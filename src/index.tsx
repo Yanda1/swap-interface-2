@@ -1,14 +1,44 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import "./index.scss";
 import reportWebVitals from "./reportWebVitals";
+import { createGlobalStyle } from "styled-components";
+import {
+  FontStyles,
+  fontStyle,
+  fontWeight,
+  spacing,
+  fontFamily,
+  fontSize,
+} from "./styles";
+
+const GlobalStyles = createGlobalStyle`
+  body {
+    font-family: ${fontFamily};
+    font-style: ${fontStyle.normal};
+    font-weight: ${fontWeight.regular};
+    margin: ${spacing[0]};
+    padding: ${spacing[0]};
+    font-size: ${fontSize[16]};
+  }
+
+  *,
+  *::before,
+  *::after {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+`;
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
+    <FontStyles />
+    <GlobalStyles />
     <App />
   </React.StrictMode>
 );
