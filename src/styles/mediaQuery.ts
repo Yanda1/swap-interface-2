@@ -10,6 +10,16 @@ export const breakpoint: { [key in Breakpoint]: number } = {
   xxl: 1920,
 };
 
+export const viewport = {
+  375: "23.4375rem",
+  480: "30rem",
+  760: "47.5rem",
+  1000: "62.5rem",
+  1300: "81.25rem",
+  1760: "110rem",
+  1920: "120rem",
+};
+
 type BreakpointOrNumber = Breakpoint | number;
 
 export const mediaQuery = (

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled, { ThemeProvider } from "styled-components";
-import { lightTheme, darkTheme } from "./styles";
+import { lightTheme, darkTheme, viewport } from "./styles";
 import { createGlobalStyle } from "styled-components";
 import { fontStyle, fontWeight, spacing, fontFamily, fontSize } from "./styles";
 
@@ -9,7 +9,11 @@ export const GlobalStyles = createGlobalStyle`
     font-family: ${fontFamily};
     font-style: ${fontStyle.normal};
     font-weight: ${fontWeight.regular};
-    margin: ${spacing[0]};
+    margin: ${spacing[0]} auto;
+    border: 2px solid red; // remove, for demo only
+    max-width: ${viewport[1300]};
+    height: 100vh;
+    max-height: ${viewport[1760]}; // check with Ilaria
     padding: ${spacing[0]};
     font-size: ${fontSize[16]};
     color: ${(props: any) => props.theme.default};
