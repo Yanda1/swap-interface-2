@@ -1,7 +1,7 @@
 export type Breakpoint = "xxs" | "xs" | "s" | "m" | "l" | "xl" | "xxl";
 
 export const breakpoint: { [key in Breakpoint]: number } = {
-  xxs: 0,
+  xxs: 375,
   xs: 480,
   s: 760,
   m: 1000,
