@@ -5,8 +5,8 @@
 Tiwanaku is a cross-chain swap app built on Yanda HyFi protocol.
 It leverages on CEXs pairs to exchange assets between different chains, solving the main problems of using a fully DEX app:
 
-- High and slow transaction fees;
-- Lack of the order book and low liquidity.
+- High and slow transaction fees
+- Lack of the order book and low liquidity
 
 # Setup
 
