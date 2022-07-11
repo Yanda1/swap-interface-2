@@ -18,7 +18,7 @@ export const GlobalStyles = createGlobalStyle`
     font-size: ${fontSize[16]};
     color: ${(props: any) => props.theme.default};
     background-color: ${(props: any) => props.theme.background.default};
-    transition: all .3s ease-in-out;
+    transition: all .2s ease-in-out;
   }
 
   *,

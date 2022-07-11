@@ -2,7 +2,7 @@ export type Theme = "light" | "dark";
 
 export type Colors = {
   // brand: string;
-  name: string;
+  name: Theme;
   default: string;
   background: {
     default: string;
@@ -35,9 +35,9 @@ export type Colors = {
 export const lightTheme: Colors = {
   // brand: "#d5001c",
   name: "light",
-  default: "black",
+  default: "#5A5A5A",
   background: {
-    default: "white",
+    default: "#FFF",
     // surface: "#f2f2f2",
     // shading: "rgba(14, 20, 24, 0.9)",
   },
@@ -67,9 +67,9 @@ export const lightTheme: Colors = {
 export const darkTheme: Colors = {
   // brand: "#d5001c",
   name: "dark",
-  default: "white",
+  default: "#8C8D8F",
   background: {
-    default: "black",
+    default: "#161B20",
     // surface: "#262b2e",
     // shading: "rgba(14, 20, 24, 0.9)",
   },
