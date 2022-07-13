@@ -3,6 +3,7 @@ import styled, { ThemeProvider } from "styled-components";
 import { lightTheme, darkTheme, viewport } from "./styles";
 import { createGlobalStyle } from "styled-components";
 import { fontStyle, fontWeight, spacing, fontFamily, fontSize } from "./styles";
+import Button from "./components/button/button";
 
 export const GlobalStyles = createGlobalStyle`
   body {
@@ -35,7 +36,7 @@ export const GlobalStyles = createGlobalStyle`
 {
   /* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
 }
-const Button = styled.button`
+const SwitchButton = styled.button`
   font-size: 1em;
   margin: 1em;
   padding: 0.25em 1em;
@@ -74,11 +75,12 @@ const App = () => {
       <ThemeProvider theme={selectedTheme}>
         <GlobalStyles />
         {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
-        <Button onClick={changeTheme}>
+          <Button color={"#FFFFFF"} width={"150px"} height={"35px"}  backgroundColor={"#161B20"} border={"0"} >Transaction History</Button>
+          <Button color={"#00A8E8"} border={"1px solid #00A8E8"} width={"150px"} height={"35px"}  backgroundColor={"#161B20"} margin={"0 39px 0 0"}>Connect Wallet</Button>
+        <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === "light" ? "DARK" : "LIGHT"}
-        </Button>
-        <h1>Welcome to Yanda</h1>
-        {/* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
+        </SwitchButton>
+       {/* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
       </ThemeProvider>
     </div>
   );
