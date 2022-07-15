@@ -19,6 +19,7 @@ export type Colors = {
     info: string
     error: string;
     warning: string;
+    logo: "#172631",
     main: string;
   };
   // state: {
@@ -48,6 +49,7 @@ export const lightTheme: Colors = {
     info: "gray",
     error: "red",
     warning: "orange",
+    logo: "#172631",
     main: "#00A8E8"
   },
   // state: {
@@ -77,6 +79,7 @@ export const darkTheme: Colors = {
     info: "gray",
     error: "red",
     warning: "orange",
+    logo: "#172631",
     main: "#00A8E8"
   },
   // state: {

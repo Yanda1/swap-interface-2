@@ -5,7 +5,7 @@ import {
     pxToRem,
 } from "../../styles";
 type VariantType = "primary" | "secondary" | "pure";
-type ColorType = "default" | "info" | "error" | "warning" | "main";
+type ColorType = "default" | "info" | "error" | "warning" | "main"| "logo";
 type Props = {
     color: ColorType;
     variant: VariantType;
@@ -13,11 +13,10 @@ type Props = {
 };
 
 const StyledButton = styled.button`
-  color: ${(props: any) => props.variant === "primary" ? "white" : props.variant === "secondary" ? props.theme.notification[props.color] : "white"};
-
-  background-color: ${(props: any) => props.variant === "primary" ? props.theme.notification[props.color] : props.color === 'info' ? props.theme.notification[props.color] : "transparent"};
+  color: ${(props: any) => props.variant === "primary" ? "white" : props.variant === "secondary" ? props.theme.notification[props.color] : 'white'};
+  background-color: ${(props: any) => props.variant === "primary" ? props.theme.notification[props.color] : props.color === 'info' ? props.theme.notification[props.color] : props.color === "logo" ? "#172631;" : "transparent"};
   border: 1px solid;
-  border-color: ${(props: any) => props.color === "main" ? props.theme.notification[props.color] : props.color === "error" ? "white" : props.color === "warning" ? "white " : "transparent"};
+  border-color: ${(props: any) => props.color === "main" ? props.theme.notification[props.color] : props.color === "error" ? "white" : props.color === "warning" ? "white " : props.color === "logo" ? "white" : "transparent" };
   width: 100%;
   border-radius: ${(props: any) => props.variant === "primary" ? "5px" : "5px"};
   max-width: ${pxToRem(426)};

@@ -112,6 +112,12 @@ const App = () => {
         >
           Change network ....
         </Button>
+        <Button
+            variant={'pure'}
+            color={'logo'}
+        >
+          Moonbeam
+        </Button>
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
         </SwitchButton>
