@@ -77,23 +77,40 @@ const App = () => {
         <GlobalStyles />
         {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
         <Button
-          color={'#FFFFFF'}
-          width={'150px'}
-          height={'35px'}
-          backgroundColor={'#161B20'}
-          border={'0'}
+          color={'default'}
+          variant={'pure'}
         >
           Transaction History
         </Button>
         <Button
-          color={'#00A8E8'}
-          border={'1px solid #00A8E8'}
-          width={'150px'}
-          height={'35px'}
-          backgroundColor={'#161B20'}
-          margin={'0 39px 0 0'}
+            variant={'secondary'}
+            color={'main'}
         >
           Connect Wallet
+        </Button>
+        <Button
+            variant={'primary'}
+            color={'main'}
+        >
+          Connect Wallet
+        </Button>
+        <Button
+            variant={'primary'}
+            color={'error'}
+        >
+          Wrong Network
+        </Button>
+        <Button
+            variant={'primary'}
+            color={'warning'}
+        >
+          Complete KYC
+        </Button>
+        <Button
+            variant={'pure'}
+            color={'info'}
+        >
+          Change network ....
         </Button>
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}

@@ -14,16 +14,13 @@ export type Colors = {
   //   medium: string;
   //   low: string;
   // };
-  // notification: {
-  //   success: string;
-  //   successSoft: string;
-  //   warning: string;
-  //   warningSoft: string;
-  //   error: string;
-  //   errorSoft: string;
-  //   neutral: string;
-  //   neutralSoft: string;
-  // };
+  notification: {
+    default: string;
+    info: string
+    error: string;
+    warning: string;
+    main: string;
+  };
   // state: {
   //   hover: string;
   //   active: string;
@@ -46,16 +43,13 @@ export const lightTheme: Colors = {
   //   medium: "#626669",
   //   low: "#e3e4e5",
   // },
-  // notification: {
-  //   success: "#018a16",
-  //   successSoft: "#e5f3e7",
-  //   warning: "#ff9b00",
-  //   warningSoft: "#fff5e5",
-  //   error: "#e00000",
-  //   errorSoft: "#fae6e6",
-  //   neutral: "#0061bd",
-  //   neutralSoft: "#e5eff8",
-  // },
+  notification: {
+    default: "blue",
+    info: "gray",
+    error: "red",
+    warning: "orange",
+    main: "#00A8E8"
+  },
   // state: {
   //   hover: "#d5001c",
   //   active: "#d5001c",
@@ -78,16 +72,13 @@ export const darkTheme: Colors = {
   //   medium: "#b0b1b2",
   //   low: "#4a4e51",
   // },
-  // notification: {
-  //   success: "#01ba1d",
-  //   successSoft: "#bfeec6",
-  //   warning: "#ff9b00",
-  //   warningSoft: "#ffe6bf",
-  //   error: "#fc1717",
-  //   errorSoft: "#fec5c5",
-  //   neutral: "#2193ff",
-  //   neutralSoft: "#c7e4ff",
-  // },
+  notification: {
+    default: "blue",
+    info: "gray",
+    error: "red",
+    warning: "orange",
+    main: "#00A8E8"
+  },
   // state: {
   //   hover: "#ff0223",
   //   active: "#ff0223",
