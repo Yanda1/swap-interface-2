@@ -14,22 +14,28 @@ export type Colors = {
   //   medium: string;
   //   low: string;
   // };
-  // notification: {
-  //   success: string;
-  //   successSoft: string;
-  //   warning: string;
-  //   warningSoft: string;
-  //   error: string;
-  //   errorSoft: string;
-  //   neutral: string;
-  //   neutralSoft: string;
-  // };
-  // state: {
-  //   hover: string;
-  //   active: string;
-  //   focus: string;
-  //   disabled: string;
-  // };
+  notification: {
+    default: string;
+    info: string
+    error: string;
+    warning: string;
+    logo: string;
+    main: string;
+  };
+  state: {
+    hover : {
+      warning: string,
+      error: string,
+      info: string,
+      main: string,
+      secondary: string,
+      pure: string,
+      logo: string,
+    },
+    active: string;
+    focus: string;
+    disabled: string;
+  };
 };
 
 export const lightTheme: Colors = {
@@ -46,22 +52,28 @@ export const lightTheme: Colors = {
   //   medium: "#626669",
   //   low: "#e3e4e5",
   // },
-  // notification: {
-  //   success: "#018a16",
-  //   successSoft: "#e5f3e7",
-  //   warning: "#ff9b00",
-  //   warningSoft: "#fff5e5",
-  //   error: "#e00000",
-  //   errorSoft: "#fae6e6",
-  //   neutral: "#0061bd",
-  //   neutralSoft: "#e5eff8",
-  // },
-  // state: {
-  //   hover: "#d5001c",
-  //   active: "#d5001c",
-  //   focus: "currentColor",
-  //   disabled: "#96989a",
-  // },
+  notification: {
+    default: "white",
+    info: "#6D6D6D",
+    error: "#DE3434",
+    warning: "#FD862F",
+    logo: "#172631",
+    main: "#00A8E8"
+  },
+  state: {
+    hover : {
+      warning: "#FFA665",
+      error: "#FF4040",
+      info: "#979797",
+      main: "#37C8FF",
+      secondary: "#00A8E8",
+      pure: "#B4B4B4",
+      logo: "#203646",
+    },
+    active: "#ff0223",
+    focus: "currentColor",
+    disabled: "#7c7f81",
+  },
 };
 
 export const darkTheme: Colors = {
@@ -78,20 +90,26 @@ export const darkTheme: Colors = {
   //   medium: "#b0b1b2",
   //   low: "#4a4e51",
   // },
-  // notification: {
-  //   success: "#01ba1d",
-  //   successSoft: "#bfeec6",
-  //   warning: "#ff9b00",
-  //   warningSoft: "#ffe6bf",
-  //   error: "#fc1717",
-  //   errorSoft: "#fec5c5",
-  //   neutral: "#2193ff",
-  //   neutralSoft: "#c7e4ff",
-  // },
-  // state: {
-  //   hover: "#ff0223",
-  //   active: "#ff0223",
-  //   focus: "currentColor",
-  //   disabled: "#7c7f81",
-  // },
+  notification: {
+    default: "white",
+    info: "#6D6D6D",
+    error: "#DE3434",
+    warning: "#FD862F",
+    logo: "#172631",
+    main: "#00A8E8"
+  },
+  state: {
+    hover : {
+      warning: "#FFA665",
+      error: "#FF4040",
+      info: "#979797",
+      main: "#37C8FF",
+      secondary: "#00A8E8",
+      pure: "#B4B4B4",
+      logo: "#203646",
+    },
+    active: "#ff0223",
+    focus: "currentColor",
+    disabled: "#7c7f81",
+  },
 };

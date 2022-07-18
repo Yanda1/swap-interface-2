@@ -36,3 +36,5 @@ export const mediaQuery = (
     (typeof maxBreakpoint !== "number" && breakpoint[maxBreakpoint]) ||
     maxBreakpoint
   }px)`;
+
+export const pxToRem = (px: number): string => `${px / 16}rem`
