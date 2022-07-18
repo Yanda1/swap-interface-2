@@ -76,48 +76,6 @@ const App = () => {
       <ThemeProvider theme={selectedTheme}>
         <GlobalStyles />
         {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
-        <Button
-          color={'default'}
-          variant={'pure'}
-        >
-          Transaction History
-        </Button>
-        <Button
-            variant={'secondary'}
-            color={'main'}
-        >
-          Connect Wallet
-        </Button>
-        <Button
-            variant={'primary'}
-            color={'main'}
-        >
-          Connect Wallet
-        </Button>
-        <Button
-            variant={'primary'}
-            color={'error'}
-        >
-          Wrong Network
-        </Button>
-        <Button
-            variant={'primary'}
-            color={'warning'}
-        >
-          Complete KYC
-        </Button>
-        <Button
-            variant={'pure'}
-            color={'info'}
-        >
-          Change network ....
-        </Button>
-        <Button
-            variant={'pure'}
-            color={'logo'}
-        >
-          Moonbeam
-        </Button>
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
         </SwitchButton>

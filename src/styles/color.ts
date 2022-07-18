@@ -19,15 +19,23 @@ export type Colors = {
     info: string
     error: string;
     warning: string;
-    logo: "#172631",
+    logo: string;
     main: string;
   };
-  // state: {
-  //   hover: string;
-  //   active: string;
-  //   focus: string;
-  //   disabled: string;
-  // };
+  state: {
+    hover : {
+      warning: string,
+      error: string,
+      info: string,
+      main: string,
+      secondary: string,
+      pure: string,
+      logo: string,
+    },
+    active: string;
+    focus: string;
+    disabled: string;
+  };
 };
 
 export const lightTheme: Colors = {
@@ -45,19 +53,27 @@ export const lightTheme: Colors = {
   //   low: "#e3e4e5",
   // },
   notification: {
-    default: "blue",
-    info: "gray",
-    error: "red",
-    warning: "orange",
+    default: "white",
+    info: "#6D6D6D",
+    error: "#DE3434",
+    warning: "#FD862F",
     logo: "#172631",
     main: "#00A8E8"
   },
-  // state: {
-  //   hover: "#d5001c",
-  //   active: "#d5001c",
-  //   focus: "currentColor",
-  //   disabled: "#96989a",
-  // },
+  state: {
+    hover : {
+      warning: "#FFA665",
+      error: "#FF4040",
+      info: "#979797",
+      main: "#37C8FF",
+      secondary: "#00A8E8",
+      pure: "#B4B4B4",
+      logo: "#203646",
+    },
+    active: "#ff0223",
+    focus: "currentColor",
+    disabled: "#7c7f81",
+  },
 };
 
 export const darkTheme: Colors = {
@@ -75,17 +91,25 @@ export const darkTheme: Colors = {
   //   low: "#4a4e51",
   // },
   notification: {
-    default: "blue",
-    info: "gray",
-    error: "red",
-    warning: "orange",
+    default: "white",
+    info: "#6D6D6D",
+    error: "#DE3434",
+    warning: "#FD862F",
     logo: "#172631",
     main: "#00A8E8"
   },
-  // state: {
-  //   hover: "#ff0223",
-  //   active: "#ff0223",
-  //   focus: "currentColor",
-  //   disabled: "#7c7f81",
-  // },
+  state: {
+    hover : {
+      warning: "#FFA665",
+      error: "#FF4040",
+      info: "#979797",
+      main: "#37C8FF",
+      secondary: "#00A8E8",
+      pure: "#B4B4B4",
+      logo: "#203646",
+    },
+    active: "#ff0223",
+    focus: "currentColor",
+    disabled: "#7c7f81",
+  },
 };
