@@ -66,7 +66,6 @@ const App = () => {
 
   const changeTheme = (): void => {
     const getTheme = selectedTheme.name === 'light' ? darkTheme : lightTheme;
-    console.log(getTheme);
     setSelectedTheme(getTheme);
     localStorage.setItem(localStorageThemeName, JSON.stringify(getTheme));
   };
@@ -76,25 +75,6 @@ const App = () => {
       <ThemeProvider theme={selectedTheme}>
         <GlobalStyles />
         {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
-        <Button
-          color={'#FFFFFF'}
-          width={'150px'}
-          height={'35px'}
-          backgroundColor={'#161B20'}
-          border={'0'}
-        >
-          Transaction History
-        </Button>
-        <Button
-          color={'#00A8E8'}
-          border={'1px solid #00A8E8'}
-          width={'150px'}
-          height={'35px'}
-          backgroundColor={'#161B20'}
-          margin={'0 39px 0 0'}
-        >
-          Connect Wallet
-        </Button>
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
         </SwitchButton>
