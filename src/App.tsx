@@ -66,7 +66,6 @@ const App = () => {
 
   const changeTheme = (): void => {
     const getTheme = selectedTheme.name === 'light' ? darkTheme : lightTheme;
-    console.log(getTheme);
     setSelectedTheme(getTheme);
     localStorage.setItem(localStorageThemeName, JSON.stringify(getTheme));
   };
@@ -79,6 +78,13 @@ const App = () => {
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
         </SwitchButton>
+        <Button
+          theme={selectedTheme}
+          color="main"
+          onClick={() => console.log('CLICK')}
+        >
+          Connect Wallet
+        </Button>
         {/* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
       </ThemeProvider>
     </div>
