@@ -16,14 +16,15 @@ export type Colors = {
   // };
   notification: {
     default: string;
-    info: string
     error: string;
     warning: string;
-    logo: string;
-    main: string;
+    icon: string;
+    disabled: string;
+    transparent: string;
   };
   state: {
     hover : {
+      default: string,
       warning: string,
       error: string,
       info: string,
@@ -53,15 +54,16 @@ export const lightTheme: Colors = {
   //   low: "#e3e4e5",
   // },
   notification: {
-    default: "white",
-    info: "#6D6D6D",
+    default: "#00A8E8",
     error: "#DE3434",
     warning: "#FD862F",
-    logo: "#172631",
-    main: "#00A8E8"
+    icon: "#172631",
+    disabled: "#6D6D6D",
+    transparent: "transparent",
   },
   state: {
     hover : {
+      default: "#B4B4B4",
       warning: "#FFA665",
       error: "#FF4040",
       info: "#979797",
@@ -91,15 +93,16 @@ export const darkTheme: Colors = {
   //   low: "#4a4e51",
   // },
   notification: {
-    default: "white",
-    info: "#6D6D6D",
+    default: "#00A8E8",
     error: "#DE3434",
     warning: "#FD862F",
-    logo: "#172631",
-    main: "#00A8E8"
+    icon: "#172631",
+    disabled: "#6D6D6D",
+    transparent: "transparent",
   },
   state: {
     hover : {
+      default: "#B4B4B4",
       warning: "#FFA665",
       error: "#FF4040",
       info: "#979797",

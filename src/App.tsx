@@ -34,9 +34,9 @@ export const GlobalStyles = createGlobalStyle`
   }
 `;
 
-{
+
   /* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
-}
+
 const SwitchButton = styled.button`
   font-size: 1em;
   margin: 1em;
@@ -46,9 +46,9 @@ const SwitchButton = styled.button`
   border: 2px solid ${(props: any) => props.theme.default};
   background-color: ${(props: any) => props.theme.background.default};
 `;
-{
+
   /* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
-}
+
 
 const App = () => {
   const localStorageThemeName: string = 'current-theme';
@@ -66,22 +66,43 @@ const App = () => {
 
   const changeTheme = (): void => {
     const getTheme = selectedTheme.name === 'light' ? darkTheme : lightTheme;
-    console.log(getTheme);
+    console.log('___GET THEME___', getTheme);
     setSelectedTheme(getTheme);
     localStorage.setItem(localStorageThemeName, JSON.stringify(getTheme));
   };
 
   return (
-    <div>
+    <>
       <ThemeProvider theme={selectedTheme}>
         <GlobalStyles />
         {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
+        <Button variant={"primary"}>
+          Connect Wallet
+        </Button>
+        <Button variant={"secondary"}>
+          Connect Wallet
+        </Button>
+        <Button  variant={"secondary"} color={"icon"}>
+          Moonbean
+        </Button>
+        <Button  variant={"secondary"} color={"warning"} >
+          Complete KYC
+        </Button>
+        <Button   variant={"secondary"} color={"error"}>
+          Wrong Network
+        </Button>
+        <Button  variant={"primary"} disabled>
+          Change network...
+        </Button>
+        <Button  variant={"pure"}>
+          Transactions History
+        </Button>
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
         </SwitchButton>
         {/* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
       </ThemeProvider>
-    </div>
+    </>
   );
 };
 
