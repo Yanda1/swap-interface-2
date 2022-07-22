@@ -73,21 +73,26 @@ const App = () => {
       <ThemeProvider theme={selectedTheme}>
         <GlobalStyles />
         {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
-        <Button variant={'primary'}>Primary</Button>
-        <Button variant={'secondary'}>Secondary Default</Button>
-        <Button variant={'secondary'} color={'icon'}>
+        <Button theme={selectedTheme}>Primary</Button>
+        <Button theme={selectedTheme} variant={'secondary'}>
+          Secondary Default
+        </Button>
+        <Button theme={selectedTheme} variant={'secondary'} icon="moonbeam">
           Secondary Icon
         </Button>
-        <Button variant={'secondary'} color={'warning'}>
+        <Button theme={selectedTheme} variant={'secondary'} color={'warning'}>
           Secondary Warning
         </Button>
-        <Button variant={'secondary'} color={'error'}>
+        <Button theme={selectedTheme} variant={'secondary'} color={'error'}>
           Secondary Error
         </Button>
-        <Button variant={'primary'} disabled>
+        <Button theme={selectedTheme} variant={'primary'} disabled>
           Primary disabled
         </Button>
-        <Button variant={'pure'}>Pure</Button>
+        <Button theme={selectedTheme} variant={'pure'}>
+          Pure
+        </Button>
+
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
         </SwitchButton>
