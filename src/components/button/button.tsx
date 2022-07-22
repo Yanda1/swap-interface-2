@@ -1,4 +1,4 @@
-import { Colors, darkTheme } from '../../styles';
+import { Colors, fontFamily } from '../../styles';
 import styled, { css } from 'styled-components';
 import type { ReactNode } from 'react';
 import { pxToRem } from '../../styles';
@@ -15,6 +15,7 @@ type ColorType = 'default' | 'error' | 'warning' | 'icon';
 interface CommonProps {
   disabled?: boolean;
   children?: ReactNode;
+  onClick: () => void;
   theme: Colors;
 }
 interface PrimaryPureProps {
@@ -52,11 +53,9 @@ const StyledButton = styled.button(
   }: Props) => {
     const isPrimary = variant === 'primary';
     const isSecondary = variant === 'secondary';
-    const isColorDefault = color === 'default';
-    const isSecondaryDefault = isSecondary && color === 'default';
-    color = icon ? 'icon' : color;
-
-    console.log({ variant, color, icon });
+    const setColor = icon ? 'icon' : color;
+    const isColorDefault = setColor === 'default';
+    const isSecondaryDefault = isSecondary && setColor === 'default';
 
     return css`
       display: ${icon ? 'inline-flex' : 'inline-block'};
@@ -64,9 +63,13 @@ const StyledButton = styled.button(
       justify-content: space-between;
       max-width: ${isPrimary ? pxToRem(426) : pxToRem(148)};
       width: 100%;
-      font-size: ${isPrimary && pxToRem(16)};
+      cursor: ${disabled ? 'not-allowed' : 'pointer'};
+      font-family: ${fontFamily}; // somehow this is not applied from GLOBAL_STYLES
+      font-size: ${isPrimary
+        ? pxToRem(16)
+        : pxToRem(14)}; // same here for font-size = 14
       min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
-      padding: ${pxToRem(8)};
+      padding: ${icon ? pxToRem(4) : pxToRem(8)} ${pxToRem(12)};
       color: ${variant === 'pure'
         ? theme.pure
         : isSecondaryDefault
@@ -77,7 +80,7 @@ const StyledButton = styled.button(
         : isPrimary
         ? theme.button.default
         : !isColorDefault
-        ? theme.button?.[color]
+        ? theme.button?.[setColor]
         : 'transparent'};
       border: 1px solid
         ${!isSecondary
@@ -104,14 +107,17 @@ const Button = ({
   color = 'default',
   disabled = false,
   icon,
+  onClick,
 }: Props) => {
   return (
+    // @ts-ignore
     <StyledButton
       theme={theme}
       variant={variant}
       disabled={disabled}
       icon={icon}
       color={color}
+      onClick={onClick}
     >
       {icon && <img src={icons?.[icon]} alt={icon} />}
       {children}
