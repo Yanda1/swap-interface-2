@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-import { lightTheme, darkTheme, viewport } from './styles';
+import { lightTheme, darkTheme, viewport, Colors, pxToRem } from './styles';
 import { createGlobalStyle } from 'styled-components';
-import { fontStyle, fontWeight, spacing, fontFamily, fontSize } from './styles';
+import { fontStyle, fontWeight, spacing, fontFamily } from './styles';
 import Button from './components/button/button';
 
 export const GlobalStyles = createGlobalStyle`
@@ -10,7 +10,7 @@ export const GlobalStyles = createGlobalStyle`
     font-family: ${fontFamily};
     font-style: ${fontStyle.normal};
     font-weight: ${fontWeight.regular};
-    font-size: ${fontSize[14]};
+    font-size: ${pxToRem(14)};
     margin: ${spacing[0]} auto;
     border: 2px solid red; // remove, for demo only
     max-width: ${viewport[1300]};
@@ -22,7 +22,7 @@ export const GlobalStyles = createGlobalStyle`
     transition: all .2s ease-in-out;
     padding: ${spacing[10]} ${spacing[20]} ${spacing[40]};
   }
-
+  
   *,
   *::before,
   *::after {
@@ -32,13 +32,11 @@ export const GlobalStyles = createGlobalStyle`
     scroll-behavior: smooth;
     overflow: hidden;
   }
-`;
+  `;
 
-{
-  /* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
-}
+/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
+
 const SwitchButton = styled.button`
-  font-size: 1em;
   margin: 1em;
   padding: 0.25em 1em;
   border-radius: 3px;
@@ -46,13 +44,12 @@ const SwitchButton = styled.button`
   border: 2px solid ${(props: any) => props.theme.default};
   background-color: ${(props: any) => props.theme.background.default};
 `;
-{
-  /* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
-}
+
+/* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
 
 const App = () => {
   const localStorageThemeName: string = 'current-theme';
-  const [selectedTheme, setSelectedTheme] = useState(darkTheme);
+  const [selectedTheme, setSelectedTheme] = useState<Colors>(darkTheme);
 
   useEffect(() => {
     const currentTheme = JSON.parse(
@@ -71,16 +68,63 @@ const App = () => {
   };
 
   return (
-    <div>
+    <>
       <ThemeProvider theme={selectedTheme}>
         <GlobalStyles />
-        {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
+        <Button onClick={() => console.log('Hi THERE')} theme={selectedTheme}>
+          Primary
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          theme={selectedTheme}
+          variant={'secondary'}
+        >
+          Secondary Default
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          theme={selectedTheme}
+          variant="secondary"
+          icon="moonbeam"
+        >
+          Moonbeam
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          theme={selectedTheme}
+          variant={'secondary'}
+          color={'warning'}
+        >
+          Check Network
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          theme={selectedTheme}
+          variant={'secondary'}
+          color={'error'}
+        >
+          Secondary Error
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          theme={selectedTheme}
+          variant={'primary'}
+          disabled
+        >
+          Primary disabled
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          theme={selectedTheme}
+          variant={'pure'}
+        >
+          Pure
+        </Button>
         <SwitchButton onClick={changeTheme}>
           {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
         </SwitchButton>
-        {/* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
       </ThemeProvider>
-    </div>
+    </>
   );
 };
 
