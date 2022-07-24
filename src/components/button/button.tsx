@@ -1,9 +1,10 @@
-import { Colors, fontFamily } from '../../styles';
+import { fontFamily } from '../../styles';
 import styled, { css } from 'styled-components';
 import type { ReactNode } from 'react';
 import { pxToRem } from '../../styles';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
+import { useAuth } from '../../helpers';
 
 const icons = {
   moonbeam,
@@ -16,7 +17,6 @@ interface CommonProps {
   disabled?: boolean;
   children?: ReactNode;
   onClick: () => void;
-  theme: Colors;
 }
 interface PrimaryPureProps {
   variant?: 'primary' | 'pure';
@@ -45,7 +45,6 @@ type Props = IndividualProps & CommonProps;
 
 const StyledButton = styled.button(
   ({
-    theme,
     variant = 'primary',
     color = 'default',
     disabled = false,
@@ -56,12 +55,14 @@ const StyledButton = styled.button(
     const setColor = icon ? 'icon' : color;
     const isColorDefault = setColor === 'default';
     const isSecondaryDefault = isSecondary && setColor === 'default';
+    const { state } = useAuth();
+    const { theme } = state;
 
     return css`
       display: ${icon ? 'inline-flex' : 'inline-block'};
       align-items: center;
       justify-content: space-between;
-      max-width: ${isPrimary ? pxToRem(426) : pxToRem(148)};
+      max-width: ${isPrimary ? pxToRem(428) : pxToRem(160)};
       width: 100%;
       cursor: ${disabled ? 'not-allowed' : 'pointer'};
       font-family: ${fontFamily}; // somehow this is not applied from GLOBAL_STYLES
@@ -69,7 +70,7 @@ const StyledButton = styled.button(
         ? pxToRem(16)
         : pxToRem(14)}; // same here for font-size = 14
       min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
-      padding: ${icon ? pxToRem(4) : pxToRem(8)} ${pxToRem(12)};
+      padding: ${pxToRem(4)} ${pxToRem(12)};
       color: ${variant === 'pure'
         ? theme.pure
         : isSecondaryDefault
@@ -100,8 +101,7 @@ const StyledButton = styled.button(
   }
 );
 
-const Button = ({
-  theme,
+export const Button = ({
   children,
   variant = 'primary',
   color = 'default',
@@ -112,7 +112,6 @@ const Button = ({
   return (
     // @ts-ignore
     <StyledButton
-      theme={theme}
       variant={variant}
       disabled={disabled}
       icon={icon}
@@ -123,7 +122,4 @@ const Button = ({
       {children}
     </StyledButton>
   );
->>>>>>> feature/01-button-component-prop-fix
 };
-
-export default Button;

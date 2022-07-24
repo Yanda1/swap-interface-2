@@ -1,11 +1,12 @@
-export type Theme = 'light' | 'dark';
+export type ThemeName = 'light' | 'dark';
 
-export type Colors = {
-  name: Theme;
+export type Theme = {
+  name: ThemeName;
   default: string;
   pure: string;
   background: {
     default: string;
+    mobile: string;
   };
   button: {
     default: string;
@@ -16,12 +17,13 @@ export type Colors = {
   };
 };
 
-export const lightTheme: Colors = {
+export const lightTheme: Theme = {
   name: 'light',
   default: '#5A5A5A',
   pure: '#5A5A5A',
   background: {
     default: '#FFF',
+    mobile: '#F0F0F0',
   },
   button: {
     default: '#00A8E8',
@@ -32,12 +34,13 @@ export const lightTheme: Colors = {
   },
 };
 
-export const darkTheme: Colors = {
+export const darkTheme: Theme = {
   name: 'dark',
   pure: '#FFF',
   default: '#8C8D8F',
   background: {
     default: '#161B20',
+    mobile: '#161B20',
   },
   button: {
     default: '#00A8E8',
