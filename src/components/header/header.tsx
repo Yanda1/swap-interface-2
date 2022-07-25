@@ -1,11 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
 import { ReactComponent as MenuDark } from '../../assets/menu-dark.svg';
 import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
-import { pxToRem, mediaQuery, lightTheme, darkTheme } from '../../styles';
+import {
+  pxToRem,
+  mediaQuery,
+  lightTheme,
+  darkTheme,
+  spacing,
+} from '../../styles';
 import sun from '../../assets/sole.png';
 import moon from '../../assets/moon.png';
 import { Button } from '../button/button';
@@ -38,11 +44,31 @@ const Icon = styled.img`
   }
 `;
 
+const Menu = styled.ul`
+  position: fixed;
+  top: ${spacing[56]};
+  right: ${spacing[14]};
+  max-width: calc(100vw - ${pxToRem(28)});
+  background: ${(props: any) => props.theme.background.default};
+  text-align: right;
+  padding: ${spacing[14]};
+  border-radius: ${pxToRem(6)};
+  cursor: pointer;
+  border: 1px solid
+    ${(props: any) =>
+      props.theme.name === 'light' ? props.theme.default : props.theme.pure};
+  & > li:not(:last-child) {
+    margin-bottom: ${pxToRem(16)};
+  }
+`;
+
 export const Header = () => {
   const { isBreakpointWidth } = useBreakpoint('s');
   const { state, dispatch } = useAuth();
   const { theme } = state;
+  const [showMenu, setShowMenu] = useState(false);
   const isLight = isLightTheme(theme);
+  const menuRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     const localStorageTheme = JSON.parse(
@@ -58,6 +84,25 @@ export const Header = () => {
     const getTheme = isLight ? darkTheme : lightTheme;
     dispatch({ type: ThemeEnum.THEME, payload: getTheme });
     localStorage.setItem(localStorageThemeName, JSON.stringify(getTheme));
+  };
+
+  const handleShowMenu = (): void => {
+    if (!showMenu) {
+      document.addEventListener('click', handleOutsideClick, { capture: true });
+    } else {
+      document.removeEventListener('click', handleOutsideClick, {
+        capture: true,
+      });
+    }
+    setShowMenu((showMenu) => !showMenu);
+  };
+
+  const handleOutsideClick = (e: any): void => {
+    e.preventDefault();
+
+    if (menuRef.current) {
+      if (!menuRef.current.contains(e.target)) handleShowMenu();
+    }
   };
 
   return (
@@ -85,7 +130,19 @@ export const Header = () => {
         <Icon src={isLight ? moon : sun} alt={isLight ? moon : sun} />
       </button>
 
-      {isBreakpointWidth && (isLight ? <MenuLight /> : <MenuDark />)}
+      {isBreakpointWidth &&
+        (isLight ? (
+          <MenuLight onClick={handleShowMenu} />
+        ) : (
+          <MenuDark onClick={handleShowMenu} />
+        ))}
+      {showMenu && (
+        <Menu theme={theme} ref={menuRef}>
+          <li>Transaction History</li>
+          <li>Change Network</li>
+          <li>Logout</li>
+        </Menu>
+      )}
     </StyledHeader>
   );
 };
