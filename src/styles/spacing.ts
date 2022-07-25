@@ -1,5 +1,4 @@
 export type Spacing =
-  | '0'
   | '4'
   | '8'
   | '10'
@@ -15,7 +14,6 @@ export type Spacing =
   | '80';
 
 export const spacing = {
-  0: '0',
   4: '0.25rem',
   8: '0.5rem',
   10: '0.625rem',

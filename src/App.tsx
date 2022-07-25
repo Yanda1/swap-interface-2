@@ -1,86 +1,93 @@
-import { useState, useEffect } from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import { lightTheme, darkTheme, viewport } from './styles';
+import styled from 'styled-components';
+import { viewport, pxToRem } from './styles';
+import { useAuth } from './helpers';
 import { createGlobalStyle } from 'styled-components';
-import { fontStyle, fontWeight, spacing, fontFamily, fontSize } from './styles';
-import Button from './components/button/button';
+import { fontStyle, fontWeight, fontFamily, mediaQuery } from './styles';
+import { Button, Header } from './components';
 
 export const GlobalStyles = createGlobalStyle`
-  body {
-    font-family: ${fontFamily};
-    font-style: ${fontStyle.normal};
-    font-weight: ${fontWeight.regular};
-    font-size: ${fontSize[14]};
-    margin: ${spacing[0]} auto;
-    border: 2px solid red; // remove, for demo only
-    max-width: ${viewport[1300]};
-    height: 100vh;
-    max-height: ${viewport[1760]}; // check with Ilaria
-    padding: ${spacing[0]};
-    color: ${(props: any) => props.theme.default};
-    background-color: ${(props: any) => props.theme.background.default};
-    transition: all .2s ease-in-out;
-    padding: ${spacing[10]} ${spacing[20]} ${spacing[40]};
-  }
+    body {
+      font-family: ${fontFamily};
+      font-style: ${fontStyle.normal};
+      font-weight: ${fontWeight.regular};
+      font-size: ${pxToRem(14)};
+      max-width: ${viewport[1760]};
+      max-height: ${viewport[1760]}; // check with Ilaria
+      margin: 0 auto;
+      background: ${(props: any) => props.theme.background.default};
+      padding: 0 ${pxToRem(20)} ${pxToRem(40)};
+      height: 100vh;
+      color: ${(props: any) => props.theme.default};
+      transition: all 0.2s ease-in-out;
+      ${mediaQuery('s')} {
+        background: ${(props: any) =>
+          `linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 52px, ${props.theme.background.default} 52px);`}
+      }
+    }
+    
+    *,
+    *::before,
+    *::after {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+      overflow: hidden;
+      margin: 0;
+    }
+    `;
 
-  *,
-  *::before,
-  *::after {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    box-sizing: border-box;
-    scroll-behavior: smooth;
-    overflow: hidden;
-  }
+const MainStyle = styled.main`
+  max-width: ${pxToRem(466)};
+  margin: 0 auto;
 `;
-
-{
-  /* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
-}
-const SwitchButton = styled.button`
-  font-size: 1em;
-  margin: 1em;
-  padding: 0.25em 1em;
-  border-radius: 3px;
-  color: ${(props: any) => props.theme.default};
-  border: 2px solid ${(props: any) => props.theme.default};
-  background-color: ${(props: any) => props.theme.background.default};
-`;
-{
-  /* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */
-}
 
 const App = () => {
-  const localStorageThemeName: string = 'current-theme';
-  const [selectedTheme, setSelectedTheme] = useState(darkTheme);
-
-  useEffect(() => {
-    const currentTheme = JSON.parse(
-      localStorage.getItem(localStorageThemeName) as string
-    );
-    if (currentTheme) {
-      setSelectedTheme(currentTheme);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const changeTheme = (): void => {
-    const getTheme = selectedTheme.name === 'light' ? darkTheme : lightTheme;
-    setSelectedTheme(getTheme);
-    localStorage.setItem(localStorageThemeName, JSON.stringify(getTheme));
-  };
+  const { state } = useAuth();
+  const { theme } = state;
 
   return (
-    <div>
-      <ThemeProvider theme={selectedTheme}>
-        <GlobalStyles />
-        {/* START --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
-        <SwitchButton onClick={changeTheme}>
-          {selectedTheme.name === 'light' ? 'DARK' : 'LIGHT'}
-        </SwitchButton>
-        {/* END --- THIS PART IS FOR DEMO ONLY - HAS TO BE REMOVED */}
-      </ThemeProvider>
-    </div>
+    <>
+      <GlobalStyles theme={theme} />
+      <Header />
+      <MainStyle>
+        <Button onClick={() => console.log('Hi THERE')}>Primary</Button>
+        <Button onClick={() => console.log('Hi THERE')} variant={'secondary'}>
+          Secondary Default
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          variant="secondary"
+          icon="moonbeam"
+        >
+          Moonbeam
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          variant={'secondary'}
+          color={'warning'}
+        >
+          Check Network
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          variant={'secondary'}
+          color={'error'}
+        >
+          Secondary Error
+        </Button>
+        <Button
+          onClick={() => console.log('Hi THERE')}
+          variant={'primary'}
+          disabled
+        >
+          Primary disabled
+        </Button>
+        <Button onClick={() => console.log('Hi THERE')} variant={'pure'}>
+          Pure
+        </Button>
+      </MainStyle>
+    </>
   );
 };
 
