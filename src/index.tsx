@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { Header } from './components';
 import reportWebVitals from './reportWebVitals';
 import { FontStyles } from './styles';
 import { AuthProvider } from './helpers';
@@ -14,7 +13,6 @@ root.render(
   <React.StrictMode>
     <AuthProvider>
       <FontStyles />
-      <Header />
       <App />
     </AuthProvider>
   </React.StrictMode>

@@ -1,4 +1,4 @@
-import type { Breakpoint } from './../styles';
+import type { Breakpoint, Theme } from './../styles';
 import { useState, useLayoutEffect } from 'react';
 import { breakpoint } from './../styles';
 
@@ -22,3 +22,5 @@ export const useBreakpoint = (size: Breakpoint) => {
     isBreakpointHeight: windowHeight < breakpoint[size],
   };
 };
+
+export const isLightTheme = (theme: Theme) => theme.name === 'light';
