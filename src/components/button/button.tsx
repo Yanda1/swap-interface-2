@@ -6,50 +6,48 @@ import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
 import { useAuth } from '../../helpers';
 
-const icons = {
+type Icon = 'moonbeam' | 'metamask';
+
+const icons: { [key: string]: string } = {
   moonbeam,
   metamask,
 };
 
 type ColorType = 'default' | 'error' | 'warning' | 'icon';
 
-interface CommonProps {
+type CommonProps = {
   disabled?: boolean;
   children?: ReactNode;
   onClick: () => void;
-}
-interface PrimaryPureProps {
+};
+
+type PrimaryPureProps = {
   variant?: 'primary' | 'pure';
   color?: never;
   icon?: never;
-}
+};
 
-interface IconOnlyProps {
-  icon?: 'moonbeam' | 'metamask';
+type IconOnlyProps = {
+  icon: Icon;
   color?: never;
-}
+};
 
-interface ColorOnlyProps {
+type ColorOnlyProps = {
   color?: ColorType;
   icon?: never;
-}
+};
 
 type ColorIconProps = IconOnlyProps | ColorOnlyProps;
 
 type SecondaryProps = {
-  variant: 'secondary';
+  variant?: 'secondary';
 } & ColorIconProps;
 
 type IndividualProps = PrimaryPureProps | SecondaryProps;
 type Props = IndividualProps & CommonProps;
 
 const StyledButton = styled.button(
-  ({
-    variant = 'primary',
-    color = 'default',
-    disabled = false,
-    icon,
-  }: Props) => {
+  ({ variant, color, disabled, icon }: Props) => {
     const isPrimary = variant === 'primary';
     const isSecondary = variant === 'secondary';
     const setColor = icon ? 'icon' : color;
@@ -81,7 +79,7 @@ const StyledButton = styled.button(
         : isPrimary
         ? theme.button.default
         : !isColorDefault
-        ? theme.button?.[setColor]
+        ? theme.button?.[setColor as ColorType]
         : 'transparent'};
       border: 1px solid
         ${!isSecondary
@@ -102,24 +100,22 @@ const StyledButton = styled.button(
 );
 
 export const Button = ({
-  children,
   variant = 'primary',
-  color = 'default',
   disabled = false,
   icon,
+  color = 'default',
   onClick,
-}: Props) => {
-  return (
-    // @ts-ignore
-    <StyledButton
-      variant={variant}
-      disabled={disabled}
-      icon={icon}
-      color={color}
-      onClick={onClick}
-    >
-      {icon && <img src={icons?.[icon]} alt={icon} />}
-      {children}
-    </StyledButton>
-  );
-};
+  children,
+}: Props) => (
+  // @ts-ignore
+  <StyledButton
+    variant={variant}
+    disabled={disabled}
+    icon={icon}
+    color={color}
+    onClick={onClick}
+  >
+    {icon && <img src={icons?.[icon]} alt={icon} />}
+    {children}
+  </StyledButton>
+);
