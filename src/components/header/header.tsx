@@ -5,6 +5,8 @@ import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
 import { ReactComponent as MenuDark } from '../../assets/menu-dark.svg';
 import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
+import { ReactComponent as Sun } from '../../assets/sun.svg';
+import { ReactComponent as Moon } from '../../assets/moon.svg';
 import {
   pxToRem,
   mediaQuery,
@@ -12,8 +14,6 @@ import {
   darkTheme,
   spacing,
 } from '../../styles';
-import sun from '../../assets/sole.png';
-import moon from '../../assets/moon.png';
 import { Button } from '../button/button';
 import {
   isLightTheme,
@@ -35,10 +35,8 @@ const StyledHeader = styled.header`
   }
 `;
 
-const Icon = styled.img`
+const Icon = styled.div`
   cursor: pointer;
-  border: none;
-  background: none;
   &:hover {
     opacity: 0.8;
   }
@@ -127,7 +125,7 @@ export const Header = () => {
         onClick={changeTheme}
         style={{ border: 'none', background: 'none' }}
       >
-        <Icon src={isLight ? moon : sun} alt={isLight ? moon : sun} />
+        <Icon>{isLight ? <Moon /> : <Sun />}</Icon>
       </button>
 
       {isBreakpointWidth &&
