@@ -98,6 +98,7 @@ export const Button = ({
 	onClick
 }: Props) => {
 	return (
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		<StyledButton variant={variant} disabled={disabled} icon={icon} color={color} onClick={onClick}>
 			{icon && <img src={icons?.[icon]} alt={icon} />}

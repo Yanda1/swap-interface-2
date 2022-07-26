@@ -10,13 +10,16 @@ const useWindowSize = () => {
 		};
 		window.addEventListener('resize', updateSize);
 		updateSize();
+
 		return () => window.removeEventListener('resize', updateSize);
 	}, []);
+
 	return size;
 };
 
 export const useBreakpoint = (size: Breakpoint) => {
 	const [windowWidth, windowHeight] = useWindowSize();
+
 	return {
 		isBreakpointWidth: windowWidth < breakpoint[size],
 		isBreakpointHeight: windowHeight < breakpoint[size]

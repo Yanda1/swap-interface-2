@@ -44,9 +44,9 @@ export const Header = () => {
 	const isLight = isLightTheme(theme);
 
 	useEffect(() => {
-		const localStorageTheme = JSON.parse(localStorage.getItem(localStorageThemeName) as string);
-		if (localStorageTheme) {
-			dispatch({ type: ThemeEnum.THEME, payload: localStorageTheme });
+		const localStorageTheme = localStorage.getItem(localStorageThemeName);
+		if (localStorageTheme !== null) {
+			dispatch({ type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) });
 		}
 		// eslint-disable-next-line
 	}, []);
