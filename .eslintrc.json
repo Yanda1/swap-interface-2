@@ -1,0 +1,91 @@
+{
+	"env": {
+		"browser": true,
+		"es2021": true,
+		"jest": true
+	},
+	"extends": [
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/recommended-requiring-type-checking"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": "latest",
+		"sourceType": "module",
+		"project": "tsconfig.json"
+	},
+	"plugins": ["react", "@typescript-eslint"],
+	"rules": {
+		// "indent": ["error", "tab", { "SwitchCase": 1, "ignoredNodes": ["ConditionalExpression"] }],
+		// "no-tabs": ["error", { "allowIndentationTabs": true }],
+		"linebreak-style": "off",
+		"max-classes-per-file": ["error", 1],
+		"max-len": "off",
+		"new-parens": "off",
+		"newline-per-chained-call": "off",
+		"no-bitwise": "error",
+		"no-caller": "error",
+		"no-cond-assign": "error",
+		"@typescript-eslint/quotes": ["error", "single"],
+		"@typescript-eslint/semi": ["error", "always"],
+		"@typescript-eslint/triple-slash-reference": "error",
+		"@typescript-eslint/type-annotation-spacing": "off",
+		"react/react-in-jsx-scope": "off",
+		"no-multiple-empty-lines": 2,
+		"@typescript-eslint/member-ordering": "error",
+		"@typescript-eslint/no-use-before-define": "off",
+		"@typescript-eslint/no-unsafe-assignment": "off",
+		"@typescript-eslint/no-empty-interface": "error",
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/restrict-template-expressions": "off",
+		"camelcase": "error",
+		"no-throw-literal": "error",
+		"no-trailing-spaces": "off",
+		"no-undef-init": "error",
+		"no-underscore-dangle": "error",
+		"no-unused-expressions": "error",
+		"no-unused-labels": "error",
+		"no-unused-vars": "off",
+		"no-var": "error",
+		"object-shorthand": "error",
+		"one-var": ["error", "never"],
+		"prefer-const": "error",
+		"react/jsx-uses-vars": "error",
+		"quote-props": "off",
+		"radix": "error",
+		"space-before-function-paren": "off",
+		"space-in-parens": ["off", "never"],
+		"spaced-comment": "error",
+		"use-isnan": "error",
+		"valid-typeof": "off",
+		"padding-line-between-statements": [
+			"error",
+			{ "blankLine": "always", "prev": "*", "next": "return" }
+		],
+		"@typescript-eslint/no-unused-vars": [
+			"error",
+			{
+				"vars": "all",
+				"args": "after-used",
+				"ignoreRestSiblings": false,
+				"varsIgnorePattern": "h"
+			}
+		],
+		"@typescript-eslint/member-delimiter-style": [
+			"error",
+			{
+				"multiline": {
+					"delimiter": "semi",
+					"requireLast": true
+				},
+				"singleline": {
+					"delimiter": "semi",
+					"requireLast": false
+				}
+			}
+		]
+	}
+}

@@ -1,1 +1,1 @@
-export const localStorageThemeName: string = 'current-theme';
+export const localStorageThemeName = 'current-theme';
