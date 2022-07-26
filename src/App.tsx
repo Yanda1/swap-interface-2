@@ -21,7 +21,7 @@ export const GlobalStyles = createGlobalStyle`
       transition: all 0.2s ease-in-out;
       ${mediaQuery('s')} {
         background: ${(props: any) =>
-          `linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 52px, ${props.theme.background.default} 52px);`}
+					`linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 52px, ${props.theme.background.default} 52px);`}
       }
     }
     
@@ -38,57 +38,41 @@ export const GlobalStyles = createGlobalStyle`
     `;
 
 const MainStyle = styled.main`
-  max-width: ${pxToRem(466)};
-  margin: 0 auto;
+	max-width: ${pxToRem(466)};
+	margin: 0 auto;
 `;
 
 const App = () => {
-  const { state } = useAuth();
-  const { theme } = state;
+	const { state } = useAuth();
+	const { theme } = state;
 
-  return (
-    <>
-      <GlobalStyles theme={theme} />
-      <Header />
-      <MainStyle>
-        <Button onClick={() => console.log('Hi THERE')}>Primary</Button>
-        <Button onClick={() => console.log('Hi THERE')} variant={'secondary'}>
-          Secondary Default
-        </Button>
-        <Button
-          onClick={() => console.log('Hi THERE')}
-          variant="secondary"
-          icon="moonbeam"
-        >
-          Moonbeam
-        </Button>
-        <Button
-          onClick={() => console.log('Hi THERE')}
-          variant={'secondary'}
-          color={'warning'}
-        >
-          Check Network
-        </Button>
-        <Button
-          onClick={() => console.log('Hi THERE')}
-          variant={'secondary'}
-          color={'error'}
-        >
-          Secondary Error
-        </Button>
-        <Button
-          onClick={() => console.log('Hi THERE')}
-          variant={'primary'}
-          disabled
-        >
-          Primary disabled
-        </Button>
-        <Button onClick={() => console.log('Hi THERE')} variant={'pure'}>
-          Pure
-        </Button>
-      </MainStyle>
-    </>
-  );
+	return (
+		<>
+			<GlobalStyles theme={theme} />
+			<Header />
+			<MainStyle>
+				<Button onClick={() => console.log('Hi THERE')}>Primary</Button>
+				<Button onClick={() => console.log('Hi THERE')} variant={'secondary'}>
+					Secondary Default
+				</Button>
+				<Button onClick={() => console.log('Hi THERE')} variant="secondary" icon="moonbeam">
+					Moonbeam
+				</Button>
+				<Button onClick={() => console.log('Hi THERE')} variant={'secondary'} color={'warning'}>
+					Check Network
+				</Button>
+				<Button onClick={() => console.log('Hi THERE')} variant={'secondary'} color={'error'}>
+					Secondary Error
+				</Button>
+				<Button onClick={() => console.log('Hi THERE')} variant={'primary'} disabled>
+					Primary disabled
+				</Button>
+				<Button onClick={() => console.log('Hi THERE')} variant={'pure'}>
+					Pure
+				</Button>
+			</MainStyle>
+		</>
+	);
 };
 
 export default App;
