@@ -1,9 +1,14 @@
 import styled from 'styled-components';
 import { viewport, pxToRem } from './styles';
+import type { Theme } from './styles';
 import { useAuth } from './helpers';
 import { createGlobalStyle } from 'styled-components';
 import { fontStyle, fontWeight, fontFamily, mediaQuery } from './styles';
 import { Button, Header } from './components';
+
+type Props = {
+	theme: Theme;
+};
 
 export const GlobalStyles = createGlobalStyle`
     body {
@@ -14,13 +19,13 @@ export const GlobalStyles = createGlobalStyle`
       max-width: ${viewport[1760]};
       max-height: ${viewport[1760]}; // check with Ilaria
       margin: 0 auto;
-      background: ${(props: any) => props.theme.background.default};
+      background: ${(props: Props) => props.theme.background.default};
       padding: 0 ${pxToRem(20)} ${pxToRem(40)};
       height: 100vh;
-      color: ${(props: any) => props.theme.default};
+      color: ${(props: Props) => props.theme.default};
       transition: all 0.2s ease-in-out;
       ${mediaQuery('s')} {
-        background: ${(props: any) =>
+        background: ${(props: Props) =>
 					`linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 52px, ${props.theme.background.default} 52px);`}
       }
     }
