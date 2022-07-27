@@ -6,15 +6,13 @@ import { ReactComponent as MenuDark } from '../../assets/menu-dark.svg';
 import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { pxToRem, mediaQuery, lightTheme, darkTheme } from '../../styles';
-import sun from '../../assets/sole.png';
-import moon from '../../assets/moon.png';
 import { Button } from '../button/button';
 import {
-    isLightTheme,
-    localStorageThemeName,
-    ThemeEnum,
-    useAuth,
-    useBreakpoint
+	isLightTheme,
+	localStorageThemeName,
+	ThemeEnum,
+	useAuth,
+	useBreakpoint
 } from '../../helpers';
 
 const StyledHeader = styled.header`
@@ -38,48 +36,48 @@ const Icon = styled.img`
 `;
 
 export const Header = () => {
-    const { isBreakpointWidth } = useBreakpoint('s');
-    const { state, dispatch } = useAuth();
-    const { theme } = state;
-    const isLight = isLightTheme(theme);
+	const { isBreakpointWidth } = useBreakpoint('s');
+	const { state, dispatch } = useAuth();
+	const { theme } = state;
+	const isLight = isLightTheme(theme);
 
-    useEffect(() => {
-        const localStorageTheme = localStorage.getItem(localStorageThemeName);
-        if (localStorageTheme) {
-            dispatch({ type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) });
-        }
-        // eslint-disable-next-line
-    }, []);
+	useEffect(() => {
+		const localStorageTheme = localStorage.getItem(localStorageThemeName);
+		if (localStorageTheme) {
+			dispatch({ type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) });
+		}
+		// eslint-disable-next-line
+	}, []);
 
-    const changeTheme = (): void => {
-        const getTheme = isLight ? darkTheme : lightTheme;
-        dispatch({ type: ThemeEnum.THEME, payload: getTheme });
-        localStorage.setItem(localStorageThemeName, JSON.stringify(getTheme));
-    };
+	const changeTheme = (): void => {
+		const getTheme = isLight ? darkTheme : lightTheme;
+		dispatch({ type: ThemeEnum.THEME, payload: getTheme });
+		localStorage.setItem(localStorageThemeName, JSON.stringify(getTheme));
+	};
 
-    return (
-        <StyledHeader theme={theme}>
-            {isBreakpointWidth ? (
-                <LogoMobile style={{ marginRight: 'auto' }} />
-            ) : isLight ? (
-                <LogoLight style={{ marginRight: 'auto' }} />
-            ) : (
-                <LogoDark style={{ marginRight: 'auto' }} />
-            )}
-            {!isBreakpointWidth && (
-                <Button variant="pure" onClick={() => console.log('hedader')}>
-                    Transaction History
-                </Button>
-            )}
-            <Button variant="secondary" onClick={() => console.log('hedader')}>
-                Connect Wallet
-            </Button>
+	return (
+		<StyledHeader theme={theme}>
+			{isBreakpointWidth ? (
+				<LogoMobile style={{ marginRight: 'auto' }} />
+			) : isLight ? (
+				<LogoLight style={{ marginRight: 'auto' }} />
+			) : (
+				<LogoDark style={{ marginRight: 'auto' }} />
+			)}
+			{!isBreakpointWidth && (
+				<Button variant="pure" onClick={() => console.log('hedader')}>
+					Transaction History
+				</Button>
+			)}
+			<Button variant="secondary" onClick={() => console.log('hedader')}>
+				Connect Wallet
+			</Button>
 
-            <button onClick={changeTheme} style={{ border: 'none', background: 'none' }}>
-                <Icon src={isLight ? moon : sun} alt={isLight ? moon : sun} />
-            </button>
+			<button onClick={changeTheme} style={{ border: 'none', background: 'none' }}>
+				<Icon src={isLight ? moon : sun} alt={isLight ? moon : sun} />
+			</button>
 
-            {isBreakpointWidth && (isLight ? <MenuLight /> : <MenuDark />)}
-        </StyledHeader>
-    );
+			{isBreakpointWidth && (isLight ? <MenuLight /> : <MenuDark />)}
+		</StyledHeader>
+	);
 };
