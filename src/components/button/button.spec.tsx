@@ -1,10 +1,11 @@
+import 'jest-styled-components';
 import { render, fireEvent, screen, findByText, getByRole } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider } from '../../helpers';
 import { lightTheme, darkTheme } from '../../styles';
 import { Button } from './button';
 import { pxToRem } from '../../styles';
-import 'jest-styled-components';
+
 describe('Button Component', () => {
 	it('should render a default button', () => {
 
@@ -17,13 +18,13 @@ describe('Button Component', () => {
 			`background-color: ${lightTheme.button.default}; color: #FFF; border: 1px solid transparent; max-width: ${pxToRem(428)}; cursor: pointer;`
 		);
 
-		const btnPrimary = getByText(/Primary default Button/)
-		userEvent.hover(btnPrimary);
+		expect(getByText(/Primary default Button/)).toMatchSnapshot();
 
-		expect(btnPrimary).toHaveStyleRole("opacity", "0.8", {
+		const btn = getByText(/Primary default Button/)
+		userEvent.hover(btn);
+		expect(btn).toHaveStyleRule("opacity", "0.8", {
 			modifier: ':hover',
 		});
-
 	});
 
 	it('should render a secondary default button', () => {
@@ -35,6 +36,8 @@ describe('Button Component', () => {
 		expect(getByText(/Secondary default Button/)).toHaveStyle(
 			`background-color: transparent; color: ${lightTheme.button.default}; border: 1px solid ${lightTheme.button.default}; max-width: ${pxToRem(160)}`
 		);
+
+		expect(getByText(/Secondary default Button/)).toMatchSnapshot();
 
 		const btn = getByText(/Secondary default Button/)
 		userEvent.hover(btn);
@@ -52,6 +55,8 @@ describe('Button Component', () => {
 		expect(getByText(/Secondary icon Button/)).toHaveStyle(
 			`background-color: ${lightTheme.button.icon}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
 		);
+
+		expect(getByText(/Secondary icon Button/)).toMatchSnapshot();
 
 		const btn = getByText(/Secondary icon Button/)
 		userEvent.hover(btn);
@@ -71,6 +76,8 @@ describe('Button Component', () => {
 			`background-color: ${lightTheme.button.warning}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
 		);
 
+		expect(getByText(/Secondary warning Button/)).toMatchSnapshot();
+
 		const btn = getByText(/Secondary warning Button/)
 		userEvent.hover(btn);
 
@@ -88,6 +95,8 @@ describe('Button Component', () => {
 		expect(getByText(/Secondary error Button/)).toHaveStyle(
 			`background-color: ${lightTheme.button.error}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
 		);
+
+		expect(getByText(/Secondary error Button/)).toMatchSnapshot();
 
 		const btn = getByText(/Secondary error Button/)
 		userEvent.hover(btn);
@@ -107,6 +116,9 @@ describe('Button Component', () => {
 			`background-color: ${lightTheme.button.disabled}; color: #FFF; border: 1px solid transparent; max-width: ${pxToRem(428)}`
 		);
 
+		expect(getByText(/Secondary primary disabled Button/)).toMatchSnapshot();
+
+
 		const btn = getByText(/Secondary primary disabled Button/)
 		userEvent.hover(btn);
 
@@ -124,6 +136,9 @@ describe('Button Component', () => {
 		expect(getByText(/Secondary pure Button/)).toHaveStyle(
 			`background-color: transparent; color: #FFF; border: 1px solid transparent; max-width: ${pxToRem(160)}`
 		);
+
+		expect(getByText(/Secondary pure Button/)).toMatchSnapshot();
+
 
 		const btn = getByText(/Secondary pure Button/)
 		userEvent.hover(btn);
