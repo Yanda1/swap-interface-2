@@ -93,6 +93,7 @@ export const Header = () => {
 
 	const handleOutsideClick = (e: any): void => {
 		if (menuRef.current) {
+			// eslint-disable-next-line
 			if (!menuRef.current.contains(e.target)) handleShowMenu();
 		}
 	};

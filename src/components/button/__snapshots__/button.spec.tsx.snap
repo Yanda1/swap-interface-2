@@ -1,0 +1,276 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button Component should render a default button 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 26.75rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 1rem;
+  min-height: 3.5625rem;
+  padding: 0.25rem 0.75rem;
+  color: #FFF;
+  background-color: #00A8E8;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+<button
+  class="c0"
+  color="default"
+>
+  Primary default Button
+</button>
+`;
+
+exports[`Button Component should render a primary disabled button 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 26.75rem;
+  width: 100%;
+  cursor: not-allowed;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 1rem;
+  min-height: 3.5625rem;
+  padding: 0.25rem 0.75rem;
+  color: #FFF;
+  background-color: #6D6D6D;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+<button
+  class="c0"
+  color="default"
+  disabled=""
+>
+  Secondary primary disabled Button
+</button>
+`;
+
+exports[`Button Component should render a pure button 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 10rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 0.875rem;
+  min-height: 2.1875rem;
+  padding: 0.25rem 0.75rem;
+  color: #FFF;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+<button
+  class="c0"
+  color="default"
+>
+  Secondary pure Button
+</button>
+`;
+
+exports[`Button Component should render a secondary default button 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 10rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 0.875rem;
+  min-height: 2.1875rem;
+  padding: 0.25rem 0.75rem;
+  color: #00A8E8;
+  background-color: transparent;
+  border: 1px solid #00A8E8;
+  border-radius: 0.375rem;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  margin: 1px;
+}
+
+.c0:hover {
+  box-shadow: 0 0 0 1px #00A8E8;
+}
+
+<button
+  class="c0"
+  color="default"
+>
+  Secondary default Button
+</button>
+`;
+
+exports[`Button Component should render a secondary error button 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 10rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 0.875rem;
+  min-height: 2.1875rem;
+  padding: 0.25rem 0.75rem;
+  color: #FFF;
+  background-color: #DE3434;
+  border: 1px solid #FFF;
+  border-radius: 0.375rem;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+<button
+  class="c0"
+  color="error"
+>
+  Secondary error Button
+</button>
+`;
+
+exports[`Button Component should render a secondary icon button 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 10rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 0.875rem;
+  min-height: 2.1875rem;
+  padding: 0.25rem 0.75rem;
+  color: #FFF;
+  background-color: #172631;
+  border: 1px solid #FFF;
+  border-radius: 0.375rem;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+<button
+  class="c0"
+  color="default"
+>
+  <img
+    alt="moonbeam"
+    src="moonbeam.svg"
+  />
+  Secondary icon Button
+</button>
+`;
+
+exports[`Button Component should render a secondary warning button 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 10rem;
+  width: 100%;
+  cursor: pointer;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-size: 0.875rem;
+  min-height: 2.1875rem;
+  padding: 0.25rem 0.75rem;
+  color: #FFF;
+  background-color: #FD862F;
+  border: 1px solid #FFF;
+  border-radius: 0.375rem;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+<button
+  class="c0"
+  color="warning"
+>
+  Secondary warning Button
+</button>
+`;

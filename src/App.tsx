@@ -29,7 +29,7 @@ export const GlobalStyles = createGlobalStyle`
 					`linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 52px, ${props.theme.background.default} 52px);`}
       }
     }
-    
+
     *,
     *::before,
     *::after {
