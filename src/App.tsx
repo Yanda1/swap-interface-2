@@ -5,6 +5,8 @@ import { useAuth } from './helpers';
 import { createGlobalStyle } from 'styled-components';
 import { fontStyle, fontWeight, fontFamily, mediaQuery } from './styles';
 import { Button, Header } from './components';
+import { Modal } from './components/modal/modal';
+import { useState } from 'react';
 
 type Props = {
 	theme: Theme;
@@ -29,7 +31,7 @@ export const GlobalStyles = createGlobalStyle`
 					`linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 52px, ${props.theme.background.default} 52px);`}
       }
     }
-    
+
     *,
     *::before,
     *::after {
@@ -37,7 +39,6 @@ export const GlobalStyles = createGlobalStyle`
       -moz-osx-font-smoothing: grayscale;
       box-sizing: border-box;
       scroll-behavior: smooth;
-      overflow: hidden;
       margin: 0;
     }
     `;
@@ -45,36 +46,24 @@ export const GlobalStyles = createGlobalStyle`
 const MainStyle = styled.main`
 	max-width: ${pxToRem(466)};
 	margin: 0 auto;
+	outline: 2px solid red;
 `;
 
 const App = () => {
 	const { state } = useAuth();
 	const { theme } = state;
+	const [showModal, setShowModal] = useState(false);
+	const openModal = () => {
+		setShowModal(prev => !prev);
+	}
 
 	return (
 		<>
-			<GlobalStyles theme={theme} />
+			<GlobalStyles theme={theme}/>
 			<Header />
+			<Modal showModal={showModal} setShowModal={setShowModal}/>
 			<MainStyle>
-				<Button onClick={() => console.log('Hi THERE')}>Primary</Button>
-				<Button onClick={() => console.log('Hi THERE')} variant={'secondary'}>
-					Secondary Default
-				</Button>
-				<Button onClick={() => console.log('Hi THERE')} variant="secondary" icon="moonbeam">
-					Moonbeam
-				</Button>
-				<Button onClick={() => console.log('Hi THERE')} variant={'secondary'} color={'warning'}>
-					Check Network
-				</Button>
-				<Button onClick={() => console.log('Hi THERE')} variant={'secondary'} color={'error'}>
-					Secondary Error
-				</Button>
-				<Button onClick={() => console.log('Hi THERE')} variant={'primary'} disabled>
-					Primary disabled
-				</Button>
-				<Button onClick={() => console.log('Hi THERE')} variant={'pure'}>
-					Pure
-				</Button>
+				<Button onClick={openModal} variant={'secondary'} icon='metamask'></Button>
 			</MainStyle>
 		</>
 	);

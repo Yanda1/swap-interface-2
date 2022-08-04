@@ -14,6 +14,7 @@ export type Theme = {
 		warning: string;
 		icon: string;
 		disabled: string;
+		selected: string;
 	};
 };
 
@@ -30,7 +31,8 @@ export const lightTheme: Theme = {
 		error: '#DE3434',
 		warning: '#FD862F',
 		icon: '#172631',
-		disabled: '#6D6D6D'
+		disabled: '#6D6D6D',
+		selected: 'transparent',
 	}
 };
 
@@ -47,6 +49,7 @@ export const darkTheme: Theme = {
 		error: '#DE3434',
 		warning: '#FD862F',
 		icon: '#172631',
-		disabled: '#6D6D6D'
+		disabled: '#6D6D6D',
+		selected: 'transparent',
 	}
 };

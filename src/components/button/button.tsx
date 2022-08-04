@@ -11,12 +11,12 @@ const icons = {
 	metamask
 };
 
-type ColorType = 'default' | 'error' | 'warning' | 'icon';
+type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'selected';
 
 interface CommonProps {
 	disabled?: boolean;
 	children?: ReactNode;
-	onClick: () => void;
+	onClick: (e: any) => void;
 }
 interface PrimaryPureProps {
 	variant?: 'primary' | 'pure';
@@ -34,7 +34,12 @@ interface ColorOnlyProps {
 	icon?: never;
 }
 
-type ColorIconProps = IconOnlyProps | ColorOnlyProps;
+interface SelectedProps {
+	color?: ColorType;
+	icon?: 'moonbeam' | 'metamask';
+}
+
+type ColorIconProps = IconOnlyProps | ColorOnlyProps | SelectedProps;
 
 type SecondaryProps = {
 	variant: 'secondary';
@@ -47,9 +52,10 @@ const StyledButton = styled.button(
 	({ variant = 'primary', color = 'default', disabled = false, icon }: Props) => {
 		const isPrimary = variant === 'primary';
 		const isSecondary = variant === 'secondary';
-		const setColor = icon ? 'icon' : color;
+		const setColor = icon && color ? color : icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isSecondaryDefault = isSecondary && setColor === 'default';
+		const isSelected = isSecondary && setColor === 'selected';
 		const { state } = useAuth();
 		const { theme } = state;
 
@@ -77,13 +83,14 @@ const StyledButton = styled.button(
 				? theme.button?.[setColor]
 				: 'transparent'};
 			border: 1px solid
-				${!isSecondary ? 'transparent' : isColorDefault ? theme.button.default : '#FFF'};
+				${!isSecondary || isSelected ? 'transparent' : isColorDefault ? theme.button.default : '#FFF'};
 			border-radius: ${pxToRem(6)};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
 			&:hover {
 				opacity: ${!isSecondaryDefault && '0.8'};
 				box-shadow: ${isSecondaryDefault && `0 0 0 1px ${theme.button.default}`};
+				border: 1px solid ${isSelected && theme.button.default};
 			}
 		`;
 	}
