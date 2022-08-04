@@ -8,7 +8,8 @@ type Props = {
 	data: any;
 	title: string;
 	placeholder: string;
-	updateData: (data: any) => void;
+	updateData?: (data: any) => void;
+	updateNetwork?: (data: any) => void;
 };
 
 const StyledInput = styled.input`
@@ -56,7 +57,7 @@ const Title = styled.div`
 	margin-bottom: ${pxToRem(12)};
 `;
 
-export const SelectList = ({ data, title, placeholder, updateData }: Props) => {
+export const SelectList = ({ data, title, placeholder, updateData, updateNetwork }: Props) => {
 	const [search, setSearch] = useState('');
 
 	return (
@@ -66,7 +67,7 @@ export const SelectList = ({ data, title, placeholder, updateData }: Props) => {
 				<StyledInput placeholder={placeholder} onChange={event => setSearch(event.target.value)}/>
 				<div style={{	overflowY:'auto', height: '100%'}}>
 				{data.length > 0 && data.filter((coin: any) => coin.toLowerCase().includes(search.toLowerCase())).map((val: any) => {
-					return <Button key={val} onClick={(e) => updateData(e.target.textContent)} variant='secondary' color='selected' >{val}</Button>
+					return <Button key={val} onClick={(e) => updateData ? updateData(e.target.textContent) : updateNetwork ? updateNetwork(e.target.textContent) : null} variant='secondary' color='selected' >{val}</Button>
 				})}
 				</div>
 			</StyledList>

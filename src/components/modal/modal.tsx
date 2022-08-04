@@ -72,10 +72,15 @@ const ModalContainer = styled.div`
 export const Modal = ({showModal, setShowModal}: Props) => {
 	const coins = Object.keys(availableCoins);
 	const [coin, setCoin] = useState('');
-	const [result, setResult] = useState(['']);
+	const [result, setResult] = useState('');
 	const updateData = (value: string) => {
 		console.log('%c !!! HERE !!!!', 'color: red; font-size: 10px;', value);
 		setCoin(value);
+	};
+
+	const updateNetwork = (value: string) => {
+		console.log('%c !!! HERE !!!!', 'color: red; font-size: 10px;', value);
+		setResult(value);
 	};
 
 	const networks = coin && availableCoins[`${coin}`].map((coin: any) => coin.name)
@@ -88,7 +93,7 @@ export const Modal = ({showModal, setShowModal}: Props) => {
 						<CloseButton onClick={() => setShowModal(false)}>&#x2716;</CloseButton>
 							<ModalContainer>
 								<SelectList data={coins} title='Select Token' placeholder='Token Name' updateData={updateData} />
-								<SelectList data={networks} title='Select Network' placeholder='Network Name' updateData={updateData} />
+								<SelectList data={networks} title='Select Network' placeholder='Network Name' updateNetwork={updateNetwork} />
 							</ModalContainer>
 							<Button onClick={() => setShowModal(false)}>Select</Button>
 						</Background>
