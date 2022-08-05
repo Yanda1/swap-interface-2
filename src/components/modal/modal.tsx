@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { Button } from '..';
 import {mediaQuery, pxToRem } from '../../styles';
 import {SelectList} from '../selectlist/selectlist';
-const availableCoins = require('../../../src/availableCoins.json');
+const destinationNetworks = require('../../../src/destinationNetworks.json');
+
 type Props = {
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
@@ -35,12 +36,13 @@ const Background = styled.div`
 	height: 100%;
 	background-color: #212426;
 	opacity: 0.95;
-	padding-bottom: ${pxToRem(61)};
+	padding: 0 ${pxToRem(53)} ${pxToRem(61)};
 	text-align: center;
 	border-radius:  ${pxToRem(5)};
-	${mediaQuery('xxs')} {
-		padding-bottom: ${pxToRem(53)};
+	${mediaQuery('xs', 's')} {
+		padding: ${pxToRem(49)} ${pxToRem(38)} ${pxToRem(53)};
 		border-radius: ${pxToRem(28)};
+
 	}
 `;
 
@@ -53,8 +55,8 @@ const CloseButton = styled.button`
 	font-size: ${pxToRem(20)};
 	color: #FFFFFF;
 	${mediaQuery('xxs')} {
-		margin: 0;
-		padding: 0px;
+		margin-right: ${pxToRem(9)};
+		font-size: ${pxToRem(16)};
 	}
 `;
 
@@ -64,36 +66,40 @@ const ModalContainer = styled.div`
 	max-width: ${pxToRem(435)};
 	margin: 0 auto;
 	margin-bottom: ${pxToRem(29)};
-	${mediaQuery('xxs')} {
-	padding: 0 ${pxToRem(38)};
-	}
 `;
 
+const CloseButtonContainer = styled.div`
+	text-align: right;
+	max-width: ${pxToRem(605)};
+	background-color: #212426;
+`;
+
+
 export const Modal = ({showModal, setShowModal}: Props) => {
-	const coins = Object.keys(availableCoins);
-	const [coin, setCoin] = useState('');
-	const [result, setResult] = useState('');
-	const updateData = (value: string) => {
-		console.log('%c !!! HERE !!!!', 'color: red; font-size: 10px;', value);
-		setCoin(value);
-	};
+	const networks = Object.keys(destinationNetworks);
+	const [network, setNetwork] = useState<string>('');
+	const [token, setToken] = useState<string>('');
 
 	const updateNetwork = (value: string) => {
-		console.log('%c !!! HERE !!!!', 'color: red; font-size: 10px;', value);
-		setResult(value);
+		setNetwork(value);
 	};
 
-	const networks = coin && availableCoins[`${coin}`].map((coin: any) => coin.name)
+	const updateToken = (value: string) => {
+		setToken(value);
+	};
+	const coins = network && destinationNetworks[`${network}`].tokens;
 
 	return (
 		<>
 			{showModal ? (
 					<ModalWrapper>
-						<Background>
+							<CloseButtonContainer>
 						<CloseButton onClick={() => setShowModal(false)}>&#x2716;</CloseButton>
+							</CloseButtonContainer>
+						<Background>
 							<ModalContainer>
-								<SelectList data={coins} title='Select Token' placeholder='Token Name' updateData={updateData} />
-								<SelectList data={networks} title='Select Network' placeholder='Network Name' updateNetwork={updateNetwork} />
+								<SelectList data={networks} title='Select Network' placeholder='Token Name' updateNetwork={updateNetwork} />
+								<SelectList data={coins} title='Select Token' placeholder='Token Name' updateToken={updateToken} />
 							</ModalContainer>
 							<Button onClick={() => setShowModal(false)}>Select</Button>
 						</Background>

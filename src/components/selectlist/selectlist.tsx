@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Button } from '..';
-
 import { pxToRem, mediaQuery, spacing } from '../../styles';
 
 type Props = {
 	data: any;
 	title: string;
 	placeholder: string;
-	updateData?: (data: any) => void;
+	updateToken?: (data: any) => void;
 	updateNetwork?: (data: any) => void;
 };
 
@@ -27,26 +26,25 @@ const StyledList = styled.ul`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 206px;
+	max-width: ${pxToRem(206)};
 	border: 2px solid grey;
 	height: 478px;
-	//overflow-y: scroll;
-	&:first-child {
-		margin-right: 23px;
-	}
-
 	padding: 0;
 	padding-top: ${spacing[16]};
 	background: #161B20;
 	border-radius: 5px;
-
+	&:first-child {
+		margin: 0px 23px 0px 0px;
+		${mediaQuery('s', 'xxs')} {
+			margin: 0 auto;
+		}
+	}
 	&:last-child {
-		${mediaQuery('xxs')} {
+		${mediaQuery('s', 'xxs')} {
 			display: none;
 		}
 	}
-
-	${mediaQuery('xxs')} {
+	${mediaQuery('s', 'xxs')} {
 		max-width: ${pxToRem(270)};
 		margin: 0 auto;
 	}
@@ -57,9 +55,8 @@ const Title = styled.div`
 	margin-bottom: ${pxToRem(12)};
 `;
 
-export const SelectList = ({ data, title, placeholder, updateData, updateNetwork }: Props) => {
+export const SelectList = ({ data, title, placeholder, updateNetwork, updateToken }: Props) => {
 	const [search, setSearch] = useState('');
-
 	return (
 		<>
 			<StyledList>
@@ -67,7 +64,7 @@ export const SelectList = ({ data, title, placeholder, updateData, updateNetwork
 				<StyledInput placeholder={placeholder} onChange={event => setSearch(event.target.value)}/>
 				<div style={{	overflowY:'auto', height: '100%'}}>
 				{data.length > 0 && data.filter((coin: any) => coin.toLowerCase().includes(search.toLowerCase())).map((val: any) => {
-					return <Button key={val} onClick={(e) => updateData ? updateData(e.target.textContent) : updateNetwork ? updateNetwork(e.target.textContent) : null} variant='secondary' color='selected' >{val}</Button>
+					return <Button key={val} onClick={(e) => updateNetwork ? updateNetwork(e.target.textContent) : updateToken ? updateToken(e.target.textContent) : null} variant='secondary' color='selected' >{val}</Button>
 				})}
 				</div>
 			</StyledList>
