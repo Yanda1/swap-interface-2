@@ -20,9 +20,11 @@ const StyledHeader = styled.header`
 	display: flex;
 	align-items: center;
 	gap: ${pxToRem(16)};
-	height: ${pxToRem(52)};
+	height: ${pxToRem(63)};
 	margin-bottom: ${pxToRem(67.5)};
+
 	${mediaQuery('s')} {
+		height: ${pxToRem(55)};
 		gap: ${pxToRem(24)};
 		margin-bottom: ${pxToRem(39.5)};
 	}
@@ -30,6 +32,7 @@ const StyledHeader = styled.header`
 
 const Icon = styled.div`
 	cursor: pointer;
+
 	&:hover {
 		opacity: 0.8;
 	}
