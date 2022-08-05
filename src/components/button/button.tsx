@@ -1,10 +1,9 @@
-import { fontFamily } from '../../styles';
+import { fontFamily, pxToRem } from '../../styles';
 import styled, { css } from 'styled-components';
 import type { ReactNode } from 'react';
-import { pxToRem } from '../../styles';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
-import { useAuth } from '../../helpers';
+import { useStore } from '../../helpers';
 
 const icons = {
 	moonbeam,
@@ -50,7 +49,7 @@ const StyledButton = styled.button(
 		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isSecondaryDefault = isSecondary && setColor === 'default';
-		const { state } = useAuth();
+		const { state } = useStore();
 		const { theme } = state;
 
 		return css`
