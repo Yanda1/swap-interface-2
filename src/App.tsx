@@ -25,7 +25,7 @@ export const GlobalStyles = createGlobalStyle`
 
 		${mediaQuery('s')} {
 			background: ${(props: Props) =>
-				`linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 52px, ${props.theme.background.default} 52px);`}
+				`linear-gradient(180deg, ${props.theme.background.mobile}, ${props.theme.background.mobile} 55px, ${props.theme.background.default} 55px);`}
 		}
 	}
 
@@ -47,8 +47,8 @@ const MainStyle = styled.main`
 `;
 
 const App = () => {
-	const {state} = useStore();
-	const {theme} = state;
+	const { state } = useStore();
+	const { theme } = state;
 
 	return (
 		<>

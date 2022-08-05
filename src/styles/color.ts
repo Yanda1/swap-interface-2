@@ -40,7 +40,7 @@ export const darkTheme: Theme = {
 	default: '#8C8D8F',
 	background: {
 		default: '#161B20',
-		mobile: '#161B20'
+		mobile: '#1C2125'
 	},
 	button: {
 		default: '#00A8E8',

@@ -134,8 +134,6 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.NETWORK, payload: false });
 			void checkNetwork();
 		}
-		console.log(account, library, chainId);
-
 	}, [account, chainId, dispatch]);
 
 	useEffect(() => {
@@ -219,7 +217,7 @@ export const Header = () => {
 					<li>Logout</li>
 				</Menu>
 			)}
-			{showModal && <div>Modal</div>} // TODO: add modal
+			{showModal && <div>Modal</div>}
 		</StyledHeader>
 	);
 };
