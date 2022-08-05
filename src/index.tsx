@@ -1,20 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import type { Config } from '@usedapp/core';
+import { DAppProvider, Moonbeam } from '@usedapp/core';
 import App from './App';
 import { FontStyles } from './styles';
 import { AuthProvider } from './helpers';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
+const config: Config = {
+	readOnlyChainId: Moonbeam.chainId,
+	readOnlyUrls: {
+		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network',
+		// [Localhost.chainId]: 'http://127.0.0.1:8545',
+	},
+	networks: [Moonbeam],
+};
+
 root.render(
 	<React.StrictMode>
-		<AuthProvider>
-			<FontStyles/>
-			<App/>
-		</AuthProvider>
+		<DAppProvider config={config}>
+			<AuthProvider>
+				<FontStyles/>
+				<App/>
+			</AuthProvider>
+		</DAppProvider>
+
 	</React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
