@@ -23,7 +23,8 @@ import {
 	useStore,
 	VerificationEnum
 } from '../../helpers';
-import { Button } from '../button/button';
+import type { ColorType } from '../../components';
+import { Button } from '../../components';
 import { loadBinanceKycScript, makeBinanceKycCall } from '../../helpers/axios';
 
 type Props = {
@@ -72,7 +73,7 @@ const Menu = styled.ul`
 export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
 	const { state, dispatch } = useStore();
-	const { theme } = state;
+	const { theme, buttonStatus } = state;
 	const [showMenu, setShowMenu] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const isLight = isLightTheme(theme);
@@ -137,7 +138,6 @@ export const Header = () => {
 	}, [account, chainId, dispatch]);
 
 	useEffect(() => {
-		console.log('%c in second useEffect', 'color: yellow; font-size: 20px;');
 		loadBinanceKycScript(() => {
 			setKycScriptLoaded(true);
 		});
@@ -175,7 +175,6 @@ export const Header = () => {
 			try {
 				activateBrowserWallet();
 			} catch(error) {
-				console.log('error in activateBrowserWallet', error);
 				setShowModal(true);
 			}
 		}
@@ -199,9 +198,9 @@ export const Header = () => {
 					Transaction History
 				</Button>
 			)}
-			{/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-			<Button variant="secondary" onClick={handleButtonClick}>
-				Connect Wallet
+			<Button variant="secondary" onClick={handleButtonClick}
+							color={buttonStatus.color as ColorType}>
+				{buttonStatus.text}
 			</Button>
 
 			<button onClick={changeTheme} style={{ border: 'none', background: 'none' }}>

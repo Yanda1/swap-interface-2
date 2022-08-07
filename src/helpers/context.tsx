@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
 import type { Theme } from '../styles';
 import { darkTheme } from '../styles';
+import type { ColorType } from '../components';
 
 export enum VerificationEnum {
 	ACCOUNT = 'SET_ACCOUNT_CONNECTED',
@@ -62,11 +63,11 @@ type State = {
 
 type ButtonStatus = {
 	// TODO: refactor type
-	CONNECT_WALLET: { color: string; text: string };
-	CHANGE_NETWORK: { color: string; text: string };
-	PASS_KYC: { color: string; text: string };
-	CHECK_KYC: { color: string; text: string };
-	GET_NONCE: { color: string; text: string };
+	CONNECT_WALLET: { color: ColorType; text: string };
+	CHANGE_NETWORK: { color: ColorType; text: string };
+	PASS_KYC: { color: ColorType; text: string };
+	CHECK_KYC: { color: ColorType; text: string };
+	GET_NONCE: { color: ColorType; text: string };
 };
 
 export const buttonText = {
@@ -78,11 +79,11 @@ export const buttonText = {
 };
 
 export const buttonType: ButtonStatus = {
-	CONNECT_WALLET: { color: 'blue', text: buttonText.CONNECT_WALLET },
-	CHANGE_NETWORK: { color: 'red', text: buttonText.CHANGE_NETWORK },
-	PASS_KYC: { color: 'orange', text: buttonText.PASS_KYC },
-	CHECK_KYC: { color: 'green', text: buttonText.CHECK_KYC },
-	GET_NONCE: { color: 'purple', text: buttonText.GET_NONCE },
+	CONNECT_WALLET: { color: 'default', text: buttonText.CONNECT_WALLET },
+	CHANGE_NETWORK: { color: 'error', text: buttonText.CHANGE_NETWORK },
+	PASS_KYC: { color: 'warning', text: buttonText.PASS_KYC },
+	CHECK_KYC: { color: 'success', text: buttonText.CHECK_KYC },
+	GET_NONCE: { color: 'default', text: buttonText.GET_NONCE },
 };
 
 const initialState: State = {
