@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { Button } from '..';
 import { pxToRem, mediaQuery, spacing } from '../../styles';
 
 type Props = {
@@ -55,16 +54,23 @@ const Title = styled.div`
 	margin-bottom: ${pxToRem(12)};
 `;
 
-export const SelectList = ({ data, title, placeholder, updateNetwork, updateToken }: Props) => {
+export const SelectList = ({ data, title, placeholder }: Props) => {
 	const [search, setSearch] = useState('');
+	const dataList = data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
+
 	return (
 		<>
 			<StyledList>
 				<Title>{title}</Title>
 				<StyledInput placeholder={placeholder} onChange={event => setSearch(event.target.value)}/>
 				<div style={{	overflowY:'auto', height: '100%'}}>
-				{data.length > 0 && data.filter((coin: any) => coin.toLowerCase().includes(search.toLowerCase())).map((val: any) => {
-					return <Button key={val} onClick={(e) => updateNetwork ? updateNetwork(e.target.textContent) : updateToken ? updateToken(e.target.textContent) : null} variant='secondary' color='selected' >{val}</Button>
+				{data.length > 0 && dataList.map((val: any) => {
+					console.log(val);
+					// @ts-ignore
+					// eslint-disable-next-line
+					// return <Button key={val} onClick={(e: any) => updateNetwork ? updateNetwork(e.target.textContent) : updateToken ? updateToken(e.target.textContent) : null} variant='secondary' color='selected' >{val}</Button>
+
+					return <div>TEST</div>;
 				})}
 				</div>
 			</StyledList>

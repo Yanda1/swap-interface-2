@@ -53,13 +53,13 @@ const App = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => {
 		setShowModal(prev => !prev);
-	}
+	};
 
 	return (
 		<>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<Modal showModal={showModal} setShowModal={setShowModal}/>
+			<Modal showModal={showModal} setShowModal={setShowModal} background='mobile' />
 			<MainStyle>
 				<Button onClick={openModal} variant={'secondary'} icon='metamask'></Button>
 			</MainStyle>

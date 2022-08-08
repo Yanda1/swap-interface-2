@@ -1,109 +1,66 @@
-import { useState } from 'react';
-import styled from 'styled-components';
-import { Button } from '..';
-import {mediaQuery, pxToRem } from '../../styles';
-import {SelectList} from '../selectlist/selectlist';
-const destinationNetworks = require('../../../src/destinationNetworks.json');
+import styled, { css } from 'styled-components';
+import {fontSize, mediaQuery, pxToRem } from '../../styles';
+import { useStore } from '../../helpers';
 
 type Props = {
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
+	width?: 'large' | 'small';
+	background: 'default' | 'mobile';
+	children?: React.ReactNode;
 };
 
-const ModalWrapper = styled.div`
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	right: 50%;
-	transform: translate(-50%, -50%);
-	max-width: ${pxToRem(605)} ;
-	width: calc(100% - ${pxToRem(28)});
-	margin: 0 auto;
-	border: 1px solid #505050;
-	border-radius: ${pxToRem(5)};
-	${mediaQuery('xxs')} {
-		max-width: ${pxToRem(347)};
-		width: calc(100% - ${pxToRem(10)});
-		border-radius: ${pxToRem(28)};
-		border: none;
-		margin: 0 auto;
-		margin-top: 50px;
-	}
-`;
+const ModalWrapper = styled.div(
+	({ width, showModal, background } : Props) => {
+		const { state } = useStore();
+		const { theme } = state;
 
-const Background = styled.div`
-	width: 100%;
-	height: 100%;
-	background-color: #212426;
-	opacity: 0.95;
-	padding: 0 ${pxToRem(53)} ${pxToRem(61)};
-	text-align: center;
-	border-radius:  ${pxToRem(5)};
-	${mediaQuery('xs', 's')} {
-		padding: ${pxToRem(49)} ${pxToRem(38)} ${pxToRem(53)};
-		border-radius: ${pxToRem(28)};
+		return css`
+			position: fixed;
+			display: ${showModal ? 'inline-flex' : 'none'};
+			justify-content: center;
+			align-items: center;
+			top: 50%;
+			left: 50%;
+			right: 50%;
+			transform: translate(-50%, -50%);
+			width: 100%;
+			max-width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
+			margin: 0 auto;
+			background-color: ${theme.background[background]};
+			border: 1px solid ${theme.default};
+			border-radius: ${pxToRem(6)};
+			${mediaQuery('xxs')} { // TODO: mobile style
+				max-width: ${pxToRem(347)};
+				width: calc(100% - ${pxToRem(10)});
+				border-radius: ${pxToRem(28)};
+				border: none;
+				margin: 0 auto;
+				margin-top: 50px;
+			}
+		`;
+});
 
-	}
-`;
-
-const CloseButton = styled.button`
+const CloseIcon = styled.div`
 	cursor: pointer;
-	background-color: transparent;
-	margin: ${pxToRem(5)} ${pxToRem(12)} ${pxToRem(27)};
-	border: none;
-	padding: 0;
-	font-size: ${pxToRem(20)};
-	color: #FFFFFF;
+	position: fixed;
+	top: 10px;
+	right: 10px;
+	font-size: ${fontSize[16]};
+	line-height: ${fontSize[22]};
+	color: #FFF;
 	${mediaQuery('xxs')} {
 		margin-right: ${pxToRem(9)};
 		font-size: ${pxToRem(16)};
 	}
 `;
 
-const ModalContainer = styled.div`
-	display: flex;
-	text-align: center;
-	max-width: ${pxToRem(435)};
-	margin: 0 auto;
-	margin-bottom: ${pxToRem(29)};
-`;
-
-const CloseButtonContainer = styled.div`
-	text-align: right;
-	max-width: ${pxToRem(605)};
-	background-color: #212426;
-`;
-
-export const Modal = ({showModal, setShowModal}: Props) => {
-	const networks = Object.keys(destinationNetworks);
-	const [network, setNetwork] = useState<string>('');
-	const [token, setToken] = useState<string>('');
-
-	const updateNetwork = (value: string) => {
-		setNetwork(value);
-	};
-
-	const updateToken = (value: string) => {
-		setToken(value);
-	};
-	const coins = network && destinationNetworks[`${network}`].tokens;
-
+export const Modal = ({showModal = false, setShowModal, width = 'large', background, children}: Props) => {
 	return (
-		<>
-			{showModal ? (
-					<ModalWrapper>
-							<CloseButtonContainer>
-						<CloseButton onClick={() => setShowModal(false)}>&#x2716;</CloseButton>
-							</CloseButtonContainer>
-						<Background>
-							<ModalContainer>
-								<SelectList data={networks} title='Select Network' placeholder='Token Name' updateNetwork={updateNetwork} />
-								<SelectList data={coins} title='Select Token' placeholder='Token Name' updateToken={updateToken} />
-							</ModalContainer>
-							<Button onClick={() => setShowModal(false)}>Select</Button>
-						</Background>
-					</ModalWrapper>
-			) : null}
-		</>
+		// @ts-ignore
+		<ModalWrapper width={width} showModal={showModal} background={background}>
+			<CloseIcon onClick={() => setShowModal(false)}>&#x2716;</CloseIcon>
+			{children}
+		</ModalWrapper>
 	);
 };
