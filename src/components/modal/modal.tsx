@@ -74,7 +74,6 @@ const CloseButtonContainer = styled.div`
 	background-color: #212426;
 `;
 
-
 export const Modal = ({showModal, setShowModal}: Props) => {
 	const networks = Object.keys(destinationNetworks);
 	const [network, setNetwork] = useState<string>('');
