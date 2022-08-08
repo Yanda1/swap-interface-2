@@ -13,7 +13,6 @@ export type Spacing =
 	| '64'
 	| '72'
 	| '80';
-
 export const spacing = {
 	4: '0.25rem',
 	8: '0.5rem',

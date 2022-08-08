@@ -1,23 +1,23 @@
-import { fontFamily } from '../../styles';
+import { fontFamily, pxToRem } from '../../styles';
 import styled, { css } from 'styled-components';
 import type { ReactNode } from 'react';
-import { pxToRem } from '../../styles';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
-import { useAuth } from '../../helpers';
+import { useStore } from '../../helpers';
 
 const icons = {
 	moonbeam,
 	metamask
 };
 
-type ColorType = 'default' | 'error' | 'warning' | 'icon';
+export type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'success';
 
 interface CommonProps {
 	disabled?: boolean;
 	children?: ReactNode;
 	onClick: () => void;
 }
+
 interface PrimaryPureProps {
 	variant?: 'primary' | 'pure';
 	color?: never;
@@ -50,7 +50,7 @@ const StyledButton = styled.button(
 		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isSecondaryDefault = isSecondary && setColor === 'default';
-		const { state } = useAuth();
+		const { state } = useStore();
 		const { theme } = state;
 
 		return css`
@@ -67,20 +67,20 @@ const StyledButton = styled.button(
 			color: ${variant === 'pure'
 				? theme.pure
 				: isSecondaryDefault
-				? theme.button.default
-				: '#FFF'};
+					? theme.button.default
+					: '#FFF'};
 			background-color: ${disabled
 				? theme.button.disabled
 				: isPrimary
-				? theme.button.default
-				: !isColorDefault
-				? theme.button?.[setColor]
-				: 'transparent'};
-			border: 1px solid
-				${!isSecondary ? 'transparent' : isColorDefault ? theme.button.default : '#FFF'};
+					? theme.button.default
+					: !isColorDefault
+						? theme.button?.[setColor]
+						: 'transparent'};
+			border: 1px solid ${!isSecondary ? 'transparent' : isColorDefault ? theme.button.default : '#FFF'};
 			border-radius: ${pxToRem(6)};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
+
 			&:hover {
 				opacity: ${!isSecondaryDefault && '0.8'};
 				box-shadow: ${isSecondaryDefault && `0 0 0 1px ${theme.button.default}`};
@@ -98,7 +98,6 @@ export const Button = ({
 	onClick
 }: Props) => {
 	return (
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		<StyledButton variant={variant} disabled={disabled} icon={icon} color={color} onClick={onClick}>
 			{icon && <img src={icons?.[icon]} alt={icon} />}

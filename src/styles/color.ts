@@ -14,6 +14,7 @@ export type Theme = {
 		warning: string;
 		icon: string;
 		disabled: string;
+		success: string;
 	};
 };
 
@@ -30,7 +31,8 @@ export const lightTheme: Theme = {
 		error: '#DE3434',
 		warning: '#FD862F',
 		icon: '#172631',
-		disabled: '#6D6D6D'
+		disabled: '#6D6D6D',
+		success: '#18C108'
 	}
 };
 
@@ -40,13 +42,14 @@ export const darkTheme: Theme = {
 	default: '#8C8D8F',
 	background: {
 		default: '#161B20',
-		mobile: '#161B20'
+		mobile: '#1C2125'
 	},
 	button: {
 		default: '#00A8E8',
 		error: '#DE3434',
 		warning: '#FD862F',
 		icon: '#172631',
-		disabled: '#6D6D6D'
+		disabled: '#6D6D6D',
+		success: '#18C108'
 	}
 };
