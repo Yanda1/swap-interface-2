@@ -15,6 +15,7 @@ export type Theme = {
 		icon: string;
 		disabled: string;
 		selected: string;
+		success: string;
 	};
 	modal: {
 		default: string;
@@ -34,6 +35,7 @@ export const lightTheme: Theme = {
 		error: '#DE3434',
 		warning: '#FD862F',
 		icon: '#172631',
+		success: '#18C108',
 		disabled: '#6D6D6D',
 		selected: 'transparent',
 	},
@@ -48,13 +50,14 @@ export const darkTheme: Theme = {
 	default: '#8C8D8F',
 	background: {
 		default: '#161B20',
-		mobile: '#161B20'
+		mobile: '#1C2125'
 	},
 	button: {
 		default: '#00A8E8',
 		error: '#DE3434',
 		warning: '#FD862F',
 		icon: '#172631',
+		success: '#18C108',
 		disabled: '#6D6D6D',
 		selected: 'transparent',
 	},
