@@ -52,8 +52,8 @@ const App = () => {
 
 	return (
 		<>
-			<GlobalStyles theme={theme}/>
-			<Header/>
+			<GlobalStyles theme={theme} />
+			<Header />
 			<MainStyle>
 
 			</MainStyle>

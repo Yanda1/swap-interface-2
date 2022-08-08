@@ -90,18 +90,17 @@ const StyledButton = styled.button(
 );
 
 export const Button = ({
-												 children,
-												 variant = 'primary',
-												 color = 'default',
-												 disabled = false,
-												 icon,
-												 onClick
-											 }: Props) => {
+	children,
+	variant = 'primary',
+	color = 'default',
+	disabled = false,
+	icon,
+	onClick
+}: Props) => {
 	return (
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		<StyledButton variant={variant} disabled={disabled} icon={icon} color={color} onClick={onClick}>
-			{icon && <img src={icons?.[icon]} alt={icon}/>}
+			{icon && <img src={icons?.[icon]} alt={icon} />}
 			{children}
 		</StyledButton>
 	);
