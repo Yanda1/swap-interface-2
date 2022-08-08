@@ -13,8 +13,10 @@ import type { Theme } from '../../styles';
 import { darkTheme, lightTheme, mediaQuery, pxToRem, spacing } from '../../styles';
 import {
 	isLightTheme,
+	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
+	makeBinanceKycCall,
 	MOONBEAM_URL,
 	ThemeEnum,
 	useBreakpoint,
@@ -25,7 +27,6 @@ import {
 } from '../../helpers';
 import type { ColorType } from '../../components';
 import { Button } from '../../components';
-import { loadBinanceKycScript, makeBinanceKycCall } from '../../helpers/axios';
 
 type Props = {
 	theme: Theme;
@@ -95,15 +96,15 @@ export const Header = () => {
 	const checkNetwork = async () => {
 		const NETWORK_PARAMS = [
 			{
-				chainId: ethers.utils.hexValue(Moonbeam.chainId),
-				chainName: Moonbeam.chainName,
-				rpcUrls: [MOONBEAM_URL],
-				nativeCurrency: {
-					name: 'Glimer',
-					symbol: 'GLMR',
-					decimals: 18,
+				chainId:ethers.utils.hexValue(Moonbeam.chainId),
+				chainName:Moonbeam.chainName,
+				rpcUrls:[MOONBEAM_URL],
+				nativeCurrency:{
+					name:'Glimer',
+					symbol:'GLMR',
+					decimals:18,
 				},
-				blockExplorerUrls: ['https://moonscan.io/'],
+				blockExplorerUrls:['https://moonscan.io/'],
 			},
 		];
 
@@ -118,21 +119,21 @@ export const Header = () => {
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
 		if (localStorageTheme) {
-			dispatch({ type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) as Theme });
+			dispatch({ type:ThemeEnum.THEME, payload:JSON.parse(localStorageTheme) as Theme });
 		}
 	}, []);
 
 	useEffect(() => {
 		if (account) {
-			dispatch({ type: VerificationEnum.ACCOUNT, payload: true });
+			dispatch({ type:VerificationEnum.ACCOUNT, payload:true });
 		} else {
-			dispatch({ type: VerificationEnum.ACCOUNT, payload: false });
+			dispatch({ type:VerificationEnum.ACCOUNT, payload:false });
 		}
 
 		if (chainId) {
-			dispatch({ type: VerificationEnum.NETWORK, payload: true });
+			dispatch({ type:VerificationEnum.NETWORK, payload:true });
 		} else {
-			dispatch({ type: VerificationEnum.NETWORK, payload: false });
+			dispatch({ type:VerificationEnum.NETWORK, payload:false });
 			void checkNetwork();
 		}
 	}, [account, chainId, dispatch]);
@@ -148,16 +149,16 @@ export const Header = () => {
 
 	const changeTheme = (): void => {
 		const getTheme = isLight ? darkTheme : lightTheme;
-		dispatch({ type: ThemeEnum.THEME, payload: getTheme });
+		dispatch({ type:ThemeEnum.THEME, payload:getTheme });
 		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(getTheme));
 	};
 
 	const handleShowMenu = (): void => {
 		if (!showMenu) {
-			document.addEventListener('click', handleOutsideClick, { capture: true });
+			document.addEventListener('click', handleOutsideClick, { capture:true });
 		} else {
 			document.removeEventListener('click', handleOutsideClick, {
-				capture: true
+				capture:true
 			});
 		}
 		setShowMenu((showMenu) => !showMenu);
@@ -174,7 +175,7 @@ export const Header = () => {
 		if (!account) {
 			try {
 				activateBrowserWallet();
-			} catch(error) {
+			} catch (error) {
 				setShowModal(true);
 			}
 		}
@@ -187,11 +188,11 @@ export const Header = () => {
 	return (
 		<StyledHeader theme={theme}>
 			{isBreakpointWidth ? (
-				<LogoMobile style={{ marginRight: 'auto' }}/>
+				<LogoMobile style={{ marginRight:'auto' }} />
 			) : isLight ? (
-				<LogoLight style={{ marginRight: 'auto' }}/>
+				<LogoLight style={{ marginRight:'auto' }} />
 			) : (
-				<LogoDark style={{ marginRight: 'auto' }}/>
+				<LogoDark style={{ marginRight:'auto' }} />
 			)}
 			{!isBreakpointWidth && (
 				<Button variant="pure" onClick={() => console.log('hedader')}>
@@ -203,12 +204,12 @@ export const Header = () => {
 				{buttonStatus.text}
 			</Button>
 
-			<button onClick={changeTheme} style={{ border: 'none', background: 'none' }}>
-				<Icon>{isLight ? <Moon/> : <Sun/>}</Icon>
+			<button onClick={changeTheme} style={{ border:'none', background:'none' }}>
+				<Icon>{isLight ? <Moon /> : <Sun />}</Icon>
 			</button>
 
 			{isBreakpointWidth &&
-				(isLight ? <MenuLight onClick={handleShowMenu}/> : <MenuDark onClick={handleShowMenu}/>)}
+				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
 			{showMenu && (
 				<Menu theme={theme} ref={menuRef}>
 					<li>Transaction History</li>
