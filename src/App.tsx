@@ -2,9 +2,8 @@ import { useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import type { Theme } from './styles';
 import { fontFamily, fontStyle, fontWeight, mediaQuery, pxToRem, viewport } from './styles';
-import { Header, Button } from './components';
+import { Header, Button, NetworkTokenModal } from './components';
 import { useStore } from './helpers';
-import { Modal } from './components/modal/modal';
 type Props = {
 	theme: Theme;
 };
@@ -37,7 +36,6 @@ export const GlobalStyles = createGlobalStyle`
 		-moz-osx-font-smoothing: grayscale;
 		box-sizing: border-box;
 		scroll-behavior: smooth;
-		overflow: hidden;
 		margin: 0;
 	}
 `;
@@ -59,9 +57,9 @@ const App = () => {
 		<>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<Modal showModal={showModal} setShowModal={setShowModal} background='mobile' />
+			<NetworkTokenModal />
 			<MainStyle>
-				<Button onClick={openModal} variant={'secondary'} icon='metamask'></Button>
+				<Button onClick={openModal} variant={'secondary'} icon='metamask'>Test</Button>
 			</MainStyle>
 		</>
 	);

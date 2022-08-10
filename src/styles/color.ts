@@ -4,6 +4,10 @@ export type Theme = {
 	name: ThemeName;
 	default: string;
 	pure: string;
+	font: {
+		default: string;
+		pure: string;
+	};
 	background: {
 		default: string;
 		mobile: string;
@@ -26,6 +30,10 @@ export const lightTheme: Theme = {
 	name: 'light',
 	default: '#5A5A5A',
 	pure: '#5A5A5A',
+	font: {
+		default: '#5A5A5A',
+		pure: '#5A5A5A',
+	},
 	background: {
 		default: '#FFF',
 		mobile: '#F0F0F0'
@@ -46,8 +54,12 @@ export const lightTheme: Theme = {
 
 export const darkTheme: Theme = {
 	name: 'dark',
-	pure: '#FFF',
-	default: '#8C8D8F',
+	default: '#8C8D8F', // TODO: refactor font colors
+	pure: '#FFF',  // TODO: refactor font colors
+	font: {
+		default: '#8C8D8F',
+		pure: '#FFF'
+	},
 	background: {
 		default: '#161B20',
 		mobile: '#1C2125'

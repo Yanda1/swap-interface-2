@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import {fontSize, mediaQuery, pxToRem } from '../../styles';
+import {fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
 type Props = {
@@ -17,7 +17,7 @@ const ModalWrapper = styled.div(
 
 		return css`
 			position: fixed;
-			display: ${showModal ? 'inline-flex' : 'none'};
+			display: ${showModal ? 'flex' : 'none'};
 			justify-content: center;
 			align-items: center;
 			top: 50%;
@@ -26,7 +26,7 @@ const ModalWrapper = styled.div(
 			transform: translate(-50%, -50%);
 			width: 100%;
 			max-width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
-			margin: 0 auto;
+			margin: 0 ${spacing[20]};
 			background-color: ${theme.background[background]};
 			border: 1px solid ${theme.default};
 			border-radius: ${pxToRem(6)};
@@ -41,19 +41,26 @@ const ModalWrapper = styled.div(
 		`;
 });
 
-const CloseIcon = styled.div`
-	cursor: pointer;
-	position: fixed;
-	top: 10px;
-	right: 10px;
-	font-size: ${fontSize[16]};
-	line-height: ${fontSize[22]};
-	color: #FFF;
-	${mediaQuery('xxs')} {
-		margin-right: ${pxToRem(9)};
-		font-size: ${pxToRem(16)};
-	}
+const CloseIcon = styled.div(
+	() => {
+		const { state } = useStore();
+		const { theme } = state;
+
+		return css`
+		cursor: pointer;
+		position: fixed;
+		top: 10px;
+		right: 10px;
+		font-size: ${fontSize[16]};
+		line-height: ${fontSize[22]};
+		color: ${theme.font.pure};
+		${mediaQuery('xxs')} {
+			margin-right: ${pxToRem(9)};
+			font-size: ${pxToRem(16)};
+		}
 `;
+	}
+);
 
 export const Modal = ({showModal = false, setShowModal, width = 'large', background, children}: Props) => {
 	return (

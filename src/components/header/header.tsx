@@ -28,7 +28,7 @@ import {
 import type { ColorType } from '../../components';
 import { Button } from '../../components';
 
-type Props = {
+export type ThemeProps = {
 	theme: Theme;
 };
 
@@ -59,13 +59,12 @@ const Menu = styled.ul`
 	top: ${spacing[56]};
 	right: ${spacing[14]};
 	max-width: calc(100vw - ${pxToRem(28)});
-	background: ${(props: Props) => props.theme.background.default};
+	background: ${(props: ThemeProps) => props.theme.background.default};
 	text-align: right;
 	padding: ${spacing[14]};
 	border-radius: ${pxToRem(6)};
 	cursor: pointer;
-	border: 1px solid ${(props: Props) => (props.theme.name === 'light' ? props.theme.default : props.theme.pure)};
-
+	border: 1px solid ${(props: ThemeProps) => (props.theme.name === 'light' ? props.theme.default : props.theme.pure)};
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
 	}
