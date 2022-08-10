@@ -85,6 +85,10 @@ const StyledButton = styled.button(
 				opacity: ${!isSecondaryDefault && '0.8'};
 				box-shadow: ${isSecondaryDefault && `0 0 0 1px ${theme.button.default}`};
 			}
+
+			&:active, &:focus {
+				outline: none;
+			}
 		`;
 	}
 );

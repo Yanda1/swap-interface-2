@@ -51,7 +51,7 @@ export const GlobalStyles = createGlobalStyle`
 `;
 
 const MainStyle = styled.main`
-	max-width: ${pxToRem(466)};
+	max-width: ${pxToRem(428)};
 	margin: 0 auto;
 `;
 

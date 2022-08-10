@@ -13,6 +13,11 @@ export enum ThemeEnum {
 	THEME = 'SET_THEME'
 }
 
+export enum DestinationNetworkEnum {
+	NETWORK = 'SET_DESTINATION_NETWORK',
+	TOKEN = 'SET_DESTINATION_TOKEN',
+}
+
 export enum KycEnum {
 	STATUS = 'SET_KYC_STATUS',
 }
@@ -50,7 +55,17 @@ type ThemeAction = {
 	payload: Theme;
 };
 
-type Action = VerificationAction | ButtonAction | KycAction | ThemeAction;
+type DestinationNetworkAction = {
+	type: DestinationNetworkEnum;
+	payload: string;
+};
+
+type Action =
+	VerificationAction
+	| ButtonAction
+	| KycAction
+	| ThemeAction
+	| DestinationNetworkAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -59,6 +74,8 @@ type State = {
 	kycStatus: KycStatusEnum;
 	buttonStatus: { color: string; text: string };
 	theme: Theme;
+	network: string;
+	token: string;
 };
 
 type ButtonStatus = {
@@ -92,7 +109,9 @@ const initialState: State = {
 	isNetworkConnected: false,
 	kycStatus: KycStatusEnum.INITIAL, // TOOD: from localStorage?
 	buttonStatus: buttonType.CONNECT_WALLET,
-	theme: darkTheme
+	theme: darkTheme,
+	network: '',
+	token: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -113,6 +132,11 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, isUserVerified: action.payload };
 		case ThemeEnum.THEME:
 			return { ...state, theme: action.payload };
+		case DestinationNetworkEnum.NETWORK:
+			return { ...state, network: action.payload };
+		case DestinationNetworkEnum.TOKEN:
+			return { ...state, token: action.payload };
+
 		default:
 			return state;
 	}
