@@ -8,6 +8,10 @@ export type Theme = {
 		default: string;
 		mobile: string;
 	};
+	color: {
+		pure: string;
+		default: string;
+	};
 	button: {
 		default: string;
 		error: string;
@@ -19,37 +23,45 @@ export type Theme = {
 };
 
 export const lightTheme: Theme = {
-	name: 'light',
-	default: '#5A5A5A',
-	pure: '#5A5A5A',
-	background: {
-		default: '#FFF',
-		mobile: '#F0F0F0'
+	name:'light',
+	default:'#5A5A5A',
+	pure:'#5A5A5A',
+	background:{
+		default:'#FFF',
+		mobile:'#F0F0F0'
 	},
-	button: {
-		default: '#00A8E8',
-		error: '#DE3434',
-		warning: '#FD862F',
-		icon: '#172631',
-		disabled: '#6D6D6D',
-		success: '#18C108'
+	color:{
+		default:'#5A5A5A',
+		pure:'#5A5A5A',
+	},
+	button:{
+		default:'#00A8E8',
+		error:'#DE3434',
+		warning:'#FD862F',
+		icon:'#172631',
+		disabled:'#6D6D6D',
+		success:'#18C108'
 	}
 };
 
 export const darkTheme: Theme = {
-	name: 'dark',
-	pure: '#FFF',
-	default: '#8C8D8F',
-	background: {
-		default: '#161B20',
-		mobile: '#1C2125'
+	name:'dark',
+	pure:'#FFF',
+	default:'#8C8D8F',
+	background:{
+		default:'#161B20',
+		mobile:'#1C2125'
 	},
-	button: {
-		default: '#00A8E8',
-		error: '#DE3434',
-		warning: '#FD862F',
-		icon: '#172631',
-		disabled: '#6D6D6D',
-		success: '#18C108'
+	color:{
+		pure:'#FFF',
+		default:'#8C8D8F',
+	},
+	button:{
+		default:'#00A8E8',
+		error:'#DE3434',
+		warning:'#FD862F',
+		icon:'#172631',
+		disabled:'#6D6D6D',
+		success:'#18C108'
 	}
 };

@@ -1,7 +1,7 @@
 import styled, { createGlobalStyle } from 'styled-components';
 import type { Theme } from './styles';
 import { fontFamily, fontStyle, fontWeight, mediaQuery, pxToRem, viewport } from './styles';
-import { Header } from './components';
+import { Header, Input } from './components';
 import { useStore } from './helpers';
 
 type Props = {
@@ -55,7 +55,7 @@ const App = () => {
 			<GlobalStyles theme={theme} />
 			<Header />
 			<MainStyle>
-
+				<div style={{ display:'flex', gap:16 }}><Input /><Input /></div>
 			</MainStyle>
 		</>
 	);
