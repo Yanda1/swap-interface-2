@@ -28,26 +28,11 @@ export const fontStyle: { [key in FontStyle]: string } = {
 	italic: 'italic'
 };
 
-export type FontSize =
-	| '12'
-	| '14'
-	| '16'
-	| '20'
-	| '24'
-	| '28'
-	| '32'
-	| '36'
-	| '40'
-	| '44'
-	| '48'
-	| '52'
-	| '60'
-	| '72';
-
 export const fontSize = {
 	12: '0.75rem',
 	14: '0.875rem',
 	16: '1rem',
+	18: '1.125rem',
 	20: '1.25rem',
 	22: '1.375rem',
 	24: '1.5rem',

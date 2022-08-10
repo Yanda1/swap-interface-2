@@ -3,14 +3,13 @@ import { fontSize, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
 const StyledInput = styled.input(() => {
-	const { state:{ theme } } = useStore();
+	const { state: { theme } } = useStore();
 
 	return `
 		background: none;
 		text-align: center;
-		width: 100%;
 		font-size: ${fontSize[16]};
-		line-height: ${fontSize[22]};
+		line-height: ${fontSize[20]};
 		padding: ${spacing[18]} 0;
 		color: ${theme.color.pure};
 		border: 1px solid ${theme.default};

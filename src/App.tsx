@@ -1,7 +1,15 @@
 import styled, { createGlobalStyle } from 'styled-components';
 import type { Theme } from './styles';
-import { fontFamily, fontStyle, fontWeight, mediaQuery, pxToRem, viewport } from './styles';
-import { Header, Input } from './components';
+import {
+	fontFamily,
+	fontSize,
+	fontStyle,
+	fontWeight,
+	mediaQuery,
+	pxToRem,
+	viewport
+} from './styles';
+import { Header, Swapper } from './components';
 import { useStore } from './helpers';
 
 type Props = {
@@ -13,7 +21,8 @@ export const GlobalStyles = createGlobalStyle`
 		font-family: ${fontFamily};
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.regular};
-		font-size: ${pxToRem(14)};
+		font-size: ${fontSize[14]};
+		line-height: ${fontSize[18]};
 		max-width: ${viewport[1760]};
 		max-height: ${viewport[1760]}; // check with Ilaria
 		margin: 0 auto;
@@ -55,7 +64,7 @@ const App = () => {
 			<GlobalStyles theme={theme} />
 			<Header />
 			<MainStyle>
-				<div style={{ display:'flex', gap:16 }}><Input /><Input /></div>
+				<Swapper />
 			</MainStyle>
 		</>
 	);
