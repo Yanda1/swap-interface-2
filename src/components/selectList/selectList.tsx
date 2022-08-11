@@ -2,6 +2,9 @@ import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useStore, DestinationNetworkEnum } from '../../helpers';
 import { fontSize, pxToRem, spacing } from '../../styles';
+import {ReactComponent as IconBlack } from '../../assets/Ellipse-black.svg';
+import {ReactComponent as IconBlue } from '../../assets/Ellipse-blue.svg';
+import {ReactComponent as IconGreen } from '../../assets/Ellipse-green.svg';
 
 type Props = {
 	data: any;
@@ -13,8 +16,7 @@ type Props = {
 
 const Wrapper = styled.div(
 	() => {
-		const { state } = useStore();
-		const { theme } = state;
+		const { state: { theme } } = useStore();
 
 		return css`
 			display: flex;
@@ -72,31 +74,40 @@ const List = styled.ul`
 	/* Handle */
 	&::-webkit-scrollbar-thumb {
 		display: none;
-
 	}
 `;
 
 const Item = styled.li(
 	() => {
-		const { state } = useStore();
-		const { theme } = state;
+		const { state: { theme } } = useStore();
 
 		return css`
+			display: flex;
+			align-items: center;
 			cursor: pointer;
 			font-size: ${fontSize[16]};
 			color: ${theme.font.pure};
 			line-height: ${fontSize[22]};
 			margin: ${spacing[10]} 0;
 			border-radius: ${pxToRem(6)};
-			padding: ${spacing[12]} ${spacing[10]} ;
+			padding: ${spacing[12]} ${spacing[10]};
+			&:first-child {
+				margin-right: ${spacing[10]};
+			}
 		`;
 	}
 );
 
+const Icons = {
+	0: <IconBlack />,
+	1: <IconBlue />,
+	2: <IconGreen />,
+};
+
 export const SelectList = ({ data, title, placeholder, value }: Props) => {
 	const [search, setSearch] = useState('');
 	const [activeIndex, setActiveIndex] = useState(0);
-	const dataList = data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
+	const dataList = data && data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const { dispatch } = useStore();
 	const handleClick = (index: number, e: any): void => {
 		setActiveIndex(index);
@@ -110,13 +121,14 @@ export const SelectList = ({ data, title, placeholder, value }: Props) => {
 				<Input placeholder={placeholder} onChange={event => setSearch(event.target.value)} />
 				<List>
 				{data.length > 0 && dataList.map((el: HTMLLIElement, index: number) => {
+					const iconKey = index % 3;
 						// @ts-ignore
 						// eslint-disable-next-line
-						return <Item
-							style={{border: index === activeIndex ? '1px solid #00bcd4' : '1px solid transparent'}}
-							onClick={(e) => handleClick(index, e)}
-							key={el}>{el}</Item>;
-					})
+					return (<Item
+								style={{border: index === activeIndex ? '1px solid #00bcd4' : '1px solid transparent'}}
+								onClick={(e) => handleClick(index, e)}
+								key={el}>{Icons[iconKey]}{el}</Item>
+					);})
 				}
 				</List>
 			</Wrapper>

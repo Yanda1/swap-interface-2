@@ -49,15 +49,13 @@ const App = () => {
 	const { state } = useStore();
 	const { theme } = state;
 	const [showModal, setShowModal] = useState(false);
-	const openModal = () => {
-		setShowModal(prev => !prev);
-	};
+	const openModal = () => setShowModal(prev => !prev);
 
 	return (
 		<>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<NetworkTokenModal />
+			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<MainStyle>
 				<Button onClick={openModal} variant={'secondary'} icon='metamask'>Test</Button>
 			</MainStyle>

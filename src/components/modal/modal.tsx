@@ -12,8 +12,7 @@ type Props = {
 
 const ModalWrapper = styled.div(
 	({ width, showModal, background } : Props) => {
-		const { state } = useStore();
-		const { theme } = state;
+		const { state: { theme } } = useStore();
 
 		return css`
 			position: fixed;
@@ -43,8 +42,7 @@ const ModalWrapper = styled.div(
 
 const CloseIcon = styled.div(
 	() => {
-		const { state } = useStore();
-		const { theme } = state;
+		const { state: { theme } } = useStore();
 
 		return css`
 		cursor: pointer;
@@ -62,11 +60,15 @@ const CloseIcon = styled.div(
 	}
 );
 
-export const Modal = ({showModal = false, setShowModal, width = 'large', background, children}: Props) => {
+export const Modal = ({showModal, setShowModal, width = 'large', background, children}: Props) => {
+	const handleClose = () => {
+		setShowModal(false);
+	};
+
 	return (
 		// @ts-ignore
-		<ModalWrapper width={width} showModal={showModal} background={background}>
-			<CloseIcon onClick={() => setShowModal(false)}>&#x2716;</CloseIcon>
+		 <ModalWrapper width={width} showModal={showModal} background={background}>
+			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
 			{children}
 		</ModalWrapper>
 	);
