@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { mediaQuery, pxToRem, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import { isLightTheme, useStore } from '../../helpers';
+import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
 import { Button, TextField } from '../../components';
 
 const Wrapper = styled.div`
@@ -23,28 +23,37 @@ const Trader = styled.div`
 
 const Swap = styled.div`
 	display: flex;
+	flex-direction: column;
+	gap: ${spacing[4]};
+	flex: 1;
+
+	${mediaQuery('xs')} {
+		width: 100%;
+	}
+`;
+
+const SwapInput = styled.div`
+	display: flex;
+	gap: ${spacing[8]};
 	justify-content: space-between;
-	width: 100%;
-	gap: ${spacing[8]}
 `;
 
 const Ali = styled.div`
 	height: 58px;
-	width: 72px;
+	width: 58px;
 	border: 1px solid grey;
 	border-radius: 6px;
 `;
 
-const NamesDisplay = styled.div`
-	margin-top: ${spacing[4]};
-	display: flex;
-	justify-content: space-between;
-`;
-
-const Names = styled.div(({ pos = 'start' }: { pos?: string }) => `
+const SwapNames = styled.div(({ pos = 'start' }: { pos?: string }) => `
 	display: flex;
 	flex-direction: column;
 	align-items: flex-${pos};
+
+	${mediaQuery('xs')} {
+		align-items: flex-start;
+		width: 100%;
+	}
 `);
 
 const Name = styled.div(({ color }: { color: string }) => `
@@ -94,42 +103,58 @@ const Arrow = styled.div(({ color, turnArrow }: { color: string; turnArrow: bool
 `);
 
 export const Swapper = () => {
-	const { state: { theme, network, token } } = useStore();
+	const { state: { theme, network, token, destinationAddress }, dispatch } = useStore();
 	const [amount, setAmount] = useState('');
 	const [turnArrow, setTurnArrow] = useState(false);
+
+	const handleAddressChange = (event: any) => {
+		console.log(event.target.value);
+		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
+	};
 
 	return (
 		<Wrapper>
 			<Trader>
 				<Swap>
-					<Ali />
-					<TextField
-						type="number"
-						placeholder="Amount"
-						value={amount}
-						onChange={(e) => setAmount(e.target.value)}
-					/>
+					<SwapInput>
+						<Ali />
+						<TextField
+							type="number"
+							placeholder="Amount"
+							value={amount}
+							onChange={(e) => setAmount(e.target.value)}
+						/>
+					</SwapInput>
+					<SwapNames>
+						<Name color={theme.color.pure}>GLMR</Name>
+						<Name color={theme.color.default}>(Moonbeam)</Name>
+					</SwapNames>
 				</Swap>
-				{isLightTheme(theme) ? <SwapperLight /> : <SwapperDark />}
+				{isLightTheme(theme) ?
+					<SwapperLight style={{ marginBottom: 38 }} /> :
+					<SwapperDark style={{ marginBottom: 38 }} />
+				}
 				<Swap>
-					<Ali />
-					<TextField type="number" value="0.123423454" disabled />
+					<SwapInput>
+						<Ali />
+						<TextField type="number"
+											 value="0.123423454"
+											 disabled />
+					</SwapInput>
+					<SwapNames pos="end">
+						<Name color={theme.color.pure}>{token ? token : 'DOT'}</Name>
+						<Name color={theme.color.default}>({network ? network : 'BNB'})</Name>
+					</SwapNames>
 				</Swap>
 			</Trader>
-			<NamesDisplay>
-				<Names>
-					<Name color={theme.color.pure}>GLMR</Name>
-					<Name color={theme.color.default}>(Moonbeam)</Name>
-				</Names>
-				<Names pos="end">
-					<Name color={theme.color.pure}>{token ? token : 'DOT'}</Name>
-					<Name color={theme.color.default}>({network ? network : 'BNB'})</Name>
-				</Names>
-			</NamesDisplay>
 			<ExchangeRate color={theme.color.pure}>
 				1 GLMR = 20 DOT
 			</ExchangeRate>
-			<TextField placeholder="Destination address" value="" description="Destination Address" />
+			<TextField placeholder="Destination Address"
+								 value={destinationAddress}
+								 description="Destination Address"
+								 onChange={(e) => handleAddressChange(e)}
+			/>
 			<Fee color={theme.color.pure}>Fee: 0.123432423423423
 				<Arrow
 					color={theme.arrow}
@@ -137,7 +162,8 @@ export const Swapper = () => {
 					onClick={() => setTurnArrow((!turnArrow))}
 				/>
 			</Fee>
-			<Fees turnArrow={turnArrow} color={theme.default}>
+			<Fees turnArrow={turnArrow}
+						color={theme.default}>
 				<div><p>Gas fee:</p><p>1234.12345665 GLMR</p></div>
 				<div><p>Ex rate:</p><p>1234.5665 DOT</p></div>
 				<div><p>CEX rate:</p><p>1234.5665 DOT</p></div>

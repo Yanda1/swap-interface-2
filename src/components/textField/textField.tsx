@@ -1,14 +1,13 @@
-import styled from 'styled-components';
-import { fontSize, pxToRem, spacing } from '../../styles';
+import styled, { css } from 'styled-components';
+import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
 const StyledTextField = styled.input(() => {
 	const { state: { theme } } = useStore();
 
-	return `
+	return css`
 		background: none;
 		text-align: center;
-		width: 100%;
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
 		padding: ${spacing[18]} 0;
@@ -18,6 +17,10 @@ const StyledTextField = styled.input(() => {
 		pointer: cursor;
 		transition: all 0.2s ease-in-out;
 
+		${mediaQuery('xs')} {
+			width: 100%;
+		}
+
 		&:hover, &:focus, &:focus-visible, &:active {
 			border-color: ${theme.color.pure};
 			outline: none;
@@ -25,12 +28,12 @@ const StyledTextField = styled.input(() => {
 
 		&-webkit-outer-spin-button,
 		&::-webkit-inner-spin-button {
-  		-webkit-appearance: none;
-  		margin: 0;
+			-webkit-appearance: none;
+			margin: 0;
 		}
 
 		&[type=number] {
-  		-moz-appearance: textfield;
+			-moz-appearance: textfield;
 		}
 	`;
 });
@@ -64,6 +67,7 @@ export const TextField = ({
 				type={type}
 				value={value}
 				onChange={onChange}
+				lang="en"
 			/>
 			{description && <Description>{description}</Description>}
 		</>

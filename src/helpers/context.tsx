@@ -16,6 +16,7 @@ export enum ThemeEnum {
 export enum DestinationNetworkEnum {
 	NETWORK = 'SET_DESTINATION_NETWORK',
 	TOKEN = 'SET_DESTINATION_TOKEN',
+	ADDRESS = 'SET_DESTINATION_ADDRESS'
 }
 
 export enum KycEnum {
@@ -76,6 +77,7 @@ type State = {
 	theme: Theme;
 	network: string;
 	token: string;
+	destinationAddress: string;
 };
 
 type ButtonStatus = {
@@ -111,7 +113,8 @@ const initialState: State = {
 	buttonStatus: buttonType.CONNECT_WALLET,
 	theme: darkTheme,
 	network: '',
-	token: ''
+	token: '',
+	destinationAddress: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -136,7 +139,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, network: action.payload };
 		case DestinationNetworkEnum.TOKEN:
 			return { ...state, token: action.payload };
-
+		case DestinationNetworkEnum.ADDRESS:
+			return { ...state, destinationAddress: action.payload };
 		default:
 			return state;
 	}
