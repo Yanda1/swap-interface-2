@@ -45,8 +45,14 @@ export const GlobalStyles = createGlobalStyle`
 		-moz-osx-font-smoothing: grayscale;
 		box-sizing: border-box;
 		scroll-behavior: smooth;
-		overflow: hidden;
+		overflow: scroll;
 		margin: 0;
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
+
+	*::-webkit-scrollbar {
+		display: none;
 	}
 `;
 
