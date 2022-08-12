@@ -2,9 +2,8 @@ import 'jest-styled-components';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider } from '../../helpers';
-import { lightTheme } from '../../styles';
+import { lightTheme, pxToRem } from '../../styles';
 import { Button } from './button';
-import { pxToRem } from '../../styles';
 
 const onCheckStyles = (button: string) => {
 	if (button === 'primary default') {
@@ -52,9 +51,9 @@ const onCheckStyles = (button: string) => {
 	}
 };
 
-describe('Button Component', () => {
+describe('Button', () => {
 	it('should render a default button', () => {
-		const { getByText, getByRole } = render(
+		const { getByText } = render(
 			<AuthProvider>
 				<Button onClick={() => console.log('test')}>Primary default Button</Button>
 			</AuthProvider>
@@ -72,7 +71,8 @@ describe('Button Component', () => {
 	it('should render a secondary default button', () => {
 		const { getByText } = render(
 			<AuthProvider>
-				<Button onClick={() => console.log('test')} variant={'secondary'}>
+				<Button onClick={() => console.log('test')}
+								variant={'secondary'}>
 					Secondary default Button
 				</Button>
 			</AuthProvider>
@@ -90,7 +90,9 @@ describe('Button Component', () => {
 	it('should render a secondary icon button', () => {
 		const { getByText, getByRole } = render(
 			<AuthProvider>
-				<Button onClick={() => console.log('test')} variant="secondary" icon="moonbeam">
+				<Button onClick={() => console.log('test')}
+								variant="secondary"
+								icon="moonbeam">
 					Secondary icon Button
 				</Button>
 			</AuthProvider>
@@ -111,7 +113,9 @@ describe('Button Component', () => {
 	it('should render a secondary warning button', () => {
 		const { getByText } = render(
 			<AuthProvider>
-				<Button onClick={() => console.log('test')} variant={'secondary'} color={'warning'}>
+				<Button onClick={() => console.log('test')}
+								variant={'secondary'}
+								color={'warning'}>
 					Secondary warning Button
 				</Button>
 			</AuthProvider>
@@ -131,7 +135,9 @@ describe('Button Component', () => {
 	it('should render a secondary error button', () => {
 		const { getByText } = render(
 			<AuthProvider>
-				<Button onClick={() => console.log('test')} variant={'secondary'} color={'error'}>
+				<Button onClick={() => console.log('test')}
+								variant={'secondary'}
+								color={'error'}>
 					Secondary error Button
 				</Button>
 			</AuthProvider>
@@ -151,7 +157,9 @@ describe('Button Component', () => {
 	it('should render a primary disabled button', () => {
 		const { getByText } = render(
 			<AuthProvider>
-				<Button onClick={() => console.log('test')} variant={'primary'} disabled>
+				<Button onClick={() => console.log('test')}
+								variant={'primary'}
+								disabled>
 					Secondary primary disabled Button
 				</Button>
 			</AuthProvider>
@@ -171,7 +179,8 @@ describe('Button Component', () => {
 	it('should render a pure button', () => {
 		const { getByText } = render(
 			<AuthProvider>
-				<Button onClick={() => console.log('test')} variant={'pure'}>
+				<Button onClick={() => console.log('test')}
+								variant={'pure'}>
 					Secondary pure Button
 				</Button>
 			</AuthProvider>
