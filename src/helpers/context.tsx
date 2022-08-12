@@ -16,6 +16,7 @@ export enum ThemeEnum {
 export enum DestinationNetworkEnum {
 	NETWORK = 'SET_DESTINATION_NETWORK',
 	TOKEN = 'SET_DESTINATION_TOKEN',
+	ADDRESS = 'SET_DESTINATION_ADDRESS'
 }
 
 export enum KycEnum {
@@ -58,9 +59,14 @@ type ThemeAction = {
 type DestinationNetworkAction = {
 	type: DestinationNetworkEnum;
 	payload: string;
-}
+};
 
-type Action = VerificationAction | ButtonAction | KycAction | ThemeAction | DestinationNetworkAction;
+type Action =
+	VerificationAction
+	| ButtonAction
+	| KycAction
+	| ThemeAction
+	| DestinationNetworkAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -71,6 +77,7 @@ type State = {
 	theme: Theme;
 	network: string;
 	token: string;
+	destinationAddress: string;
 };
 
 type ButtonStatus = {
@@ -107,6 +114,7 @@ const initialState: State = {
 	theme: darkTheme,
 	network: '',
 	token: '',
+	destinationAddress: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -131,6 +139,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, network: action.payload };
 		case DestinationNetworkEnum.TOKEN:
 			return { ...state, token: action.payload };
+		case DestinationNetworkEnum.ADDRESS:
+			return { ...state, destinationAddress: action.payload };
 		default:
 			return state;
 	}

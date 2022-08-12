@@ -32,6 +32,7 @@ export const fontSize = {
 	12: '0.75rem',
 	14: '0.875rem',
 	16: '1rem',
+	18: '1.125rem',
 	20: '1.25rem',
 	22: '1.375rem',
 	24: '1.5rem',
@@ -47,82 +48,82 @@ export const fontSize = {
 };
 
 export const FontStyles = createGlobalStyle`
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.normal};
-    font-weight: ${fontWeight.bold};
-    src: url(${OpenSansBold}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.normal};
+		font-weight: ${fontWeight.bold};
+		src: url(${OpenSansBold}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.italic};
-    font-weight: ${fontWeight.bold};
-    src: url(${OpenSansBoldItalic}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.italic};
+		font-weight: ${fontWeight.bold};
+		src: url(${OpenSansBoldItalic}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.normal};
-    font-weight: ${fontWeight.extrabold};
-    src: url(${OpenSansExtraBold}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.normal};
+		font-weight: ${fontWeight.extrabold};
+		src: url(${OpenSansExtraBold}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.italic};
-    font-weight: ${fontWeight.extrabold};
-    src: url(${OpenSansExtraBoldItalic}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.italic};
+		font-weight: ${fontWeight.extrabold};
+		src: url(${OpenSansExtraBoldItalic}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.italic};
-    font-weight: ${fontWeight.regular};
-    src: url(${OpenSansItalic}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.italic};
+		font-weight: ${fontWeight.regular};
+		src: url(${OpenSansItalic}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.normal};
-    font-weight: ${fontWeight.thin};
-    src: url(${OpenSansLight}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.normal};
+		font-weight: ${fontWeight.thin};
+		src: url(${OpenSansLight}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.italic};
-    font-weight: ${fontWeight.thin};
-    src: url(${OpenSansLightItalic}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.italic};
+		font-weight: ${fontWeight.thin};
+		src: url(${OpenSansLightItalic}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.normal};
-    font-weight: ${fontWeight.regular};
-    src: url(${OpenSansRegular}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.normal};
+		font-weight: ${fontWeight.regular};
+		src: url(${OpenSansRegular}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.normal};
-    font-weight: ${fontWeight.semibold};
-    src: url(${OpenSansSemiBold}) format("truetype");
-    font-display: swap;
-  }
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.normal};
+		font-weight: ${fontWeight.semibold};
+		src: url(${OpenSansSemiBold}) format("truetype");
+		font-display: swap;
+	}
 
-  @font-face {
-    font-family: "Open Sans";
-    font-style: ${fontStyle.italic};
-    font-weight: ${fontWeight.semibold};
-    src: url(${OpenSansSemiBoldItalic}) format("truetype");
-    font-display: swap;
-}`;
+	@font-face {
+		font-family: "Open Sans";
+		font-style: ${fontStyle.italic};
+		font-weight: ${fontWeight.semibold};
+		src: url(${OpenSansSemiBoldItalic}) format("truetype");
+		font-display: swap;
+	}`;

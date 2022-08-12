@@ -1,9 +1,18 @@
 import { useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import type { Theme } from './styles';
-import { fontFamily, fontStyle, fontWeight, mediaQuery, pxToRem, viewport } from './styles';
-import { Header, Button, NetworkTokenModal } from './components';
+import {
+	fontFamily,
+	fontSize,
+	fontStyle,
+	fontWeight,
+	mediaQuery,
+	pxToRem,
+	viewport
+} from './styles';
+import { Header, Swapper } from './components';
 import { useStore } from './helpers';
+
 type Props = {
 	theme: Theme;
 };
@@ -13,7 +22,8 @@ export const GlobalStyles = createGlobalStyle`
 		font-family: ${fontFamily};
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.regular};
-		font-size: ${pxToRem(14)};
+		font-size: ${fontSize[14]};
+		line-height: ${fontSize[18]};
 		max-width: ${viewport[1760]};
 		max-height: ${viewport[1760]}; // check with Ilaria
 		margin: 0 auto;
@@ -36,12 +46,21 @@ export const GlobalStyles = createGlobalStyle`
 		-moz-osx-font-smoothing: grayscale;
 		box-sizing: border-box;
 		scroll-behavior: smooth;
+		overflow: scroll;
 		margin: 0;
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
+
+	*::-webkit-scrollbar {
+		display: none;
 	}
 `;
 
 const MainStyle = styled.main`
-	max-width: ${pxToRem(466)};
+	display: flex;
+	flex-direction: column;
+	max-width: ${pxToRem(428)}; // TODO: refasctor without width
 	margin: 0 auto;
 `;
 
@@ -56,8 +75,9 @@ const App = () => {
 			<GlobalStyles theme={theme} />
 			<Header />
 			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
+			<Button onClick={openModal} variant={'secondary'} icon='metamask'>Test</Button>
 			<MainStyle>
-				<Button onClick={openModal} variant={'secondary'} icon='metamask'>Test</Button>
+				<Swapper />
 			</MainStyle>
 		</>
 	);

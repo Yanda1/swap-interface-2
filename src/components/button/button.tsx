@@ -93,6 +93,10 @@ const StyledButton = styled.button(
 				box-shadow: ${isSecondaryDefault && `0 0 0 1px ${theme.button.default}`};
 				border: 1px solid ${isSelected && theme.button.default};
 			}
+
+			&:active, &:focus {
+				outline: none; // TODO: make nicer outline
+			}
 		`;
 	}
 );
@@ -107,8 +111,15 @@ export const Button = ({
 }: Props) => {
 	return (
 		// @ts-ignore
-		<StyledButton variant={variant} disabled={disabled} icon={icon} color={color} onClick={onClick}>
-			{icon && <img src={icons?.[icon]} alt={icon} />}
+		<StyledButton
+			icon={icon}
+			color={color}
+			variant={variant}
+			disabled={disabled}
+			onClick={onClick}
+		>
+			{icon && <img src={icons?.[icon]}
+										alt={icon} />}
 			{children}
 		</StyledButton>
 	);
