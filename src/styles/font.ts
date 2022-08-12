@@ -24,7 +24,7 @@ export const fontWeight: { [key in FontWeight]: number } = {
 };
 
 export const fontStyle: { [key in FontStyle]: string } = {
-	normal: ' normal',
+	normal: 'normal',
 	italic: 'italic'
 };
 

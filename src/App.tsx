@@ -57,7 +57,7 @@ export const GlobalStyles = createGlobalStyle`
 `;
 
 const MainStyle = styled.main`
-	max-width: ${pxToRem(428)};
+	max-width: ${pxToRem(428)}; // TODO: refasctor without width
 	margin: 0 auto;
 `;
 

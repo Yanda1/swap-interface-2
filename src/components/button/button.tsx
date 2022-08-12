@@ -87,7 +87,7 @@ const StyledButton = styled.button(
 			}
 
 			&:active, &:focus {
-				outline: none;
+				outline: none; // TODO: make nicer outline
 			}
 		`;
 	}
@@ -103,8 +103,13 @@ export const Button = ({
 }: Props) => {
 	return (
 		// @ts-ignore
-		<StyledButton variant={variant} disabled={disabled} icon={icon} color={color} onClick={onClick}>
-			{icon && <img src={icons?.[icon]} alt={icon} />}
+		<StyledButton variant={variant}
+									disabled={disabled}
+									icon={icon}
+									color={color}
+									onClick={onClick}>
+			{icon && <img src={icons?.[icon]}
+										alt={icon} />}
 			{children}
 		</StyledButton>
 	);
