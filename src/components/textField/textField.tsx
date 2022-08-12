@@ -39,7 +39,7 @@ const StyledTextField = styled.input(() => {
 });
 
 const Description = styled.div`
-	margin-top: ${spacing[4]};
+	margin: ${spacing[4]} 0;
 `;
 
 type Props = {

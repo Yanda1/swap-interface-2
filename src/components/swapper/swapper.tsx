@@ -6,11 +6,6 @@ import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
 import { Button, TextField } from '../../components';
 
-const Wrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-`;
-
 const Trader = styled.div`
 	display: flex;
 	gap: ${spacing[10]};
@@ -95,9 +90,9 @@ const Fees = styled.div(({ turnArrow, color }: { turnArrow: boolean; color: stri
 const Arrow = styled.div(({ color, turnArrow }: { color: string; turnArrow: boolean }) => `
 	width: 0;
 	height: 0;
-	border-left: 7px solid transparent;
-	border-right: 7px solid transparent;
-	border-top: 7px solid ${color};
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 6px solid ${color};
 	transform: rotate(${!turnArrow ? '0' : '180'}deg);
   transition: transform .3s linear;
 `);
@@ -108,12 +103,11 @@ export const Swapper = () => {
 	const [turnArrow, setTurnArrow] = useState(false);
 
 	const handleAddressChange = (event: any) => {
-		console.log(event.target.value);
 		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
 	};
 
 	return (
-		<Wrapper>
+		<>
 			<Trader>
 				<Swap>
 					<SwapInput>
@@ -138,7 +132,7 @@ export const Swapper = () => {
 					<SwapInput>
 						<Ali />
 						<TextField type="number"
-											 value="0.123423454"
+											 value="0.123423454" // TODO: check if comma stays the same for dynamic input
 											 disabled />
 					</SwapInput>
 					<SwapNames pos="end">
@@ -170,6 +164,6 @@ export const Swapper = () => {
 				<div><p>Withdrawal fee:</p><p>1234.5665 DOT</p></div>
 			</Fees>
 			<Button onClick={() => console.log('Click')}>Swap</Button>
-		</Wrapper>
+		</>
 	);
 };

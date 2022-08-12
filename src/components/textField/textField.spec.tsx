@@ -30,7 +30,7 @@ describe('TextField', () => {
 			</AuthProvider>
 		);
 		const textField = getByPlaceholderText(/placeholder/i);
-		expect(textField).toHaveStyle('border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem;');
+		expect(textField).toHaveStyle('border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem; padding: 1.125rem 0;');
 	});
 
 	it('should set props correctly', () => {

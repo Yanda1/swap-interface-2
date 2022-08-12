@@ -57,6 +57,8 @@ export const GlobalStyles = createGlobalStyle`
 `;
 
 const MainStyle = styled.main`
+	display: flex;
+	flex-direction: column;
 	max-width: ${pxToRem(428)}; // TODO: refasctor without width
 	margin: 0 auto;
 `;

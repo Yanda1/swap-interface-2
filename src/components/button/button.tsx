@@ -103,11 +103,13 @@ export const Button = ({
 }: Props) => {
 	return (
 		// @ts-ignore
-		<StyledButton variant={variant}
-									disabled={disabled}
-									icon={icon}
-									color={color}
-									onClick={onClick}>
+		<StyledButton
+			icon={icon}
+			color={color}
+			variant={variant}
+			disabled={disabled}
+			onClick={onClick}
+		>
 			{icon && <img src={icons?.[icon]}
 										alt={icon} />}
 			{children}
