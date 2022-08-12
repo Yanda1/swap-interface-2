@@ -24,6 +24,7 @@ const ModalWrapper = styled.div(
 			right: 50%;
 			transform: translate(-50%, -50%);
 			width: 100%;
+			z-index: 1000;
 			max-width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
 			margin: 0 ${spacing[20]};
 			background-color: ${theme.background[background]};

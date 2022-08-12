@@ -2,9 +2,7 @@ import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useStore, DestinationNetworkEnum } from '../../helpers';
 import { fontSize, pxToRem, spacing } from '../../styles';
-import {ReactComponent as IconBlack } from '../../assets/Ellipse-black.svg';
-import {ReactComponent as IconBlue } from '../../assets/Ellipse-blue.svg';
-import {ReactComponent as IconGreen } from '../../assets/Ellipse-green.svg';
+import { IconButton } from '../iconButton/iconButton';
 
 type Props = {
 	data: any;
@@ -98,12 +96,6 @@ const Item = styled.li(
 	}
 );
 
-const Icons = {
-	0: <IconBlack />,
-	1: <IconBlue />,
-	2: <IconGreen />,
-};
-
 export const SelectList = ({ data, title, placeholder, value }: Props) => {
 	const [search, setSearch] = useState('');
 	const [activeIndex, setActiveIndex] = useState(0);
@@ -121,13 +113,12 @@ export const SelectList = ({ data, title, placeholder, value }: Props) => {
 				<Input placeholder={placeholder} onChange={event => setSearch(event.target.value)} />
 				<List>
 				{data.length > 0 && dataList.map((el: HTMLLIElement, index: number) => {
-					const iconKey = index % 3;
 						// @ts-ignore
 						// eslint-disable-next-line
 					return (<Item
 								style={{border: index === activeIndex ? '1px solid #00bcd4' : '1px solid transparent'}}
 								onClick={(e) => handleClick(index, e)}
-								key={el}>{Icons[iconKey]}{el}</Item>
+								key={el}><IconButton icon={el} />{el}</Item>
 					);})
 				}
 				</List>

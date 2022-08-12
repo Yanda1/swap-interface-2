@@ -23,7 +23,6 @@ export type Theme = {
 		warning: string;
 		icon: string;
 		disabled: string;
-		selected: string;
 		success: string;
 	};
 	modal: {
@@ -54,7 +53,7 @@ export const lightTheme: Theme = {
 		warning: '#FD862F',
 		icon: '#172631',
 		disabled: '#6D6D6D',
-		selected: 'transparent',
+		success: '#18C108'
 	},
 	modal: {
 		default: '#212426',
@@ -84,7 +83,6 @@ export const darkTheme: Theme = {
 		warning: '#FD862F',
 		icon: '#172631',
 		disabled: '#6D6D6D',
-		selected: 'transparent',
 		success: '#18C108'
 	},
 	modal: {

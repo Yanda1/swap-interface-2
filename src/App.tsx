@@ -10,7 +10,7 @@ import {
 	pxToRem,
 	viewport
 } from './styles';
-import { Header, Swapper } from './components';
+import { Button, Header, Swapper } from './components';
 import { useStore } from './helpers';
 
 type Props = {
@@ -67,15 +67,11 @@ const MainStyle = styled.main`
 const App = () => {
 	const { state } = useStore();
 	const { theme } = state;
-	const [showModal, setShowModal] = useState(false);
-	const openModal = () => setShowModal(prev => !prev);
 
 	return (
 		<>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
-			<Button onClick={openModal} variant={'secondary'} icon='metamask'>Test</Button>
 			<MainStyle>
 				<Swapper />
 			</MainStyle>

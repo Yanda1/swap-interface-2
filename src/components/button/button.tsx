@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
 import { fontFamily, pxToRem } from '../../styles';
 import styled, { css } from 'styled-components';
+import type { ReactNode } from 'react';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
 import { useStore } from '../../helpers';
@@ -10,7 +10,7 @@ const icons = {
 	metamask
 };
 
-export type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'selected' | 'success';
+export type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'success';
 
 interface CommonProps {
 	disabled?: boolean;
@@ -34,12 +34,7 @@ interface ColorOnlyProps {
 	icon?: never;
 }
 
-interface SelectedProps {
-	color?: ColorType;
-	icon?: 'moonbeam' | 'metamask';
-}
-
-type ColorIconProps = IconOnlyProps | ColorOnlyProps | SelectedProps;
+type ColorIconProps = IconOnlyProps | ColorOnlyProps;
 
 type SecondaryProps = {
 	variant: 'secondary';
@@ -52,11 +47,10 @@ const StyledButton = styled.button(
 	({ variant = 'primary', color = 'default', disabled = false, icon }: Props) => {
 		const isPrimary = variant === 'primary';
 		const isSecondary = variant === 'secondary';
-		const setColor = icon && color ? color : icon ? 'icon' : color;
+		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isSecondaryDefault = isSecondary && setColor === 'default';
 		const { state } = useStore();
-		const isSelected = isSecondary && setColor === 'selected';
 		const { theme } = state;
 
 		return css`
@@ -83,7 +77,7 @@ const StyledButton = styled.button(
 				? theme.button?.[setColor]
 				: 'transparent'};
 			border: 1px solid
-				${!isSecondary || isSelected ? 'transparent' : isColorDefault ? theme.button.default : '#FFF'};
+				${!isSecondary ? 'transparent' : isColorDefault ? theme.button.default : '#FFF'};
 			border-radius: ${pxToRem(6)};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
@@ -91,7 +85,6 @@ const StyledButton = styled.button(
 			&:hover {
 				opacity: ${!isSecondaryDefault && '0.8'};
 				box-shadow: ${isSecondaryDefault && `0 0 0 1px ${theme.button.default}`};
-				border: 1px solid ${isSelected && theme.button.default};
 			}
 
 			&:active, &:focus {

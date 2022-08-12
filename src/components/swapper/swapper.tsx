@@ -4,7 +4,7 @@ import { mediaQuery, pxToRem, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
-import { Button, TextField } from '../../components';
+import { Button, NetworkTokenModal, TextField, IconButton } from '../../components';
 
 const Trader = styled.div`
 	display: flex;
@@ -31,13 +31,6 @@ const SwapInput = styled.div`
 	display: flex;
 	gap: ${spacing[8]};
 	justify-content: space-between;
-`;
-
-const Ali = styled.div`
-	height: 58px;
-	width: 58px;
-	border: 1px solid grey;
-	border-radius: 6px;
 `;
 
 const SwapNames = styled.div(({ pos = 'start' }: { pos?: string }) => `
@@ -100,7 +93,10 @@ const Arrow = styled.div(({ color, turnArrow }: { color: string; turnArrow: bool
 export const Swapper = () => {
 	const { state: { theme, network, token, destinationAddress }, dispatch } = useStore();
 	const [amount, setAmount] = useState('');
+	const [showModal, setShowModal] = useState(false);
 	const [turnArrow, setTurnArrow] = useState(false);
+
+	const openModal = () => setShowModal(prev => !prev);
 
 	const handleAddressChange = (event: any) => {
 		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
@@ -108,10 +104,11 @@ export const Swapper = () => {
 
 	return (
 		<>
+			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<Ali />
+						<IconButton disabled icon='GLMR' onClick={() => console.log('Start token')} />
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -130,7 +127,7 @@ export const Swapper = () => {
 				}
 				<Swap>
 					<SwapInput>
-						<Ali />
+						<IconButton onClick={openModal} icon='USDT' />
 						<TextField type="number"
 											 value="0.123423454" // TODO: check if comma stays the same for dynamic input
 											 disabled />
