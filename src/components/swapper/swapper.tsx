@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { mediaQuery, pxToRem, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
@@ -69,17 +69,26 @@ const ExchangeRate = styled.div(({ color }: { color: string }) => `
 	}
 `);
 
-const Fee = styled.summary(({ color }: { color: string }) => `
+const Fee = styled.summary(({ color }: { color: string }) => css`
 	color: ${color};
 	margin: ${spacing[28]} 0;
+
+	&:focus, &:focus-visible {
+		outline-offset: 2px;
+		outline: 1px solid ${color};
+	}
+
+	&:active {
+		outline: none;
+	}
 `);
 
-const Fees = styled.div(({ color }: { color: string }) => `
+const Fees = styled.div(({ color }: { color: string }) => css`
 	flex-direction: column;
-  padding: ${spacing[10]} ${spacing[16]};
-  margin-bottom: ${spacing[56]};
-  border-radius: ${pxToRem(6)};
-  border: 1px solid ${color};
+	padding: ${spacing[10]} ${spacing[16]};
+	margin-bottom: ${spacing[56]};
+	border-radius: ${pxToRem(6)};
+	border: 1px solid ${color};
 
 	& > * {
 		display: flex;
