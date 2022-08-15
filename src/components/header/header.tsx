@@ -46,12 +46,25 @@ const StyledHeader = styled.header`
 	}
 `;
 
-const Icon = styled.div`
+const ThemeButton = styled.button`
 	cursor: pointer;
+	background: none;
+	border: none;
 
 	&:hover {
 		opacity: 0.8;
 	}
+
+	&:focus-visible, &:focus {
+		outline-offset: 2px;
+		outline: 1px solid ${(props: Props) => props.theme.default};
+	}
+;
+}
+
+&:active {
+	outline: none;
+}
 `;
 
 const Menu = styled.ul`
@@ -64,7 +77,7 @@ const Menu = styled.ul`
 	padding: ${spacing[14]};
 	border-radius: ${pxToRem(6)};
 	cursor: pointer;
-	border: 1px solid ${(props: Props) => (props.theme.name === 'light' ? props.theme.default : props.theme.pure)};
+	border: 1px solid ${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -206,10 +219,8 @@ export const Header = () => {
 				{buttonStatus.text}
 			</Button>
 
-			<button onClick={changeTheme}
-							style={{ border: 'none', background: 'none' }}>
-				<Icon>{isLight ? <Moon /> : <Sun />}</Icon>
-			</button>
+			<  ThemeButton theme={theme}
+										 onClick={changeTheme}>{isLight ? <Moon /> : <Sun />}</ThemeButton>
 
 			{isBreakpointWidth &&
 				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}

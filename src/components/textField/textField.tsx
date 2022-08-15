@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import { fontSize, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
 const StyledTextField = styled.input(() => {
@@ -16,14 +16,17 @@ const StyledTextField = styled.input(() => {
 		border-radius: ${pxToRem(6)};
 		pointer: cursor;
 		transition: all 0.2s ease-in-out;
+		flex: 1;
+		width: 100%;
 
-		${mediaQuery('xs')} {
-			width: 100%;
-		}
-
-		&:hover, &:focus, &:focus-visible, &:active {
+		&:hover, &:active {
 			border-color: ${theme.color.pure};
 			outline: none;
+		}
+
+		&:focus, &:focus-visible {
+			outline-offset: 2px;
+			outline: 1px solid ${theme.default};
 		}
 
 		&-webkit-outer-spin-button,
