@@ -29,25 +29,36 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: NetworkTokenModal
 		setIsDisabled(() => (destinationNetwork === 'Select Network' || destinationToken === 'Select Token'));
 	}, [destinationNetwork, destinationToken]);
 
+	const networks = Object.keys(destinationNetworks);
+	// @ts-ignore
+	const tokens = destinationNetwork !== 'Select Network' && destinationNetworks[destinationNetwork].tokens;
+
+	const handleSelectClick = (): void => {
+		setShowModal(!showModal);
+		console.log({
+			destinationNetwork,
+			destinationToken
+		});
+	};
+
 	return (
-		<Modal showModal={showModal} setShowModal={setShowModal} background='mobile'>
+		<Modal showModal={showModal}
+					 setShowModal={setShowModal}
+					 background="mobile">
 			<ChildWrapper>
 				<SelectList
-					value='NETWORK'
-					data={destinationNetwork}
-					title='Select Network'
-					placeholder='Network Name' />
+					value="NETWORK"
+					data={networks}
+					title="Select Network"
+					placeholder="Network Name" />
 				<SelectList
-					value='TOKEN'
-					data={destinationToken}
-					title='Select Token'
-					placeholder='Token Name' />
+					value="TOKEN"
+					data={tokens}
+					title="Select Token"
+					placeholder="Token Name" />
 				<Button
 					disabled={isDisabled}
-					onClick={() => console.log({
-						destinationNetwork,
-						destinationToken
-					})}>{isDisabled ? 'Please select Network and Token' : 'Select'}</Button>
+					onClick={handleSelectClick}>{isDisabled ? 'Please select Network and Token' : 'Select'}</Button>
 			</ChildWrapper>
 		</Modal>
 	);

@@ -1,9 +1,9 @@
 import styled, { css } from 'styled-components';
 import { useStore } from '../../helpers';
-import BSC from '../../assets/BSC.png';
 import USDT from '../../assets/USDT.png';
 import GLMR from '../../assets/GLMR.png';
 import BTC from '../../assets/BTC.png';
+import BSC from '../../assets/BSC.png';
 import BNB from '../../assets/BNB.png';
 import ETH from '../../assets/ETH.png';
 import SOL from '../../assets/SOL.png';
@@ -28,11 +28,12 @@ const icons = {
 	MATIC,
 	AVAXC,
 	SEGWIT,
+	'Select Token': questionMark
 };
 
 type IconButtonsProps = {
 	disabled?: boolean;
-	icon: 'USDT' | 'GLMR' | 'BTC' | 'BNB' | 'ETH' | 'SOL' | 'BUSD' | 'TRX' | 'MATIC' | 'Select Token';
+	icon: 'BSC' | 'USDT' | 'GLMR' | 'BTC' | 'BNB' | 'ETH' | 'SOL' | 'BUSD' | 'TRX' | 'MATIC' | 'AVAXC' | 'SEGWIT' | 'Select Token';
 	onClick?: () => void;
 	iconOnly?: boolean;
 };
@@ -53,6 +54,15 @@ const Icon = styled.button(() => {
 		&:hover {
 			opacity: 0.8;
 		}
+
+		&:active {
+			outline: none;
+		}
+
+		&:focus-visible {
+			outline-offset: 2px;
+			outline: 1px solid ${theme.default};
+		}
 	;
 	`;
 });
@@ -68,11 +78,25 @@ const Img = styled.img(
 	});
 
 export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: IconButtonsProps) => {
-	const setIcon: any = icon !== 'Select Token' ? icons[icon] : questionMark;
+	const setIcon: string = !icon || icon === 'Select Token' ? questionMark : icons[icon];
 
 	return (
-		!iconOnly ? <Icon disabled={disabled} onClick={onClick}>
-			<Img src={setIcon} alt={icon} />
-		</Icon> : <Img src={setIcon} alt={icon} iconOnly />
+		!iconOnly ?
+			<Icon
+				disabled={disabled}
+				onClick={onClick}
+			>
+				{/* @ts-ignore */}
+				<Img
+					src={setIcon}
+					alt={icon}
+				/>
+			</Icon> :
+			// @ts-ignore
+			<Img
+				src={setIcon}
+				alt={icon}
+				iconOnly
+			/>
 	);
 };

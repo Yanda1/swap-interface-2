@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
@@ -8,7 +9,7 @@ import {
 	isLightTheme,
 	useStore
 } from '../../helpers';
-import { Button, TextField, IconButton, NetworkTokenModal  } from '../../components';
+import { Button, IconButton, NetworkTokenModal, TextField } from '../../components';
 import axios from 'axios';
 
 const Wrapper = styled.main`
@@ -101,11 +102,13 @@ export const SwapForm = () => {
 		dispatch
 	} = useStore();
 	const [amount, setAmount] = useState('');
+	const [showModal, setShowModal] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
 	const startToken = 'GLMR';
-	const token = 'BNB';
 
-	const openModal = () => setShowModal(prev => !prev);
+	const isDisabled = destinationNetwork === 'Select Network' || destinationToken === 'Select Token' || !destinationAmount || !destinationAddress;
+
+	const openModal = () => setShowModal(!showModal);
 
 	const handleAddressChange = (event: any) => {
 		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
@@ -114,7 +117,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		const convertDestinationAmount = async () => {
 			try {
-				const getPriceAndSymbol: { data: { symbol: string; price: string } } = await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${token}` }); // TODO: change to destinationToken
+				const getPriceAndSymbol: { data: { symbol: string; price: string } } = await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${destinationToken}` }); // TODO: change to destinationToken
 				setCurrentPrice(getPriceAndSymbol.data.price);
 			} catch (err: any) {
 				throw new Error(err);
@@ -122,7 +125,7 @@ export const SwapForm = () => {
 		};
 		// eslint-disable-next-line
 		convertDestinationAmount();
-	}, [token]);
+	}, [destinationToken]);
 
 	useEffect(() => {
 		dispatch({
@@ -131,18 +134,25 @@ export const SwapForm = () => {
 		});
 	}, [amount, currentPrice]);
 
-	console.log(destinationAmount);
+	const handleSwap = (): void => {
+		console.log({ destinationAmount, destinationToken, destinationAddress, destinationNetwork });
+	};
 
 	return (
 		<Wrapper>
-			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
+			<NetworkTokenModal showModal={showModal}
+												 setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton disabled icon='GLMR' onClick={() => console.log('Start token')} />
+						<IconButton
+							disabled
+							icon="GLMR"
+							onClick={() => console.log('Start token')}
+						/>
 						<TextField
-							type='number'
-							placeholder='Amount'
+							type="number"
+							placeholder="Amount"
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
 						/>
@@ -158,11 +168,17 @@ export const SwapForm = () => {
 				}
 				<Swap>
 					<SwapInput>
-						<IconButton onClick={openModal} icon={token} />
+						<IconButton
+							onClick={openModal}
+							icon={destinationToken as any}
+						/>
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField type='number' value='0.123423454' />
+						<TextField
+							type="number"
+							value={destinationAmount}
+						/>
 					</SwapInput>
-					<SwapNames pos='end'>
+					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
 						<Name color={theme.font.default}>{destinationNetwork}</Name>
 					</SwapNames>
@@ -170,11 +186,11 @@ export const SwapForm = () => {
 			</Trader>
 			<ExchangeRate color={theme.font.pure}>
 				{/* TODO: change to destinationToken */}
-				1 GLMR = {currentPrice} {token}
+				{destinationToken === 'Select Token' ? 'Please select token to see price' : `1 GLMR = ${currentPrice} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
-				description='Destination Address'
+				description="Destination Address"
 				onChange={(e) => handleAddressChange(e)}
 			/>
 			<details>
@@ -187,7 +203,8 @@ export const SwapForm = () => {
 					<div><p>Withdrawal fee:</p><p>1234.5665 DOT</p></div>
 				</Fees>
 			</details>
-			<Button onClick={() => console.log('Click')}>Swap</Button>
+			<Button onClick={handleSwap}
+							disabled={isDisabled}>Swap</Button>
 		</Wrapper>
 	);
 };

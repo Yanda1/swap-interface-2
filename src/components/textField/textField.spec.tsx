@@ -46,7 +46,7 @@ describe('TextField', () => {
 		);
 		const textField = getByPlaceholderText(/placeholder/i) as HTMLInputElement;
 		expect(textField.placeholder).toBe('placeholder');
-		expect(textField.disabled).toBe(true);
+		expect(textField.readOnly).toBe(true);
 		expect(textField.type).toBe('number');
 		expect(textField.lang).toBe('en');
 	});

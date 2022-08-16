@@ -81,7 +81,7 @@ export const SelectList = ({ data, title, placeholder, value }: Props) => {
 	const [search, setSearch] = useState('');
 	const [activeIndex, setActiveIndex] = useState(-1);
 	const dataList = data && data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
-	const { dispatch, state: { token, network } } = useStore();
+	const { dispatch, state: { destinationNetwork, destinationToken } } = useStore();
 
 	const handleClick = useCallback((index: number, e: any) => {
 		if (value === 'TOKEN' && index !== activeIndex) {
@@ -97,17 +97,19 @@ export const SelectList = ({ data, title, placeholder, value }: Props) => {
 			dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 		}
 
-		if (token === 'Select Token' && value === 'TOKEN') {
+		if (destinationToken === 'Select Token' && value === 'TOKEN') {
 			console.log('FIRST TOKEN IN NEW NETWORK', value);
 			setActiveIndex(-1);
 		}
-	}, [activeIndex, token, network]);
+	}, [activeIndex, destinationNetwork, destinationToken]);
 
 	return (
 		<>
 			<Wrapper>
 				<Title>{title}</Title>
-				<TextField value={search} placeholder={placeholder} onChange={event => setSearch(event.target.value)} />
+				<TextField value={search}
+									 placeholder={placeholder}
+									 onChange={event => setSearch(event.target.value)} />
 				<List>
 					{data.length > 0 && dataList.map((el: HTMLLIElement, index: number) => {
 						// @ts-ignore
@@ -117,7 +119,9 @@ export const SelectList = ({ data, title, placeholder, value }: Props) => {
 								index={index}
 								activeIndex={activeIndex}
 								onClick={(e) => handleClick(index, e)}
-								key={el}><IconButton icon={el} iconOnly />{el}</Item>
+								// @ts-ignore
+								key={el}><IconButton icon={el}
+																		 iconOnly />{el}</Item>
 						);
 					})
 					}
