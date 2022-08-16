@@ -18,16 +18,14 @@ const Wrapper = styled.div(
 		const { state: { theme } } = useStore();
 
 		return css`
-
 			display: flex;
 			flex-direction: column;
-			flex: 0 1 ${pxToRem(172)};
+			flex: 0 1 ${pxToRem(178)};
 			border: 1px solid ${theme.default};
 			height: ${pxToRem(478)};
 			padding: 0 ${spacing[10]};
 			background: ${theme.background.default};
 			border-radius: ${pxToRem(6)};
-
 		`;
 	}
 );
@@ -107,9 +105,12 @@ export const SelectList = ({ data, title, placeholder, value }: Props) => {
 		<>
 			<Wrapper>
 				<Title>{title}</Title>
-				<TextField value={search}
-									 placeholder={placeholder}
-									 onChange={event => setSearch(event.target.value)} />
+				<TextField
+					align="left"
+					value={search}
+					placeholder={placeholder}
+					onChange={event => setSearch(event.target.value)}
+				/>
 				<List>
 					{data.length > 0 && dataList.map((el: HTMLLIElement, index: number) => {
 						// @ts-ignore

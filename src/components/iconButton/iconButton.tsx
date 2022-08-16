@@ -74,6 +74,7 @@ const Img = styled.img(
 			height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
 			width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
 			margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
+			cursor: pointer;
 		`;
 	});
 

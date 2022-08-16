@@ -2,21 +2,21 @@ import styled, { css } from 'styled-components';
 import { fontSize, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
-const StyledTextField = styled.input(() => {
+const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
 	const { state: { theme } } = useStore();
 
 	return css`
 		background: none;
-		text-align: center;
+		text-align: ${align};
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
-		padding: ${spacing[18]} 0;
+		padding: ${spacing[18]} ${align !== 'center' ? spacing[12] : 0};
 		color: ${theme.font.pure};
 		border: 1px solid ${theme.default};
 		border-radius: ${pxToRem(6)};
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
-		width: 100%;
+		width: ${align !== 'center' ? `calc(100% - ${pxToRem(26)})` : '100%'};
 
 		&:hover, &:active {
 			border-color: ${theme.font.pure};
@@ -51,7 +51,10 @@ type Props = {
 	value: string;
 	description?: string;
 	onChange?: (e?: any) => void;
+	align?: AlignProps;
 };
+
+type AlignProps = 'left' | 'right' | 'center';
 
 export const TextField = ({
 	placeholder,
@@ -59,16 +62,18 @@ export const TextField = ({
 	type = 'text',
 	value,
 	onChange,
-	description
+	description,
+	align = 'center'
 }: Props) => {
 	return (
 		<>
 			<StyledTextField
 				placeholder={placeholder}
 				readOnly={readOnly}
-				type={type}
-				value={value}
 				onChange={onChange}
+				align={align}
+				value={value}
+				type={type}
 				lang="en"
 				min="18"
 			/>
