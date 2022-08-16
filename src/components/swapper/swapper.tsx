@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import styled from 'styled-components';
-import { mediaQuery, pxToRem, spacing } from '../../styles';
+import styled, { css } from 'styled-components';
+import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
-import { Button, NetworkTokenModal, TextField, IconButton } from '../../components';
+import { Button, TextField, IconButton, NetworkTokenModal } from '../../components';
+
+const Wrapper = styled.main`
+	margin: 0 auto;
+	max-width: ${pxToRem(428)};
+`;
 
 const Trader = styled.div`
 	display: flex;
@@ -57,22 +62,27 @@ const ExchangeRate = styled.div(({ color }: { color: string }) => `
 	}
 `);
 
-const Fee = styled.div(({ color }: { color: string }) => `
-	display: flex;
-	align-items: center;
-	gap: ${spacing[8]};
-	color: ${color};
+const Fee = styled.summary(({ color, theme }: { color: string; theme: Theme }) => css`
+	color: ${theme.pure};
 	margin: ${spacing[28]} 0;
+	cursor: pointer;
+
+	&:focus-visible {
+		outline-offset: 2px;
+		outline: 1px solid ${color};
+	}
+
+	&:active {
+		outline: none;
+	}
 `);
 
-const Fees = styled.div(({ turnArrow, color }: { turnArrow: boolean; color: string }) => `
-	height: ${!turnArrow ? '0' : 'max-content'}px;
+const Fees = styled.div(({ color }: { color: string }) => css`
 	flex-direction: column;
-	margin-bottom: ${turnArrow ? spacing[56] : 0};
-  transition: all .15s ease-out;
-  padding: ${!turnArrow ? 0 : spacing[10]} ${spacing[16]};
-  border-radius: ${pxToRem(6)};
-  border: 1px solid ${turnArrow ? color : 'transparent'};
+	padding: ${spacing[10]} ${spacing[16]};
+	margin-bottom: ${spacing[56]};
+	border-radius: ${pxToRem(6)};
+	border: 1px solid ${color};
 
 	& > * {
 		display: flex;
@@ -80,21 +90,10 @@ const Fees = styled.div(({ turnArrow, color }: { turnArrow: boolean; color: stri
 	}
 `);
 
-const Arrow = styled.div(({ color, turnArrow }: { color: string; turnArrow: boolean }) => `
-	width: 0;
-	height: 0;
-	border-left: 6px solid transparent;
-	border-right: 6px solid transparent;
-	border-top: 6px solid ${color};
-	transform: rotate(${!turnArrow ? '0' : '180'}deg);
-  transition: transform .3s linear;
-`);
-
 export const Swapper = () => {
 	const { state: { theme, network, token, destinationAddress }, dispatch } = useStore();
-	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
-	const [turnArrow, setTurnArrow] = useState(false);
+	const [amount, setAmount] = useState('');
 
 	const openModal = () => setShowModal(prev => !prev);
 
@@ -103,7 +102,7 @@ export const Swapper = () => {
 	};
 
 	return (
-		<>
+		<Wrapper>
 			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
@@ -127,7 +126,7 @@ export const Swapper = () => {
 				}
 				<Swap>
 					<SwapInput>
-						<IconButton onClick={openModal} icon='USDT' />
+						<IconButton onClick={openModal} icon={token} />
 						<TextField type="number"
 											 value="0.123423454" // TODO: check if comma stays the same for dynamic input
 											 disabled />
@@ -141,26 +140,22 @@ export const Swapper = () => {
 			<ExchangeRate color={theme.color.pure}>
 				1 GLMR = 20 DOT
 			</ExchangeRate>
-			<TextField placeholder="Destination Address"
-								 value={destinationAddress}
-								 description="Destination Address"
-								 onChange={(e) => handleAddressChange(e)}
+			<TextField
+				value={destinationAddress}
+				description="Destination Address"
+				onChange={(e) => handleAddressChange(e)}
 			/>
-			<Fee color={theme.color.pure}>Fee: 0.123432423423423
-				<Arrow
-					color={theme.arrow}
-					turnArrow={turnArrow}
-					onClick={() => setTurnArrow((!turnArrow))}
-				/>
-			</Fee>
-			<Fees turnArrow={turnArrow}
-						color={theme.default}>
-				<div><p>Gas fee:</p><p>1234.12345665 GLMR</p></div>
-				<div><p>Ex rate:</p><p>1234.5665 DOT</p></div>
-				<div><p>CEX rate:</p><p>1234.5665 DOT</p></div>
-				<div><p>Withdrawal fee:</p><p>1234.5665 DOT</p></div>
-			</Fees>
+			<details>
+				<Fee color={theme.default}
+						 theme={theme}>Fee: 0.123432423423423</Fee>
+				<Fees color={theme.default}>
+					<div><p>Gas fee:</p><p>1234.12345665 GLMR</p></div>
+					<div><p>Ex rate:</p><p>1234.5665 DOT</p></div>
+					<div><p>CEX rate:</p><p>1234.5665 DOT</p></div>
+					<div><p>Withdrawal fee:</p><p>1234.5665 DOT</p></div>
+				</Fees>
+			</details>
 			<Button onClick={() => console.log('Click')}>Swap</Button>
-		</>
+		</Wrapper>
 	);
 };
