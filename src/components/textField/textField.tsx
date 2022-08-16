@@ -47,7 +47,7 @@ const Description = styled.div`
 
 type Props = {
 	placeholder?: string;
-	disabled?: boolean;
+	readOnly?: boolean;
 	type?: 'number' | 'text';
 	value: string;
 	description?: string;
@@ -56,7 +56,7 @@ type Props = {
 
 export const TextField = ({
 	placeholder,
-	disabled = false,
+	readOnly = false,
 	type = 'text',
 	value,
 	onChange,
@@ -66,11 +66,12 @@ export const TextField = ({
 		<>
 			<StyledTextField
 				placeholder={placeholder}
-				disabled={disabled}
+				readOnly={readOnly}
 				type={type}
 				value={value}
 				onChange={onChange}
 				lang="en"
+				min="18"
 			/>
 			{description && <Description>{description}</Description>}
 		</>
