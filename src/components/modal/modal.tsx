@@ -13,8 +13,7 @@ type Props = {
 
 const ModalWrapper = styled.div(
 	({ width, showModal, background }: Props) => {
-		const { state } = useStore();
-		const { theme } = state;
+		const { state: { theme } } = useStore();
 
 		return css`
 			position: fixed;
@@ -26,6 +25,7 @@ const ModalWrapper = styled.div(
 			right: 50%;
 			transform: translate(-50%, -50%);
 			width: 100%;
+			z-index: 1000;
 			max-width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
 			margin: 0 ${spacing[20]};
 			background-color: ${theme.background[background]};
@@ -55,30 +55,19 @@ const CloseIcon = styled.div(
 			font-size: ${fontSize[16]};
 			line-height: ${fontSize[22]};
 			color: ${theme.font.pure};
-
-			${mediaQuery('xxs')} {
-				margin-right: ${pxToRem(9)};
-				font-size: ${pxToRem(16)};
-			}
 		`;
 	}
 );
 
-export const Modal = ({
-	showModal = false,
-	setShowModal,
-	width = 'large',
-	background,
-	children
-}: Props) => {
+export const Modal = ({ showModal, setShowModal, width = 'large', background, children }: Props) => {
+	const handleClose = () => {
+		setShowModal(false);
+	};
+
 	return (
 		// @ts-ignore
-		<ModalWrapper
-			width={width}
-			showModal={showModal}
-			background={background}
-		>
-			<CloseIcon onClick={() => setShowModal(false)}>&#x2716;</CloseIcon>
+		<ModalWrapper width={width} showModal={showModal} background={background}>
+			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
 			{children}
 		</ModalWrapper>
 	);

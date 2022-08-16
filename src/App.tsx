@@ -1,4 +1,3 @@
-// import { useState } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import type { Theme } from './styles';
 import {
@@ -10,7 +9,7 @@ import {
 	pxToRem,
 	viewport
 } from './styles';
-import { Header, NetworkTokenModal, SwapForm } from './components';
+import { Header, SwapForm } from './components';
 import { useStore } from './helpers';
 
 type Props = {
@@ -51,16 +50,11 @@ export const GlobalStyles = createGlobalStyle`
 
 const App = () => {
 	const { state: { theme } } = useStore();
-	// const [showModal, setShowModal] = useState(false);
-	// const openModal = () => {
-	// 	setShowModal(prev => !prev);
-	// };
 
 	return (
 		<>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<NetworkTokenModal />
 			<SwapForm />
 		</>
 	);

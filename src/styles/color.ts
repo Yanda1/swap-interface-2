@@ -20,6 +20,9 @@ export type Theme = {
 		disabled: string;
 		success: string;
 	};
+	modal: {
+		default: string;
+	};
 };
 
 export const lightTheme: Theme = {
@@ -41,6 +44,9 @@ export const lightTheme: Theme = {
 		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108'
+	},
+	modal: {
+		default: '#212426',
 	}
 };
 
@@ -63,5 +69,8 @@ export const darkTheme: Theme = {
 		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108'
+	},
+	modal: {
+		default: '#212426',
 	}
 };

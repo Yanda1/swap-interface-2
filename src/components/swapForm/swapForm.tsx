@@ -8,8 +8,7 @@ import {
 	isLightTheme,
 	useStore
 } from '../../helpers';
-import { Button, TextField } from '../../components';
-import { useEffect, useState } from 'react';
+import { Button, TextField, IconButton, NetworkTokenModal  } from '../../components';
 import axios from 'axios';
 
 const Wrapper = styled.main`
@@ -42,13 +41,6 @@ const SwapInput = styled.div`
 	display: flex;
 	gap: ${spacing[8]};
 	justify-content: space-between;
-`;
-
-const Ali = styled.div`
-	height: 58px;
-	width: 58px;
-	border: 1px solid grey;
-	border-radius: 6px;
 `;
 
 const SwapNames = styled.div(({ pos = 'start' }: { pos?: string }) => `
@@ -113,6 +105,8 @@ export const SwapForm = () => {
 	const startToken = 'GLMR';
 	const token = 'BNB';
 
+	const openModal = () => setShowModal(prev => !prev);
+
 	const handleAddressChange = (event: any) => {
 		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
 	};
@@ -141,13 +135,14 @@ export const SwapForm = () => {
 
 	return (
 		<Wrapper>
+			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<Ali />
+						<IconButton disabled icon='GLMR' onClick={() => console.log('Start token')} />
 						<TextField
-							type="number"
-							placeholder="Amount"
+							type='number'
+							placeholder='Amount'
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
 						/>
@@ -163,16 +158,13 @@ export const SwapForm = () => {
 				}
 				<Swap>
 					<SwapInput>
-						<Ali />
-						<TextField
-							type="number"
-							value={destinationAmount}
-							readOnly
-						/>
+						<IconButton onClick={openModal} icon={token} />
+						{/* TODO: check if comma stays the same for dynamic input*/}
+						<TextField type='number' value='0.123423454' />
 					</SwapInput>
-					<SwapNames pos="end">
-						<Name color={theme.font.pure}>{destinationToken ? destinationToken : 'DOT'}</Name>
-						<Name color={theme.font.default}>({destinationNetwork ? destinationNetwork : 'BNB'})</Name>
+					<SwapNames pos='end'>
+						<Name color={theme.font.pure}>{destinationToken}</Name>
+						<Name color={theme.font.default}>{destinationNetwork}</Name>
 					</SwapNames>
 				</Swap>
 			</Trader>
@@ -182,7 +174,7 @@ export const SwapForm = () => {
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
-				description="Destination Address"
+				description='Destination Address'
 				onChange={(e) => handleAddressChange(e)}
 			/>
 			<details>
