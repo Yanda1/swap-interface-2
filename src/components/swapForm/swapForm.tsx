@@ -153,8 +153,8 @@ export const SwapForm = () => {
 						/>
 					</SwapInput>
 					<SwapNames>
-						<Name color={theme.color.pure}>GLMR</Name>
-						<Name color={theme.color.default}>(Moonbeam)</Name>
+						<Name color={theme.font.pure}>GLMR</Name>
+						<Name color={theme.font.default}>(Moonbeam)</Name>
 					</SwapNames>
 				</Swap>
 				{isLightTheme(theme) ?
@@ -171,12 +171,12 @@ export const SwapForm = () => {
 						/>
 					</SwapInput>
 					<SwapNames pos="end">
-						<Name color={theme.color.pure}>{destinationToken ? destinationToken : 'DOT'}</Name>
-						<Name color={theme.color.default}>({destinationNetwork ? destinationNetwork : 'BNB'})</Name>
+						<Name color={theme.font.pure}>{destinationToken ? destinationToken : 'DOT'}</Name>
+						<Name color={theme.font.default}>({destinationNetwork ? destinationNetwork : 'BNB'})</Name>
 					</SwapNames>
 				</Swap>
 			</Trader>
-			<ExchangeRate color={theme.color.pure}>
+			<ExchangeRate color={theme.font.pure}>
 				{/* TODO: change to destinationToken */}
 				1 GLMR = {currentPrice} {token}
 			</ExchangeRate>

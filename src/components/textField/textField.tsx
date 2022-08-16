@@ -11,7 +11,7 @@ const StyledTextField = styled.input(() => {
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
 		padding: ${spacing[18]} 0;
-		color: ${theme.color.pure};
+		color: ${theme.font.pure};
 		border: 1px solid ${theme.default};
 		border-radius: ${pxToRem(6)};
 		pointer: cursor;
@@ -20,7 +20,7 @@ const StyledTextField = styled.input(() => {
 		width: 100%;
 
 		&:hover, &:active {
-			border-color: ${theme.color.pure};
+			border-color: ${theme.font.pure};
 			outline: none;
 		}
 
