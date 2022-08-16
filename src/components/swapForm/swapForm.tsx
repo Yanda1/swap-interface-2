@@ -1,10 +1,16 @@
-import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
+import {
+	BINANCE_PRICE_TICKER,
+	DestinationNetworkEnum,
+	isLightTheme,
+	useStore
+} from '../../helpers';
 import { Button, TextField } from '../../components';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -97,13 +103,41 @@ const Fees = styled.div(({ color }: { color: string }) => css`
 	}
 `);
 
-export const Swapper = () => {
-	const { state: { theme, network, token, destinationAddress }, dispatch } = useStore();
+export const SwapForm = () => {
+	const {
+		state: { theme, destinationNetwork, destinationToken, destinationAddress, destinationAmount },
+		dispatch
+	} = useStore();
 	const [amount, setAmount] = useState('');
+	const [currentPrice, setCurrentPrice] = useState('');
+	const startToken = 'GLMR';
+	const token = 'BNB';
 
 	const handleAddressChange = (event: any) => {
 		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
 	};
+
+	useEffect(() => {
+		const convertDestinationAmount = async () => {
+			try {
+				const getPriceAndSymbol: { data: { symbol: string; price: string } } = await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${token}` }); // TODO: change to destinationToken
+				setCurrentPrice(getPriceAndSymbol.data.price);
+			} catch (err: any) {
+				throw new Error(err);
+			}
+		};
+		// eslint-disable-next-line
+		convertDestinationAmount();
+	}, [token]);
+
+	useEffect(() => {
+		dispatch({
+			type: DestinationNetworkEnum.AMOUNT,
+			payload: (+amount * +currentPrice).toFixed(8).toString()
+		});
+	}, [amount, currentPrice]);
+
+	console.log(destinationAmount);
 
 	return (
 		<Wrapper>
@@ -130,18 +164,21 @@ export const Swapper = () => {
 				<Swap>
 					<SwapInput>
 						<Ali />
-						<TextField type="number"
-											 value="0.123423454" // TODO: check if comma stays the same for dynamic input
-											 disabled />
+						<TextField
+							type="number"
+							value={destinationAmount}
+							readOnly
+						/>
 					</SwapInput>
 					<SwapNames pos="end">
-						<Name color={theme.color.pure}>{token ? token : 'DOT'}</Name>
-						<Name color={theme.color.default}>({network ? network : 'BNB'})</Name>
+						<Name color={theme.color.pure}>{destinationToken ? destinationToken : 'DOT'}</Name>
+						<Name color={theme.color.default}>({destinationNetwork ? destinationNetwork : 'BNB'})</Name>
 					</SwapNames>
 				</Swap>
 			</Trader>
 			<ExchangeRate color={theme.color.pure}>
-				1 GLMR = 20 DOT
+				{/* TODO: change to destinationToken */}
+				1 GLMR = {currentPrice} {token}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
