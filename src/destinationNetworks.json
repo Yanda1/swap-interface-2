@@ -56,7 +56,7 @@
 			"BNB"
 		]
 	},
-	"SEGWITBTC": {
+	"SEGWIT": {
 		"hasTag": false,
 		"tokens": [
 			"BTC"

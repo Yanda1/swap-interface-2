@@ -112,8 +112,8 @@ const initialState: State = {
 	kycStatus: KycStatusEnum.INITIAL, // TOOD: from localStorage?
 	buttonStatus: buttonType.CONNECT_WALLET,
 	theme: darkTheme,
-	network: '',
-	token: '',
+	network: 'Select Network',
+	token: 'Select Token',
 	destinationAddress: ''
 };
 

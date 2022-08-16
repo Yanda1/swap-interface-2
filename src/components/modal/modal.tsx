@@ -1,5 +1,6 @@
+import React from 'react';
 import styled, { css } from 'styled-components';
-import {fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 };
 
 const ModalWrapper = styled.div(
-	({ width, showModal, background } : Props) => {
+	({ width, showModal, background }: Props) => {
 		const { state: { theme } } = useStore();
 
 		return css`
@@ -30,6 +31,7 @@ const ModalWrapper = styled.div(
 			background-color: ${theme.background[background]};
 			border: 1px solid ${theme.default};
 			border-radius: ${pxToRem(6)};
+
 			${mediaQuery('xxs')} { // TODO: mobile style
 				max-width: ${pxToRem(347)};
 				width: calc(100% - ${pxToRem(10)});
@@ -39,36 +41,32 @@ const ModalWrapper = styled.div(
 				margin-top: 50px;
 			}
 		`;
-});
+	});
 
 const CloseIcon = styled.div(
 	() => {
 		const { state: { theme } } = useStore();
 
 		return css`
-		cursor: pointer;
-		position: fixed;
-		top: 10px;
-		right: 10px;
-		font-size: ${fontSize[16]};
-		line-height: ${fontSize[22]};
-		color: ${theme.font.pure};
-		${mediaQuery('xxs')} {
-			margin-right: ${pxToRem(9)};
-			font-size: ${pxToRem(16)};
-		}
-`;
+			cursor: pointer;
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			font-size: ${fontSize[16]};
+			line-height: ${fontSize[22]};
+			color: ${theme.font.pure};
+		`;
 	}
 );
 
-export const Modal = ({showModal, setShowModal, width = 'large', background, children}: Props) => {
+export const Modal = ({ showModal, setShowModal, width = 'large', background, children }: Props) => {
 	const handleClose = () => {
 		setShowModal(false);
 	};
 
 	return (
 		// @ts-ignore
-		 <ModalWrapper width={width} showModal={showModal} background={background}>
+		<ModalWrapper width={width} showModal={showModal} background={background}>
 			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
 			{children}
 		</ModalWrapper>

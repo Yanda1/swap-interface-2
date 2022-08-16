@@ -14,9 +14,8 @@ const StyledTextField = styled.input(() => {
 		color: ${theme.color.pure};
 		border: 1px solid ${theme.default};
 		border-radius: ${pxToRem(6)};
-		pointer: cursor;
+		cursor: pointer;
 		transition: all 0.2s ease-in-out;
-		flex: 1;
 		width: 100%;
 
 		&:hover, &:active {
@@ -55,13 +54,13 @@ type Props = {
 };
 
 export const TextField = ({
-	placeholder,
-	disabled = false,
-	type = 'text',
-	value,
-	onChange,
-	description
-}: Props) => {
+														placeholder,
+														disabled = false,
+														type = 'text',
+														value,
+														onChange,
+														description
+													}: Props) => {
 	return (
 		<>
 			<StyledTextField
@@ -70,7 +69,7 @@ export const TextField = ({
 				type={type}
 				value={value}
 				onChange={onChange}
-				lang="en"
+				lang='en'
 			/>
 			{description && <Description>{description}</Description>}
 		</>

@@ -4,7 +4,7 @@ import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
-import { Button, TextField, IconButton, NetworkTokenModal } from '../../components';
+import { Button, IconButton, NetworkTokenModal, TextField } from '../../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -109,8 +109,8 @@ export const Swapper = () => {
 					<SwapInput>
 						<IconButton disabled icon='GLMR' onClick={() => console.log('Start token')} />
 						<TextField
-							type="number"
-							placeholder="Amount"
+							type='number'
+							placeholder='Amount'
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
 						/>
@@ -127,13 +127,12 @@ export const Swapper = () => {
 				<Swap>
 					<SwapInput>
 						<IconButton onClick={openModal} icon={token} />
-						<TextField type="number"
-											 value="0.123423454" // TODO: check if comma stays the same for dynamic input
-											 disabled />
+						{/* TODO: check if comma stays the same for dynamic input*/}
+						<TextField type='number' value='0.123423454' />
 					</SwapInput>
-					<SwapNames pos="end">
-						<Name color={theme.color.pure}>{token ? token : 'DOT'}</Name>
-						<Name color={theme.color.default}>({network ? network : 'BNB'})</Name>
+					<SwapNames pos='end'>
+						<Name color={theme.color.pure}>{token}</Name>
+						<Name color={theme.color.default}>{network}</Name>
 					</SwapNames>
 				</Swap>
 			</Trader>
@@ -142,7 +141,7 @@ export const Swapper = () => {
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
-				description="Destination Address"
+				description='Destination Address'
 				onChange={(e) => handleAddressChange(e)}
 			/>
 			<details>
