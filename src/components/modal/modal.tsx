@@ -17,20 +17,19 @@ const ModalWrapper = styled.div(
 
 		return css`
 			position: fixed;
-			display: ${showModal ? 'flex' : 'none'};
+			display: ${showModal ? 'block' : 'none'};
 			justify-content: center;
 			align-items: center;
 			top: 50%;
 			left: 50%;
-			right: 50%;
 			transform: translate(-50%, -50%);
-			width: 100%;
-			z-index: 1000;
-			max-width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
-			margin: 0 ${spacing[20]};
+			z-index: 100;
+			width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
+			max-width: calc(100% - ${spacing[64]});
 			background-color: ${theme.background[background]};
 			border: 1px solid ${theme.default};
 			border-radius: ${pxToRem(6)};
+			padding: ${spacing[12]};
 
 			${mediaQuery('xxs')} { // TODO: mobile style
 				max-width: ${pxToRem(347)};
@@ -38,7 +37,7 @@ const ModalWrapper = styled.div(
 				border-radius: ${pxToRem(28)};
 				border: none;
 				margin: 0 auto;
-				margin-top: 50px;
+				margin-top: ${spacing[48]};
 			}
 		`;
 	});
@@ -59,14 +58,24 @@ const CloseIcon = styled.div(
 	}
 );
 
-export const Modal = ({ showModal, setShowModal, width = 'large', background, children }: Props) => {
+export const Modal = ({
+	showModal,
+	setShowModal,
+	width = 'large',
+	background,
+	children
+}: Props) => {
 	const handleClose = () => {
 		setShowModal(false);
 	};
 
 	return (
 		// @ts-ignore
-		<ModalWrapper width={width} showModal={showModal} background={background}>
+		<ModalWrapper
+			width={width}
+			showModal={showModal}
+			background={background}
+		>
 			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
 			{children}
 		</ModalWrapper>
