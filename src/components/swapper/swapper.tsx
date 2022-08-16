@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
-import { mediaQuery, pxToRem, spacing } from '../../styles';
+import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
@@ -69,11 +69,12 @@ const ExchangeRate = styled.div(({ color }: { color: string }) => `
 	}
 `);
 
-const Fee = styled.summary(({ color }: { color: string }) => css`
-	color: ${color};
+const Fee = styled.summary(({ color, theme }: { color: string; theme: Theme }) => css`
+	color: ${theme.pure};
 	margin: ${spacing[28]} 0;
+	cursor: pointer;
 
-	&:focus, &:focus-visible {
+	&:focus-visible {
 		outline-offset: 2px;
 		outline: 1px solid ${color};
 	}
@@ -148,7 +149,8 @@ export const Swapper = () => {
 				onChange={(e) => handleAddressChange(e)}
 			/>
 			<details>
-				<Fee color={theme.default}>Fee: 0.123432423423423</Fee>
+				<Fee color={theme.default}
+						 theme={theme}>Fee: 0.123432423423423</Fee>
 				<Fees color={theme.default}>
 					<div><p>Gas fee:</p><p>1234.12345665 GLMR</p></div>
 					<div><p>Ex rate:</p><p>1234.5665 DOT</p></div>

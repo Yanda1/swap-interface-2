@@ -87,7 +87,7 @@ const StyledButton = styled.button(
 				box-shadow: ${isSecondaryDefault && `0 0 0 1px ${theme.button.default}`};
 			}
 
-			&:focus, &:focus-visible {
+			&:focus-visible {
 				outline-offset: 2px;
 				outline: 1px solid ${isPrimary ? theme.button.default : isPure ? theme.pure : isLightTheme(theme) ? theme.button[setColor] : '#FFF'};
 			}

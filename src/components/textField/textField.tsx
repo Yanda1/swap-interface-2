@@ -24,7 +24,7 @@ const StyledTextField = styled.input(() => {
 			outline: none;
 		}
 
-		&:focus, &:focus-visible {
+		&:focus-visible {
 			outline-offset: 2px;
 			outline: 1px solid ${theme.default};
 		}

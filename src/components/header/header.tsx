@@ -55,16 +55,14 @@ const ThemeButton = styled.button`
 		opacity: 0.8;
 	}
 
-	&:focus-visible, &:focus {
+	&:focus-visible {
 		outline-offset: 2px;
 		outline: 1px solid ${(props: Props) => props.theme.default};
 	}
-;
-}
 
-&:active {
-	outline: none;
-}
+	&:active {
+		outline: none;
+	}
 `;
 
 const Menu = styled.ul`
