@@ -47,9 +47,7 @@ const List = styled.ul`
 	overflow-y: auto;
 	padding: 0;
 
-	&::-webkit-scrollbar
-	&::-webkit-scrollbar-track
-	&::-webkit-scrollbar-thumb {
+	&::-webkit-scrollbar, &::-webkit-scrollbar-track, &::-webkit-scrollbar-thumb {
 		display: none;
 	}
 `;
