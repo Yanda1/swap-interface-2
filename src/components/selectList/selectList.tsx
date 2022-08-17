@@ -57,7 +57,6 @@ const List = styled.ul`
 const Item = styled.li(
 	(props: any) => {
 		const { state: { theme } } = useStore();
-		const activeBorder = props.index === props.activeIndex;
 
 		return css`
 			display: flex;
@@ -69,7 +68,7 @@ const Item = styled.li(
 			margin: ${spacing[10]} 0;
 			border-radius: ${pxToRem(6)};
 			padding: ${spacing[12]} ${spacing[10]};
-			border: 1px solid ${activeBorder ? '#00bcd4' : 'transparent'};
+			border: 1px solid ${props.activeBorder ? '#00bcd4' : 'transparent'};
 		`;
 	}
 );
@@ -77,29 +76,15 @@ const Item = styled.li(
 export const SelectList = ({ data, title, placeholder, value }: Props) => {
 
 	const [search, setSearch] = useState('');
-	const [activeIndex, setActiveIndex] = useState(-1);
 	const dataList = data && data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
-	const { dispatch, state: { destinationNetwork, destinationToken } } = useStore();
+	const { dispatch, state: { destinationToken, destinationNetwork } } = useStore();
 
-	const handleClick = useCallback((index: number, e: any) => {
-		if (value === 'TOKEN' && index !== activeIndex) {
-			console.log('TOKEN index !== active', activeIndex, value);
-			setActiveIndex(index);
-			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
-		}
-
-		if (value === 'NETWORK' && index !== activeIndex) {
-			console.log('TOKEN index !== active', activeIndex, value);
-			setActiveIndex(index);
-			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
+	const handleClick = useCallback((e: any) => {
+		dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
+		if (value === 'NETWORK') {
 			dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 		}
-
-		if (destinationToken === 'Select Token' && value === 'TOKEN') {
-			console.log('FIRST TOKEN IN NEW NETWORK', value);
-			setActiveIndex(-1);
-		}
-	}, [activeIndex, destinationNetwork, destinationToken]);
+	}, [destinationToken, destinationNetwork]);
 
 	return (
 		<>
@@ -112,17 +97,23 @@ export const SelectList = ({ data, title, placeholder, value }: Props) => {
 					onChange={event => setSearch(event.target.value)}
 				/>
 				<List>
-					{data.length > 0 && dataList.map((el: HTMLLIElement, index: number) => {
-						// @ts-ignore
-						// eslint-disable-next-line
-						return (<Item
+					{data.length > 0 && dataList.map((el: string) => {
+						const hasActiveBorder = value === 'NETWORK' ? destinationNetwork === el : destinationToken === el;
+
+						return (
+							<Item
 								value={value}
-								index={index}
-								activeIndex={activeIndex}
-								onClick={(e) => handleClick(index, e)}
 								// @ts-ignore
-								key={el}><IconButton icon={el}
-																		 iconOnly />{el}</Item>
+								activeBorder={hasActiveBorder}
+								onClick={(e) => handleClick(e)}
+								key={el}
+							>
+								<IconButton
+									// @ts-ignore
+									icon={el}
+									iconOnly
+								/>{el}
+							</Item>
 						);
 					})
 					}

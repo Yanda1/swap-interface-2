@@ -10,13 +10,13 @@ const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
 		text-align: ${align};
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
-		padding: ${spacing[18]} ${align !== 'center' ? spacing[12] : 0};
+		padding: ${spacing[18]} ${spacing[12]};
 		color: ${theme.font.pure};
 		border: 1px solid ${theme.default};
 		border-radius: ${pxToRem(6)};
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
-		width: ${align !== 'center' ? `calc(100% - ${pxToRem(26)})` : '100%'};
+		width: calc(100% - ${pxToRem(26)});
 
 		&:hover, &:active {
 			border-color: ${theme.font.pure};
@@ -46,7 +46,7 @@ const Description = styled.div`
 
 type Props = {
 	placeholder?: string;
-	readOnly?: boolean;
+	disabled?: boolean;
 	type?: 'number' | 'text';
 	value: string;
 	description?: string;
@@ -58,7 +58,7 @@ type AlignProps = 'left' | 'right' | 'center';
 
 export const TextField = ({
 	placeholder,
-	readOnly = false,
+	disabled = false,
 	type = 'text',
 	value,
 	onChange,
@@ -69,7 +69,7 @@ export const TextField = ({
 		<>
 			<StyledTextField
 				placeholder={placeholder}
-				readOnly={readOnly}
+				disabled={disabled}
 				onChange={onChange}
 				align={align}
 				value={value}

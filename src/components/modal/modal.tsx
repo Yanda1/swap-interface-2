@@ -17,12 +17,12 @@ const ModalWrapper = styled.div(
 
 		return css`
 			position: fixed;
-			display: ${showModal ? 'block' : 'none'};
-			justify-content: center;
-			align-items: center;
 			top: 50%;
 			left: 50%;
 			transform: translate(-50%, -50%);
+			display: ${showModal ? 'block' : 'none'};
+			justify-content: center;
+			align-items: center;
 			z-index: 100;
 			width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
 			max-width: calc(100% - ${spacing[64]});

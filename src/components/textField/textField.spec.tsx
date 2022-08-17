@@ -7,7 +7,7 @@ describe('TextField', () => {
 		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField
-					readOnly
+					disabled
 					value="Test Value"
 					placeholder="placeholder"
 					type="number"
@@ -22,7 +22,7 @@ describe('TextField', () => {
 		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField
-					readOnly
+					disabled
 					value="Test Value"
 					placeholder="placeholder"
 					type="number"
@@ -37,7 +37,7 @@ describe('TextField', () => {
 		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField
-					readOnly
+					disabled
 					value="value"
 					placeholder="placeholder"
 					type="number"

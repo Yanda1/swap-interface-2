@@ -12,7 +12,7 @@ import TRX from '../../assets/TRX.png';
 import MATIC from '../../assets/MATIC.png';
 import AVAXC from '../../assets/AVAXC.png';
 import SEGWIT from '../../assets/SEGWIT.png';
-import questionMark from '../../assets/questionMark.png';
+import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
 
 const icons = {
@@ -28,7 +28,6 @@ const icons = {
 	MATIC,
 	AVAXC,
 	SEGWIT,
-	'Select Token': questionMark
 };
 
 type IconButtonsProps = {
@@ -79,25 +78,25 @@ const Img = styled.img(
 	});
 
 export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: IconButtonsProps) => {
-	const setIcon: string = !icon || icon === 'Select Token' ? questionMark : icons[icon];
-
 	return (
 		!iconOnly ?
 			<Icon
 				disabled={disabled}
 				onClick={onClick}
 			>
-				{/* @ts-ignore */}
+				{!icon || icon === 'Select Token' ? <QuestionMark style={{ width: 42, height: 42 }} /> :
+					// @ts-ignore
+					<Img
+						src={icons[icon]}
+						alt={icon}
+					/>}
+			</Icon> : !icon || icon === 'Select Token' ?
+				<QuestionMark style={{ width: 42, height: 42 }} /> :
+				// @ts-ignore
 				<Img
-					src={setIcon}
+					src={icons[icon]}
 					alt={icon}
+					iconOnly
 				/>
-			</Icon> :
-			// @ts-ignore
-			<Img
-				src={setIcon}
-				alt={icon}
-				iconOnly
-			/>
 	);
 };

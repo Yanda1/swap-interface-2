@@ -116,11 +116,13 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		const convertDestinationAmount = async () => {
-			try {
-				const getPriceAndSymbol: { data: { symbol: string; price: string } } = await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${destinationToken}` }); // TODO: change to destinationToken
-				setCurrentPrice(getPriceAndSymbol.data.price);
-			} catch (err: any) {
-				throw new Error(err);
+			if (destinationToken !== 'Select Token') {
+				try {
+					const getPriceAndSymbol: { data: { symbol: string; price: string } } = await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${destinationToken}` }); // TODO: change to destinationToken
+					setCurrentPrice(getPriceAndSymbol.data.price);
+				} catch (err: any) {
+					throw new Error(err);
+				}
 			}
 		};
 		// eslint-disable-next-line
@@ -174,6 +176,7 @@ export const SwapForm = () => {
 						/>
 						{/* TODO: check if comma stays the same for dynamic input*/}
 						<TextField
+							disabled
 							type="number"
 							value={destinationAmount}
 						/>
