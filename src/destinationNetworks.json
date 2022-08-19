@@ -1,65 +1,149 @@
 {
 	"BSC": {
 		"hasTag": false,
-		"tokens": [
-			"BTC",
-			"USDT",
-			"BUSD",
-			"BNB"
-		]
+		"tokens": {
+			"BTC": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0.0000038",
+				"withdrawMin": "0.0000076"
+			},
+			"USDT": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0.29",
+				"withdrawMin": "10"
+			},
+			"BUSD": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0",
+				"withdrawMin": "10"
+			},
+			"BNB": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0.0005",
+				"withdrawMin": "0.01"
+			}
+		}
 	},
 	"BTC": {
 		"hasTag": false,
-		"tokens": [
-			"BTC"
-		]
+		"tokens": {
+			"BTC": {
+				"addressRegex": "^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^[(bc1q)|(bc1p)][0-9A-Za-z]{37,62}$",
+				"tagRegex": "",
+				"withdrawFee": "0.0002",
+				"withdrawMin": "0.001"
+			}
+		}
 	},
 	"AVAXC": {
 		"hasTag": false,
-		"tokens": [
-			"USDT"
-		]
+		"tokens": {
+			"USDT": {
+				"addressRegex":  "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0.8",
+				"withdrawMin": "50"
+			}
+		}
 	},
 	"ETH": {
 		"hasTag": false,
-		"tokens": [
-			"BTC",
-			"USDT",
-			"BUSD",
-			"BNB"
-		]
+		"tokens": {
+			"BTC": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0.00024",
+				"withdrawMin": "0.00048"
+			},
+			"USDT": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "4",
+				"withdrawMin": "50"
+			},
+			"BUSD": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "4",
+				"withdrawMin": "40"
+			}
+		}
 	},
 	"MATIC": {
 		"hasTag": false,
-		"tokens": [
-			"USDT"
-		]
+		"tokens": {
+			"USDT": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0.8",
+				"withdrawMin": "10"
+			}
+		}
 	},
 	"SOL": {
 		"hasTag": false,
-		"tokens": [
-			"USDT"
-		]
+		"tokens": {
+			"USDT": {
+				"addressRegex": "^[1-9A-HJ-NP-Za-km-z]{32,44}$",
+				"tagRegex": "",
+				"withdrawFee": "0.8",
+				"withdrawMin": "2"
+			}
+		}
+	},
+	"XTZ": {
+		"hasTag": false,
+		"tokens": {
+			"USDT": {
+				"addressRegex": "^(tz[1,2,3])[a-zA-Z0-9]{33}$",
+				"tagRegex": "",
+				"withdrawFee": "0.8",
+            	"withdrawMin": "10"
+			}
+		}
 	},
 	"TRX": {
 		"hasTag": false,
-		"tokens": [
-			"USDT"
-		]
+		"tokens": {
+			"USDT": {
+				"addressRegex": "^T[1-9A-HJ-NP-Za-km-z]{33}$",
+				"tagRegex": "",
+				"withdrawFee": "0.8",
+            	"withdrawMin": "10"
+			}
+		}
 	},
 	"BNB": {
 		"hasTag": true,
-		"tokens": [
-			"BTC",
-			"USDT",
-			"BUSD",
-			"BNB"
-		]
-	},
-	"SEGWIT": {
-		"hasTag": false,
-		"tokens": [
-			"BTC"
-		]
+		"tokens": {
+			"BTC": {
+				"addressRegex": "^(bnb1)[0-9a-z]{38}$",
+				"tagRegex": "^[0-9A-Za-z\\-_]{1,120}$",
+				"withdrawFee": "0.0000064",
+				"withdrawMin": "0.000013"
+			},
+			"USDT": {
+				"addressRegex": "^(bnb1)[0-9a-z]{38}$",
+				"tagRegex": "^[0-9A-Za-z\\-_]{1,120}$",
+				"withdrawFee": "0.8",
+				"withdrawMin": "10"
+			},
+			"BUSD": {
+				"addressRegex": "^(bnb1)[0-9a-z]{38}$",
+				"tagRegex": "^[0-9A-Za-z\\-_]{1,120}$",
+				"withdrawFee": "0.5",
+				"withdrawMin": "10"
+			},
+			"BNB": {
+				"addressRegex": "^(bnb1)[0-9a-z]{38}$",
+				"tagRegex": "^[0-9A-Za-z\\-_]{1,120}$",
+				"withdrawFee": "0.0005",
+				"withdrawMin": "0.01"
+			}
+		}
 	}
 }
