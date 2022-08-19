@@ -11,7 +11,7 @@ import BUSD from '../../assets/BUSD.png';
 import TRX from '../../assets/TRX.png';
 import MATIC from '../../assets/MATIC.png';
 import AVAXC from '../../assets/AVAXC.png';
-import SEGWIT from '../../assets/SEGWIT.png';
+import XTZ from '../../assets/XTZ.png';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
 
@@ -27,12 +27,12 @@ const icons = {
 	TRX,
 	MATIC,
 	AVAXC,
-	SEGWIT,
+	XTZ,
 };
 
 type IconButtonsProps = {
 	disabled?: boolean;
-	icon: 'BSC' | 'USDT' | 'GLMR' | 'BTC' | 'BNB' | 'ETH' | 'SOL' | 'BUSD' | 'TRX' | 'MATIC' | 'AVAXC' | 'SEGWIT' | 'Select Token';
+	icon: 'BSC' | 'USDT' | 'GLMR' | 'BTC' | 'BNB' | 'ETH' | 'SOL' | 'BUSD' | 'TRX' | 'MATIC' | 'AVAXC' | 'XTZ' | 'Select Token';
 	onClick?: () => void;
 	iconOnly?: boolean;
 };
