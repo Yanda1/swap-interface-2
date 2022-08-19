@@ -31,7 +31,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: NetworkTokenModal
 
 	const networks = Object.keys(destinationNetworks);
 	// @ts-ignore
-	const tokens = destinationNetwork !== 'Select Network' && destinationNetworks[destinationNetwork].tokens;
+	const tokens = destinationNetwork !== 'Select Network' && Object.keys(destinationNetworks[destinationNetwork].tokens);
 
 	const handleSelectClick = (): void => {
 		setShowModal(!showModal);
