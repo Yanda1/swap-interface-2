@@ -3,7 +3,9 @@ import { fontSize, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
 const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
-	const { state: { theme } } = useStore();
+	const {
+		state: { theme }
+	} = useStore();
 
 	return css`
 		background: none;
@@ -18,7 +20,8 @@ const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
 		transition: all 0.2s ease-in-out;
 		width: calc(100% - ${pxToRem(26)});
 
-		&:hover, &:active {
+		&:hover,
+		&:active {
 			border-color: ${theme.font.pure};
 			outline: none;
 		}
@@ -34,7 +37,7 @@ const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
 			margin: 0;
 		}
 
-		&[type=number] {
+		&[type='number'] {
 			-moz-appearance: textfield;
 		}
 	`;
@@ -43,6 +46,8 @@ const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
 const Description = styled.div`
 	margin: ${spacing[4]} 0;
 `;
+
+type AlignProps = 'left' | 'right' | 'center';
 
 type Props = {
 	placeholder?: string;
@@ -53,8 +58,6 @@ type Props = {
 	onChange?: (e?: any) => void;
 	align?: AlignProps;
 };
-
-type AlignProps = 'left' | 'right' | 'center';
 
 export const TextField = ({
 	placeholder,

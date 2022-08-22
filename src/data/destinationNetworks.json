@@ -1,0 +1,38 @@
+{
+	"BSC": {
+		"hasTag": false,
+		"tokens": ["BTC", "USDT", "BUSD", "BNB"]
+	},
+	"BTC": {
+		"hasTag": false,
+		"tokens": ["BTC"]
+	},
+	"AVAXC": {
+		"hasTag": false,
+		"tokens": ["USDT"]
+	},
+	"ETH": {
+		"hasTag": false,
+		"tokens": ["BTC", "USDT", "BUSD", "BNB"]
+	},
+	"MATIC": {
+		"hasTag": false,
+		"tokens": ["USDT"]
+	},
+	"SOL": {
+		"hasTag": false,
+		"tokens": ["USDT"]
+	},
+	"TRX": {
+		"hasTag": false,
+		"tokens": ["USDT"]
+	},
+	"BNB": {
+		"hasTag": true,
+		"tokens": ["BTC", "USDT", "BUSD", "BNB"]
+	},
+	"SEGWIT": {
+		"hasTag": false,
+		"tokens": ["BTC"]
+	}
+}

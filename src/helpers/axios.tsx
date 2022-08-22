@@ -5,7 +5,7 @@ import axios from 'axios';
 export enum STATUS_ENUM {
 	NONCE = 'NONCE',
 	AUTH = 'AUTH',
-	PASS = 'PASS',
+	PASS = 'PASS'
 }
 
 type LocalStorageProps = {
@@ -20,7 +20,7 @@ export const apiCall = {
 	auth: 'auth',
 	kycToken: 'kyc/token',
 	kycStatus: 'kyc/status',
-	refresh: 'refresh',
+	refresh: 'refresh'
 };
 
 export const getMetamaskMessage = (nonce: string): string =>
@@ -48,33 +48,11 @@ export const makeBinanceKycCall = (authToken: string) => {
 		authToken,
 		bizEntityKey: BIZ_ENTRY_KEY,
 		apiHost: BINANCE_DEV_URL,
-		onMessage: ({typeCode}: any) => {
+		onMessage: ({ typeCode }: any) => {
 			if (typeCode === '102') {
 				binanceKyc.switchVisible(true);
 			}
-		},
-		closeCallback: () => {
-			// 	axios
-			// 		.request({
-			// 			url: `${BASE_URL}${apiCall.kycStatus}`,
-			// 			headers: {
-			// 				Authorization: `Bearer ${authToken}`,
-			// 			},
-			// 		})
-			// 		.then((res: any) => {
-			// 			const { dispatch } = useStore();
-			// 			console.log('res.data.levelInfo.currentLevel', res.data.levelInfo.currentLevel);
-			// 			if (res.data.levelInfo.currentLevel.kycStatus === 'PASS') {
-			// 				dispatch({ type: VerificationEnum.USER, payload: true });
-			// 			} else {
-			// 				dispatch({ type: KycEnum.STATUS, payload: res.data.levelInfo.currentLevel.kycStatus }); // payload: KycStastusEnum[res.data.levelInfo.currentLevel.kycStatus]
-			// 				dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
-			// 			}
-			// 		})
-			// 		.catch((err) => {
-			// 			throw new Error(err);
-			// 		});
-		},
+		}
 	});
 };
 
@@ -82,7 +60,7 @@ const getStorageValue = (key: string, defaultValue: LocalStorageProps) => {
 	if (typeof window !== 'undefined') {
 		const saved = localStorage.getItem(key);
 
-		return saved !== null ? JSON.parse(saved) as object : defaultValue;
+		return saved !== null ? (JSON.parse(saved) as object) : defaultValue;
 	}
 };
 
@@ -101,7 +79,7 @@ export const useLocalStorage = (key: string, defaultValue: LocalStorageProps) =>
 export const getAuthTokensFromNonce = async (account: string, library: any) => {
 	try {
 		const res = await axios.request({
-			url: `${BASE_URL}${apiCall.getNonce}${account}`,
+			url: `${BASE_URL}${apiCall.getNonce}${account}`
 		});
 		try {
 			const msg = getMetamaskMessage(res.data.nonce);
@@ -110,7 +88,7 @@ export const getAuthTokensFromNonce = async (account: string, library: any) => {
 				const tokenRes = await axios.request({
 					url: `${BASE_URL}${apiCall.auth}`,
 					method: 'POST',
-					data: {address: account, signature},
+					data: { address: account, signature }
 				});
 
 				return tokenRes.data as string; // TODO: if is_kyced TRUE store in localStorage
@@ -126,7 +104,7 @@ export const getAuthTokensFromNonce = async (account: string, library: any) => {
 };
 
 export const useKyc = (
-	authToken: string,
+	authToken: string
 ): { loading: boolean; error: any; kycStatus: string; kycToken: string } => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
@@ -141,8 +119,8 @@ export const useKyc = (
 					// TODO: check typing and if kycStatus is from right place
 					url: `${BASE_URL}${apiCall.kycStatus}`,
 					headers: {
-						Authorization: `Bearer ${authToken}`,
-					},
+						Authorization: `Bearer ${authToken}`
+					}
 				});
 				setKycStatus(statusRes.data.statusInfo.kycStatus);
 			} catch (err: any) {
@@ -156,8 +134,8 @@ export const useKyc = (
 				const tokenRes = await axios.request({
 					url: `${BASE_URL}${apiCall.kycToken}`,
 					headers: {
-						Authorization: `Bearer ${authToken}`,
-					},
+						Authorization: `Bearer ${authToken}`
+					}
 				});
 				setKycToken(tokenRes.data.token);
 			} catch (err: any) {
@@ -167,13 +145,13 @@ export const useKyc = (
 			}
 		},
 		// eslint-disable-next-line
-		[authToken],
+		[authToken]
 	);
 
 	useEffect(() => {
-		fetchData(authToken).catch(err => console.log(err)); // TODO: check promise call
+		fetchData(authToken).catch((err) => console.log(err)); // TODO: check promise call
 		// eslint-disable-next-line
 	}, [fetchData]);
 
-	return {loading, error, kycStatus, kycToken};
+	return { loading, error, kycStatus, kycToken };
 };
