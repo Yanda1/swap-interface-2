@@ -59,11 +59,11 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 		state: { theme }
 	} = useStore();
 
-	const [networkFee, setNetworkFee] = useState(0);
-	const [cexFee, setCexFee] = useState(0);
-	const [withdrawalFee, setWithdrawalFee] = useState(0);
-	const [protocolFee, setProtocolFee] = useState(0);
-	const [feeSum, setFeeSum] = useState(0);
+	const [networkFee, setNetworkFee] = useState({ amount: 0, currency: 'GLMR' });
+	const [cexFee, setCexFee] = useState({ amount: 0, currency: 'GLMR' });
+	const [withdrawalFee, setWithdrawalFee] = useState({ amount: 0, currency: 'GLMR' });
+	const [protocolFee, setProtocolFee] = useState({ amount: 0, currency: 'GLMR' });
+	const [feeSum, setFeeSum] = useState({ amount: 0, currency: 'GLMR' });
 
 	const { chainId, library: web3Provider } = useEthers();
 	const gasPrice: any = useGasPrice();
@@ -77,27 +77,9 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	if (web3Provider) {
 		contract.connect(web3Provider.getSigner());
 	}
-	// const provider = new ethers.providers.Web3Provider(window.ethereum);
-	// if (provider)
-	// 	provider
-	// 		.estimateGas({
-	// 			to: contractAddress,
-	// 			value: ethers.utils.parseEther('0.001')
-	// 		})
-	// 		.then((gas) => console.log('PROVIDER', gas))
-	// 		.catch((error) => console.log('!!!! ERROR PROVIDER !!!!!', error, typeof contractAddress));
-
-	// const { state: createState, send: sendCreateProcess } = useContractFunction(
-	// 	contract,
-	// 	'createProcess',
-	// 	{ transactionName: 'Request Swap' }
-	// );
-	// const { sendTransaction, state: depositState } = useSendTransaction({
-	// 	transactionName: 'Deposit'
-	// });
 
 	useEffect(() => {
-		const estimateNetworkFee = async () => {
+		const estimateNetworkFee = async (): Promise<void> => {
 			if (token !== 'Select Token' && network !== 'Select Network' && address && amount) {
 				const namedValues = {
 					scoin: 'GLMR',
@@ -123,56 +105,65 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 					const calculatedFee = BigNumber.from(calculatedProcessFee).add(
 						BigNumber.from(calculatedTransactionFee)
 					);
-					// console.log('!!! HERE !!!', calculatedFee['_hex'].toNumber());
-					// setNetworkFee(BigNumber.from(calculatedFee['_hex']).toNumber());
+					setNetworkFee({
+						amount: Number(utils.formatEther(calculatedFee['_hex'])),
+						currency: token
+					});
 				} catch (err: any) {
 					throw new Error(err);
 				}
 			}
 		};
-		estimateNetworkFee();
+		void estimateNetworkFee();
 	}, [amount, token, network, address]);
 
 	useEffect(() => {
 		if (token !== 'Select Token' && network !== 'Select Network') {
 			// @ts-ignore
 			const tokenDetails = destinationNetworks[network]['tokens'][token];
-			setWithdrawalFee(tokenDetails['withdrawFee']);
+			setWithdrawalFee({ amount: tokenDetails['withdrawFee'], currency: token });
 		}
 	}, [network, token]);
 
 	useEffect(() => {
-		setProtocolFee(Number(amount) * PROTOCOL_FEE);
+		setProtocolFee({ amount: Number(amount) * PROTOCOL_FEE, currency: 'GLMR' });
 	}, [amount]);
 
 	useEffect(() => {
-		setFeeSum(Number(networkFee) + protocolFee + Number(cexFee) + withdrawalFee);
+		setFeeSum({
+			amount: networkFee.amount + protocolFee.amount + cexFee.amount + withdrawalFee.amount,
+			currency: 'GLMR'
+		});
 	}, [networkFee, cexFee, withdrawalFee, protocolFee]);
 
 	return (
 		<details>
 			<Summary color={theme.default} theme={theme}>
-				Fee: {feeSum}
+				Fee: {feeSum.amount} {feeSum.currency}
 			</Summary>
 			<Details color={theme.default}>
 				<div>
 					<p>Gas fee:</p>
-					<p>{networkFee} GLMR</p>
+					<p>
+						{networkFee.amount} {networkFee.currency}
+					</p>
 				</div>
 				<div>
 					<p>Protocol fee:</p>
 					<p>
-						{protocolFee} {token !== 'Select Token' ? token : 'GLMR'}
+						{protocolFee.amount} {protocolFee.currency}
 					</p>
 				</div>
 				<div>
 					<p>CEX fee:</p>
-					<p>{cexFee?.toString()} DOT</p>
+					<p>
+						{cexFee.amount} {cexFee.currency}
+					</p>
 				</div>
 				<div>
 					<p>Withdrawal fee:</p>
 					<p>
-						{withdrawalFee} {token !== 'Select Token' ? token : 'GLMR'}
+						{withdrawalFee.amount} {withdrawalFee.currency}
 					</p>
 				</div>
 			</Details>
