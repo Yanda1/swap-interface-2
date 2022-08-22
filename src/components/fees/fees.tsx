@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useEthers, useGasPrice } from '@usedapp/core';
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import styled, { css } from 'styled-components';
 import {
 	CONTRACT_ADDRESSES,
@@ -11,6 +11,7 @@ import {
 	ESTIMATED_NETWORK_TRANSACTION_GAS
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
+import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
 import { pxToRem, spacing, Theme } from '../../styles';
 
@@ -58,8 +59,8 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 		state: { theme }
 	} = useStore();
 
-	const [networkFee, setNetworkFee] = useState<bigint>();
-	const [cexFee, setCexFee] = useState<bigint>();
+	const [networkFee, setNetworkFee] = useState(0);
+	const [cexFee, setCexFee] = useState(0);
 	const [withdrawalFee, setWithdrawalFee] = useState(0);
 	const [protocolFee, setProtocolFee] = useState(0);
 	const [feeSum, setFeeSum] = useState(0);
@@ -113,10 +114,17 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 						productId,
 						shortNamedValues
 					);
-					const calculatedProcessFee = BigInt(gasAmount['_hex']) * BigInt(gasPrice['_hex']);
-					const calculatedTransactionFee =
-						BigInt(ESTIMATED_NETWORK_TRANSACTION_GAS) * BigInt(gasPrice['_hex']);
-					setNetworkFee(calculatedProcessFee + calculatedTransactionFee);
+					const calculatedProcessFee = BigNumber.from(gasAmount['_hex']).mul(
+						BigNumber.from(gasPrice['_hex'])
+					);
+					const calculatedTransactionFee = BigNumber.from(ESTIMATED_NETWORK_TRANSACTION_GAS).mul(
+						BigNumber.from(gasPrice['_hex'])
+					);
+					const calculatedFee = BigNumber.from(calculatedProcessFee).add(
+						BigNumber.from(calculatedTransactionFee)
+					);
+					// console.log('!!! HERE !!!', calculatedFee['_hex'].toNumber());
+					// setNetworkFee(BigNumber.from(calculatedFee['_hex']).toNumber());
 				} catch (err: any) {
 					throw new Error(err);
 				}
@@ -124,6 +132,14 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 		};
 		estimateNetworkFee();
 	}, [amount, token, network, address]);
+
+	useEffect(() => {
+		if (token !== 'Select Token' && network !== 'Select Network') {
+			// @ts-ignore
+			const tokenDetails = destinationNetworks[network]['tokens'][token];
+			setWithdrawalFee(tokenDetails['withdrawFee']);
+		}
+	}, [network, token]);
 
 	useEffect(() => {
 		setProtocolFee(Number(amount) * PROTOCOL_FEE);
@@ -141,11 +157,13 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			<Details color={theme.default}>
 				<div>
 					<p>Gas fee:</p>
-					<p>{networkFee?.toString()} GLMR</p>
+					<p>{networkFee} GLMR</p>
 				</div>
 				<div>
 					<p>Protocol fee:</p>
-					<p>{protocolFee} DOT</p>
+					<p>
+						{protocolFee} {token !== 'Select Token' ? token : 'GLMR'}
+					</p>
 				</div>
 				<div>
 					<p>CEX fee:</p>
@@ -153,7 +171,9 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 				</div>
 				<div>
 					<p>Withdrawal fee:</p>
-					<p>{withdrawalFee} DOT</p>
+					<p>
+						{withdrawalFee} {token !== 'Select Token' ? token : 'GLMR'}
+					</p>
 				</div>
 			</Details>
 		</details>
