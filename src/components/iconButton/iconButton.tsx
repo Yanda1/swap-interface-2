@@ -10,6 +10,7 @@ import SOL from '../../assets/SOL.png';
 import BUSD from '../../assets/BUSD.png';
 import TRX from '../../assets/TRX.png';
 import MATIC from '../../assets/MATIC.png';
+import XTZ from '../../assets/XTZ.png';
 import AVAXC from '../../assets/AVAXC.png';
 import SEGWIT from '../../assets/SEGWIT.png';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
@@ -27,8 +28,9 @@ const icons = {
 	TRX,
 	MATIC,
 	AVAXC,
-	SEGWIT
-};
+	SEGWIT,
+	XTZ
+}; // TODO: @daniel - should we load all icons by default?
 
 type Props = {
 	disabled?: boolean;
@@ -45,6 +47,7 @@ type Props = {
 		| 'MATIC'
 		| 'AVAXC'
 		| 'SEGWIT'
+		| 'XTZ'
 		| 'Select Token';
 	onClick?: () => void;
 	iconOnly?: boolean;

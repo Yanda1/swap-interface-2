@@ -78,7 +78,7 @@ export const TextField = ({
 				value={value}
 				type={type}
 				lang="en"
-				min="18"
+				min="18" // TODO: replace with amount from destinationsNetwork
 			/>
 			{description && <Description>{description}</Description>}
 		</>

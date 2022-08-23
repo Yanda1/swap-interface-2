@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { mediaQuery, pxToRem, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
-	BINANCE_PRICE_TICKER,
 	DestinationNetworkEnum,
 	isLightTheme,
-	useStore
+	useBinanceApi,
+	useStore,
+	startToken
 } from '../../helpers';
 import { Button, Fees, IconButton, NetworkTokenModal, TextField } from '../../components';
 
@@ -87,11 +87,11 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
+	const { allPrices } = useBinanceApi();
 	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
-	const startToken = 'GLMR';
 
 	const isDisabled =
 		destinationNetwork === 'Select Network' ||
@@ -103,18 +103,15 @@ export const SwapForm = () => {
 	const openModal = () => setShowModal(!showModal);
 
 	useEffect(() => {
-		const convertDestinationAmount = async () => {
+		const convertDestinationAmount = () => {
 			if (destinationToken !== 'Select Token') {
-				try {
-					const getPriceAndSymbol: { data: { symbol: string; price: string } } =
-						await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${destinationToken}` });
-					setCurrentPrice(getPriceAndSymbol.data.price);
-				} catch (err: any) {
-					throw new Error(err);
-				}
+				const getSymbol: any = allPrices.find(
+					(pair: { symbol: string; price: string }) =>
+						pair.symbol === `${startToken}${destinationToken}`
+				);
+				setCurrentPrice(getSymbol.price);
 			}
 		};
-		// eslint-disable-next-line
 		convertDestinationAmount();
 	}, [destinationToken]);
 
@@ -141,7 +138,7 @@ export const SwapForm = () => {
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton disabled icon="GLMR" onClick={() => console.log('Start token')} />
+						<IconButton disabled icon="GLMR" />
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -187,11 +184,15 @@ export const SwapForm = () => {
 				}
 			/>
 			{hasMemo && (
-				<TextField
-					value={destinationMemo}
-					description="Destination Memo"
-					onChange={(e) => dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })}
-				/>
+				<div style={{ marginTop: 24 }}>
+					<TextField
+						value={destinationMemo}
+						description="Destination Memo"
+						onChange={(e) =>
+							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })
+						}
+					/>
+				</div>
 			)}
 			<Fees
 				amount={amount}

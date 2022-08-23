@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { BASE_URL, BINANCE_DEV_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY } from './index';
+import {
+	BASE_URL,
+	BINANCE_DEV_URL,
+	BINANCE_SCRIPT,
+	BIZ_ENTRY_KEY,
+	BINANCE_EXCHANGE_INFO,
+	BINANCE_PRICE_TICKER
+} from './index';
 import axios from 'axios';
 
 export enum STATUS_ENUM {
@@ -112,7 +119,7 @@ export const useKyc = (
 	const [kycToken, setKycToken] = useState('');
 
 	const fetchData = useCallback(
-		async (authToken: string) => {
+		async (authToken: string): Promise<void> => {
 			try {
 				setLoading(true);
 				const statusRes = await axios.request({
@@ -144,14 +151,42 @@ export const useKyc = (
 				setLoading(false);
 			}
 		},
-		// eslint-disable-next-line
 		[authToken]
 	);
 
 	useEffect(() => {
-		fetchData(authToken).catch((err) => console.log(err)); // TODO: check promise call
-		// eslint-disable-next-line
+		void fetchData(authToken);
 	}, [fetchData]);
 
 	return { loading, error, kycStatus, kycToken };
+};
+
+export const useBinanceApi = () => {
+	const [allPrices, setAllPrices] = useState<{ symbol: string; price: string }[]>([]);
+	const [allPairs, setAllPairs] = useState([]);
+
+	const getExchangeInfo = async () => {
+		try {
+			const res = await axios.request({ url: BINANCE_EXCHANGE_INFO });
+			setAllPairs(res.data.symbols);
+		} catch (e: any) {
+			throw new Error(e);
+		}
+	};
+
+	const getTickerData = async () => {
+		try {
+			const res = await axios.request({ url: BINANCE_PRICE_TICKER });
+			setAllPrices(res.data);
+		} catch (e: any) {
+			throw new Error(e);
+		}
+	};
+
+	useEffect(() => {
+		void getExchangeInfo();
+		void getTickerData();
+	}, []);
+
+	return { allPairs, allPrices };
 };

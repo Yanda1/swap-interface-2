@@ -8,7 +8,11 @@ import {
 	makeId,
 	useStore,
 	serviceAddress,
-	ESTIMATED_NETWORK_TRANSACTION_GAS
+	ESTIMATED_NETWORK_TRANSACTION_GAS,
+	useBinanceApi,
+	Graph,
+	startToken,
+	BINANCE_FEE
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
@@ -58,12 +62,14 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
+	const { allPairs, allPrices } = useBinanceApi();
 
 	const [networkFee, setNetworkFee] = useState({ amount: 0, currency: 'GLMR' });
-	const [cexFee, setCexFee] = useState({ amount: 0, currency: 'GLMR' });
+	const [cexFee, setCexFee] = useState([{ amount: 0, currency: 'GLMR' }]);
 	const [withdrawalFee, setWithdrawalFee] = useState({ amount: 0, currency: 'GLMR' });
 	const [protocolFee, setProtocolFee] = useState({ amount: 0, currency: 'GLMR' });
 	const [feeSum, setFeeSum] = useState({ amount: 0, currency: 'GLMR' });
+	const [cexGraph, setCexGraph] = useState<Graph>();
 
 	const { chainId, library: web3Provider } = useEthers();
 	const gasPrice: any = useGasPrice();
@@ -118,10 +124,57 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	}, [amount, token, network, address]);
 
 	useEffect(() => {
+		const localGraph = new Graph();
+		for (let i = 0; i < allPairs.length; i++) {
+			// @ts-ignore
+			localGraph.addEdge(allPairs[i].baseAsset, allPairs[i].quoteAsset);
+			if (allPairs.length === localGraph.edges) {
+				// @ts-ignore
+				setCexGraph(localGraph);
+			}
+		}
+	}, [allPairs]);
+
+	useEffect(() => {
+		const estimateCexFee = () => {
+			if (cexGraph) {
+				const graphPath: false | { distance: number; path: string[] } = cexGraph.bfs(
+					startToken,
+					token
+				); // TODO: @daniel - only one edge atm?
+
+				if (graphPath) {
+					let result = Number(amount);
+					const allCexFees: { amount: number; currency: string }[] = [];
+					for (let i = 0; i < graphPath.distance; i++) {
+						let edgePrice = 0;
+						let ticker: undefined | { symbol: string; price: string } = allPrices.find(
+							(x: { symbol: string; price: string }) =>
+								x.symbol === graphPath.path[i] + graphPath.path[i + 1]
+						);
+						if (ticker) {
+							edgePrice = Number(ticker.price);
+						} else {
+							ticker = allPrices.find(
+								(x: any) => x.symbol === graphPath.path[i + 1] + graphPath.path[i]
+							);
+							edgePrice = 1 / Number(ticker?.price);
+						}
+						result *= edgePrice;
+						allCexFees.push({ amount: result * BINANCE_FEE, currency: graphPath.path[i + 1] });
+					}
+					setCexFee(allCexFees);
+				}
+			}
+		};
+		estimateCexFee();
+	}, [token, cexGraph, amount]);
+
+	useEffect(() => {
 		if (token !== 'Select Token' && network !== 'Select Network') {
 			// @ts-ignore
 			const tokenDetails = destinationNetworks[network]['tokens'][token];
-			setWithdrawalFee({ amount: tokenDetails['withdrawFee'], currency: token });
+			setWithdrawalFee({ amount: tokenDetails?.['withdrawFee'], currency: token });
 		}
 	}, [network, token]);
 
@@ -131,7 +184,11 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	useEffect(() => {
 		setFeeSum({
-			amount: networkFee.amount + protocolFee.amount + cexFee.amount + withdrawalFee.amount,
+			amount:
+				networkFee.amount +
+				protocolFee.amount +
+				cexFee.reduce((prev, fee) => prev + fee.amount, 0) +
+				withdrawalFee.amount,
 			currency: 'GLMR'
 		});
 	}, [networkFee, cexFee, withdrawalFee, protocolFee]);
@@ -156,9 +213,13 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 				</div>
 				<div>
 					<p>CEX fee:</p>
-					<p>
-						{cexFee.amount} {cexFee.currency}
-					</p>
+					<div>
+						{cexFee.map((fee) => (
+							<p key={fee.currency}>
+								{fee.amount} {fee.currency}
+							</p>
+						))}
+					</div>
 				</div>
 				<div>
 					<p>Withdrawal fee:</p>

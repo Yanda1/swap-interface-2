@@ -1,7 +1,8 @@
-export default class Graph {
+export class Graph {
 	vertices: string[];
 	adjacent: { [key: string]: string[] };
 	edges: number;
+
 	constructor() {
 		this.vertices = [];
 		this.adjacent = {};

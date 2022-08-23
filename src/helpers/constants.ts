@@ -6,13 +6,15 @@ export const BINANCE_PROD_URL = 'https://api.commonservice.io';
 export const BINANCE_DEV_URL = 'https://dip-qacb.sdtaop.com';
 export const BINANCE_SCRIPT =
 	'https://static.saasexch.com/static/binance/static/kyc-ui/sdk/0.0.2/sdk.js';
-export const BINANCE_PRICE_TICKER = 'https://www.binance.com/api/v3/ticker/price?symbol=';
+export const BINANCE_PRICE_TICKER = 'https://www.binance.com/api/v3/ticker/price';
+export const BINANCE_EXCHANGE_INFO = 'https://api.binance.com/api/v3/exchangeInfo';
 
 export const BASE_URL = 'https://auth-app-aq3rv.ondigitalocean.app/';
 export const MOONBEAM_URL = 'https://rpc.api.moonbeam.network';
 
 export const PROTOCOL_FEE = 0.002;
 export const BINANCE_FEE = 0.002;
+export const startToken = 'GLMR';
 export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
 export const serviceAddress = '0xeB56c1d19855cc0346f437028e6ad09C80128e02'; // TODO: is this hardcoded?
 
