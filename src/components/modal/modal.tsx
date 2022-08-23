@@ -41,16 +41,17 @@ const CloseIcon = styled.div(() => {
 		state: { theme }
 	} = useStore();
 
-	return css`
-		cursor: pointer;
-		position: fixed;
-		top: 10px;
-		right: 10px;
-		font-size: ${fontSize[16]};
-		line-height: ${fontSize[22]};
-		color: ${theme.font.pure};
-	`;
-});
+		return css`
+			cursor: pointer;
+			position: fixed;
+			top: ${pxToRem(10)};
+			right: ${pxToRem(10)};
+			font-size: ${fontSize[16]};
+			line-height: ${fontSize[22]};
+			color: ${theme.font.pure};
+		`;
+	}
+);
 
 type Props = {
 	showModal: boolean;
@@ -73,7 +74,12 @@ export const Modal = ({
 
 	return (
 		// @ts-ignore
-		<ModalWrapper width={width} showModal={showModal} background={background}>
+		<ModalWrapper
+			width={width}
+			showModal={showModal}
+			background={background}
+			data-testid="modal-container"
+		>
 			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
 			{children}
 		</ModalWrapper>

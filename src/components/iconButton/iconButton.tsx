@@ -65,7 +65,7 @@ const Icon = styled.button(() => {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: ${theme.button.icon};
+		background: ${theme.icon.default};
 		transition: all 0.2s ease-in-out;
 
 		&:hover {

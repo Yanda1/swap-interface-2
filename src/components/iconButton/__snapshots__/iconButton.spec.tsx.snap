@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IconButton should render a IconButton with icon only 1`] = `
+.c0 {
+  height: 1.5625rem;
+  width: 1.5625rem;
+  margin-right: 0.625rem;
+  cursor: pointer;
+}
+
+<img
+  alt="GLMR"
+  class="c0"
+  src="GLMR.png"
+/>
+`;
+
+exports[`IconButton should render a disabled IconButton with img and Text 1`] = `
+.c0 {
+  padding: 0.5rem;
+  border: 1px solid #8C8D8F;
+  border-radius: 0.375rem;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  background: #172631;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+.c0:active {
+  outline: none;
+}
+
+.c0:focus-visible {
+  outline-offset: 2px;
+  outline: 1px solid #8C8D8F;
+}
+
+.c1 {
+  height: 2.625rem;
+  width: 2.625rem;
+  margin-right: 0rem;
+  cursor: pointer;
+}
+
+<button
+  class="c0"
+  disabled=""
+>
+  <img
+    alt="GLMR"
+    class="c1"
+    src="GLMR.png"
+  />
+</button>
+`;

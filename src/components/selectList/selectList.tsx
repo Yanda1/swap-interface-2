@@ -73,59 +73,53 @@ const Item = styled.li((props: any) => {
 	`;
 });
 
-export const SelectList = ({ data, title, placeholder, value }: Props) => {
-	const [search, setSearch] = useState('');
-	const dataList =
-		data &&
-		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
-	const {
-		dispatch,
-		state: { destinationToken, destinationNetwork }
-	} = useStore();
+export const SelectList = ({ data, placeholder, value }: Props) => {
 
-	const handleClick = useCallback(
-		(e: any) => {
-			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
-			if (value === 'NETWORK') {
-				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
-			}
-		},
-		[destinationToken, destinationNetwork]
-	);
+	const [search, setSearch] = useState('');
+	const dataList = data && data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
+	const { dispatch, state: { destinationToken, destinationNetwork } } = useStore();
+
+	const handleClick = useCallback((e: any) => {
+		dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
+		if (value === 'NETWORK') {
+			dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
+		}
+	}, [destinationToken, destinationNetwork]);
 
 	return (
 		<>
-			<Wrapper>
-				<Title>{title}</Title>
+			<Wrapper data-testid="custom">
+				<Title>SELECT {value}</Title>
 				<TextField
 					align="left"
 					value={search}
 					placeholder={placeholder}
-					onChange={(event) => setSearch(event.target.value)}
+					onChange={event => setSearch(event.target.value)}
 				/>
-				<List>
-					{data.length > 0 &&
-						dataList.map((el: string) => {
-							const hasActiveBorder =
-								value === 'NETWORK' ? destinationNetwork === el : destinationToken === el;
+				{data.length > 0 ? (
+						<List>
+							{data.length > 0 && dataList.map((el: string) => {
+								const hasActiveBorder = value === 'NETWORK' ? destinationNetwork === el : destinationToken === el;
 
-							return (
-								<Item
-									value={value}
-									// @ts-ignore
-									activeBorder={hasActiveBorder}
-									onClick={(e) => handleClick(e)}
-									key={el}>
-									<IconButton
+								return (
+									<Item
+										value={value}
 										// @ts-ignore
-										icon={el}
-										iconOnly
-									/>
-									{el}
-								</Item>
-							);
-						})}
-				</List>
+										activeBorder={hasActiveBorder}
+										onClick={(e) => handleClick(e)}
+										key={el}
+									>
+										<IconButton
+											// @ts-ignore
+											icon={el}
+											iconOnly
+										/>{el}
+									</Item>
+								);
+							})
+							}
+						</List>) :
+					<Title>Please choose network.</Title>}
 			</Wrapper>
 		</>
 	);

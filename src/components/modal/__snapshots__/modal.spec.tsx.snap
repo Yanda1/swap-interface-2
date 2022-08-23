@@ -1,0 +1,61 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Modal should render a modal with background mobile and large size 1`] = `
+.c0 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  display: block;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  z-index: 100;
+  width: 37.8125rem;
+  max-width: calc(100% - 4rem);
+  background-color: #1C2125;
+  border: 1px solid #8C8D8F;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+}
+
+.c1 {
+  cursor: pointer;
+  position: fixed;
+  top: 0.625rem;
+  right: 0.625rem;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  color: #FFF;
+}
+
+@media (max-width:375px) {
+  .c0 {
+    max-width: 21.6875rem;
+    width: calc(100% - 0.625rem);
+    border-radius: 1.75rem;
+    border: none;
+    margin: 0 auto;
+    margin-top: 3rem;
+  }
+}
+
+<div
+  class="c0"
+  data-testid="modal-container"
+  width="large"
+>
+  <div
+    class="c1"
+  >
+    ✖
+  </div>
+</div>
+`;
