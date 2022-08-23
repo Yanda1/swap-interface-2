@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import { DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
-import { Button, TextField } from '../../components';
+import { BINANCE_PRICE_TICKER, DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
+import { Button, IconButton, NetworkTokenModal, TextField } from '../../components';
+import axios from 'axios';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -36,13 +37,6 @@ const SwapInput = styled.div`
 	display: flex;
 	gap: ${spacing[8]};
 	justify-content: space-between;
-`;
-
-const Ali = styled.div`
-	height: 58px;
-	width: 58px;
-	border: 1px solid grey;
-	border-radius: 6px;
 `;
 
 const SwapNames = styled.div(({ pos = 'start' }: { pos?: string }) => `
@@ -97,20 +91,61 @@ const Fees = styled.div(({ color }: { color: string }) => css`
 	}
 `);
 
-export const Swapper = () => {
-	const { state: { theme, network, token, destinationAddress }, dispatch } = useStore();
+export const SwapForm = () => {
+	const {
+		state: { theme, destinationNetwork, destinationToken, destinationAddress, destinationAmount },
+		dispatch
+	} = useStore();
 	const [amount, setAmount] = useState('');
+	const [showModal, setShowModal] = useState(false);
+	const [currentPrice, setCurrentPrice] = useState('');
+	const startToken = 'GLMR';
+
+	const isDisabled = destinationNetwork === 'Select Network' || destinationToken === 'Select Token' || !destinationAmount || !destinationAddress;
+
+	const openModal = () => setShowModal(!showModal);
 
 	const handleAddressChange = (event: any) => {
 		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
 	};
 
+	useEffect(() => {
+		const convertDestinationAmount = async () => {
+			if (destinationToken !== 'Select Token') {
+				try {
+					const getPriceAndSymbol: { data: { symbol: string; price: string } } = await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${destinationToken}` }); // TODO: change to destinationToken
+					setCurrentPrice(getPriceAndSymbol.data.price);
+				} catch (err: any) {
+					throw new Error(err);
+				}
+			}
+		};
+		// eslint-disable-next-line
+		convertDestinationAmount();
+	}, [destinationToken]);
+
+	useEffect(() => {
+		dispatch({
+			type: DestinationNetworkEnum.AMOUNT,
+			payload: (+amount * +currentPrice).toFixed(8).toString()
+		});
+	}, [amount, currentPrice]);
+
+	const handleSwap = (): void => {
+		console.log({ destinationAmount, destinationToken, destinationAddress, destinationNetwork });
+	};
+
 	return (
 		<Wrapper>
+			<NetworkTokenModal showModal={true} setShowModal={setShowModal} data-testid="modal" />
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<Ali />
+						<IconButton
+							disabled
+							icon="GLMR"
+							onClick={() => console.log('Start token')}
+						/>
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -119,8 +154,8 @@ export const Swapper = () => {
 						/>
 					</SwapInput>
 					<SwapNames>
-						<Name color={theme.color.pure}>GLMR</Name>
-						<Name color={theme.color.default}>(Moonbeam)</Name>
+						<Name color={theme.font.pure}>GLMR</Name>
+						<Name color={theme.font.default}>(Moonbeam)</Name>
 					</SwapNames>
 				</Swap>
 				{isLightTheme(theme) ?
@@ -129,19 +164,26 @@ export const Swapper = () => {
 				}
 				<Swap>
 					<SwapInput>
-						<Ali />
-						<TextField type="number"
-											 value="0.123423454" // TODO: check if comma stays the same for dynamic input
-											 disabled />
+						<IconButton
+							onClick={openModal}
+							icon={destinationToken as any}
+						/>
+						{/* TODO: check if comma stays the same for dynamic input*/}
+						<TextField
+							disabled
+							type="number"
+							value={destinationAmount.replace(/0*$/, '')}
+						/>
 					</SwapInput>
 					<SwapNames pos="end">
-						<Name color={theme.color.pure}>{token ? token : 'DOT'}</Name>
-						<Name color={theme.color.default}>({network ? network : 'BNB'})</Name>
+						<Name color={theme.font.pure}>{destinationToken}</Name>
+						<Name color={theme.font.default}>{destinationNetwork}</Name>
 					</SwapNames>
 				</Swap>
 			</Trader>
-			<ExchangeRate color={theme.color.pure}>
-				1 GLMR = 20 DOT
+			<ExchangeRate color={theme.font.pure}>
+				{/* TODO: change to destinationToken */}
+				{destinationToken === 'Select Token' ? 'Please select token to see price' : `1 GLMR = ${currentPrice.replace(/0*$/, '')} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
@@ -158,7 +200,8 @@ export const Swapper = () => {
 					<div><p>Withdrawal fee:</p><p>1234.5665 DOT</p></div>
 				</Fees>
 			</details>
-			<Button onClick={() => console.log('Click')}>Swap</Button>
+			<Button onClick={handleSwap}
+							disabled={isDisabled}>Swap</Button>
 		</Wrapper>
 	);
 };

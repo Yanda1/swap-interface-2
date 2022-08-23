@@ -206,25 +206,29 @@ export const Header = () => {
 				<LogoDark style={{ marginRight: 'auto' }} />
 			)}
 			{!isBreakpointWidth && (
-				<Button variant="pure"
-								onClick={() => console.log('hedader')}>
+				<Button variant="pure" onClick={() => console.log('hedader')}>
 					Transaction History
 				</Button>
 			)}
-			<Button variant="secondary"
-							onClick={handleButtonClick}
-							color={buttonStatus.color as ColorType}>
+			<Button
+				variant="secondary"
+				onClick={handleButtonClick}
+				color={buttonStatus.color as ColorType}
+			>
 				{buttonStatus.text}
 			</Button>
 
-			<  ThemeButton theme={theme}
-										 onClick={changeTheme}>{isLight ? <Moon /> : <Sun />}</ThemeButton>
+			<  ThemeButton
+				theme={theme}
+				onClick={changeTheme}
+			>
+				{isLight ? <Moon /> : <Sun />}
+			</ThemeButton>
 
 			{isBreakpointWidth &&
 				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
 			{showMenu && (
-				<Menu theme={theme}
-							ref={menuRef}>
+				<Menu theme={theme} ref={menuRef}>
 					<li>Transaction History</li>
 					<li>Change Network</li>
 					<li>Logout</li>

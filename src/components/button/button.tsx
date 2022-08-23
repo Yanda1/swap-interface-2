@@ -1,6 +1,6 @@
+import type { ReactNode } from 'react';
 import { fontFamily, pxToRem } from '../../styles';
 import styled, { css } from 'styled-components';
-import type { ReactNode } from 'react';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
 import { isLightTheme, useStore } from '../../helpers';
@@ -51,8 +51,7 @@ const StyledButton = styled.button(
 		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isSecondaryDefault = isSecondary && setColor === 'default';
-		const { state } = useStore();
-		const { theme } = state;
+		const { state: { theme } } = useStore();
 
 		return css`
 			display: ${icon ? 'inline-flex' : 'inline-block'};
@@ -99,14 +98,15 @@ const StyledButton = styled.button(
 	}
 );
 
-export const Button = ({
-	children,
-	variant = 'primary',
-	color = 'default',
-	disabled = false,
-	icon,
-	onClick
-}: Props) => {
+export const Button = (
+	{
+		children,
+		variant = 'primary',
+		color = 'default',
+		disabled = false,
+		icon,
+		onClick
+	}: Props) => {
 	return (
 		// @ts-ignore
 		<StyledButton

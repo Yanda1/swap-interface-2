@@ -9,7 +9,7 @@ import {
 	pxToRem,
 	viewport
 } from './styles';
-import { Header, Swapper } from './components';
+import { Header, SwapForm } from './components';
 import { useStore } from './helpers';
 
 type Props = {
@@ -55,7 +55,7 @@ const App = () => {
 		<>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<Swapper />
+			<SwapForm />
 		</>
 	);
 };
