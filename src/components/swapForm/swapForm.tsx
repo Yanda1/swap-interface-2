@@ -3,12 +3,7 @@ import styled, { css } from 'styled-components';
 import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import {
-	BINANCE_PRICE_TICKER,
-	DestinationNetworkEnum,
-	isLightTheme,
-	useStore
-} from '../../helpers';
+import { BINANCE_PRICE_TICKER, DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
 import { Button, IconButton, NetworkTokenModal, TextField } from '../../components';
 import axios from 'axios';
 
@@ -142,8 +137,7 @@ export const SwapForm = () => {
 
 	return (
 		<Wrapper>
-			<NetworkTokenModal showModal={showModal}
-												 setShowModal={setShowModal} />
+			<NetworkTokenModal showModal={true} setShowModal={setShowModal} data-testid="modal" />
 			<Trader>
 				<Swap>
 					<SwapInput>
@@ -178,7 +172,7 @@ export const SwapForm = () => {
 						<TextField
 							disabled
 							type="number"
-							value={destinationAmount}
+							value={destinationAmount.replace(/0*$/, '')}
 						/>
 					</SwapInput>
 					<SwapNames pos="end">
@@ -189,7 +183,7 @@ export const SwapForm = () => {
 			</Trader>
 			<ExchangeRate color={theme.font.pure}>
 				{/* TODO: change to destinationToken */}
-				{destinationToken === 'Select Token' ? 'Please select token to see price' : `1 GLMR = ${currentPrice} ${destinationToken}`}
+				{destinationToken === 'Select Token' ? 'Please select token to see price' : `1 GLMR = ${currentPrice.replace(/0*$/, '')} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}

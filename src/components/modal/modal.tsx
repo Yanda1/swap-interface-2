@@ -49,8 +49,8 @@ const CloseIcon = styled.div(
 		return css`
 			cursor: pointer;
 			position: fixed;
-			top: 10px;
-			right: 10px;
+			top: ${pxToRem(10)};
+			right: ${pxToRem(10)};
 			font-size: ${fontSize[16]};
 			line-height: ${fontSize[22]};
 			color: ${theme.font.pure};
@@ -59,12 +59,12 @@ const CloseIcon = styled.div(
 );
 
 export const Modal = ({
-	showModal,
-	setShowModal,
-	width = 'large',
-	background,
-	children
-}: Props) => {
+												showModal,
+												setShowModal,
+												width = 'large',
+												background,
+												children
+											}: Props) => {
 	const handleClose = () => {
 		setShowModal(false);
 	};
@@ -75,6 +75,7 @@ export const Modal = ({
 			width={width}
 			showModal={showModal}
 			background={background}
+			data-testid="modal-container"
 		>
 			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
 			{children}

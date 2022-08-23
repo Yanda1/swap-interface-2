@@ -98,14 +98,15 @@ const StyledButton = styled.button(
 	}
 );
 
-export const Button = ({
-	children,
-	variant = 'primary',
-	color = 'default',
-	disabled = false,
-	icon,
-	onClick
-}: Props) => {
+export const Button = (
+	{
+		children,
+		variant = 'primary',
+		color = 'default',
+		disabled = false,
+		icon,
+		onClick
+	}: Props) => {
 	return (
 		// @ts-ignore
 		<StyledButton
