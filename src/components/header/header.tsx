@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Moonbeam, useEtherBalance, useEthers } from '@usedapp/core';
+import { formatEther } from '@ethersproject/units';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -26,7 +27,7 @@ import {
 	VerificationEnum
 } from '../../helpers';
 import type { ColorType } from '../../components';
-import { Button } from '../../components';
+import { Button, Wallet } from '../../components';
 
 type Props = {
 	theme: Theme;
@@ -127,6 +128,7 @@ export const Header = () => {
 			}
 		}
 	};
+	const balance = etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
@@ -217,6 +219,8 @@ export const Header = () => {
 				color={buttonStatus.color as ColorType}>
 				{buttonStatus.text}
 			</Button>
+
+			{account && balance && <Wallet balance={balance} token="GLMR" account={account} />}
 
 			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}

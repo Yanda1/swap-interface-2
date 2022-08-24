@@ -184,7 +184,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	useEffect(() => {
 		setFeeSum({
-			amount: networkFee.amount + protocolFee.amount + cexFee[0].amount + withdrawalFee.amount,
+			amount: networkFee.amount + protocolFee.amount + cexFee[0].amount + withdrawalFee.amount, // TODO: @daniel - feeSum currency? reduce for cexFee
 			currency: 'GLMR'
 		});
 	}, [networkFee, cexFee, withdrawalFee, protocolFee]);
@@ -197,9 +197,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			<Details color={theme.default}>
 				<div>
 					<p>Gas fee:</p>
-					<p>
-						{networkFee.amount} {networkFee.currency}
-					</p>
+					<p>{networkFee.amount} GLMR</p> // TODO: check logic for currency
 				</div>
 				<div>
 					<p>Protocol fee:</p>
