@@ -4,13 +4,7 @@ import destinationNetworks from '../../data/destinationNetworks.json';
 import { mediaQuery, pxToRem, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import {
-	DestinationNetworkEnum,
-	isLightTheme,
-	useBinanceApi,
-	useStore,
-	startToken
-} from '../../helpers';
+import { DestinationNetworkEnum, isLightTheme, startToken, useBinanceApi, useStore } from '../../helpers';
 import { Button, Fees, IconButton, NetworkTokenModal, TextField } from '../../components';
 
 const Wrapper = styled.main`
@@ -200,7 +194,7 @@ export const SwapForm = () => {
 				network={destinationNetwork}
 				address={destinationAddress}
 			/>
-			<Button onClick={handleSwap} disabled={isDisabled}>
+			<Button onClick={handleSwap} disabled={isDisabled} color="default">
 				Swap
 			</Button>
 		</Wrapper>

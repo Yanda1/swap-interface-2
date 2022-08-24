@@ -75,8 +75,7 @@ const Menu = styled.ul`
 	padding: ${spacing[14]};
 	border-radius: ${pxToRem(6)};
 	cursor: pointer;
-	border: 1px solid
-		${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
+	border: 1px solid ${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -207,7 +206,7 @@ export const Header = () => {
 				<LogoDark style={{ marginRight: 'auto' }} />
 			)}
 			{!isBreakpointWidth && (
-				<Button variant="pure" onClick={() => console.log('hedader')}>
+				<Button variant="pure" onClick={() => console.log('header')}>
 					Transaction History
 				</Button>
 			)}
