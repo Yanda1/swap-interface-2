@@ -25,21 +25,15 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 		padding: ${spacing[12]};
 
 		${mediaQuery('xxs')} {
-			// TODO: mobile style
-			max-width: ${pxToRem(347)};
 			width: calc(100% - ${pxToRem(10)});
-			border-radius: ${pxToRem(28)};
-			border: none;
-			margin: 0 auto;
-			margin-top: ${spacing[48]};
 		}
 	`;
 });
 
 const CloseIcon = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
+		const {
+			state: { theme }
+		} = useStore();
 
 		return css`
 			cursor: pointer;
@@ -53,6 +47,7 @@ const CloseIcon = styled.div(() => {
 	}
 );
 
+
 type Props = {
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
@@ -62,12 +57,12 @@ type Props = {
 };
 
 export const Modal = ({
-	showModal,
-	setShowModal,
-	width = 'large',
-	background,
-	children
-}: Props) => {
+												showModal,
+												setShowModal,
+												width = 'large',
+												background,
+												children
+											}: Props) => {
 	const handleClose = () => {
 		setShowModal(false);
 	};

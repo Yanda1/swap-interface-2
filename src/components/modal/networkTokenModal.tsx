@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Button } from '..';
-import { spacing } from '../../styles';
+import { mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
-import { useStore } from '../../helpers';
+import { DestinationNetworkEnum, useBreakpoint, useStore } from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -14,6 +14,11 @@ const ChildWrapper = styled.div`
 	justify-content: center;
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};
+
+	${mediaQuery('xs')} {
+		flex-direction: column;
+		flex-wrap: nowrap;
+	}
 `;
 
 type Props = {
@@ -22,11 +27,16 @@ type Props = {
 };
 
 export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
+	const { isBreakpointWidth } = useBreakpoint('xs');
 	const [isDisabled, setIsDisabled] = useState(true);
+	const [isMobile, setIsMobile] = useState(isBreakpointWidth);
+	const [isShowList, setIsShowList] = useState(true);
 	const {
-		state: { destinationNetwork, destinationToken }
+		dispatch, state: { destinationNetwork, destinationToken }
 	} = useStore();
-
+	useEffect(() => {
+		setIsMobile(isBreakpointWidth);
+	}, [isBreakpointWidth]);
 	useEffect(() => {
 		setIsDisabled(
 			() => destinationNetwork === 'Select Network' || destinationToken === 'Select Token'
@@ -39,8 +49,17 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 		// @ts-ignore
 		Object.keys(destinationNetworks?.[destinationNetwork]['tokens']);
 
+	const handleSubmit = () => {
+		setShowModal(!showModal);
+	};
+
+	const handleBack = () => {
+		setIsShowList(true);
+		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
+	};
+
 	return (
-		<div data-testid="network">
+		!isMobile ? <div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
 					{networksList && networksList.length > 0 ? (
@@ -51,9 +70,32 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 					) : (
 						<div>No available networks...</div>
 					)}
-					<Button disabled={isDisabled} onClick={() => setShowModal(!showModal)}>
+					<Button disabled={isDisabled} onClick={handleSubmit} color="default">
 						{isDisabled ? 'Please select Network and Token' : 'Select'}
 					</Button>
+				</ChildWrapper>
+			</Modal>
+		</div> : <div data-testid="network">
+			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
+				<ChildWrapper>
+					{networksList && networksList.length > 0 ? (
+						<>
+							{isShowList &&
+								<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />}
+							{!isShowList &&
+								<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />}
+						</>
+					) : (
+						<div>No available networks...</div>
+					)}
+					{isShowList &&
+						<Button onClick={() => setIsShowList(false)}
+										color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
+										disabled={destinationNetwork === 'Select Network'}>NEXT</Button>}
+					{!isShowList && <Button disabled={isDisabled} onClick={handleSubmit} color="default">
+						{isDisabled ? 'Please select Network and Token' : 'Select'}
+					</Button>}
+					{!isShowList && <Button onClick={handleBack} color="default">BACK</Button>}
 				</ChildWrapper>
 			</Modal>
 		</div>

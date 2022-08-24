@@ -19,6 +19,8 @@ const Wrapper = styled.div(() => {
 		padding: 0 ${spacing[10]};
 		background: ${theme.background.default};
 		border-radius: ${pxToRem(6)};
+
+
 	`;
 });
 

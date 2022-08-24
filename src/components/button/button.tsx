@@ -18,8 +18,14 @@ interface CommonProps {
 	onClick: () => void;
 }
 
-interface PrimaryPureProps {
-	variant?: 'primary' | 'pure';
+interface PrimaryProps {
+	variant?: 'primary';
+	color: 'default' | 'transparent';
+	icon?: never;
+}
+
+interface PureProps {
+	variant?: 'pure';
 	color?: never;
 	icon?: never;
 }
@@ -40,7 +46,7 @@ type SecondaryProps = {
 	variant: 'secondary';
 } & ColorIconProps;
 
-type IndividualProps = PrimaryPureProps | SecondaryProps;
+type IndividualProps = PrimaryProps | SecondaryProps | PureProps;
 type Props = IndividualProps & CommonProps;
 
 const StyledButton = styled.button(
@@ -50,6 +56,7 @@ const StyledButton = styled.button(
 		const isPure = variant === 'pure';
 		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
+		const isPrimaryTransparent = variant === 'primary' && color === 'transparent';
 		const isSecondaryDefault = isSecondary && setColor === 'default';
 		const { state: { theme } } = useStore();
 
@@ -66,17 +73,13 @@ const StyledButton = styled.button(
 			padding: ${pxToRem(4)} ${pxToRem(12)};
 			color: ${isPure
 				? theme.pure
-				: isSecondaryDefault
+				: isSecondaryDefault || isPrimaryTransparent
 					? theme.button.default
 					: '#FFF'};
 			background-color: ${disabled
 				? theme.button.disabled
-				: isPrimary
-					? theme.button.default
-					: !isColorDefault
-						? theme.button[setColor]
-						: 'transparent'};
-			border: 1px solid ${!isSecondary ? 'transparent' : isColorDefault ? theme.button.default : '#FFF'};
+				: isPure || isSecondaryDefault ? theme.button.transparent : theme.button[setColor]};
+			border: 1px solid ${isSecondaryDefault || isPrimaryTransparent ? theme.button.default : isPure || isColorDefault ? theme.button.transparent : '#FFF'};
 			border-radius: ${pxToRem(6)};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
@@ -88,14 +91,13 @@ const StyledButton = styled.button(
 
 			&:focus-visible {
 				outline-offset: 2px;
-				outline: 1px solid
-					${isPrimary
-						? theme.button.default
-						: isPure
+				outline: 1px solid ${isPrimary
+					? theme.button.default
+					: isPure
 						? theme.pure
 						: isLightTheme(theme)
-						? theme.button[setColor]
-						: '#FFF'};
+							? theme.button[setColor]
+							: '#FFF'};
 			}
 
 			&:active {
@@ -106,13 +108,13 @@ const StyledButton = styled.button(
 );
 
 export const Button = ({
-	children,
-	variant = 'primary',
-	color = 'default',
-	disabled = false,
-	icon,
-	onClick
-}: Props) => {
+												 children,
+												 variant = 'primary',
+												 color = 'default',
+												 disabled = false,
+												 icon,
+												 onClick
+											 }: Props) => {
 	return (
 		// @ts-ignore
 		<StyledButton
