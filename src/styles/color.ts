@@ -23,6 +23,7 @@ export type Theme = {
 		disabled: string;
 		success: string;
 		wallet: string;
+		transparent: string;
 	};
 	modal: {
 		default: string;
@@ -51,7 +52,8 @@ export const lightTheme: Theme = {
 		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108',
-		wallet: '#505050'
+		wallet: '#505050',
+		transparent: 'transparent'
 	},
 	modal: {
 		default: '#212426'
@@ -80,7 +82,8 @@ export const darkTheme: Theme = {
 		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108',
-		wallet: '#505050'
+		wallet: '#505050',
+		transparent: 'transparent'
 	},
 	modal: {
 		default: '#212426'
