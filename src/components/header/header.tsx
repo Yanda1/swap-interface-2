@@ -75,7 +75,8 @@ const Menu = styled.ul`
 	padding: ${spacing[14]};
 	border-radius: ${pxToRem(6)};
 	cursor: pointer;
-	border: 1px solid ${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
+	border: 1px solid
+		${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -113,10 +114,10 @@ export const Header = () => {
 				nativeCurrency: {
 					name: 'Glimer',
 					symbol: 'GLMR',
-					decimals: 18,
+					decimals: 18
 				},
-				blockExplorerUrls: ['https://moonscan.io/'],
-			},
+				blockExplorerUrls: ['https://moonscan.io/']
+			}
 		];
 
 		if (!chainId) {
@@ -213,15 +214,11 @@ export const Header = () => {
 			<Button
 				variant="secondary"
 				onClick={handleButtonClick}
-				color={buttonStatus.color as ColorType}
-			>
+				color={buttonStatus.color as ColorType}>
 				{buttonStatus.text}
 			</Button>
 
-			<  ThemeButton
-				theme={theme}
-				onClick={changeTheme}
-			>
+			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}
 			</ThemeButton>
 

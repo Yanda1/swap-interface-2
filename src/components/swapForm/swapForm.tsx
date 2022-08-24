@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
-import styled, { css } from 'styled-components';
-import { mediaQuery, pxToRem, spacing, Theme } from '../../styles';
+import styled from 'styled-components';
+import destinationNetworks from '../../data/destinationNetworks.json';
+import { mediaQuery, pxToRem, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import { BINANCE_PRICE_TICKER, DestinationNetworkEnum, isLightTheme, useStore } from '../../helpers';
-import { Button, IconButton, NetworkTokenModal, TextField } from '../../components';
-import axios from 'axios';
+import {
+	DestinationNetworkEnum,
+	isLightTheme,
+	useBinanceApi,
+	useStore,
+	startToken
+} from '../../helpers';
+import { Button, Fees, IconButton, NetworkTokenModal, TextField } from '../../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -39,7 +45,8 @@ const SwapInput = styled.div`
 	justify-content: space-between;
 `;
 
-const SwapNames = styled.div(({ pos = 'start' }: { pos?: string }) => `
+const SwapNames = styled.div(
+	({ pos = 'start' }: { pos?: string }) => `
 	display: flex;
 	flex-direction: column;
 	align-items: flex-${pos};
@@ -48,79 +55,63 @@ const SwapNames = styled.div(({ pos = 'start' }: { pos?: string }) => `
 		align-items: flex-start;
 		width: 100%;
 	}
-`);
+`
+);
 
-const Name = styled.div(({ color }: { color: string }) => `
+const Name = styled.div(
+	({ color }: { color: string }) => `
 	color: ${color};
-`);
+`
+);
 
-const ExchangeRate = styled.div(({ color }: { color: string }) => `
+const ExchangeRate = styled.div(
+	({ color }: { color: string }) => `
 	margin: ${spacing[28]} 0;
 	color: ${color};
 
 	${mediaQuery('s')} {
 	text-align: center;
 	}
-`);
-
-const Fee = styled.summary(({ color, theme }: { color: string; theme: Theme }) => css`
-	color: ${theme.pure};
-	margin: ${spacing[28]} 0;
-	cursor: pointer;
-
-	&:focus-visible {
-		outline-offset: 2px;
-		outline: 1px solid ${color};
-	}
-
-	&:active {
-		outline: none;
-	}
-`);
-
-const Fees = styled.div(({ color }: { color: string }) => css`
-	flex-direction: column;
-	padding: ${spacing[10]} ${spacing[16]};
-	margin-bottom: ${spacing[56]};
-	border-radius: ${pxToRem(6)};
-	border: 1px solid ${color};
-
-	& > * {
-		display: flex;
-		justify-content: space-between;
-	}
-`);
+`
+);
 
 export const SwapForm = () => {
 	const {
-		state: { theme, destinationNetwork, destinationToken, destinationAddress, destinationAmount },
+		state: {
+			theme,
+			destinationNetwork,
+			destinationToken,
+			destinationAddress,
+			destinationAmount,
+			destinationMemo
+		},
 		dispatch
 	} = useStore();
+	const { allPrices } = useBinanceApi();
 	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
+	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
-	const startToken = 'GLMR';
 
-	const isDisabled = destinationNetwork === 'Select Network' || destinationToken === 'Select Token' || !destinationAmount || !destinationAddress;
+	const isDisabled =
+		destinationNetwork === 'Select Network' ||
+		destinationToken === 'Select Token' ||
+		!amount ||
+		!destinationAddress ||
+		(hasMemo && !destinationMemo);
 
 	const openModal = () => setShowModal(!showModal);
 
-	const handleAddressChange = (event: any) => {
-		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: event.target.value });
-	};
-
 	useEffect(() => {
-		const convertDestinationAmount = async () => {
+		const convertDestinationAmount = () => {
 			if (destinationToken !== 'Select Token') {
-				try {
-					const getPriceAndSymbol: { data: { symbol: string; price: string } } = await axios.request({ url: `${BINANCE_PRICE_TICKER}${startToken}${destinationToken}` }); // TODO: change to destinationToken
-					setCurrentPrice(getPriceAndSymbol.data.price);
-				} catch (err: any) {
-					throw new Error(err);
-				}
+				const getSymbol: any = allPrices.find(
+					(pair: { symbol: string; price: string }) =>
+						pair.symbol === `${startToken}${destinationToken}`
+				);
+				setCurrentPrice(getSymbol?.price);
 			}
 		};
-		// eslint-disable-next-line
 		convertDestinationAmount();
 	}, [destinationToken]);
 
@@ -131,21 +122,23 @@ export const SwapForm = () => {
 		});
 	}, [amount, currentPrice]);
 
+	useEffect(() => {
+		// @ts-ignore
+		const hasTag = destinationNetworks?.[destinationNetwork]?.['hasTag'];
+		setHasMemo(destinationNetwork === 'Select Network' ? false : hasTag);
+	}, [destinationNetwork]);
+
 	const handleSwap = (): void => {
 		console.log({ destinationAmount, destinationToken, destinationAddress, destinationNetwork });
 	};
 
 	return (
 		<Wrapper>
-			<NetworkTokenModal showModal={true} setShowModal={setShowModal} data-testid="modal" />
+			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton
-							disabled
-							icon="GLMR"
-							onClick={() => console.log('Start token')}
-						/>
+						<IconButton disabled icon="GLMR" />
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -158,22 +151,16 @@ export const SwapForm = () => {
 						<Name color={theme.font.default}>(Moonbeam)</Name>
 					</SwapNames>
 				</Swap>
-				{isLightTheme(theme) ?
-					<SwapperLight style={{ marginBottom: 38 }} /> :
+				{isLightTheme(theme) ? (
+					<SwapperLight style={{ marginBottom: 38 }} />
+				) : (
 					<SwapperDark style={{ marginBottom: 38 }} />
-				}
+				)}
 				<Swap>
 					<SwapInput>
-						<IconButton
-							onClick={openModal}
-							icon={destinationToken as any}
-						/>
+						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField
-							disabled
-							type="number"
-							value={destinationAmount.replace(/0*$/, '')}
-						/>
+						<TextField disabled type="number" value={destinationAmount.replace(/0*$/, '')} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
@@ -182,26 +169,40 @@ export const SwapForm = () => {
 				</Swap>
 			</Trader>
 			<ExchangeRate color={theme.font.pure}>
-				{/* TODO: change to destinationToken */}
-				{destinationToken === 'Select Token' ? 'Please select token to see price' : `1 GLMR = ${currentPrice.replace(/0*$/, '')} ${destinationToken}`}
+				{destinationToken === 'Select Token'
+					? 'Please select token to see price'
+					: `1 GLMR = ${currentPrice} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
 				description="Destination Address"
-				onChange={(e) => handleAddressChange(e)}
+				onChange={(e) =>
+					dispatch({
+						type: DestinationNetworkEnum.ADDRESS,
+						payload: e.target.value
+					})
+				}
 			/>
-			<details>
-				<Fee color={theme.default}
-						 theme={theme}>Fee: 0.123432423423423</Fee>
-				<Fees color={theme.default}>
-					<div><p>Gas fee:</p><p>1234.12345665 GLMR</p></div>
-					<div><p>Ex rate:</p><p>1234.5665 DOT</p></div>
-					<div><p>CEX rate:</p><p>1234.5665 DOT</p></div>
-					<div><p>Withdrawal fee:</p><p>1234.5665 DOT</p></div>
-				</Fees>
-			</details>
-			<Button onClick={handleSwap}
-							disabled={isDisabled}>Swap</Button>
+			{hasMemo && (
+				<div style={{ marginTop: 24 }}>
+					<TextField
+						value={destinationMemo}
+						description="Destination Memo"
+						onChange={(e) =>
+							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })
+						}
+					/>
+				</div>
+			)}
+			<Fees
+				amount={amount}
+				token={destinationToken}
+				network={destinationNetwork}
+				address={destinationAddress}
+			/>
+			<Button onClick={handleSwap} disabled={isDisabled}>
+				Swap
+			</Button>
 		</Wrapper>
 	);
 };

@@ -10,6 +10,7 @@ import SOL from '../../assets/SOL.png';
 import BUSD from '../../assets/BUSD.png';
 import TRX from '../../assets/TRX.png';
 import MATIC from '../../assets/MATIC.png';
+import XTZ from '../../assets/XTZ.png';
 import AVAXC from '../../assets/AVAXC.png';
 import SEGWIT from '../../assets/SEGWIT.png';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
@@ -28,17 +29,34 @@ const icons = {
 	MATIC,
 	AVAXC,
 	SEGWIT,
-};
+	XTZ
+}; // TODO: @daniel - should we load all icons by default?
 
-type IconButtonsProps = {
+type Props = {
 	disabled?: boolean;
-	icon: 'BSC' | 'USDT' | 'GLMR' | 'BTC' | 'BNB' | 'ETH' | 'SOL' | 'BUSD' | 'TRX' | 'MATIC' | 'AVAXC' | 'SEGWIT' | 'Select Token';
+	icon:
+		| 'BSC'
+		| 'USDT'
+		| 'GLMR'
+		| 'BTC'
+		| 'BNB'
+		| 'ETH'
+		| 'SOL'
+		| 'BUSD'
+		| 'TRX'
+		| 'MATIC'
+		| 'AVAXC'
+		| 'SEGWIT'
+		| 'XTZ'
+		| 'Select Token';
 	onClick?: () => void;
 	iconOnly?: boolean;
 };
 
 const Icon = styled.button(() => {
-	const { state: { theme } } = useStore();
+	const {
+		state: { theme }
+	} = useStore();
 
 	return css`
 		padding: ${spacing[8]};
@@ -62,41 +80,32 @@ const Icon = styled.button(() => {
 			outline-offset: 2px;
 			outline: 1px solid ${theme.default};
 		}
-	;
 	`;
 });
 
-const Img = styled.img(
-	({ iconOnly }: IconButtonsProps) => {
+const Img = styled.img(({ iconOnly }: Props) => {
+	return css`
+		height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
+		width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
+		margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
+		cursor: pointer;
+	`;
+});
 
-		return css`
-			height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
-			width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
-			margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
-			cursor: pointer;
-		`;
-	});
-
-export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: IconButtonsProps) => {
-	return (
-		!iconOnly ?
-			<Icon
-				disabled={disabled}
-				onClick={onClick}
-			>
-				{!icon || icon === 'Select Token' ? <QuestionMark style={{ width: 42, height: 42 }} /> :
-					// @ts-ignore
-					<Img
-						src={icons[icon]}
-						alt={icon}
-					/>}
-			</Icon> : !icon || icon === 'Select Token' ?
-				<QuestionMark style={{ width: 42, height: 42 }} /> :
+export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
+	return !iconOnly ? (
+		<Icon disabled={disabled} onClick={onClick}>
+			{!icon || icon === 'Select Token' ? (
+				<QuestionMark style={{ width: 42, height: 42 }} />
+			) : (
 				// @ts-ignore
-				<Img
-					src={icons[icon]}
-					alt={icon}
-					iconOnly
-				/>
+				<Img src={icons[icon]} alt={icon} />
+			)}
+		</Icon>
+	) : !icon || icon === 'Select Token' ? (
+		<QuestionMark style={{ width: 42, height: 42 }} />
+	) : (
+		// @ts-ignore
+		<Img src={icons[icon]} alt={icon} iconOnly />
 	);
 };

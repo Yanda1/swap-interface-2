@@ -6,7 +6,7 @@ import type { ColorType } from '../components';
 export enum VerificationEnum {
 	ACCOUNT = 'SET_ACCOUNT_CONNECTED',
 	NETWORK = 'SET_NETWORK_CONNECTED',
-	USER = 'SET_USER_VERIFIED',
+	USER = 'SET_USER_VERIFIED'
 }
 
 export enum ThemeEnum {
@@ -18,10 +18,11 @@ export enum DestinationNetworkEnum {
 	TOKEN = 'SET_DESTINATION_TOKEN',
 	ADDRESS = 'SET_DESTINATION_ADDRESS',
 	AMOUNT = 'SET_DESTINATION_AMOUNT',
+	MEMO = 'SET_DESTINATION_MEMO'
 }
 
 export enum KycEnum {
-	STATUS = 'SET_KYC_STATUS',
+	STATUS = 'SET_KYC_STATUS'
 }
 
 export enum KycStatusEnum {
@@ -30,11 +31,11 @@ export enum KycStatusEnum {
 	REVIEW = 'REVIEW',
 	PROCESS = 'PROCESS',
 	PASS = 'PASS',
-	REJECT = 'REJECT',
+	REJECT = 'REJECT'
 }
 
 export enum ButtonEnum {
-	BUTTON = 'SET_BUTTON_STATUS',
+	BUTTON = 'SET_BUTTON_STATUS'
 }
 
 type VerificationAction = {
@@ -63,7 +64,7 @@ type DestinationNetworkAction = {
 };
 
 type Action =
-	VerificationAction
+	| VerificationAction
 	| ButtonAction
 	| KycAction
 	| ThemeAction
@@ -80,6 +81,7 @@ type State = {
 	destinationToken: string;
 	destinationAddress: string;
 	destinationAmount: string;
+	destinationMemo: string;
 };
 
 type ButtonStatus = {
@@ -96,7 +98,7 @@ export const buttonText = {
 	CHANGE_NETWORK: 'Change Network',
 	PASS_KYC: 'Pass KYC',
 	CHECK_KYC: 'Check KYC',
-	GET_NONCE: 'Get Nonce',
+	GET_NONCE: 'Get Nonce'
 };
 
 export const buttonType: ButtonStatus = {
@@ -104,7 +106,7 @@ export const buttonType: ButtonStatus = {
 	CHANGE_NETWORK: { color: 'error', text: buttonText.CHANGE_NETWORK },
 	PASS_KYC: { color: 'warning', text: buttonText.PASS_KYC },
 	CHECK_KYC: { color: 'success', text: buttonText.CHECK_KYC },
-	GET_NONCE: { color: 'default', text: buttonText.GET_NONCE },
+	GET_NONCE: { color: 'default', text: buttonText.GET_NONCE }
 };
 
 const initialState: State = {
@@ -117,7 +119,8 @@ const initialState: State = {
 	destinationNetwork: 'Select Network',
 	destinationToken: 'Select Token',
 	destinationAddress: '',
-	destinationAmount: ''
+	destinationAmount: '',
+	destinationMemo: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -146,6 +149,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, destinationAddress: action.payload };
 		case DestinationNetworkEnum.AMOUNT:
 			return { ...state, destinationAmount: action.payload };
+		case DestinationNetworkEnum.MEMO:
+			return { ...state, destinationMemo: action.payload };
 		default:
 			return state;
 	}
@@ -160,14 +165,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		if (!isAccountConnected) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
-				payload: buttonType.CONNECT_WALLET,
+				payload: buttonType.CONNECT_WALLET
 			});
 		}
 
 		if (!isNetworkConnected && isAccountConnected) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
-				payload: buttonType.CHANGE_NETWORK,
+				payload: buttonType.CHANGE_NETWORK
 			});
 		}
 
@@ -178,7 +183,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
-				payload: buttonType.PASS_KYC,
+				payload: buttonType.PASS_KYC
 			});
 		}
 
@@ -189,7 +194,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
-				payload: buttonType.CHECK_KYC,
+				payload: buttonType.CHECK_KYC
 			});
 		}
 

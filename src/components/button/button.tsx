@@ -88,7 +88,14 @@ const StyledButton = styled.button(
 
 			&:focus-visible {
 				outline-offset: 2px;
-				outline: 1px solid ${isPrimary ? theme.button.default : isPure ? theme.pure : isLightTheme(theme) ? theme.button[setColor] : '#FFF'};
+				outline: 1px solid
+					${isPrimary
+						? theme.button.default
+						: isPure
+						? theme.pure
+						: isLightTheme(theme)
+						? theme.button[setColor]
+						: '#FFF'};
 			}
 
 			&:active {
@@ -98,15 +105,14 @@ const StyledButton = styled.button(
 	}
 );
 
-export const Button = (
-	{
-		children,
-		variant = 'primary',
-		color = 'default',
-		disabled = false,
-		icon,
-		onClick
-	}: Props) => {
+export const Button = ({
+	children,
+	variant = 'primary',
+	color = 'default',
+	disabled = false,
+	icon,
+	onClick
+}: Props) => {
 	return (
 		// @ts-ignore
 		<StyledButton
