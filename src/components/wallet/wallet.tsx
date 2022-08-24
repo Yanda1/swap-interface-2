@@ -67,7 +67,7 @@ export const Wallet = ({ balance, token, account }: Props) => {
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (
-		<Account theme={theme}>
+		<Account theme={theme} onClick={() => alert('here goes your modal, Ali :)')}>
 			{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
 			<JazzIcon account={account} />
 		</Account>
@@ -76,7 +76,7 @@ export const Wallet = ({ balance, token, account }: Props) => {
 			<Amount theme={theme}>
 				{balance} {token}
 			</Amount>
-			<Account theme={theme}>
+			<Account theme={theme} onClick={() => alert('here goes your modal, Ali :)')}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
 				<JazzIcon account={account} />
 			</Account>
