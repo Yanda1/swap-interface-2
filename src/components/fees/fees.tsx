@@ -112,7 +112,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 						BigNumber.from(calculatedTransactionFee)
 					);
 					setNetworkFee({
-						amount: Number(utils.formatEther(calculatedFee['_hex'])),
+						amount: Number(utils.formatEther(calculatedFee['_hex'])), // TODO: @daniel - is this correct conversion?
 						currency: token
 					});
 				} catch (err: any) {
@@ -153,7 +153,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 								x.symbol === graphPath.path[i] + graphPath.path[i + 1]
 						);
 						if (ticker) {
-							edgePrice = Number(ticker.price);
+							edgePrice = Number(ticker?.price);
 						} else {
 							ticker = allPrices.find(
 								(x: any) => x.symbol === graphPath.path[i + 1] + graphPath.path[i]
@@ -174,7 +174,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 		if (token !== 'Select Token' && network !== 'Select Network') {
 			// @ts-ignore
 			const tokenDetails = destinationNetworks[network]['tokens'][token];
-			setWithdrawalFee({ amount: tokenDetails?.['withdrawFee'], currency: token });
+			setWithdrawalFee({ amount: Number(tokenDetails?.['withdrawFee']), currency: token });
 		}
 	}, [network, token]);
 
@@ -184,11 +184,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	useEffect(() => {
 		setFeeSum({
-			amount:
-				networkFee.amount +
-				protocolFee.amount +
-				cexFee.reduce((prev, fee) => prev + fee.amount, 0) +
-				withdrawalFee.amount,
+			amount: networkFee.amount + protocolFee.amount + cexFee[0].amount + withdrawalFee.amount,
 			currency: 'GLMR'
 		});
 	}, [networkFee, cexFee, withdrawalFee, protocolFee]);

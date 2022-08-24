@@ -41,22 +41,21 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 
 	return (
 		<div data-testid="network">
-		<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
-			<ChildWrapper>
-			{networksList && networksList.length > 0 ? (
-				<>
-				<SelectList
-					value="NETWORK"
-					data={networksList}
-					placeholder="Network Name"
-				/>
-				<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />
-				) : <div>No available networks...</div>}
-				<Button disabled={isDisabled} onClick={() => setShowModal(!showModal)}>
-					{isDisabled ? 'Please select Network and Token' : 'Select'}
-				</Button>
-			</ChildWrapper>
-		</Modal>
-				</div>
+			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
+				<ChildWrapper>
+					{networksList && networksList.length > 0 ? (
+						<>
+							<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
+							<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />
+						</>
+					) : (
+						<div>No available networks...</div>
+					)}
+					<Button disabled={isDisabled} onClick={() => setShowModal(!showModal)}>
+						{isDisabled ? 'Please select Network and Token' : 'Select'}
+					</Button>
+				</ChildWrapper>
+			</Modal>
+		</div>
 	);
 };

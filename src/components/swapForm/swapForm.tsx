@@ -96,7 +96,7 @@ export const SwapForm = () => {
 	const isDisabled =
 		destinationNetwork === 'Select Network' ||
 		destinationToken === 'Select Token' ||
-		!destinationAmount ||
+		!amount ||
 		!destinationAddress ||
 		(hasMemo && !destinationMemo);
 
@@ -109,7 +109,7 @@ export const SwapForm = () => {
 					(pair: { symbol: string; price: string }) =>
 						pair.symbol === `${startToken}${destinationToken}`
 				);
-				setCurrentPrice(getSymbol.price);
+				setCurrentPrice(getSymbol?.price);
 			}
 		};
 		convertDestinationAmount();
@@ -160,11 +160,7 @@ export const SwapForm = () => {
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField
-							disabled
-							type="number"
-							value={destinationAmount.replace(/0*$/, '')}
-						/>
+						<TextField disabled type="number" value={destinationAmount.replace(/0*$/, '')} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
@@ -204,7 +200,7 @@ export const SwapForm = () => {
 				network={destinationNetwork}
 				address={destinationAddress}
 			/>
-			<Button onClick={handleSwap} disabled={!isDisabled}>
+			<Button onClick={handleSwap} disabled={isDisabled}>
 				Swap
 			</Button>
 		</Wrapper>
