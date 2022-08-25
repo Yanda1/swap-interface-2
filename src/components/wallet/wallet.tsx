@@ -39,7 +39,7 @@ const Amount = styled.div`
 	color: ${(props: StyledProps) => props.theme.font.pure};
 	padding: ${spacing[6]} ${spacing[14]};
 `;
-const Account = styled.div`
+const Account = styled.button`
 	background-color: ${(props: StyledProps) => props.theme.icon.default};
 	outline: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
 	border: 1px solid transparent;
@@ -52,6 +52,18 @@ const Account = styled.div`
 		${spacing[10]};
 	cursor: pointer;
 	margin-right: -1px;
+
+	&:hover {
+		opacity: 0.8;
+	}
+
+	&:active {
+		outline: none;
+	}
+
+	&:focus-visible {
+		border: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
+	}
 `;
 
 type Props = {

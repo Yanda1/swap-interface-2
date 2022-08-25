@@ -73,7 +73,6 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	const { chainId, library: web3Provider } = useEthers();
 	const gasPrice: any = useGasPrice();
-
 	// @ts-ignore
 	const contractAddress = CONTRACT_ADDRESSES[chainId];
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);

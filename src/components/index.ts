@@ -1,5 +1,6 @@
 export * from './header/header';
 export * from './button/button';
+export * from './button/swapButton';
 export * from './textField/textField';
 export * from './swapForm/swapForm';
 export * from './selectList/selectList';

@@ -76,7 +76,8 @@ const Menu = styled.ul`
 	padding: ${spacing[14]};
 	border-radius: ${pxToRem(6)};
 	cursor: pointer;
-	border: 1px solid ${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
+	border: 1px solid
+		${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -103,7 +104,6 @@ export const Header = () => {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [fireBinanceCall, setFireBinanceCall] = useState(false);
 	const [kycScriptLoaded, setKycScriptLoaded] = useState(false);
-	const [showWallet, setShowWallet] = useState(false);
 
 	const shouldMakeBinanceCall = kycToken && kycScriptLoaded && fireBinanceCall;
 
@@ -198,7 +198,6 @@ export const Header = () => {
 		if (!chainId) {
 			await checkNetwork();
 		}
-		setShowWallet(true);
 	};
 
 	return (
@@ -215,18 +214,14 @@ export const Header = () => {
 					Transaction History
 				</Button>
 			)}
-			{!showWallet && (
-				<Button
-					variant="secondary"
-					onClick={handleButtonClick}
-					color={buttonStatus.color as ColorType}>
-					{buttonStatus.text}
-				</Button>
-			)}
+			<Button
+				variant="secondary"
+				onClick={handleButtonClick}
+				color={buttonStatus.color as ColorType}>
+				{buttonStatus.text}
+			</Button>
 
-			{showWallet && balance && account && (
-				<Wallet balance={balance} token="GLMR" account={account} />
-			)}
+			{balance && account && <Wallet balance={balance} token="GLMR" account={account} />}
 
 			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}
