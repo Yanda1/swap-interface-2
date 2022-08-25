@@ -19,8 +19,6 @@ const Wrapper = styled.div(() => {
 		padding: 0 ${spacing[10]};
 		background: ${theme.background.default};
 		border-radius: ${pxToRem(6)};
-
-
 	`;
 });
 
@@ -70,7 +68,7 @@ const Item = styled.li((props: any) => {
 		margin: ${spacing[10]} 0;
 		border-radius: ${pxToRem(6)};
 		padding: ${spacing[12]} ${spacing[10]};
-		border: 1px solid ${props.activeBorder ? '#00bcd4' : 'transparent'};
+		border: 1px solid ${props.activeBorder ? theme.button.default : theme.button.transparent};
 	`;
 });
 

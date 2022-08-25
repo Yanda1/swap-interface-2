@@ -1,3 +1,5 @@
-/// <reference types="react-scripts" />
+// / <reference types="react-scripts" />
 declare module '*.ttf';
+declare module '*.svg';
 declare module '*.png';
+declare module '@metamask/jazzicon';

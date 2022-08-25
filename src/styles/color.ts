@@ -22,6 +22,7 @@ export type Theme = {
 		icon: string;
 		disabled: string;
 		success: string;
+		wallet: string;
 		transparent: string;
 	};
 	modal: {
@@ -35,14 +36,14 @@ export const lightTheme: Theme = {
 	pure: '#5A5A5A',
 	font: {
 		default: '#5A5A5A',
-		pure: '#5A5A5A',
+		pure: '#5A5A5A'
 	},
 	background: {
 		default: '#FFF',
 		mobile: '#F0F0F0'
 	},
 	icon: {
-		default: '#E8F0F6',
+		default: '#E8F0F6'
 	},
 	button: {
 		default: '#00A8E8',
@@ -51,17 +52,18 @@ export const lightTheme: Theme = {
 		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108',
+		wallet: '#505050',
 		transparent: 'transparent'
 	},
 	modal: {
-		default: '#212426',
+		default: '#212426'
 	}
 };
 
 export const darkTheme: Theme = {
 	name: 'dark',
 	default: '#8C8D8F', // TODO: refactor font colors
-	pure: '#FFF',  // TODO: refactor font colors
+	pure: '#FFF', // TODO: refactor font colors
 	font: {
 		default: '#8C8D8F',
 		pure: '#FFF'
@@ -71,7 +73,7 @@ export const darkTheme: Theme = {
 		mobile: '#1C2125'
 	},
 	icon: {
-		default: '#172631',
+		default: '#172631'
 	},
 	button: {
 		default: '#00A8E8',
@@ -80,9 +82,10 @@ export const darkTheme: Theme = {
 		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108',
+		wallet: '#505050',
 		transparent: 'transparent'
 	},
 	modal: {
-		default: '#212426',
+		default: '#212426'
 	}
 };
