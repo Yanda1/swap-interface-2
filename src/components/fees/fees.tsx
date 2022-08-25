@@ -197,7 +197,8 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			<Details color={theme.default}>
 				<div>
 					<p>Gas fee:</p>
-					<p>{networkFee.amount} GLMR</p> // TODO: check logic for currency
+					{/* TODO: check logic for currency */}
+					<p>{networkFee.amount} GLMR</p>
 				</div>
 				<div>
 					<p>Protocol fee:</p>
