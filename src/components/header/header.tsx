@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Moonbeam, useEtherBalance, useEthers } from '@usedapp/core';
-import { formatEther } from '@ethersproject/units';
+import { Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -94,7 +93,6 @@ export const Header = () => {
 	const menuRef = useRef<HTMLUListElement | null>(null);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
-	const etherBalance = useEtherBalance(account);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, null); // TODO: check logic for default value
 
@@ -129,7 +127,6 @@ export const Header = () => {
 			}
 		}
 	};
-	const balance = etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
@@ -221,7 +218,7 @@ export const Header = () => {
 				{buttonStatus.text}
 			</Button>
 
-			{balance && account && <Wallet balance={balance} token="GLMR" account={account} />}
+			{account && <Wallet token="GLMR" account={account} />}
 
 			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}

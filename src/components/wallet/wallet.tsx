@@ -1,6 +1,8 @@
 import { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
+import { useEtherBalance } from '@usedapp/core';
+import { formatEther } from '@ethersproject/units';
 import { useStore, useBreakpoint, isLightTheme } from '../../helpers';
 import { pxToRem, spacing } from '../../styles';
 import type { Theme } from '../../styles';
@@ -67,15 +69,17 @@ const Account = styled.button`
 `;
 
 type Props = {
-	balance: string;
 	token: string;
 	account: string;
 };
 
-export const Wallet = ({ balance, token, account }: Props) => {
+export const Wallet = ({ token, account }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
+
+	const etherBalance = useEtherBalance(account);
+	const balance = etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3);
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (
