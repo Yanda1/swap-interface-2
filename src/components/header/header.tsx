@@ -12,7 +12,14 @@ import { ReactComponent as Moon } from '../../assets/moon.svg';
 import type { Theme } from '../../styles';
 import { darkTheme, lightTheme, mediaQuery, pxToRem, spacing } from '../../styles';
 import {
+	apiCall,
+	BASE_URL,
+	ButtonEnum,
+	buttonType,
+	getAuthTokensFromNonce,
 	isLightTheme,
+	KycEnum,
+	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
@@ -26,7 +33,8 @@ import {
 	VerificationEnum
 } from '../../helpers';
 import type { ColorType } from '../../components';
-import { Button, Wallet } from '../../components';
+import { Button, Wallet, useToasts } from '../../components';
+import axios from 'axios';
 
 type Props = {
 	theme: Theme;
@@ -86,22 +94,23 @@ const Menu = styled.ul`
 export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
 	const { state, dispatch } = useStore();
-	const { theme, buttonStatus } = state;
+	const { theme, buttonStatus, isUserVerified } = state;
+	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH); // TODO: check logic for default value
+	// @ts-ignore
+	const { addToast } = useToasts();
+
 	const [showMenu, setShowMenu] = useState(false);
 	const [showModal, setShowModal] = useState(false);
-	const isLight = isLightTheme(theme);
-	const menuRef = useRef<HTMLUListElement | null>(null);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, null); // TODO: check logic for default value
-
 	const [authToken, setAuthToken] = useState('');
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const { kycStatus, kycToken } = useKyc(authToken);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [fireBinanceCall, setFireBinanceCall] = useState(false);
 	const [kycScriptLoaded, setKycScriptLoaded] = useState(false);
+	const menuRef = useRef<HTMLUListElement | null>(null);
+
+	const isLight = isLightTheme(theme);
+	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
 
 	const shouldMakeBinanceCall = kycToken && kycScriptLoaded && fireBinanceCall;
 
@@ -159,6 +168,103 @@ export const Header = () => {
 		// eslint-disable-next-line
 	}, [shouldMakeBinanceCall]);
 
+	useEffect(() => {
+		const getUserStatus = async (): Promise<void> => {
+			if (account && chainId && !storage) {
+				dispatch({
+					type: ButtonEnum.BUTTON,
+					payload: buttonType.PASS_KYC
+				});
+			}
+
+			if (account && chainId && storage) {
+				// @ts-ignore
+				if (account !== storage?.account) {
+					dispatch({
+						type: ButtonEnum.BUTTON,
+						payload: buttonType.PASS_KYC
+					});
+					dispatch({ type: VerificationEnum.USER, payload: false });
+					addToast(
+						'Please sign in with the account that has already passed KYC or start the KYC process again'
+					);
+				} else {
+					// @ts-ignore
+					if (storage.isKyced) {
+						dispatch({ type: KycEnum.STATUS, payload: KycStatusEnum.PASS });
+					} else {
+						try {
+							const tokenRes: any = await axios.request({
+								url: `${BASE_URL}${apiCall.kycToken}`,
+								headers: {
+									// @ts-ignore
+									Authorization: `Bearer ${storage.access}`
+								}
+							});
+							const statusRes: any = await axios.request({
+								url: `${BASE_URL}${apiCall.kycStatus}`,
+								headers: {
+									// @ts-ignore
+									Authorization: `Bearer ${storage.access}`
+								}
+							});
+							if (tokenRes.status === 200 && statusRes.status === 200) {
+								console.log('HERE ??? ', tokenRes.data.token);
+
+								makeBinanceKycCall(tokenRes.data.token);
+								dispatch({ type: KycEnum.STATUS, payload: statusRes.data.statusInfo.kycStatus }); // check typing
+								// @ts-ignore
+								setStorage({
+									...storage,
+									isKyced: statusRes.data.statusInfo.kycStatus === KycStatusEnum.PASS
+								});
+							} else {
+								try {
+									const tokenRes: any = await axios.request({
+										url: `${BASE_URL}${apiCall.kycToken}`,
+										headers: {
+											// @ts-ignore
+											Authorization: `Bearer ${storage.refresh}`
+										}
+									});
+									const statusRes: any = await axios.request({
+										url: `${BASE_URL}${apiCall.kycStatus}`,
+										headers: {
+											// @ts-ignore
+											Authorization: `Bearer ${storage.refresh}`
+										}
+									});
+									if (tokenRes.status === 200 && statusRes.status === 200) {
+										makeBinanceKycCall(tokenRes.data.token);
+										dispatch({
+											type: KycEnum.STATUS,
+											payload: statusRes.data.statusInfo.kycStatus
+										}); // check typing
+										// @ts-ignore
+										setStorage({
+											...storage,
+											isKyced: statusRes.data.statusInfo.kycStatus === KycStatusEnum.PASS
+										});
+									} else {
+										dispatch({
+											type: ButtonEnum.BUTTON,
+											payload: buttonType.GET_NONCE
+										});
+									}
+								} catch (err: any) {
+									addToast('We are sorry, something went wrong');
+								}
+							}
+						} catch (err: any) {
+							addToast('We are sorry, something went wrong');
+						}
+					}
+				}
+			}
+		};
+		void getUserStatus();
+	}, [account, buttonStatus, kycStatus, isUserVerified]); // toast, storage?
+
 	const changeTheme = (): void => {
 		const getTheme = isLight ? darkTheme : lightTheme;
 		dispatch({ type: ThemeEnum.THEME, payload: getTheme });
@@ -195,6 +301,34 @@ export const Header = () => {
 		if (!chainId) {
 			await checkNetwork();
 		}
+
+		if (account && chainId && library) {
+			try {
+				const res: { access: string; is_kyced: boolean; refresh: string } =
+					await getAuthTokensFromNonce(account, library);
+				console.log('res', res);
+				// @ts-ignore
+				setStorage({
+					account,
+					access: res.access,
+					refresh: res.refresh,
+					isKyced: res.is_kyced
+				}); // check with Daniel if this is the right place
+				try {
+					const tokenRes: { data: { token: string } } = await axios.request({
+						url: `${BASE_URL}${apiCall.kycToken}`,
+						headers: {
+							Authorization: `Bearer ${res.access}`
+						}
+					});
+					makeBinanceKycCall(tokenRes.data.token);
+				} catch (err: any) {
+					addToast('We are sorry, something went wrong');
+				}
+			} catch (err: any) {
+				addToast('Something went wrong in handleButtonClick call');
+			}
+		}
 	};
 
 	return (
@@ -211,14 +345,16 @@ export const Header = () => {
 					Transaction History
 				</Button>
 			)}
-			<Button
-				variant="secondary"
-				onClick={handleButtonClick}
-				color={buttonStatus.color as ColorType}>
-				{buttonStatus.text}
-			</Button>
-
-			{account && <Wallet token="GLMR" account={account} />}
+			{isUserVerified ? (
+				<Wallet token="GLMR" account={account} />
+			) : (
+				<Button
+					variant="secondary"
+					onClick={handleButtonClick}
+					color={buttonStatus.color as ColorType}>
+					{buttonStatus.text}
+				</Button>
+			)}
 
 			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}

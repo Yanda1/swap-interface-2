@@ -156,7 +156,7 @@ export const SwapForm = () => {
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField disabled type="number" value={destinationAmount.replace(/0*$/, '')} />
+						<TextField disabled type="number" value={destinationAmount} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
@@ -190,18 +190,18 @@ export const SwapForm = () => {
 					/>
 				</div>
 			)}
-			<Fees
+			{/* <Fees
 				amount={amount}
 				token={destinationToken}
 				network={destinationNetwork}
 				address={destinationAddress}
-			/>
-			<SwapButton
+			/> */}
+			{/* <SwapButton
 				ref={swapButtonRef}
 				hasMemo={hasMemo}
 				amount={amount.toString()}
 				onSubmit={handleSwap}
-			/>
+			/> */}
 		</Wrapper>
 	);
 };

@@ -43,8 +43,8 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 		!destinationAddress ||
 		(hasMemo && !destinationMemo);
 
-	console.log('depositState.status', depositState.status);
-	console.log('createStatus.status', createState.status);
+	// console.log('depositState.status', depositState.status);
+	// console.log('createStatus.status', createState.status);
 
 	// useEffect(() => {
 	// 	if (createState.status.toString() == 'Mining') {

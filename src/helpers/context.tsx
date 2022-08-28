@@ -201,6 +201,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		if (kycStatus === KycStatusEnum.PASS && isNetworkConnected && isAccountConnected) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		}
+
+		if (kycStatus !== KycStatusEnum.PASS || !isNetworkConnected || !isAccountConnected) {
+			dispatch({ type: VerificationEnum.USER, payload: false });
+		}
 	}, [isAccountConnected, isNetworkConnected, kycStatus]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
