@@ -83,7 +83,8 @@ export const SwapForm = () => {
 			destinationToken,
 			destinationAddress,
 			destinationAmount,
-			destinationMemo
+			destinationMemo,
+			isUserVerified
 		},
 		dispatch
 	} = useStore();
@@ -190,18 +191,22 @@ export const SwapForm = () => {
 					/>
 				</div>
 			)}
-			{/* <Fees
-				amount={amount}
-				token={destinationToken}
-				network={destinationNetwork}
-				address={destinationAddress}
-			/> */}
-			{/* <SwapButton
-				ref={swapButtonRef}
-				hasMemo={hasMemo}
-				amount={amount.toString()}
-				onSubmit={handleSwap}
-			/> */}
+			{isUserVerified && (
+				<Fees
+					amount={amount}
+					token={destinationToken}
+					network={destinationNetwork}
+					address={destinationAddress}
+				/>
+			)}
+			{isUserVerified && (
+				<SwapButton
+					ref={swapButtonRef}
+					hasMemo={hasMemo}
+					amount={amount.toString()}
+					onSubmit={handleSwap}
+				/>
+			)}
 		</Wrapper>
 	);
 };

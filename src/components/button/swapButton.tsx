@@ -22,13 +22,15 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 	if (web3Provider) {
 		contract.connect(web3Provider.getSigner());
 	}
-	const { state: createState, send: sendCreateProcess } = useContractFunction(
+	const { send: sendCreateProcess } = useContractFunction(
+		// TODO: add state for logs?
 		// @ts-ignore
 		contract,
 		'createProcess',
 		{ transactionName: 'Request Swap' }
 	);
-	const { sendTransaction, state: depositState } = useSendTransaction({
+	const { sendTransaction } = useSendTransaction({
+		// TODO: add state for logs?
 		transactionName: 'Deposit'
 	});
 
@@ -43,78 +45,9 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 		!destinationAddress ||
 		(hasMemo && !destinationMemo);
 
-	// console.log('depositState.status', depositState.status);
-	// console.log('createStatus.status', createState.status);
-
-	// useEffect(() => {
-	// 	if (createState.status.toString() == 'Mining') {
-	// 		toast({
-	// 			title: 'Waiting',
-	// 			description: 'Transaction is mining at this moment, soon it will be confirmed...',
-	// 			status: 'info',
-	// 			duration: 9000,
-	// 			isClosable: true
-	// 		});
-	// 	} else if (createState.status.toString() == 'Success') {
-	// 		toast({
-	// 			title: 'Confirmation',
-	// 			description: 'Swap request was successfully sent.\nNow waiting for a deposit approval...',
-	// 			status: 'success',
-	// 			duration: 9000,
-	// 			isClosable: true
-	// 		});
-	// 	} else if (createState.status.toString() == 'Exception') {
-	// 		toast({
-	// 			title: 'Something went wrong',
-	// 			description:
-	// 				"Looks like transaction wasn't signed and/or sent, \nplease try again if you didn't rejected it by yourself.",
-	// 			status: 'error',
-	// 			duration: 9000,
-	// 			isClosable: true
-	// 		});
-	// 	}
-	// }, [createState]);
-	// useEffect(() => {
-	// 	if (depositState.status.toString() == 'Mining') {
-	// 		toast({
-	// 			title: 'Waiting',
-	// 			description: 'Transaction is mining at this moment, soon it will be confirmed...',
-	// 			status: 'info',
-	// 			duration: 9000,
-	// 			isClosable: true
-	// 		});
-	// 	} else if (depositState.status.toString() == 'Success') {
-	// 		toast({
-	// 			title: 'Confirmation',
-	// 			description:
-	// 				'Your deposit have reached the contract.\nNow waiting for a broker to make the swap...',
-	// 			status: 'success',
-	// 			duration: 9000,
-	// 			isClosable: true
-	// 		});
-	// 	} else if (depositState.status.toString() == 'Exception') {
-	// 		toast({
-	// 			title: 'Something went wrong',
-	// 			description:
-	// 				"Looks like transaction wasn't signed and/or sent, \nplease try again if you didn't rejected it by yourself.",
-	// 			status: 'error',
-	// 			duration: 9000,
-	// 			isClosable: true
-	// 		});
-	// 	}
-	// }, [depositState]);
-
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
 			const productId = utils.id(makeId(32));
-			// const shortNamedValues = JSON.stringify({
-			//   'scoin': 'GLMR',
-			//   'samt': utils.parseEther(amount).toString(),
-			//   'fcoin': destCurrency,
-			//   'net': destNetwork,
-			//   'daddr': destAddr,
-			//   // 'tag': '',
-			// });
 
 			const namedValues = {
 				scoin: 'GLMR',
@@ -123,10 +56,6 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 				net: destinationNetwork,
 				daddr: destinationAddress
 			};
-
-			// if (tag) {
-			// 	namedValues.tag = tag;
-			// }
 
 			const shortNamedValues = JSON.stringify(namedValues);
 

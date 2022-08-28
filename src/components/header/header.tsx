@@ -27,7 +27,6 @@ import {
 	MOONBEAM_URL,
 	ThemeEnum,
 	useBreakpoint,
-	useKyc,
 	useLocalStorage,
 	useStore,
 	VerificationEnum
@@ -103,16 +102,11 @@ export const Header = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [authToken, setAuthToken] = useState('');
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { kycStatus, kycToken } = useKyc(authToken);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [fireBinanceCall, setFireBinanceCall] = useState(false);
 	const [kycScriptLoaded, setKycScriptLoaded] = useState(false);
 	const menuRef = useRef<HTMLUListElement | null>(null);
 
 	const isLight = isLightTheme(theme);
 	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
-
-	const shouldMakeBinanceCall = kycToken && kycScriptLoaded && fireBinanceCall;
 
 	const checkNetwork = async () => {
 		const NETWORK_PARAMS = [
@@ -163,13 +157,10 @@ export const Header = () => {
 		loadBinanceKycScript(() => {
 			setKycScriptLoaded(true);
 		});
-
-		if (shouldMakeBinanceCall) makeBinanceKycCall(kycToken);
-		// eslint-disable-next-line
-	}, [shouldMakeBinanceCall]);
+	}, []);
 
 	useEffect(() => {
-		const getUserStatus = async (): Promise<void> => {
+		const checkUsersKycStatus = async (): Promise<void> => {
 			if (account && chainId && !storage) {
 				dispatch({
 					type: ButtonEnum.BUTTON,
@@ -209,8 +200,6 @@ export const Header = () => {
 								}
 							});
 							if (tokenRes.status === 200 && statusRes.status === 200) {
-								console.log('HERE ??? ', tokenRes.data.token);
-
 								makeBinanceKycCall(tokenRes.data.token);
 								dispatch({ type: KycEnum.STATUS, payload: statusRes.data.statusInfo.kycStatus }); // check typing
 								// @ts-ignore
@@ -262,8 +251,8 @@ export const Header = () => {
 				}
 			}
 		};
-		void getUserStatus();
-	}, [account, buttonStatus, kycStatus, isUserVerified]); // toast, storage?
+		void checkUsersKycStatus();
+	}, [account, buttonStatus, isUserVerified]); // toast, storage?
 
 	const changeTheme = (): void => {
 		const getTheme = isLight ? darkTheme : lightTheme;
@@ -345,7 +334,7 @@ export const Header = () => {
 					Transaction History
 				</Button>
 			)}
-			{isUserVerified ? (
+			{isUserVerified && account ? (
 				<Wallet token="GLMR" account={account} />
 			) : (
 				<Button
