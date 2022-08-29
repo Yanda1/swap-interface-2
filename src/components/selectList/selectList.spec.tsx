@@ -10,10 +10,7 @@ describe('SelectList', () => {
 	it('should render a select list with 3 items', () => {
 		const { getByRole, getByText, getAllByRole, getByTestId } = render(
 			<AuthProvider>
-				<SelectList
-					value="NETWORK"
-					data={networksList}
-					placeholder="Network Name" />
+				<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 			</AuthProvider>
 		);
 
@@ -43,7 +40,8 @@ describe('SelectList', () => {
 			line-height: ${fontSize[22]};
 			color: ${darkTheme.font.pure};
 			margin: ${spacing[20]} ${spacing[12]} ${spacing[12]};
-			`);
+			`
+		);
 
 		expect(input).toHaveStyle(
 			`
@@ -58,7 +56,8 @@ describe('SelectList', () => {
 			cursor: pointer;
 			transition: all 0.2s ease-in-out;
 			width: calc(100% - ${pxToRem(26)});
-			`);
+			`
+		);
 
 		void userEvent.hover(input);
 		expect(input).toHaveStyleRule('border-color', `${darkTheme.font.pure}`, {
@@ -78,7 +77,8 @@ describe('SelectList', () => {
 			`
 			overflow-y: auto;
 			padding: 0;
-			`);
+			`
+		);
 
 		expect(getAllByRole('listitem').length).toBe(networksList.length);
 		expect(listItem).toHaveAttribute('value', 'NETWORK');
@@ -93,14 +93,16 @@ describe('SelectList', () => {
 			margin: ${spacing[10]} 0;
 			border-radius: ${pxToRem(6)};
 			padding: ${spacing[12]} ${spacing[10]};
-			border: 1px solid transparent;`);
+			border: 1px solid transparent;`
+		);
 
 		expect(icon).toHaveStyle(
 			`
 			cursor: pointer;
 			margin-right: ${spacing[10]};
 			width: ${pxToRem(25)};
-			height: ${pxToRem(25)};`);
+			height: ${pxToRem(25)};`
+		);
 
 		expect(icon).toHaveAttribute('src', 'ETH.png');
 	});
@@ -109,10 +111,7 @@ describe('SelectList', () => {
 		const networksList: any = [];
 		const { getByTestId } = render(
 			<AuthProvider>
-				<SelectList
-					value="NETWORK"
-					data={networksList}
-					placeholder="Network Name" />
+				<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 			</AuthProvider>
 		);
 

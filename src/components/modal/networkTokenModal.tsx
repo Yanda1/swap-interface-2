@@ -37,7 +37,8 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const [isMobile, setIsMobile] = useState(isBreakpointWidth);
 	const [isShowList, setIsShowList] = useState(true);
 	const {
-		dispatch, state: { destinationNetwork, destinationToken }
+		dispatch,
+		state: { destinationNetwork, destinationToken }
 	} = useStore();
 	useEffect(() => {
 		setIsMobile(isBreakpointWidth);
@@ -63,9 +64,9 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 	};
 
-	return (
-		!isMobile ? <div data-testid='network'>
-			<Modal showModal={showModal} setShowModal={setShowModal} background='mobile'>
+	return !isMobile ? (
+		<div data-testid="network">
+			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
 					{networksList && networksList.length > 0 ? (
 						<>
@@ -80,29 +81,42 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 					</Button>
 				</ChildWrapper>
 			</Modal>
-		</div> : <div data-testid='network'>
-			<Modal showModal={showModal} setShowModal={setShowModal} background='mobile'>
+		</div>
+	) : (
+		<div data-testid="network">
+			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
 					{networksList && networksList.length > 0 ? (
 						<>
-							{isShowList &&
-								<SelectList value='NETWORK' data={networksList} placeholder='Network Name' />}
-							{!isShowList &&
-								<SelectList value='TOKEN' data={networkTokensList} placeholder='Token Name' />}
+							{isShowList && (
+								<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
+							)}
+							{!isShowList && (
+								<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />
+							)}
 						</>
 					) : (
 						<div>No available networks...</div>
 					)}
-					{isShowList &&
-						<Button onClick={() => setIsShowList(false)}
-										color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
-										disabled={destinationNetwork === 'Select Network'}>NEXT</Button>}
-					{!isShowList && <Button disabled={isDisabled} onClick={handleSubmit} color='default'>
-						{isDisabled ? 'Please select Network and Token' : 'Select'}
-					</Button>}
-					<BackContainer>
-						{!isShowList && <Button onClick={handleBack} variant='pure'>&#8592;Back</Button>}
-					</BackContainer>
+					{isShowList && (
+						<Button
+							onClick={() => setIsShowList(false)}
+							// @ts-ignore
+							color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
+							disabled={destinationNetwork === 'Select Network'}>
+							NEXT
+						</Button>
+					)}
+					{!isShowList && (
+						<Button disabled={isDisabled} onClick={handleSubmit} color="default">
+							{isDisabled ? 'Please select Network and Token' : 'Select'}
+						</Button>
+					)}
+					{!isShowList && (
+						<Button onClick={handleBack} color="default">
+							BACK
+						</Button>
+					)}
 				</ChildWrapper>
 			</Modal>
 		</div>

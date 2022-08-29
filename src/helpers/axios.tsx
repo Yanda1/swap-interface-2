@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Buffer } from 'buffer';
 import {
 	BASE_URL,
 	BINANCE_DEV_URL,
@@ -16,11 +17,11 @@ export enum STATUS_ENUM {
 }
 
 type LocalStorageProps = {
-	is_kyced: string;
+	isKyced: boolean;
 	refresh: string;
 	access: string;
 	account: string;
-} | null;
+};
 
 export const apiCall = {
 	getNonce: 'nonce?address=',
@@ -63,17 +64,24 @@ export const makeBinanceKycCall = (authToken: string) => {
 	});
 };
 
-const getStorageValue = (key: string, defaultValue: LocalStorageProps) => {
+const getStorageValue = (key: string) => {
+	const defaultValue = {
+		access: '',
+		refresh: '',
+		account: '',
+		isKyced: false
+	} as LocalStorageProps;
+
 	if (typeof window !== 'undefined') {
 		const saved = localStorage.getItem(key);
 
-		return saved !== null ? (JSON.parse(saved) as object) : defaultValue;
+		return saved ? (JSON.parse(saved) as LocalStorageProps) : defaultValue;
 	}
 };
 
-export const useLocalStorage = (key: string, defaultValue: LocalStorageProps) => {
+export const useLocalStorage = (key: string) => {
 	const [value, setValue] = useState(() => {
-		return getStorageValue(key, defaultValue);
+		return getStorageValue(key);
 	});
 
 	useEffect(() => {
@@ -98,7 +106,7 @@ export const getAuthTokensFromNonce = async (account: string, library: any) => {
 					data: { address: account, signature }
 				});
 
-				return tokenRes.data as string; // TODO: if is_kyced TRUE store in localStorage
+				return tokenRes.data as { access: string; is_kyced: boolean; refresh: string }; // TODO: define Type
 			} catch (err: any) {
 				throw new Error(err);
 			}
