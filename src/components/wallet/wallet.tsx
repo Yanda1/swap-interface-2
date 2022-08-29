@@ -1,16 +1,17 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
-import { useStore, useBreakpoint, isLightTheme } from '../../helpers';
-import { pxToRem, spacing } from '../../styles';
+import { isLightTheme, useBreakpoint, useStore } from '../../helpers';
 import type { Theme } from '../../styles';
+import { pxToRem, spacing } from '../../styles';
+import { WalletModal } from '../modal/walletModal';
 
 const StyledJazzIcon = styled.div`
 	height: ${pxToRem(16)};
 	width: ${pxToRem(16)};
 `;
 
-const JazzIcon = ({ account }: { account: string }) => {
+export const JazzIcon = ({ account }: { account: string }) => {
 	const ref = useRef<HTMLDivElement>();
 
 	useEffect(() => {
@@ -47,9 +48,8 @@ const Account = styled.div`
 	border-radius: ${pxToRem(6)};
 	display: flex;
 	gap: ${spacing[4]};
-	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))}
-		// TODO: mixing spacing & pxToRem is far from ideal
-		${spacing[10]};
+	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))} // TODO: mixing spacing & pxToRem is far from ideal
+	${spacing[10]};
 	cursor: pointer;
 	margin-right: -1px;
 `;
@@ -61,22 +61,28 @@ type Props = {
 };
 
 export const Wallet = ({ balance, token, account }: Props) => {
+	const [showModal, setShowModal] = useState(false);
+	const openModal = () => setShowModal(!showModal);
 	const {
 		state: { theme }
 	} = useStore();
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (
-		<Account theme={theme} onClick={() => alert('here goes your modal, Ali :)')}>
-			{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-			<JazzIcon account={account} />
-		</Account>
+		<>
+			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
+			<Account theme={theme} onClick={openModal}>
+				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
+				<JazzIcon account={account} />
+			</Account>
+		</>
 	) : (
 		<Wrapper theme={theme}>
+			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Amount theme={theme}>
 				{balance} {token}
 			</Amount>
-			<Account theme={theme} onClick={() => alert('here goes your modal, Ali :)')}>
+			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
 				<JazzIcon account={account} />
 			</Account>

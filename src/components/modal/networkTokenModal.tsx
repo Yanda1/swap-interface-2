@@ -21,6 +21,11 @@ const ChildWrapper = styled.div`
 	}
 `;
 
+const BackContainer = styled.div`
+	text-align: center;
+`;
+
+
 type Props = {
 	showModal: boolean;
 	setShowModal: (prev: boolean) => void;
@@ -59,31 +64,31 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	};
 
 	return (
-		!isMobile ? <div data-testid="network">
-			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
+		!isMobile ? <div data-testid='network'>
+			<Modal showModal={showModal} setShowModal={setShowModal} background='mobile'>
 				<ChildWrapper>
 					{networksList && networksList.length > 0 ? (
 						<>
-							<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
-							<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />
+							<SelectList value='NETWORK' data={networksList} placeholder='Network Name' />
+							<SelectList value='TOKEN' data={networkTokensList} placeholder='Token Name' />
 						</>
 					) : (
 						<div>No available networks...</div>
 					)}
-					<Button disabled={isDisabled} onClick={handleSubmit} color="default">
+					<Button disabled={isDisabled} onClick={handleSubmit} color='default'>
 						{isDisabled ? 'Please select Network and Token' : 'Select'}
 					</Button>
 				</ChildWrapper>
 			</Modal>
-		</div> : <div data-testid="network">
-			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
+		</div> : <div data-testid='network'>
+			<Modal showModal={showModal} setShowModal={setShowModal} background='mobile'>
 				<ChildWrapper>
 					{networksList && networksList.length > 0 ? (
 						<>
 							{isShowList &&
-								<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />}
+								<SelectList value='NETWORK' data={networksList} placeholder='Network Name' />}
 							{!isShowList &&
-								<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />}
+								<SelectList value='TOKEN' data={networkTokensList} placeholder='Token Name' />}
 						</>
 					) : (
 						<div>No available networks...</div>
@@ -92,10 +97,12 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 						<Button onClick={() => setIsShowList(false)}
 										color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
 										disabled={destinationNetwork === 'Select Network'}>NEXT</Button>}
-					{!isShowList && <Button disabled={isDisabled} onClick={handleSubmit} color="default">
+					{!isShowList && <Button disabled={isDisabled} onClick={handleSubmit} color='default'>
 						{isDisabled ? 'Please select Network and Token' : 'Select'}
 					</Button>}
-					{!isShowList && <Button onClick={handleBack} color="default">BACK</Button>}
+					<BackContainer>
+						{!isShowList && <Button onClick={handleBack} variant='pure'>&#8592;Back</Button>}
+					</BackContainer>
 				</ChildWrapper>
 			</Modal>
 		</div>
