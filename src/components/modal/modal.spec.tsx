@@ -35,22 +35,22 @@ describe('Modal', () => {
 		const mobileMedia = '(max-width:375px)';
 
 		expect(modal).toHaveStyleRule('max-width', `${pxToRem(347)}`, {
-			media: mobileMedia,
+			media: mobileMedia
 		});
 		expect(modal).toHaveStyleRule('width', `calc(100% - ${pxToRem(10)})`, {
-			media: mobileMedia,
+			media: mobileMedia
 		});
 		expect(modal).toHaveStyleRule('border-radius', `${pxToRem(28)}`, {
-			media: mobileMedia,
+			media: mobileMedia
 		});
 		expect(modal).toHaveStyleRule('border', 'none', {
-			media: mobileMedia,
+			media: mobileMedia
 		});
 		expect(modal).toHaveStyleRule('margin', '0 auto', {
-			media: mobileMedia,
+			media: mobileMedia
 		});
 		expect(modal).toHaveStyleRule('margin-top', `${spacing[48]}`, {
-			media: mobileMedia,
+			media: mobileMedia
 		});
 
 		const closeIcon = getByText('✖');
@@ -67,17 +67,16 @@ describe('Modal', () => {
 	});
 
 	it('should render modal with small size and default background', () => {
-			const { getByTestId } = render(
-				<AuthProvider>
-					<Modal showModal setShowModal={() => console.log()} background="default" width="small" />
-				</AuthProvider>
-			);
+		const { getByTestId } = render(
+			<AuthProvider>
+				<Modal showModal setShowModal={() => console.log()} background="default" width="small" />
+			</AuthProvider>
+		);
 
-			const modal = getByTestId('modal-container');
-			expect(modal).toHaveStyle(`
+		const modal = getByTestId('modal-container');
+		expect(modal).toHaveStyle(`
 			width: ${pxToRem(478)};
 			background-color: ${darkTheme.background.default};
 			`);
-		}
-	);
+	});
 });

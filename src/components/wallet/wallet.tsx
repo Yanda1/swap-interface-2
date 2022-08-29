@@ -1,6 +1,8 @@
 import { useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
+import { useEtherBalance } from '@usedapp/core';
+import { formatEther } from '@ethersproject/units';
 import { useStore, useBreakpoint, isLightTheme } from '../../helpers';
 import { pxToRem, spacing } from '../../styles';
 import type { Theme } from '../../styles';
@@ -39,7 +41,7 @@ const Amount = styled.div`
 	color: ${(props: StyledProps) => props.theme.font.pure};
 	padding: ${spacing[6]} ${spacing[14]};
 `;
-const Account = styled.div`
+const Account = styled.button`
 	background-color: ${(props: StyledProps) => props.theme.icon.default};
 	outline: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
 	border: 1px solid transparent;
@@ -52,18 +54,32 @@ const Account = styled.div`
 		${spacing[10]};
 	cursor: pointer;
 	margin-right: -1px;
+
+	&:hover {
+		opacity: 0.8;
+	}
+
+	&:active {
+		outline: none;
+	}
+
+	&:focus-visible {
+		border: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
+	}
 `;
 
 type Props = {
-	balance: string;
 	token: string;
 	account: string;
 };
 
-export const Wallet = ({ balance, token, account }: Props) => {
+export const Wallet = ({ token, account }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
+
+	const etherBalance = useEtherBalance(account);
+	const balance = etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3);
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (

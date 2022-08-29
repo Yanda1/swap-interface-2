@@ -17,7 +17,9 @@ describe('IconButton', () => {
 
 		expect(img).toBeInTheDocument();
 		expect(img).toHaveAttribute('alt', 'GLMR');
-		expect(img).toHaveStyle(`width: ${pxToRem(42)}; height: ${pxToRem(42)}; cursor: pointer; margin-right: ${pxToRem(0)};`);
+		expect(img).toHaveStyle(
+			`width: ${pxToRem(42)}; height: ${pxToRem(42)}; cursor: pointer; margin-right: ${pxToRem(0)};`
+		);
 
 		expect(btn).toMatchSnapshot();
 		expect(btn).toBeInTheDocument();
@@ -27,11 +29,11 @@ describe('IconButton', () => {
 			padding: ${spacing[8]};
 			border: 1px solid ${darkTheme.default};
 			border-radius: ${pxToRem(6)};
-			`);
+			`
+		);
 
 		expect(btn).toContainElement(img);
 		expect(btn).toHaveAttribute('disabled');
-
 
 		void userEvent.hover(btn);
 		expect(btn).toHaveStyleRule('opacity', '0.8', {
@@ -56,6 +58,8 @@ describe('IconButton', () => {
 
 		expect(img).toBeInTheDocument();
 		expect(img).toHaveAttribute('alt', 'GLMR');
-		expect(img).toHaveStyle(`width: ${pxToRem(25)}; height: ${pxToRem(25)}; cursor: pointer; margin-right: ${pxToRem(10)}`);
+		expect(img).toHaveStyle(
+			`width: ${pxToRem(25)}; height: ${pxToRem(25)}; cursor: pointer; margin-right: ${pxToRem(10)}`
+		);
 	});
 });

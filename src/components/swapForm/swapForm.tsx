@@ -1,11 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { mediaQuery, pxToRem, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import { DestinationNetworkEnum, isLightTheme, startToken, useBinanceApi, useStore } from '../../helpers';
-import { Button, Fees, IconButton, NetworkTokenModal, TextField } from '../../components';
+import {
+	DestinationNetworkEnum,
+	isLightTheme,
+	startToken,
+	useBinanceApi,
+	useStore
+} from '../../helpers';
+import { SwapButton, Fees, IconButton, NetworkTokenModal, TextField } from '../../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -77,7 +83,8 @@ export const SwapForm = () => {
 			destinationToken,
 			destinationAddress,
 			destinationAmount,
-			destinationMemo
+			destinationMemo,
+			isUserVerified
 		},
 		dispatch
 	} = useStore();
@@ -86,13 +93,7 @@ export const SwapForm = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
-
-	const isDisabled =
-		destinationNetwork === 'Select Network' ||
-		destinationToken === 'Select Token' ||
-		!amount ||
-		!destinationAddress ||
-		(hasMemo && !destinationMemo);
+	const swapButtonRef = useRef();
 
 	const openModal = () => setShowModal(!showModal);
 
@@ -124,6 +125,8 @@ export const SwapForm = () => {
 
 	const handleSwap = (): void => {
 		console.log({ destinationAmount, destinationToken, destinationAddress, destinationNetwork });
+		// @ts-ignore
+		swapButtonRef.current.onSubmit();
 	};
 
 	return (
@@ -154,7 +157,7 @@ export const SwapForm = () => {
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField disabled type="number" value={destinationAmount.replace(/0*$/, '')} />
+						<TextField disabled type="number" value={destinationAmount} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
@@ -188,15 +191,22 @@ export const SwapForm = () => {
 					/>
 				</div>
 			)}
-			<Fees
-				amount={amount}
-				token={destinationToken}
-				network={destinationNetwork}
-				address={destinationAddress}
-			/>
-			<Button onClick={handleSwap} disabled={isDisabled} color="default">
-				Swap
-			</Button>
+			{isUserVerified && (
+				<Fees
+					amount={amount}
+					token={destinationToken}
+					network={destinationNetwork}
+					address={destinationAddress}
+				/>
+			)}
+			{isUserVerified && (
+				<SwapButton
+					ref={swapButtonRef}
+					hasMemo={hasMemo}
+					amount={amount.toString()}
+					onSubmit={handleSwap}
+				/>
+			)}
 		</Wrapper>
 	);
 };
