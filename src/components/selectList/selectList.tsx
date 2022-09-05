@@ -1,9 +1,9 @@
-import { useCallback, useState } from 'react';
-import styled, { css } from 'styled-components';
-import { DestinationNetworkEnum, useStore } from '../../helpers';
-import { fontSize, pxToRem, spacing } from '../../styles';
-import { IconButton } from '../iconButton/iconButton';
-import { TextField } from '../textField/textField';
+import {useCallback, useState} from 'react';
+import styled, {css} from 'styled-components';
+import {DestinationNetworkEnum, useStore} from '../../helpers';
+import {fontSize, pxToRem, spacing} from '../../styles';
+import {IconButton} from '../iconButton/iconButton';
+import {TextField} from '../textField/textField';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -26,7 +26,7 @@ type Props = {
 	data: any;
 	placeholder: string;
 	handleSelect?: (network: string, token: string) => void;
-	value: 'NETWORK' | 'TOKEN';
+	value: 'NETWORK' | 'TOKEN' | 'WALLET';
 };
 
 const Title = styled.div(() => {
@@ -79,17 +79,20 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: { destinationToken, destinationNetwork }
+		state: { destinationToken, destinationNetwork, destinationWallet }
 	} = useStore();
 
 	const handleClick = useCallback(
 		(e: any) => {
+			if (value === 'WALLET') {
+				dispatch({ type: DestinationNetworkEnum.WALLET, payload: e.target.textContent})
+			}
 			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
 			if (value === 'NETWORK') {
 				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 			}
 		},
-		[destinationToken, destinationNetwork]
+		[destinationToken, destinationNetwork, destinationWallet]
 	);
 
 	return (
@@ -107,7 +110,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 						{data.length > 0 &&
 							dataList.map((el: string) => {
 								const hasActiveBorder =
-									value === 'NETWORK' ? destinationNetwork === el : destinationToken === el;
+									value === 'NETWORK' ? destinationNetwork === el : value === 'TOKEN' ? destinationToken === el : destinationWallet === el;
 
 								return (
 									<Item

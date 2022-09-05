@@ -68,7 +68,6 @@ const AccountNumber = styled.div(() => {
 });
 
 const CopyContainer = styled.div(({ isCopied }: Props) => {
-
 	const { state: { theme } } = useStore();
 
 	return css`
@@ -106,7 +105,6 @@ const IconContainer = styled.div(() => {
 });
 
 export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
-	console.log(typeof account);
 	const { isBreakpointWidth } = useBreakpoint('xs');
 	const { deactivate } = useEthers();
 	const { dispatch } = useStore();

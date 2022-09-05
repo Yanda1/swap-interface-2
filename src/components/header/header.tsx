@@ -34,6 +34,7 @@ import {
 import type { ColorType } from '../../components';
 import { Button, Wallet, useToasts } from '../../components';
 import axios from 'axios';
+import { Network } from "../../components";
 
 type Props = {
 	theme: Theme;
@@ -178,7 +179,7 @@ export const Header = () => {
 					dispatch({ type: VerificationEnum.USER, payload: false });
 					addToast(
 						'Please sign in with the account that has already passed KYC or start the KYC process again'
-					);
+					, 'warning');
 				} else {
 					// @ts-ignore
 					if (storage.isKyced) {
@@ -241,11 +242,11 @@ export const Header = () => {
 										});
 									}
 								} catch (err: any) {
-									addToast('We are sorry, something went wrong');
+									addToast('We are sorry, something went wrong', 'error');
 								}
 							}
 						} catch (err: any) {
-							addToast('We are sorry, something went wrong');
+							addToast('We are sorry, something went wrong', 'error');
 						}
 					}
 				}
@@ -312,10 +313,10 @@ export const Header = () => {
 					});
 					makeBinanceKycCall(tokenRes.data.token);
 				} catch (err: any) {
-					addToast('We are sorry, something went wrong');
+					addToast('We are sorry, something went wrong', 'error');
 				}
 			} catch (err: any) {
-				addToast('Something went wrong in handleButtonClick call');
+				addToast('Something went wrong in handleButtonClick call', 'error');
 			}
 		}
 	};
@@ -334,6 +335,8 @@ export const Header = () => {
 					Transaction History
 				</Button>
 			)}
+			<Button onClick={() => setShowModal(true)} icon='metamask' variant='secondary'>Metamask</Button>
+			{showModal && <Network showModal={showModal} setShowModal={setShowModal}/>}
 			{isUserVerified && account ? (
 				<Wallet token="GLMR" account={account} />
 			) : (

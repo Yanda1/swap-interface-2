@@ -10,3 +10,4 @@ export * from './iconButton/iconButton';
 export * from './fees/fees';
 export * from './toast/toast';
 export * from './wallet/wallet';
+export * from './network/network';

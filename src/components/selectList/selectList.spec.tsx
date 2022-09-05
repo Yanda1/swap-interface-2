@@ -128,4 +128,12 @@ describe('SelectList', () => {
 		margin: ${spacing[20]} ${spacing[12]} ${spacing[12]};
 		`);
 	});
+
+	it('the state should changing on clicked item', () => {
+		const {getByTestId} = render(
+			<AuthProvider>
+				<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
+			</AuthProvider>
+		);
+	})
 });
