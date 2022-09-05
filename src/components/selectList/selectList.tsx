@@ -85,7 +85,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	const handleClick = useCallback(
 		(e: any) => {
 			if (value === 'WALLET') {
-				dispatch({ type: DestinationNetworkEnum.WALLET, payload: e.target.textContent})
+				dispatch({ type: DestinationNetworkEnum.WALLET, payload: e.target.textContent});
 			}
 			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
 			if (value === 'NETWORK') {

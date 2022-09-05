@@ -21,11 +21,6 @@ const ChildWrapper = styled.div`
 	}
 `;
 
-const BackContainer = styled.div`
-	text-align: center;
-`;
-
-
 type Props = {
 	showModal: boolean;
 	setShowModal: (prev: boolean) => void;

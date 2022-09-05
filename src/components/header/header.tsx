@@ -34,7 +34,7 @@ import {
 import type { ColorType } from '../../components';
 import { Button, Wallet, useToasts } from '../../components';
 import axios from 'axios';
-import { Network } from "../../components";
+import { Network } from '../../components';
 
 type Props = {
 	theme: Theme;

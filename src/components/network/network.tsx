@@ -1,13 +1,13 @@
-import {Modal} from "../modal/modal";
-import {SelectList} from "../selectList/selectList";
-import {Button} from "../button/button";
-import styled from "styled-components";
-import {fontSize, pxToRem, spacing} from "../../styles";
+import {Modal} from '../modal/modal';
+import {SelectList} from '../selectList/selectList';
+import {Button} from '../button/button';
+import styled from 'styled-components';
+import {fontSize, pxToRem, spacing} from '../../styles';
 
 type Props = {
 	showModal: boolean;
 	setShowModal: (showModal: boolean) => void;
-}
+};
 
 const ModalContainer = styled.div`
 	display: flex;
@@ -39,5 +39,5 @@ export const Network = ({showModal, setShowModal}: Props) => {
 				<Button onClick={handleClick}>Select</Button>
 			</ModalContainer>
 		</Modal>
-	)
+	);
 };
