@@ -1,7 +1,8 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled from 'styled-components';
 import {fontSize, pxToRem, spacing} from '../../styles';
 import {useStore} from '../../helpers';
+import {IconButton} from '../iconButton/iconButton';
 
 const ToastContext = createContext(undefined);
 
@@ -13,7 +14,8 @@ const ToastContainer = styled.div`
 
 type Props = {
 	message: string;
-	type?: 'default' | 'warning' | 'error' | 'success';
+	type: 'default' | 'warning' | 'error' | 'success';
+	timer?: number;
 	onDismiss: () => void;
 };
 
@@ -22,8 +24,10 @@ const Toast = ({ message, onDismiss, type }: Props) => {
 
 	return <div
 		style={{
-			background: type ? `${theme.button[type]}` : 'LemonChiffon',
-			color: '#FFF',
+			display: 'flex',
+			alignItems: 'center',
+			background: `${theme.button[type]}`,
+			color: `${theme.font.pure}`,
 			cursor: 'pointer',
 			fontSize: `${fontSize[14]}`,
 			margin: `${spacing[10]}`,
@@ -31,6 +35,11 @@ const Toast = ({ message, onDismiss, type }: Props) => {
 			borderRadius: `${pxToRem(4)}`
 	}}
 		onClick={onDismiss}>
+		<IconButton
+			// @ts-ignore
+			icon={type.toUpperCase()}
+			iconOnly
+		/>
 		{message}
 	</div>;
 };
@@ -38,17 +47,18 @@ const Toast = ({ message, onDismiss, type }: Props) => {
 let toastCount = 0;
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [toasts, setToasts] = useState<{ message: string; id: number; type: string }[]>
+	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>
 	([
-		{message: 'Wallet was successfully connected.', id: 1, type: 'default'},
-		{message: 'Something went wrong in handleButtonClick call.', id: 2, type: 'error'},
-		{message: 'Please check destination address', id: 3, type: 'warning'},
-		{message: 'Swap was ended!.', id: 4, type: 'success'}
+		{message: 'Wallet was successfully connected!', id: 130, type: 'default', timer: 2000},
+		{message: 'Swap was ended!', id: 230, type: 'success', timer: 2000},
+		{message: 'Swap was paused!', id: 330, type: 'warning', timer: 2000},
+		{message: 'Transaction was failed!', id: 430, type: 'error', timer: 2000}
 	]);
 
-	const addToast = (message: string, type: string) => {
+	const addToast = (message: string, type: string, timer = 5000) => {
 		const id = toastCount++;
-		const toast = { message, id, type };
+		const toast = { message, id, type, timer };
+		console.log({message, timer});
 		setToasts([...toasts, toast]);
 	};
 	const remove = (id: number) => {
@@ -59,12 +69,11 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 	// avoid creating a new fn on every render
 	const onDismiss = (id: number) => () => remove(id);
 
-	setTimeout(() => {
-		if(toasts.length > 0) {
-			// remove(toasts[toasts.length - 1].id);
-			setToasts(prev => prev.filter(toast => toast !== toasts[toasts.length - 1]));
-		}
-	}, 5000);
+	if (toasts.length > 0) {
+		setTimeout(() => {
+				setToasts(prev => prev.filter(toast => toast !== toasts[toasts.length - 1]));
+		}, toasts[toasts.length - 1].timer);
+	}
 
 	return (
 		// @ts-ignore

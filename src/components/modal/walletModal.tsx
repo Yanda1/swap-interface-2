@@ -14,13 +14,25 @@ type Props = {
 	isCopied?: boolean;
 };
 
-const ModalWrapper = styled.div`
-	margin: ${pxToRem(10)} 0 0 ${pxToRem(26)};
+const ModalWrapper = styled.div(() => {
+	const {state: {theme}} = useStore();
+
+	return css`
+	display: flex;
+	align-items: center;
+	padding: ${spacing[18]} ${spacing[46]} 0 ${spacing[26]};
 
 	${mediaQuery('xs')} {
-		display: flex;
 		flex-direction: column;
+		align-items: flex-start;
+		padding: ${spacing[18]} ${spacing[46]} 0 ${spacing[14]};
+		margin-bottom: ${spacing[8]};
 	}
+`;
+});
+
+const ModalContainer = styled.div`
+	margin-right: ${spacing[60]};
 `;
 
 const AccountTitle = styled.div
@@ -31,27 +43,29 @@ const AccountTitle = styled.div
 		font-size: ${fontSize[16]};
 		color: ${theme.font.pure};
 		line-height: ${spacing[22]};
-		margin: ${pxToRem(16)} 0 ${pxToRem(30)} ${pxToRem(26)};
+		margin-bottom: ${spacing[28]};
 	`;
 });
 
-const AccountWrapper = styled.div`
+const StatusContainer = styled.div`
+	margin-bottom: ${spacing[6]};
+`;
+
+const CopyContainer = styled.div`
 	display: flex;
 	align-items: center;
-	font-size: ${fontSize[18]};
-	line-height: ${spacing[24]};
-	font-weight: 400;
-	color: #FFF;
-	margin-bottom: ${pxToRem(16)};
+	cursor: pointer;
 
 	${mediaQuery('xs')} {
-		align-items: flex-start;
+		margin-bottom: ${pxToRem(15)};
 	}
 `;
 
 const Account = styled.div`
 	display: inline-flex;
-	margin-right: ${pxToRem(70)};
+	font-size: ${fontSize[18]};
+	font-weight: 400;
+	line-height: ${spacing[26]};
 
 	${mediaQuery('xs')} {
 		justify-content: flex-start;
@@ -63,19 +77,7 @@ const AccountNumber = styled.div(() => {
 
 	return css`
 		color: ${theme.font.pure};
-		margin-right: ${pxToRem(6)};
-	`;
-});
-
-const CopyContainer = styled.div(({ isCopied }: Props) => {
-	const { state: { theme } } = useStore();
-
-	return css`
-		display: flex;
-		align-items: center;
-		cursor: pointer;
-		margin-bottom: ${pxToRem(30)};
-		color: ${isCopied ? theme.button.default : theme.default};
+		margin-right: ${spacing[6]};
 	`;
 });
 
@@ -104,6 +106,12 @@ const IconContainer = styled.div(() => {
 	`;
 });
 
+const CopyText = styled.p.attrs((props: {isCopied: boolean}) => props)`
+		opacity: ${(props) => props.isCopied ? '0.5' : '1'};;
+		font-size: ${fontSize[14]};
+		line-height: ${spacing[20]};
+`;
+
 export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	const { isBreakpointWidth } = useBreakpoint('xs');
 	const { deactivate } = useEthers();
@@ -129,41 +137,23 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 
 	return (
 		<>
-			<Modal showModal={showModal} setShowModal={setShowModal} background='mobile' width='small'>
-				<AccountTitle>Account</AccountTitle>
+			<Modal showModal={showModal} setShowModal={setShowModal} background='default' width='small'>
 				<ModalWrapper>
-					<div style={{ marginBottom: '6px' }}>Connected with Metamask</div>
-					{!isBreakpointWidth ? (
-						<>
-							<AccountWrapper>
+					<ModalContainer>
+					<AccountTitle>Account</AccountTitle>
+					<StatusContainer>Connected with Metamask</StatusContainer>
 								<Account>
 									<AccountNumber>
 										{account?.substring(0, 12)}...{account?.substring(37)}
 									</AccountNumber>
 									<JazzIcon account={account} />
 								</Account>
-								<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
-							</AccountWrapper>
-							<CopyContainer onClick={handleCopy} isCopied={isCopied}>
+							<CopyContainer>
 								<IconContainer />
-								<p style={{ fontSize: '14px', lineHeight: '19px' }}>{!isCopied ? 'Copy Address' : 'Copied!'}</p>
+								<CopyText onClick={handleCopy} isCopied={isCopied}>{!isCopied ? 'Copy Address' : 'Copied!'}</CopyText>
 							</CopyContainer>
-						</>) : (
-						<>
-							<AccountWrapper>
-								<Account>
-									<AccountNumber>
-										{account?.substring(0, 12)}...{account?.substring(37)}
-									</AccountNumber>
-									<JazzIcon account={account} />
-								</Account>
-							</AccountWrapper>
-							<CopyContainer onClick={handleCopy} isCopied={isCopied}>
-								<IconContainer />
-								{!isCopied ? 'Copy Address' : 'Copied!'}
-							</CopyContainer>
-							<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
-						</>)}
+						</ModalContainer>
+					<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
 				</ModalWrapper>
 			</Modal>
 		</>

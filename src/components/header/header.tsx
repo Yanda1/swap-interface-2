@@ -335,7 +335,6 @@ export const Header = () => {
 					Transaction History
 				</Button>
 			)}
-			<Button onClick={() => setShowModal(true)} icon='metamask' variant='secondary'>Metamask</Button>
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal}/>}
 			{isUserVerified && account ? (
 				<Wallet token="GLMR" account={account} />

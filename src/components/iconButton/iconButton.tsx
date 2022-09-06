@@ -13,6 +13,10 @@ import MATIC from '../../assets/MATIC.png';
 import XTZ from '../../assets/XTZ.png';
 import AVAXC from '../../assets/AVAXC.png';
 import SEGWIT from '../../assets/SEGWIT.png';
+import DEFAULT from '../../assets/DEFAULT.svg';
+import WARNING from '../../assets/WARNING.svg';
+import SUCCESS from '../../assets/SUCCESS.svg';
+import ERROR from '../../assets/ERROR.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
 
@@ -29,7 +33,11 @@ const icons = {
 	MATIC,
 	AVAXC,
 	SEGWIT,
-	XTZ
+	XTZ,
+	DEFAULT,
+	WARNING,
+	SUCCESS,
+	ERROR
 }; // TODO: @daniel - should we load all icons by default?
 
 type Props = {
@@ -48,6 +56,10 @@ type Props = {
 		| 'AVAXC'
 		| 'SEGWIT'
 		| 'XTZ'
+		| 'DEFAULT'
+		| 'WARNING'
+		| 'SUCCESS'
+		| 'ERROR'
 		| 'Select Token';
 	onClick?: () => void;
 	iconOnly?: boolean;
