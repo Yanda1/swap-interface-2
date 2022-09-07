@@ -4,7 +4,7 @@ import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { Button } from '../button/button';
 import { JazzIcon } from '../wallet/wallet';
 import { useState } from 'react';
-import { ButtonEnum, buttonType, useBreakpoint, useStore } from '../../helpers';
+import { ButtonEnum, buttonType, useStore } from '../../helpers';
 import { useEthers } from '@usedapp/core';
 
 type Props = {
@@ -14,10 +14,7 @@ type Props = {
 	isCopied?: boolean;
 };
 
-const ModalWrapper = styled.div(() => {
-	const {state: {theme}} = useStore();
-
-	return css`
+const ModalWrapper = styled.div`
 	display: flex;
 	align-items: center;
 	padding: ${spacing[18]} ${spacing[46]} 0 ${spacing[26]};
@@ -29,7 +26,6 @@ const ModalWrapper = styled.div(() => {
 		margin-bottom: ${spacing[8]};
 	}
 `;
-});
 
 const ModalContainer = styled.div`
 	margin-right: ${spacing[60]};
@@ -113,7 +109,6 @@ const CopyText = styled.p.attrs((props: {isCopied: boolean}) => props)`
 `;
 
 export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
-	const { isBreakpointWidth } = useBreakpoint('xs');
 	const { deactivate } = useEthers();
 	const { dispatch } = useStore();
 	const [isCopied, setIsCopied] = useState(false);

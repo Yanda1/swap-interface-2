@@ -1,8 +1,8 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled from 'styled-components';
-import {fontSize, pxToRem, spacing} from '../../styles';
-import {useStore} from '../../helpers';
-import {IconButton} from '../iconButton/iconButton';
+import { fontSize, pxToRem, spacing } from '../../styles';
+import { useStore } from '../../helpers';
+import { IconButton } from '../iconButton/iconButton';
 
 const ToastContext = createContext(undefined);
 
@@ -47,13 +47,7 @@ const Toast = ({ message, onDismiss, type }: Props) => {
 let toastCount = 0;
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>
-	([
-		{message: 'Wallet was successfully connected!', id: 130, type: 'default', timer: 2000},
-		{message: 'Swap was ended!', id: 230, type: 'success', timer: 2000},
-		{message: 'Swap was paused!', id: 330, type: 'warning', timer: 2000},
-		{message: 'Transaction was failed!', id: 430, type: 'error', timer: 2000}
-	]);
+	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>([]);
 
 	const addToast = (message: string, type: string, timer = 5000) => {
 		const id = toastCount++;
