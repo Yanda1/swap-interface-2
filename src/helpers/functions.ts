@@ -2,7 +2,9 @@ import type { Breakpoint, Theme } from './../styles';
 import { useState, useLayoutEffect } from 'react';
 import { breakpoint } from './../styles';
 
-export const isLightTheme = (theme: Theme) => theme.name === 'light';
+export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
+
+export const removeZeros = (n: string): string => Number(n).toString();
 
 const useWindowSize = () => {
 	const [size, setSize] = useState([0, 0]);

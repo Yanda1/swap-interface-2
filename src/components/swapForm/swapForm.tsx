@@ -8,6 +8,7 @@ import {
 	DestinationNetworkEnum,
 	isLightTheme,
 	realParseFloat,
+	removeZeros,
 	startToken,
 	useBinanceApi,
 	useStore
@@ -183,7 +184,7 @@ export const SwapForm = () => {
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField disabled type="text" value={destinationAmount} />
+						<TextField disabled type="text" value={removeZeros(destinationAmount)} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
@@ -194,7 +195,7 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{destinationToken === 'Select Token'
 					? 'Please select token to see price'
-					: `1 GLMR = ${currentPrice} ${destinationToken}`}
+					: `1 GLMR = ${removeZeros(currentPrice)} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
