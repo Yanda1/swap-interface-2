@@ -7,6 +7,7 @@ import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
 	DestinationNetworkEnum,
 	isLightTheme,
+	realParseFloat,
 	startToken,
 	useBinanceApi,
 	useStore
@@ -116,7 +117,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		dispatch({
 			type: DestinationNetworkEnum.AMOUNT,
-			payload: (+amount * +currentPrice).toFixed(8).toString()
+			payload: realParseFloat((+amount * +currentPrice).toFixed(8).toString())
 		});
 	}, [amount, currentPrice]);
 
@@ -147,7 +148,7 @@ export const SwapForm = () => {
 	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken, currentPrice]);
 
 	const handleSwap = (): void => {
-		if (destinationAddressIsValid && destinationMemoIsValid) {
+		if (destinationAddressIsValid && destinationMemoIsValid && +amount >= minAmount) {
 			// @ts-ignore
 			swapButtonRef.current.onSubmit();
 		}
@@ -162,10 +163,10 @@ export const SwapForm = () => {
 						<IconButton disabled icon="GLMR" />
 						<TextField
 							type="number"
-							placeholder={`Min: ${minAmount.toFixed(4)}`}
+							placeholder={`> ${minAmount.toFixed(4)}`}
 							error={+amount < minAmount}
 							value={amount}
-							onChange={(e) => setAmount(e.target.value)}
+							onChange={(e) => setAmount(() => realParseFloat(e.target.value))}
 						/>
 					</SwapInput>
 					<SwapNames>
@@ -182,7 +183,7 @@ export const SwapForm = () => {
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField disabled type="number" value={destinationAmount} />
+						<TextField disabled type="text" value={destinationAmount} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>

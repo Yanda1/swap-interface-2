@@ -33,7 +33,7 @@ describe('TextField', () => {
 		);
 		const textField = getByPlaceholderText(/placeholder/i);
 		expect(textField).toHaveStyle(
-			'border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem; padding: 1.125rem 0;'
+			'border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem; padding: 1.125rem 0.625rem;'
 		);
 	});
 
@@ -45,7 +45,7 @@ describe('TextField', () => {
 		);
 		const textField = getByPlaceholderText(/placeholder/i) as HTMLInputElement;
 		expect(textField.placeholder).toBe('placeholder');
-		expect(textField.readOnly).toBe(true);
+		expect(textField.disabled).toBe(true);
 		expect(textField.type).toBe('number');
 		expect(textField.lang).toBe('en');
 	});
