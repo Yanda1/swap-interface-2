@@ -93,6 +93,8 @@ export const SwapForm = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
+	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
+	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const swapButtonRef = useRef();
 
 	const openModal = () => setShowModal(!showModal);
@@ -123,10 +125,24 @@ export const SwapForm = () => {
 		setHasMemo(destinationNetwork === 'Select Network' ? false : hasTag);
 	}, [destinationNetwork]);
 
+	useEffect(() => {
+		const addressRegEx = new RegExp(
+			// @ts-ignore,
+			destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['addressRegex']
+		);
+		const memoRegEx = new RegExp(
+			// @ts-ignore
+			destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
+		);
+		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
+		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
+	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken]);
+
 	const handleSwap = (): void => {
-		console.log({ destinationAmount, destinationToken, destinationAddress, destinationNetwork });
-		// @ts-ignore
-		swapButtonRef.current.onSubmit();
+		if (destinationAddressIsValid && destinationMemoIsValid) {
+			// @ts-ignore
+			swapButtonRef.current.onSubmit();
+		}
 	};
 
 	return (
@@ -172,6 +188,7 @@ export const SwapForm = () => {
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
+				error={!destinationAddressIsValid}
 				description="Destination Address"
 				onChange={(e) =>
 					dispatch({
@@ -184,6 +201,7 @@ export const SwapForm = () => {
 				<div style={{ marginTop: 24 }}>
 					<TextField
 						value={destinationMemo}
+						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
 							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })

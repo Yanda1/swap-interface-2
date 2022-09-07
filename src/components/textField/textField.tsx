@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import type { Theme } from '../../styles';
 import { fontSize, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 
@@ -43,8 +45,22 @@ const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
 	`;
 });
 
+const Message = styled.div`
+	display: flex;
+	justify-content: space-between;
+`;
+
 const Description = styled.div`
 	margin: ${spacing[4]} 0;
+`;
+
+type StyledProps = {
+	theme: Theme;
+};
+
+const Error = styled.div`
+	margin: ${spacing[4]} 0;
+	color: ${(props: StyledProps) => props.theme.button.error};
 `;
 
 type AlignProps = 'left' | 'right' | 'center';
@@ -55,6 +71,7 @@ type Props = {
 	type?: 'number' | 'text';
 	value: string;
 	description?: string;
+	error?: boolean;
 	onChange?: (e?: any) => void;
 	align?: AlignProps;
 };
@@ -66,8 +83,14 @@ export const TextField = ({
 	value,
 	onChange,
 	description,
+	error,
 	align = 'center'
 }: Props) => {
+	const {
+		state: { theme }
+	} = useStore();
+	const [isActive, setIsActive] = useState(false);
+
 	return (
 		<>
 			<StyledTextField
@@ -79,8 +102,13 @@ export const TextField = ({
 				type={type}
 				lang="en"
 				min="18" // TODO: replace with amount from destinationsNetwork
+				onBlur={() => setIsActive(true)}
+				onFocus={() => setIsActive(false)}
 			/>
-			{description && <Description>{description}</Description>}
+			<Message>
+				{description && <Description>{description}</Description>}
+				{error && isActive && <Error theme={theme}>Invalid input</Error>}
+			</Message>
 		</>
 	);
 };
