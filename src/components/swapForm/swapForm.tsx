@@ -95,6 +95,7 @@ export const SwapForm = () => {
 	const [currentPrice, setCurrentPrice] = useState('');
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
+	const [minAmount, setMinAmount] = useState(0);
 	const swapButtonRef = useRef();
 
 	const openModal = () => setShowModal(!showModal);
@@ -134,9 +135,16 @@ export const SwapForm = () => {
 			// @ts-ignore
 			destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
 		);
+
+		const calculateAmount =
+			// @ts-ignore
+			+destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'] /
+			+currentPrice;
+		setMinAmount(+calculateAmount || 0);
+
 		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
 		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
-	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken]);
+	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken, currentPrice]);
 
 	const handleSwap = (): void => {
 		if (destinationAddressIsValid && destinationMemoIsValid) {
@@ -154,7 +162,8 @@ export const SwapForm = () => {
 						<IconButton disabled icon="GLMR" />
 						<TextField
 							type="number"
-							placeholder="Amount"
+							placeholder={`Min: ${minAmount.toFixed(4)}`}
+							error={+amount < minAmount}
 							value={amount}
 							onChange={(e) => setAmount(e.target.value)}
 						/>
