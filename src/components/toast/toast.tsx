@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled from 'styled-components';
-import { fontSize, spacing } from '../../styles';
+import { fontSize, mediaQuery, spacing } from '../../styles';
 import { defaultBorderRadius, useStore } from '../../helpers';
 import { IconButton } from '../iconButton/iconButton';
 
@@ -10,8 +10,13 @@ const ToastContainer = styled.div`
 	position: fixed;
 	right: 0;
 	bottom: 0;
+	overflow-wrap: break-word;
 	max-width: 335px;
-	width: 100%;
+
+	${mediaQuery('xs')} {
+		width: 100%;
+		max-width: none;
+	}
 `;
 
 type Props = {
@@ -23,6 +28,7 @@ type Props = {
 
 const Toast = ({message, onDismiss, type}: Props) => {
 	const {state: {theme}} = useStore();
+	const icon = type.toUpperCase();
 
 	return <div
 		style={{
@@ -39,7 +45,7 @@ const Toast = ({message, onDismiss, type}: Props) => {
 		onClick={onDismiss}>
 		<IconButton
 			// @ts-ignore
-			icon={type.toUpperCase()}
+			icon={icon}
 			iconOnly
 		/>
 		{message}

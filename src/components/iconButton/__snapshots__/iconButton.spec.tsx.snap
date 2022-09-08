@@ -11,7 +11,7 @@ exports[`IconButton should render a IconButton with icon only 1`] = `
 <img
   alt="GLMR"
   class="c0"
-  src="GLMR.png"
+  src="glmr.png"
 />
 `;
 
@@ -64,7 +64,7 @@ exports[`IconButton should render a disabled IconButton with img and Text 1`] = 
   <img
     alt="GLMR"
     class="c1"
-    src="GLMR.png"
+    src="glmr.png"
   />
 </button>
 `;

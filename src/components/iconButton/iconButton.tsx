@@ -1,22 +1,22 @@
 import styled, { css } from 'styled-components';
 import { defaultBorderRadius, useStore } from '../../helpers';
-import USDT from '../../assets/USDT.png';
-import GLMR from '../../assets/GLMR.png';
-import BTC from '../../assets/BTC.png';
-import BSC from '../../assets/BSC.png';
-import BNB from '../../assets/BNB.png';
-import ETH from '../../assets/ETH.png';
-import SOL from '../../assets/SOL.png';
-import BUSD from '../../assets/BUSD.png';
-import TRX from '../../assets/TRX.png';
-import MATIC from '../../assets/MATIC.png';
-import XTZ from '../../assets/XTZ.png';
-import AVAXC from '../../assets/AVAXC.png';
-import SEGWIT from '../../assets/SEGWIT.png';
-import DEFAULT from '../../assets/DEFAULT.svg';
-import WARNING from '../../assets/WARNING.svg';
-import SUCCESS from '../../assets/SUCCESS.svg';
-import ERROR from '../../assets/ERROR.svg';
+import USDT from '../../assets/usdt.png';
+import GLMR from '../../assets/glmr.png';
+import BTC from '../../assets/btc.png';
+import BSC from '../../assets/bsc.png';
+import BNB from '../../assets/bnb.png';
+import ETH from '../../assets/eth.png';
+import SOL from '../../assets/sol.png';
+import BUSD from '../../assets/busd.png';
+import TRX from '../../assets/trx.png';
+import MATIC from '../../assets/matic.png';
+import XTZ from '../../assets/xtz.png';
+import AVAXC from '../../assets/avaxc.png';
+import SEGWIT from '../../assets/segwit.png';
+import DEFAULT from '../../assets/default.svg';
+import WARNING from '../../assets/warning.svg';
+import SUCCESS from '../../assets/success.svg';
+import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
 
@@ -108,16 +108,16 @@ export const IconButton = ({disabled = false, icon, onClick, iconOnly}: Props) =
 	return !iconOnly ? (
 		<Icon disabled={disabled} onClick={onClick}>
 			{!icon || icon === 'Select Token' ? (
-				<QuestionMark style={{width: 42, height: 42}}/>
+				<QuestionMark style={{width: 42, height: 42}} />
 			) : (
 				// @ts-ignore
-				<Img src={icons[icon]} alt={icon}/>
+				<Img src={icons[icon]} alt={icon} />
 			)}
 		</Icon>
 	) : !icon || icon === 'Select Token' ? (
-		<QuestionMark style={{width: 42, height: 42}}/>
+		<QuestionMark style={{width: 42, height: 42}} />
 	) : (
 		// @ts-ignore
-		<Img src={icons[icon]} alt={icon} iconOnly/>
+		<Img src={icons[icon]} alt={icon} iconOnly />
 	);
 };

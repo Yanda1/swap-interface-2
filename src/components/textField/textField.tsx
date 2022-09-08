@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import type { Theme } from '../../styles';
 import { fontSize, pxToRem, spacing } from '../../styles';
-import { defaultBorderRadius, useStore } from '../../helpers';
+import { defaultBorderRadius, horizontalPadding, useStore } from '../../helpers';
 
 type AlignProps = 'left' | 'right' | 'center';
 type TypeProps = 'text' | 'number';
@@ -13,12 +13,11 @@ type StyledProps = {
 	type: TypeProps;
 };
 
-const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
+const StyledTextField = styled.input(({align, error, type}: StyledProps) => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore();
 
-	const horizontalPadding = 10;
 	const isTypeNumber = type === 'number';
 
 	return css`
@@ -87,17 +86,17 @@ type Props = {
 };
 
 export const TextField = ({
-	placeholder,
-	disabled = false,
-	type = 'text',
-	value,
-	onChange,
-	description,
-	error,
-	align = 'center'
-}: Props) => {
+														placeholder,
+														disabled = false,
+														type = 'text',
+														value,
+														onChange,
+														description,
+														error,
+														align = 'center'
+													}: Props) => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore();
 	const [isActive, setIsActive] = useState(false);
 

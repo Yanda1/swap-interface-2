@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, DestinationNetworkEnum, useStore } from '../../helpers';
+import { defaultBorderRadius, DestinationNetworkEnum, horizontalPadding, useStore } from '../../helpers';
 import { fontSize, pxToRem, spacing } from '../../styles';
 import { IconButton } from '../iconButton/iconButton';
 import { TextField } from '../textField/textField';
@@ -16,7 +16,7 @@ const Wrapper = styled.div(() => {
 		flex: 0 1 ${pxToRem(178)};
 		border: 1px solid ${theme.default};
 		height: ${pxToRem(478)};
-		padding: 0 ${spacing[10]};
+		padding: 0 ${spacing[horizontalPadding]};
 		background: ${theme.background.default};
 		border-radius: ${defaultBorderRadius};
 	`;
@@ -67,7 +67,7 @@ const Item = styled.li((props: any) => {
 		line-height: ${fontSize[22]};
 		margin: ${spacing[10]} 0;
 		border-radius: ${defaultBorderRadius};
-		padding: ${spacing[12]} ${spacing[10]};
+		padding: ${spacing[12]} ${spacing[horizontalPadding]};
 		border: 1px solid ${props.activeBorder ? theme.button.default : theme.button.transparent};
 	`;
 });
