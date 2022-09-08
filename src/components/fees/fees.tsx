@@ -1,26 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useEthers, useGasPrice } from '@usedapp/core';
-import { utils, BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import styled, { css } from 'styled-components';
 import {
+	BINANCE_FEE,
 	CONTRACT_ADDRESSES,
-	PROTOCOL_FEE,
-	makeId,
-	useStore,
-	serviceAddress,
+	defaultBorderRadius,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
-	useBinanceApi,
 	Graph,
+	makeId,
+	PROTOCOL_FEE,
+	serviceAddress,
 	startToken,
-	BINANCE_FEE
+	useBinanceApi,
+	useStore
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
-import { pxToRem, spacing, Theme } from '../../styles';
+import { spacing, Theme } from '../../styles';
 
 const Summary = styled.summary(
-	({ color, theme }: { color: string; theme: Theme }) => css`
+	({color, theme}: { color: string; theme: Theme }) => css`
 		color: ${theme.pure};
 		margin: ${spacing[28]} 0;
 		cursor: pointer;
@@ -37,11 +38,11 @@ const Summary = styled.summary(
 );
 
 const Details = styled.div(
-	({ color }: { color: string }) => css`
+	({color}: { color: string }) => css`
 		flex-direction: column;
 		padding: ${spacing[10]} ${spacing[16]};
 		margin-bottom: ${spacing[56]};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		border: 1px solid ${color};
 
 		& > * {
@@ -58,20 +59,20 @@ type Props = {
 	network: string;
 };
 
-export const Fees = ({ amount, token, address, network }: Props) => {
+export const Fees = ({amount, token, address, network}: Props) => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore();
-	const { allPairs, allPrices } = useBinanceApi();
+	const {allPairs, allPrices} = useBinanceApi();
 
-	const [networkFee, setNetworkFee] = useState({ amount: 0, currency: 'GLMR' });
-	const [cexFee, setCexFee] = useState([{ amount: 0, currency: 'GLMR' }]);
-	const [withdrawalFee, setWithdrawalFee] = useState({ amount: 0, currency: 'GLMR' });
-	const [protocolFee, setProtocolFee] = useState({ amount: 0, currency: 'GLMR' });
-	const [feeSum, setFeeSum] = useState({ amount: 0, currency: 'GLMR' });
+	const [networkFee, setNetworkFee] = useState({amount: 0, currency: 'GLMR'});
+	const [cexFee, setCexFee] = useState([{amount: 0, currency: 'GLMR'}]);
+	const [withdrawalFee, setWithdrawalFee] = useState({amount: 0, currency: 'GLMR'});
+	const [protocolFee, setProtocolFee] = useState({amount: 0, currency: 'GLMR'});
+	const [feeSum, setFeeSum] = useState({amount: 0, currency: 'GLMR'});
 	const [cexGraph, setCexGraph] = useState<Graph>();
 
-	const { chainId, library: web3Provider } = useEthers();
+	const {chainId, library: web3Provider} = useEthers();
 	const gasPrice: any = useGasPrice();
 	// @ts-ignore
 	const contractAddress = CONTRACT_ADDRESSES[chainId];
@@ -160,7 +161,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 							edgePrice = 1 / Number(ticker?.price);
 						}
 						result *= edgePrice;
-						allCexFees.push({ amount: result * BINANCE_FEE, currency: graphPath.path[i + 1] });
+						allCexFees.push({amount: result * BINANCE_FEE, currency: graphPath.path[i + 1]});
 					}
 					setCexFee(allCexFees);
 				}
@@ -173,12 +174,12 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 		if (token !== 'Select Token' && network !== 'Select Network') {
 			// @ts-ignore
 			const tokenDetails = destinationNetworks[network]['tokens'][token];
-			setWithdrawalFee({ amount: Number(tokenDetails?.['withdrawFee']), currency: token });
+			setWithdrawalFee({amount: Number(tokenDetails?.['withdrawFee']), currency: token});
 		}
 	}, [network, token]);
 
 	useEffect(() => {
-		setProtocolFee({ amount: Number(amount) * PROTOCOL_FEE, currency: 'GLMR' });
+		setProtocolFee({amount: Number(amount) * PROTOCOL_FEE, currency: 'GLMR'});
 	}, [amount]);
 
 	useEffect(() => {

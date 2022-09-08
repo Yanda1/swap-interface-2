@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { Modal } from './modal';
-import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
 import { Button } from '../button/button';
 import { JazzIcon } from '../wallet/wallet';
 import { useState } from 'react';
@@ -17,6 +17,7 @@ type Props = {
 const ModalWrapper = styled.div`
 	display: flex;
 	align-items: center;
+	column-gap: ${spacing[60]};
 	padding: ${spacing[18]} ${spacing[46]} 0 ${spacing[26]};
 
 	${mediaQuery('xs')} {
@@ -27,18 +28,14 @@ const ModalWrapper = styled.div`
 	}
 `;
 
-const ModalContainer = styled.div`
-	margin-right: ${spacing[60]};
-`;
-
 const AccountTitle = styled.div
 (() => {
-	const { state: { theme } } = useStore();
+	const {state: {theme}} = useStore();
 
 	return css`
 		font-size: ${fontSize[16]};
 		color: ${theme.font.pure};
-		line-height: ${spacing[22]};
+		line-height: ${fontSize[22]};
 		margin-bottom: ${spacing[28]};
 	`;
 });
@@ -53,15 +50,15 @@ const CopyContainer = styled.div`
 	cursor: pointer;
 
 	${mediaQuery('xs')} {
-		margin-bottom: ${pxToRem(15)};
+		margin-bottom: ${spacing[16]};
 	}
 `;
 
 const Account = styled.div`
 	display: inline-flex;
 	font-size: ${fontSize[18]};
-	font-weight: 400;
-	line-height: ${spacing[26]};
+	font-weight: ${fontWeight['regular']};
+	line-height: ${fontSize[26]};
 
 	${mediaQuery('xs')} {
 		justify-content: flex-start;
@@ -69,7 +66,7 @@ const Account = styled.div`
 `;
 
 const AccountNumber = styled.div(() => {
-	const { state: { theme } } = useStore();
+	const {state: {theme}} = useStore();
 
 	return css`
 		color: ${theme.font.pure};
@@ -78,15 +75,15 @@ const AccountNumber = styled.div(() => {
 });
 
 const IconContainer = styled.div(() => {
-	const { state: { theme } } = useStore();
+	const {state: {theme}} = useStore();
 
 	return css`
-		height: 8px;
-		width: 10px;
-		background-color: transparent;
-		border: 1px solid grey;
+		height: ${pxToRem(8)};
+		width: ${pxToRem(10)};
+		background-color: ${theme.button.transparent};
+		border: 1px solid ${theme.default};
 		transform: rotate(90deg);
-		margin-right: ${pxToRem(6)};
+		margin-right: ${spacing[6]};
 
 		&::after {
 			content: '';
@@ -94,23 +91,23 @@ const IconContainer = styled.div(() => {
 			position: relative;
 			top: -60%;
 			right: -25%;
-			height: 8px;
-			width: 10px;
-			border: 1px solid grey;
+			height: ${pxToRem(8)};
+			width: ${pxToRem(10)};
+			border: 1px solid ${theme.default};
 			background-color: ${theme.background.mobile};
 		}
 	`;
 });
 
-const CopyText = styled.p.attrs((props: {isCopied: boolean}) => props)`
-		opacity: ${(props) => props.isCopied ? '0.5' : '1'};;
-		font-size: ${fontSize[14]};
-		line-height: ${spacing[20]};
+const CopyText = styled.p.attrs((props: { isCopied: boolean }) => props)`
+	opacity: ${(props) => props.isCopied ? '0.5' : '1'};;
+	font-size: ${fontSize[14]};
+	line-height: ${fontSize[20]};
 `;
 
-export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
-	const { deactivate } = useEthers();
-	const { dispatch } = useStore();
+export const WalletModal = ({showModal, setShowModal, account}: Props) => {
+	const {deactivate} = useEthers();
+	const {dispatch} = useStore();
 	const [isCopied, setIsCopied] = useState(false);
 
 	const handleCopy = () => {
@@ -134,20 +131,18 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 		<>
 			<Modal showModal={showModal} setShowModal={setShowModal} background='default' width='small'>
 				<ModalWrapper>
-					<ModalContainer>
 					<AccountTitle>Account</AccountTitle>
 					<StatusContainer>Connected with Metamask</StatusContainer>
-								<Account>
-									<AccountNumber>
-										{account?.substring(0, 12)}...{account?.substring(37)}
-									</AccountNumber>
-									<JazzIcon account={account} />
-								</Account>
-							<CopyContainer>
-								<IconContainer />
-								<CopyText onClick={handleCopy} isCopied={isCopied}>{!isCopied ? 'Copy Address' : 'Copied!'}</CopyText>
-							</CopyContainer>
-						</ModalContainer>
+					<Account>
+						<AccountNumber>
+							{account?.substring(0, 12)}...{account?.substring(37)}
+						</AccountNumber>
+						<JazzIcon account={account}/>
+					</Account>
+					<CopyContainer>
+						<IconContainer/>
+						<CopyText onClick={handleCopy} isCopied={isCopied}>{!isCopied ? 'Copy Address' : 'Copied!'}</CopyText>
+					</CopyContainer>
 					<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
 				</ModalWrapper>
 			</Modal>

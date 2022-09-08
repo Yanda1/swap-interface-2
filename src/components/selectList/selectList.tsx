@@ -1,13 +1,13 @@
-import {useCallback, useState} from 'react';
-import styled, {css} from 'styled-components';
-import {DestinationNetworkEnum, useStore} from '../../helpers';
-import {fontSize, pxToRem, spacing} from '../../styles';
-import {IconButton} from '../iconButton/iconButton';
-import {TextField} from '../textField/textField';
+import { useCallback, useState } from 'react';
+import styled, { css } from 'styled-components';
+import { defaultBorderRadius, DestinationNetworkEnum, useStore } from '../../helpers';
+import { fontSize, pxToRem, spacing } from '../../styles';
+import { IconButton } from '../iconButton/iconButton';
+import { TextField } from '../textField/textField';
 
 const Wrapper = styled.div(() => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore();
 
 	return css`
@@ -18,7 +18,7 @@ const Wrapper = styled.div(() => {
 		height: ${pxToRem(478)};
 		padding: 0 ${spacing[10]};
 		background: ${theme.background.default};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 	`;
 });
 
@@ -31,7 +31,7 @@ type Props = {
 
 const Title = styled.div(() => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore(); // TODO: refactor theme export
 
 	return css`
@@ -55,7 +55,7 @@ const List = styled.ul`
 
 const Item = styled.li((props: any) => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore();
 
 	return css`
@@ -66,30 +66,30 @@ const Item = styled.li((props: any) => {
 		color: ${theme.font.pure};
 		line-height: ${fontSize[22]};
 		margin: ${spacing[10]} 0;
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		padding: ${spacing[12]} ${spacing[10]};
 		border: 1px solid ${props.activeBorder ? theme.button.default : theme.button.transparent};
 	`;
 });
 
-export const SelectList = ({ data, placeholder, value }: Props) => {
+export const SelectList = ({data, placeholder, value}: Props) => {
 	const [search, setSearch] = useState('');
 	const dataList =
 		data &&
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: { destinationToken, destinationNetwork, destinationWallet }
+		state: {destinationToken, destinationNetwork, destinationWallet}
 	} = useStore();
 
 	const handleClick = useCallback(
 		(e: any) => {
 			if (value === 'WALLET') {
-				dispatch({ type: DestinationNetworkEnum.WALLET, payload: e.target.textContent});
+				dispatch({type: DestinationNetworkEnum.WALLET, payload: e.target.textContent});
 			}
-			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
+			dispatch({type: DestinationNetworkEnum[value], payload: e.target.textContent});
 			if (value === 'NETWORK') {
-				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
+				dispatch({type: DestinationNetworkEnum.TOKEN, payload: 'Select Token'});
 			}
 		},
 		[destinationToken, destinationNetwork, destinationWallet]

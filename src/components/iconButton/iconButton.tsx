@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { useStore } from '../../helpers';
+import { defaultBorderRadius, useStore } from '../../helpers';
 import USDT from '../../assets/USDT.png';
 import GLMR from '../../assets/GLMR.png';
 import BTC from '../../assets/BTC.png';
@@ -67,13 +67,13 @@ type Props = {
 
 const Icon = styled.button(() => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore();
 
 	return css`
 		padding: ${spacing[8]};
 		border: 1px solid ${theme.default};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -95,7 +95,7 @@ const Icon = styled.button(() => {
 	`;
 });
 
-const Img = styled.img(({ iconOnly }: Props) => {
+const Img = styled.img(({iconOnly}: Props) => {
 	return css`
 		height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
 		width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
@@ -104,20 +104,20 @@ const Img = styled.img(({ iconOnly }: Props) => {
 	`;
 });
 
-export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
+export const IconButton = ({disabled = false, icon, onClick, iconOnly}: Props) => {
 	return !iconOnly ? (
 		<Icon disabled={disabled} onClick={onClick}>
 			{!icon || icon === 'Select Token' ? (
-				<QuestionMark style={{ width: 42, height: 42 }} />
+				<QuestionMark style={{width: 42, height: 42}}/>
 			) : (
 				// @ts-ignore
-				<Img src={icons[icon]} alt={icon} />
+				<Img src={icons[icon]} alt={icon}/>
 			)}
 		</Icon>
 	) : !icon || icon === 'Select Token' ? (
-		<QuestionMark style={{ width: 42, height: 42 }} />
+		<QuestionMark style={{width: 42, height: 42}}/>
 	) : (
 		// @ts-ignore
-		<Img src={icons[icon]} alt={icon} iconOnly />
+		<Img src={icons[icon]} alt={icon} iconOnly/>
 	);
 };

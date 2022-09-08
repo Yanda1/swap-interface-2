@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components';
 import { fontSize, pxToRem, spacing } from '../../styles';
-import { useStore } from '../../helpers';
+import { defaultBorderRadius, useStore } from '../../helpers';
 
-const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
+const StyledTextField = styled.input(({align}: { align: AlignProps }) => {
 	const {
-		state: { theme }
+		state: {theme}
 	} = useStore();
 
 	return css`
@@ -15,7 +15,7 @@ const StyledTextField = styled.input(({ align }: { align: AlignProps }) => {
 		padding: ${spacing[18]} ${spacing[12]};
 		color: ${theme.font.pure};
 		border: 1px solid ${theme.default};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
 		width: calc(100% - ${pxToRem(26)});
@@ -60,14 +60,14 @@ type Props = {
 };
 
 export const TextField = ({
-	placeholder,
-	disabled = false,
-	type = 'text',
-	value,
-	onChange,
-	description,
-	align = 'center'
-}: Props) => {
+														placeholder,
+														disabled = false,
+														type = 'text',
+														value,
+														onChange,
+														description,
+														align = 'center'
+													}: Props) => {
 	return (
 		<>
 			<StyledTextField
