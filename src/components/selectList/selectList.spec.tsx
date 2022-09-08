@@ -49,13 +49,13 @@ describe('SelectList', () => {
 			text-align: left;
 			font-size: ${fontSize[16]};
 			line-height: ${fontSize[20]};
-			padding: ${spacing[18]} ${spacing[12]};
+			padding: ${spacing[18]} ${spacing[10]};
 			color: ${darkTheme.font.pure};
 			border: 1px solid ${darkTheme.default};
 			border-radius: ${pxToRem(6)};
 			cursor: pointer;
 			transition: all 0.2s ease-in-out;
-			width: calc(100% - ${pxToRem(26)});
+			width: calc(100% - ${pxToRem(22)});
 			`
 		);
 

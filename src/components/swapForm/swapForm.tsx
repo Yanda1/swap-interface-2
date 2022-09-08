@@ -7,6 +7,8 @@ import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
 	DestinationNetworkEnum,
 	isLightTheme,
+	realParseFloat,
+	removeZeros,
 	startToken,
 	useBinanceApi,
 	useStore
@@ -93,6 +95,9 @@ export const SwapForm = () => {
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
+	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
+	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
+	const [minAmount, setMinAmount] = useState(0);
 	const swapButtonRef = useRef();
 
 	const openModal = () => setShowModal(!showModal);
@@ -113,7 +118,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		dispatch({
 			type: DestinationNetworkEnum.AMOUNT,
-			payload: (+amount * +currentPrice).toFixed(8).toString()
+			payload: realParseFloat((+amount * +currentPrice).toFixed(8).toString())
 		});
 	}, [amount, currentPrice]);
 
@@ -123,10 +128,31 @@ export const SwapForm = () => {
 		setHasMemo(destinationNetwork === 'Select Network' ? false : hasTag);
 	}, [destinationNetwork]);
 
+	useEffect(() => {
+		const addressRegEx = new RegExp(
+			// @ts-ignore,
+			destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['addressRegex']
+		);
+		const memoRegEx = new RegExp(
+			// @ts-ignore
+			destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
+		);
+
+		const calculateAmount =
+			// @ts-ignore
+			+destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'] /
+			+currentPrice;
+		setMinAmount(+calculateAmount || 0);
+
+		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
+		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
+	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken, currentPrice]);
+
 	const handleSwap = (): void => {
-		console.log({ destinationAmount, destinationToken, destinationAddress, destinationNetwork });
-		// @ts-ignore
-		swapButtonRef.current.onSubmit();
+		if (destinationAddressIsValid && destinationMemoIsValid && +amount >= minAmount) {
+			// @ts-ignore
+			swapButtonRef.current.onSubmit();
+		} // TODO - @daniel: should we add a toast or disable the button?
 	};
 
 	return (
@@ -138,9 +164,10 @@ export const SwapForm = () => {
 						<IconButton disabled icon="GLMR" />
 						<TextField
 							type="number"
-							placeholder="Amount"
+							placeholder={`> ${minAmount.toFixed(4)}`}
+							error={+amount < minAmount}
 							value={amount}
-							onChange={(e) => setAmount(e.target.value)}
+							onChange={(e) => setAmount(() => realParseFloat(e.target.value))}
 						/>
 					</SwapInput>
 					<SwapNames>
@@ -157,7 +184,7 @@ export const SwapForm = () => {
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField disabled type="number" value={destinationAmount} />
+						<TextField disabled type="text" value={removeZeros(destinationAmount)} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
@@ -168,10 +195,11 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{destinationToken === 'Select Token'
 					? 'Please select token to see price'
-					: `1 GLMR = ${currentPrice} ${destinationToken}`}
+					: `1 GLMR = ${removeZeros(currentPrice)} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
+				error={!destinationAddressIsValid}
 				description="Destination Address"
 				onChange={(e) =>
 					dispatch({
@@ -184,6 +212,7 @@ export const SwapForm = () => {
 				<div style={{ marginTop: 24 }}>
 					<TextField
 						value={destinationMemo}
+						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
 							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })

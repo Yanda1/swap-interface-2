@@ -1,34 +1,48 @@
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import type { Theme } from '../../styles';
 import { fontSize, pxToRem, spacing } from '../../styles';
 import { defaultBorderRadius, useStore } from '../../helpers';
 
-const StyledTextField = styled.input(({align}: { align: AlignProps }) => {
+type AlignProps = 'left' | 'right' | 'center';
+type TypeProps = 'text' | 'number';
+
+type StyledProps = {
+	align: AlignProps;
+	error: boolean;
+	type: TypeProps;
+};
+
+const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
+
+	const horizontalPadding = 10;
+	const isTypeNumber = type === 'number';
 
 	return css`
 		background: none;
 		text-align: ${align};
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
-		padding: ${spacing[18]} ${spacing[12]};
+		padding: ${spacing[18]} ${spacing[horizontalPadding]};
 		color: ${theme.font.pure};
-		border: 1px solid ${theme.default};
+		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.default};
 		border-radius: ${defaultBorderRadius};
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
-		width: calc(100% - ${pxToRem(26)});
+		width: calc(100% - ${pxToRem(horizontalPadding * 2 + 2)});
 
 		&:hover,
 		&:active {
-			border-color: ${theme.font.pure};
+			border-color: ${error && isTypeNumber ? theme.button.error : theme.font.pure};
 			outline: none;
 		}
 
 		&:focus-visible {
 			outline-offset: 2px;
-			outline: 1px solid ${theme.default};
+			outline: 1px solid ${error && isTypeNumber ? theme.button.error : theme.default};
 		}
 
 		&-webkit-outer-spin-button,
@@ -43,31 +57,50 @@ const StyledTextField = styled.input(({align}: { align: AlignProps }) => {
 	`;
 });
 
+const Message = styled.div`
+	display: flex;
+	justify-content: space-between;
+`;
+
 const Description = styled.div`
 	margin: ${spacing[4]} 0;
 `;
 
-type AlignProps = 'left' | 'right' | 'center';
+type ThemeProps = {
+	theme: Theme;
+};
+
+const Error = styled.div`
+	margin: ${spacing[4]} 0;
+	color: ${(props: ThemeProps) => props.theme.button.error};
+`;
 
 type Props = {
 	placeholder?: string;
 	disabled?: boolean;
-	type?: 'number' | 'text';
+	type?: TypeProps;
 	value: string;
 	description?: string;
+	error?: boolean;
 	onChange?: (e?: any) => void;
 	align?: AlignProps;
 };
 
 export const TextField = ({
-														placeholder,
-														disabled = false,
-														type = 'text',
-														value,
-														onChange,
-														description,
-														align = 'center'
-													}: Props) => {
+	placeholder,
+	disabled = false,
+	type = 'text',
+	value,
+	onChange,
+	description,
+	error,
+	align = 'center'
+}: Props) => {
+	const {
+		state: { theme }
+	} = useStore();
+	const [isActive, setIsActive] = useState(false);
+
 	return (
 		<>
 			<StyledTextField
@@ -77,10 +110,17 @@ export const TextField = ({
 				align={align}
 				value={value}
 				type={type}
-				lang="en"
-				min="18" // TODO: replace with amount from destinationsNetwork
+				// @ts-ignore
+				error={error}
+				onBlur={() => setIsActive(true)}
+				onFocus={() => setIsActive(false)}
 			/>
-			{description && <Description>{description}</Description>}
+			{(error || description) && type === 'text' && (
+				<Message>
+					{description && <Description>{description}</Description>}
+					{error && isActive && <Error theme={theme}>Invalid input</Error>}
+				</Message>
+			)}
 		</>
 	);
 };

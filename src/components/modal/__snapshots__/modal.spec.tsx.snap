@@ -38,12 +38,7 @@ exports[`Modal should render a modal with background mobile and large size 1`] =
 
 @media (max-width:375px) {
   .c0 {
-    max-width: 21.6875rem;
     width: calc(100% - 0.625rem);
-    border-radius: 1.75rem;
-    border: none;
-    margin: 0 auto;
-    margin-top: 3rem;
   }
 }
 
