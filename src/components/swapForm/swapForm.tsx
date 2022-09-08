@@ -152,7 +152,7 @@ export const SwapForm = () => {
 		if (destinationAddressIsValid && destinationMemoIsValid && +amount >= minAmount) {
 			// @ts-ignore
 			swapButtonRef.current.onSubmit();
-		}
+		} // TODO - @daniel: should we add a toast or disable the button?
 	};
 
 	return (

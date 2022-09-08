@@ -110,7 +110,6 @@ export const TextField = ({
 				align={align}
 				value={value}
 				type={type}
-				lang="en"
 				// @ts-ignore
 				error={error}
 				onBlur={() => setIsActive(true)}
