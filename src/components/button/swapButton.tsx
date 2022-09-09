@@ -3,8 +3,21 @@ import { useEthers, useContractFunction, useSendTransaction } from '@usedapp/cor
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import { CONTRACT_ADDRESSES, makeId, serviceAddress, useStore } from '../../helpers';
+import {
+	CONTRACT_ADDRESSES,
+	isNetworkSelected,
+	isTokenSelected,
+	makeId,
+	serviceAddress,
+	useStore
+} from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
+import styled from 'styled-components';
+import { spacing } from '../../styles';
+
+const ButtonWrapper = styled.div`
+	margin-top: ${spacing[28]};
+`;
 
 type Props = {
 	hasMemo: boolean;
@@ -39,8 +52,8 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 		dispatch
 	} = useStore();
 	const isDisabled =
-		destinationNetwork === 'Select Network' ||
-		destinationToken === 'Select Token' ||
+		!isNetworkSelected(destinationNetwork) ||
+		!isTokenSelected(destinationToken) ||
 		!amount ||
 		!destinationAddress ||
 		(hasMemo && !destinationMemo);
@@ -70,8 +83,10 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 	}));
 
 	return (
-		<Button onClick={onSubmit} disabled={isDisabled} color="default">
-			SWAP
-		</Button>
+		<ButtonWrapper>
+			<Button onClick={onSubmit} disabled={isDisabled} color="default">
+				SWAP
+			</Button>
+		</ButtonWrapper>
 	);
 });

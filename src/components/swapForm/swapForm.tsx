@@ -7,6 +7,8 @@ import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
 	DestinationNetworkEnum,
 	isLightTheme,
+	isNetworkSelected,
+	isTokenSelected,
 	realParseFloat,
 	removeZeros,
 	startToken,
@@ -104,7 +106,7 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		const convertDestinationAmount = () => {
-			if (destinationToken !== 'Select Token') {
+			if (isTokenSelected(destinationToken)) {
 				const getSymbol: any = allPrices.find(
 					(pair: { symbol: string; price: string }) =>
 						pair.symbol === `${startToken}${destinationToken}`
@@ -125,7 +127,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		// @ts-ignore
 		const hasTag = destinationNetworks?.[destinationNetwork]?.['hasTag'];
-		setHasMemo(destinationNetwork === 'Select Network' ? false : hasTag);
+		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
 	}, [destinationNetwork]);
 
 	useEffect(() => {
@@ -152,7 +154,7 @@ export const SwapForm = () => {
 		if (destinationAddressIsValid && destinationMemoIsValid && +amount >= minAmount) {
 			// @ts-ignore
 			swapButtonRef.current.onSubmit();
-		} // TODO - @daniel: should we add a toast or disable the button?
+		}
 	};
 
 	return (
@@ -188,12 +190,12 @@ export const SwapForm = () => {
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
-						<Name color={theme.font.default}>{destinationNetwork}</Name>
+						<Name color={theme.font.default}>({destinationNetwork})</Name>
 					</SwapNames>
 				</Swap>
 			</Trader>
 			<ExchangeRate color={theme.font.pure}>
-				{destinationToken === 'Select Token'
+				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
 					: `1 GLMR = ${removeZeros(currentPrice)} ${destinationToken}`}
 			</ExchangeRate>
@@ -220,22 +222,22 @@ export const SwapForm = () => {
 					/>
 				</div>
 			)}
-			{isUserVerified && (
-				<Fees
-					amount={amount}
-					token={destinationToken}
-					network={destinationNetwork}
-					address={destinationAddress}
-				/>
-			)}
-			{isUserVerified && (
-				<SwapButton
-					ref={swapButtonRef}
-					hasMemo={hasMemo}
-					amount={amount.toString()}
-					onSubmit={handleSwap}
-				/>
-			)}
+			{isUserVerified &&
+				isNetworkSelected(destinationNetwork) &&
+				isTokenSelected(destinationToken) && (
+					<Fees
+						amount={amount}
+						token={destinationToken}
+						network={destinationNetwork}
+						address={destinationAddress}
+					/>
+				)}
+			<SwapButton
+				ref={swapButtonRef}
+				hasMemo={hasMemo}
+				amount={amount.toString()}
+				onSubmit={handleSwap}
+			/>
 		</Wrapper>
 	);
 };

@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
-import { useStore } from '../../helpers';
+import { useStore, DestinationNetworkEnum } from '../../helpers';
+import type { ThemeProps } from '../../components';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
@@ -17,7 +19,7 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 		justify-content: center;
 		align-items: center;
 		z-index: 100;
-		width: ${pxToRem(width === 'large' ? 605 : 478)}; // TODO: improove operator
+		width: ${pxToRem(width === 'large' ? 605 : 478)};
 		max-width: calc(100% - ${spacing[64]});
 		background-color: ${theme.background[background]};
 		border: 1px solid ${theme.default};
@@ -30,23 +32,17 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	`;
 });
 
-const CloseIcon = styled.div(() => {
-		const {
-			state: { theme }
-		} = useStore();
-
-		return css`
-			cursor: pointer;
-			position: fixed;
-			top: ${pxToRem(10)};
-			right: ${pxToRem(10)};
-			font-size: ${fontSize[16]};
-			line-height: ${fontSize[22]};
-			color: ${theme.font.pure};
-		`;
-	}
-);
-
+const CloseIcon = styled.div(({ theme }: ThemeProps) => {
+	return css`
+		cursor: pointer;
+		position: fixed;
+		top: ${pxToRem(10)};
+		right: ${pxToRem(10)};
+		font-size: ${fontSize[16]};
+		line-height: ${fontSize[22]};
+		color: ${theme.font.pure};
+	`;
+});
 
 type Props = {
 	showModal: boolean;
@@ -57,13 +53,27 @@ type Props = {
 };
 
 export const Modal = ({
-												showModal,
-												setShowModal,
-												width = 'large',
-												background,
-												children
-											}: Props) => {
+	showModal,
+	setShowModal,
+	width = 'large',
+	background,
+	children
+}: Props) => {
+	const [selectedTokenNetwork, setSelectedTokenNetwork] = useState({ network: '', token: '' });
+	const {
+		state: { theme, destinationNetwork, destinationToken },
+		dispatch
+	} = useStore();
+
+	useEffect(() => {
+		if (showModal) {
+			setSelectedTokenNetwork({ network: destinationNetwork, token: destinationToken });
+		}
+	}, [showModal]);
+
 	const handleClose = () => {
+		dispatch({ type: DestinationNetworkEnum.NETWORK, payload: selectedTokenNetwork.network });
+		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: selectedTokenNetwork.token });
 		setShowModal(false);
 	};
 
@@ -73,9 +83,10 @@ export const Modal = ({
 			width={width}
 			showModal={showModal}
 			background={background}
-			data-testid="modal-container"
-		>
-			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
+			data-testid="modal-container">
+			<CloseIcon onClick={handleClose} theme={theme}>
+				&#x2716;
+			</CloseIcon>
 			{children}
 		</ModalWrapper>
 	);

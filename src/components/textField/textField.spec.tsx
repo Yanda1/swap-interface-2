@@ -47,6 +47,5 @@ describe('TextField', () => {
 		expect(textField.placeholder).toBe('placeholder');
 		expect(textField.disabled).toBe(true);
 		expect(textField.type).toBe('number');
-		expect(textField.lang).toBe('en');
 	});
 });

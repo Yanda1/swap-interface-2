@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { useStore } from '../../helpers';
+import { isTokenSelected, useStore } from '../../helpers';
 import USDT from '../../assets/USDT.png';
 import GLMR from '../../assets/GLMR.png';
 import BTC from '../../assets/BTC.png';
@@ -30,7 +30,7 @@ const icons = {
 	AVAXC,
 	SEGWIT,
 	XTZ
-}; // TODO: @daniel - should we load all icons by default?
+};
 
 type Props = {
 	disabled?: boolean;
@@ -95,14 +95,14 @@ const Img = styled.img(({ iconOnly }: Props) => {
 export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
 	return !iconOnly ? (
 		<Icon disabled={disabled} onClick={onClick}>
-			{!icon || icon === 'Select Token' ? (
+			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
 				// @ts-ignore
 				<Img src={icons[icon]} alt={icon} />
 			)}
 		</Icon>
-	) : !icon || icon === 'Select Token' ? (
+	) : !icon || !isTokenSelected(icon) ? (
 		<QuestionMark style={{ width: 42, height: 42 }} />
 	) : (
 		// @ts-ignore

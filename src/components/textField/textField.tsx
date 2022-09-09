@@ -66,7 +66,7 @@ const Description = styled.div`
 	margin: ${spacing[4]} 0;
 `;
 
-type ThemeProps = {
+export type ThemeProps = {
 	theme: Theme;
 };
 

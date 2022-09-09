@@ -12,17 +12,34 @@ import {
 	useBinanceApi,
 	Graph,
 	startToken,
-	BINANCE_FEE
+	BINANCE_FEE,
+	isTokenSelected,
+	isNetworkSelected
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
 import { pxToRem, spacing, Theme } from '../../styles';
 
+const Details = styled.div(
+	({ color }: { color: string }) => css`
+		flex-direction: column;
+		padding: ${spacing[10]} ${spacing[16]};
+		margin: ${spacing[28]} 0 ${spacing[56]};
+		border-radius: ${pxToRem(6)};
+		border: 1px solid ${color};
+
+		& > * {
+			display: flex;
+			justify-content: space-between;
+		}
+	`
+);
+
 const Summary = styled.summary(
 	({ color, theme }: { color: string; theme: Theme }) => css`
 		color: ${theme.pure};
-		margin: ${spacing[28]} 0;
+		margin-top: ${spacing[28]};
 		cursor: pointer;
 
 		&:focus-visible {
@@ -36,21 +53,6 @@ const Summary = styled.summary(
 	`
 );
 
-const Details = styled.div(
-	({ color }: { color: string }) => css`
-		flex-direction: column;
-		padding: ${spacing[10]} ${spacing[16]};
-		margin-bottom: ${spacing[56]};
-		border-radius: ${pxToRem(6)};
-		border: 1px solid ${color};
-
-		& > * {
-			display: flex;
-			justify-content: space-between;
-		}
-	`
-);
-
 type Props = {
 	amount: string;
 	token: string;
@@ -60,15 +62,22 @@ type Props = {
 
 export const Fees = ({ amount, token, address, network }: Props) => {
 	const {
-		state: { theme }
+		state: {
+			theme,
+			destinationAddress,
+			destinationMemo,
+			destinationAmount,
+			destinationNetwork,
+			destinationToken
+		}
 	} = useStore();
 	const { allPairs, allPrices } = useBinanceApi();
 
 	const [networkFee, setNetworkFee] = useState({ amount: 0, currency: 'GLMR' });
 	const [cexFee, setCexFee] = useState([{ amount: 0, currency: 'GLMR' }]);
-	const [withdrawalFee, setWithdrawalFee] = useState({ amount: 0, currency: 'GLMR' });
+	const [withdrawlFee, setWithdrawlFee] = useState({ amount: 0, currency: 'GLMR' });
 	const [protocolFee, setProtocolFee] = useState({ amount: 0, currency: 'GLMR' });
-	const [feeSum, setFeeSum] = useState({ amount: 0, currency: 'GLMR' });
+	const [feeSum, setFeeSum] = useState({ amount: 0, currency: 'USDT' });
 	const [cexGraph, setCexGraph] = useState<Graph>();
 
 	const { chainId, library: web3Provider } = useEthers();
@@ -85,7 +94,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	useEffect(() => {
 		const estimateNetworkFee = async (): Promise<void> => {
-			if (token !== 'Select Token' && network !== 'Select Network' && address && amount) {
+			if (isNetworkSelected(network) && isTokenSelected(token) && address && amount) {
 				const namedValues = {
 					scoin: 'GLMR',
 					samt: utils.parseEther(amount).toString(),
@@ -111,8 +120,8 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 						BigNumber.from(calculatedTransactionFee)
 					);
 					setNetworkFee({
-						amount: Number(utils.formatEther(calculatedFee['_hex'])), // TODO: @daniel - is this correct conversion?
-						currency: token
+						amount: Number(utils.formatEther(calculatedFee['_hex'])),
+						currency: 'GLMR'
 					});
 				} catch (err: any) {
 					throw new Error(err);
@@ -140,9 +149,9 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 				const graphPath: false | { distance: number; path: string[] } = cexGraph.bfs(
 					startToken,
 					token
-				); // TODO: @daniel - only one edge atm?
+				);
 
-				if (graphPath) {
+				if (graphPath && allPrices) {
 					let result = Number(amount);
 					const allCexFees: { amount: number; currency: string }[] = [];
 					for (let i = 0; i < graphPath.distance; i++) {
@@ -167,13 +176,13 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			}
 		};
 		estimateCexFee();
-	}, [token, cexGraph, amount]);
+	}, [token, cexGraph, amount, allPrices]);
 
 	useEffect(() => {
-		if (token !== 'Select Token' && network !== 'Select Network') {
+		if (isTokenSelected(token) && isNetworkSelected(network)) {
 			// @ts-ignore
 			const tokenDetails = destinationNetworks[network]['tokens'][token];
-			setWithdrawalFee({ amount: Number(tokenDetails?.['withdrawFee']), currency: token });
+			setWithdrawlFee({ amount: Number(tokenDetails?.['withdrawFee']), currency: token });
 		}
 	}, [network, token]);
 
@@ -182,21 +191,44 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	}, [amount]);
 
 	useEffect(() => {
-		setFeeSum({
-			amount: networkFee.amount + protocolFee.amount + cexFee[0].amount + withdrawalFee.amount, // TODO: @daniel - feeSum currency? reduce for cexFee
-			currency: 'GLMR'
-		});
-	}, [networkFee, cexFee, withdrawalFee, protocolFee]);
+		const amount = [...cexFee, networkFee, withdrawlFee, protocolFee].reduce((total, fee) => {
+			const ticker = allPrices.find(
+				(pair: { symbol: string; price: string }) => pair.symbol === `${fee.currency}USDT`
+			);
+			if (ticker) {
+				return (total += +ticker.price * fee.amount);
+			} else {
+				const reverseTicker = allPrices.find(
+					(pair: { symbol: string; price: string }) => pair.symbol === `${fee.currency}USDT`
+				);
+				if (reverseTicker) {
+					return (total += fee.amount / +reverseTicker.price);
+				}
+			}
+
+			return total;
+		}, 0);
+		setFeeSum({ ...feeSum, amount });
+	}, [
+		networkFee,
+		cexFee,
+		withdrawlFee,
+		protocolFee,
+		destinationAddress,
+		destinationMemo,
+		destinationAmount,
+		destinationNetwork,
+		destinationToken
+	]);
 
 	return (
 		<details>
 			<Summary color={theme.default} theme={theme}>
-				Fee: {feeSum.amount} {feeSum.currency}
+				Fee: {feeSum.amount.toFixed(2)} {feeSum.currency}
 			</Summary>
 			<Details color={theme.default}>
 				<div>
-					<p>Gas fee:</p>
-					{/* TODO: @daniel- should this be named gas or network fee? check logic for currency */}
+					<p>Network fee:</p>
 					<p>
 						{networkFee.amount} {networkFee.currency}
 					</p>
@@ -211,7 +243,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 					<p>CEX fee:</p>
 					<div>
 						{cexFee.map((fee) => (
-							<p key={fee.currency}>
+							<p style={{ textAlign: 'right' }} key={fee.currency}>
 								{fee.amount} {fee.currency}
 							</p>
 						))}
@@ -220,7 +252,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 				<div>
 					<p>Withdrawal fee:</p>
 					<p>
-						{withdrawalFee.amount} {withdrawalFee.currency}
+						{withdrawlFee.amount} {withdrawlFee.currency}
 					</p>
 				</div>
 			</Details>
