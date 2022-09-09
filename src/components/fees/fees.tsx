@@ -15,7 +15,8 @@ import {
 	isTokenSelected,
 	isNetworkSelected,
 	useBinanceApi,
-	useStore
+	useStore,
+	feeCurrency
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
@@ -78,7 +79,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	const [cexFee, setCexFee] = useState([{ amount: 0, currency: 'GLMR' }]);
 	const [withdrawlFee, setWithdrawlFee] = useState({ amount: 0, currency: 'GLMR' });
 	const [protocolFee, setProtocolFee] = useState({ amount: 0, currency: 'GLMR' });
-	const [feeSum, setFeeSum] = useState({ amount: 0, currency: 'USDT' });
+	const [feeSum, setFeeSum] = useState({ amount: 0, currency: feeCurrency });
 	const [cexGraph, setCexGraph] = useState<Graph>();
 
 	const { chainId, library: web3Provider } = useEthers();
@@ -194,17 +195,21 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	useEffect(() => {
 		const amount = [...cexFee, networkFee, withdrawlFee, protocolFee].reduce((total, fee) => {
 			const ticker = allPrices.find(
-				(pair: { symbol: string; price: string }) => pair.symbol === `${fee.currency}USDT`
+				(pair: { symbol: string; price: string }) => pair.symbol === `${fee.currency}${feeCurrency}`
 			);
 			if (ticker) {
 				return (total += +ticker.price * fee.amount);
 			} else {
 				const reverseTicker = allPrices.find(
-					(pair: { symbol: string; price: string }) => pair.symbol === `${fee.currency}USDT`
+					(pair: { symbol: string; price: string }) =>
+						pair.symbol === `${fee.currency}${feeCurrency}`
 				);
 				if (reverseTicker) {
 					return (total += fee.amount / +reverseTicker.price);
 				}
+			}
+			if (fee.currency === feeCurrency) {
+				return (total += fee.amount);
 			}
 
 			return total;
@@ -225,7 +230,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	return (
 		<details>
 			<Summary color={theme.default} theme={theme}>
-				Fee: {feeSum.amount.toFixed(2)} {feeSum.currency}
+				Fee: {feeSum.amount.toFixed(4)} {feeSum.currency}
 			</Summary>
 			<Details color={theme.default}>
 				<div>

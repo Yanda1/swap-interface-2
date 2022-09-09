@@ -17,6 +17,8 @@ export const MOONBEAM_URL = 'https://rpc.api.moonbeam.network';
 export const PROTOCOL_FEE = 0.002;
 export const BINANCE_FEE = 0.002;
 export const startToken = 'GLMR';
+export const feeCurrency = 'USDT';
+
 export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
 export const serviceAddress = '0xeB56c1d19855cc0346f437028e6ad09C80128e02';
 
