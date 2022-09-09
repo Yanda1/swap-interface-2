@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from 'react';
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
-import { useStore, DestinationNetworkEnum } from '../../helpers';
+import { defaultBorderRadius, useStore, DestinationNetworkEnum } from '../../helpers';
 import type { ThemeProps } from '../../components';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
@@ -23,7 +23,7 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 		max-width: calc(100% - ${spacing[64]});
 		background-color: ${theme.background[background]};
 		border: 1px solid ${theme.default};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		padding: ${spacing[12]};
 
 		${mediaQuery('xxs')} {

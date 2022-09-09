@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import { useEthers, useContractFunction, useSendTransaction } from '@usedapp/core';
+import { useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';

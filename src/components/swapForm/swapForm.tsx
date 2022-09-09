@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { mediaQuery, pxToRem, spacing } from '../../styles';
@@ -15,7 +15,7 @@ import {
 	useBinanceApi,
 	useStore
 } from '../../helpers';
-import { SwapButton, Fees, IconButton, NetworkTokenModal, TextField } from '../../components';
+import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -133,16 +133,16 @@ export const SwapForm = () => {
 	useEffect(() => {
 		const addressRegEx = new RegExp(
 			// @ts-ignore,
-			destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['addressRegex']
+			destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['addressRegex']
 		);
 		const memoRegEx = new RegExp(
 			// @ts-ignore
-			destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
+			destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
 		);
 
 		const calculateAmount =
 			// @ts-ignore
-			+destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'] /
+			+destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'] /
 			+currentPrice;
 		setMinAmount(+calculateAmount || 0);
 
@@ -186,7 +186,7 @@ export const SwapForm = () => {
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						{/* TODO: check if comma stays the same for dynamic input*/}
-						<TextField disabled type="text" value={removeZeros(destinationAmount)} />
+						<TextField disabled value={removeZeros(destinationAmount)} />
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>

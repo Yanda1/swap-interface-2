@@ -14,6 +14,7 @@ export enum ThemeEnum {
 }
 
 export enum DestinationNetworkEnum {
+	WALLET = 'SET_DESTINATION_WALLET',
 	NETWORK = 'SET_DESTINATION_NETWORK',
 	TOKEN = 'SET_DESTINATION_TOKEN',
 	ADDRESS = 'SET_DESTINATION_ADDRESS',
@@ -77,6 +78,7 @@ type State = {
 	kycStatus: KycStatusEnum;
 	buttonStatus: { color: string; text: string };
 	theme: Theme;
+	destinationWallet: string;
 	destinationNetwork: string;
 	destinationToken: string;
 	destinationAddress: string;
@@ -116,6 +118,7 @@ const initialState: State = {
 	kycStatus: KycStatusEnum.INITIAL, // TOOD: from localStorage?
 	buttonStatus: buttonType.CONNECT_WALLET,
 	theme: darkTheme,
+	destinationWallet: 'Select Wallet',
 	destinationNetwork: 'Select Network',
 	destinationToken: 'Select Token',
 	destinationAddress: '',
@@ -141,6 +144,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, isUserVerified: action.payload };
 		case ThemeEnum.THEME:
 			return { ...state, theme: action.payload };
+		case DestinationNetworkEnum.WALLET:
+			return { ...state, destinationWallet: action.payload };
 		case DestinationNetworkEnum.NETWORK:
 			return { ...state, destinationNetwork: action.payload };
 		case DestinationNetworkEnum.TOKEN:

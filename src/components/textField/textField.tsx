@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import type { Theme } from '../../styles';
 import { fontSize, pxToRem, spacing } from '../../styles';
-import { useStore } from '../../helpers';
+import { defaultBorderRadius, horizontalPadding, useStore } from '../../helpers';
 
 type AlignProps = 'left' | 'right' | 'center';
 type TypeProps = 'text' | 'number';
@@ -18,7 +18,6 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 		state: { theme }
 	} = useStore();
 
-	const horizontalPadding = 10;
 	const isTypeNumber = type === 'number';
 
 	return css`
@@ -29,7 +28,7 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 		padding: ${spacing[18]} ${spacing[horizontalPadding]};
 		color: ${theme.font.pure};
 		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.default};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
 		width: calc(100% - ${pxToRem(horizontalPadding * 2 + 2)});
@@ -87,15 +86,15 @@ type Props = {
 };
 
 export const TextField = ({
-	placeholder,
-	disabled = false,
-	type = 'text',
-	value,
-	onChange,
-	description,
-	error,
-	align = 'center'
-}: Props) => {
+														placeholder,
+														disabled = false,
+														type = 'text',
+														value,
+														onChange,
+														description,
+														error,
+														align = 'center'
+													}: Props) => {
 	const {
 		state: { theme }
 	} = useStore();

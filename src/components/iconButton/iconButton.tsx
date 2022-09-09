@@ -1,18 +1,22 @@
 import styled, { css } from 'styled-components';
-import { isTokenSelected, useStore } from '../../helpers';
-import USDT from '../../assets/USDT.png';
-import GLMR from '../../assets/GLMR.png';
-import BTC from '../../assets/BTC.png';
-import BSC from '../../assets/BSC.png';
-import BNB from '../../assets/BNB.png';
-import ETH from '../../assets/ETH.png';
-import SOL from '../../assets/SOL.png';
-import BUSD from '../../assets/BUSD.png';
-import TRX from '../../assets/TRX.png';
-import MATIC from '../../assets/MATIC.png';
-import XTZ from '../../assets/XTZ.png';
-import AVAXC from '../../assets/AVAXC.png';
-import SEGWIT from '../../assets/SEGWIT.png';
+import { defaultBorderRadius, useStore, isTokenSelected } from '../../helpers';
+import USDT from '../../assets/usdt.png';
+import GLMR from '../../assets/glmr.png';
+import BTC from '../../assets/btc.png';
+import BSC from '../../assets/bsc.png';
+import BNB from '../../assets/bnb.png';
+import ETH from '../../assets/eth.png';
+import SOL from '../../assets/sol.png';
+import BUSD from '../../assets/busd.png';
+import TRX from '../../assets/trx.png';
+import MATIC from '../../assets/matic.png';
+import XTZ from '../../assets/xtz.png';
+import AVAXC from '../../assets/avaxc.png';
+import SEGWIT from '../../assets/segwit.png';
+import DEFAULT from '../../assets/default.svg';
+import WARNING from '../../assets/warning.svg';
+import SUCCESS from '../../assets/success.svg';
+import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
 
@@ -29,7 +33,11 @@ const icons = {
 	MATIC,
 	AVAXC,
 	SEGWIT,
-	XTZ
+	XTZ,
+	DEFAULT,
+	WARNING,
+	SUCCESS,
+	ERROR
 };
 
 type Props = {
@@ -48,6 +56,10 @@ type Props = {
 		| 'AVAXC'
 		| 'SEGWIT'
 		| 'XTZ'
+		| 'DEFAULT'
+		| 'WARNING'
+		| 'SUCCESS'
+		| 'ERROR'
 		| 'Select Token';
 	onClick?: () => void;
 	iconOnly?: boolean;
@@ -61,7 +73,7 @@ const Icon = styled.button(() => {
 	return css`
 		padding: ${spacing[8]};
 		border: 1px solid ${theme.default};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		display: flex;
 		align-items: center;
 		justify-content: center;

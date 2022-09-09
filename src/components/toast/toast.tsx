@@ -1,41 +1,71 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled from 'styled-components';
+import { fontSize, mediaQuery, spacing } from '../../styles';
+import { defaultBorderRadius, useStore } from '../../helpers';
+import { IconButton } from '../iconButton/iconButton';
 
-const ToastContext = createContext(undefined);
+const ToastContext = createContext(null);
 
 const ToastContainer = styled.div`
 	position: fixed;
 	right: 0;
 	bottom: 0;
+	overflow-wrap: break-word;
+	max-width: 335px;
+
+	${mediaQuery('xs')} {
+		width: 100%;
+		max-width: none;
+	}
 `;
 
 type Props = {
 	message: string;
+	type: 'default' | 'warning' | 'error' | 'success';
+	timer?: number;
 	onDismiss: () => void;
 };
 
-const Toast = ({ message, onDismiss }: Props) => (
-	<div
+const Toast = ({ message, onDismiss, type }: Props) => {
+	const { state: { theme } } = useStore();
+	const icon = type.toUpperCase();
+
+	return <div
 		style={{
-			background: 'LemonChiffon',
+			display: 'flex',
+			alignItems: 'center',
+			background: `${theme.button[type]}`,
+			color: `${theme.font.pure}`,
 			cursor: 'pointer',
-			fontSize: 14,
-			margin: 10,
-			padding: 10
+			fontSize: `${fontSize[14]}`,
+			margin: `${spacing[10]}`,
+			padding: `${spacing[10]}`,
+			borderRadius: `${defaultBorderRadius}`
 		}}
 		onClick={onDismiss}>
+		<IconButton
+			// @ts-ignore
+			icon={icon}
+			iconOnly
+		/>
 		{message}
-	</div>
-);
+	</div>;
+};
 
 let toastCount = 0;
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [toasts, setToasts] = useState<{ message: string; id: number }[]>([]);
+	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>([{
+		message: 'Hello it`s a brand new toast',
+		id: 100,
+		type: 'success',
+		timer: 1000000
+	}]);
 
-	const addToast = (message: string) => {
+	const addToast = (message: string, type: string, timer = 5000) => {
 		const id = toastCount++;
-		const toast = { message, id };
+		const toast = { message, id, type, timer };
+		console.log({ message, timer });
 		setToasts([...toasts, toast]);
 	};
 	const remove = (id: number) => {
@@ -46,13 +76,19 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 	// avoid creating a new fn on every render
 	const onDismiss = (id: number) => () => remove(id);
 
+	if (toasts.length > 0) {
+		setTimeout(() => {
+			setToasts(prev => prev.filter(toast => toast !== toasts[toasts.length - 1]));
+		}, toasts[toasts.length - 1].timer);
+	}
+
 	return (
 		// @ts-ignore
 		<ToastContext.Provider value={{ addToast, remove }}>
 			{children}
 			<ToastContainer>
-				{toasts.map(({ message, id }: { message: string; id: number }) => (
-					<Toast key={id} message={message} onDismiss={onDismiss(id)} />
+				{toasts.map(({ message, id, type }: { message: string; id: number; type: any }) => (
+					<Toast key={id} message={message} type={type} onDismiss={onDismiss(id)} />
 				))}
 			</ToastContainer>
 		</ToastContext.Provider>

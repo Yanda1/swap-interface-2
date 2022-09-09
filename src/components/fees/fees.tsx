@@ -3,30 +3,31 @@ import { useEthers, useGasPrice } from '@usedapp/core';
 import { utils, BigNumber } from 'ethers';
 import styled, { css } from 'styled-components';
 import {
-	CONTRACT_ADDRESSES,
-	PROTOCOL_FEE,
-	makeId,
-	useStore,
-	serviceAddress,
-	ESTIMATED_NETWORK_TRANSACTION_GAS,
-	useBinanceApi,
-	Graph,
-	startToken,
 	BINANCE_FEE,
+	CONTRACT_ADDRESSES,
+	defaultBorderRadius,
+	ESTIMATED_NETWORK_TRANSACTION_GAS,
+	Graph,
+	makeId,
+	PROTOCOL_FEE,
+	serviceAddress,
+	startToken,
 	isTokenSelected,
-	isNetworkSelected
+	isNetworkSelected,
+	useBinanceApi,
+	useStore
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
-import { pxToRem, spacing, Theme } from '../../styles';
+import { spacing, Theme } from '../../styles';
 
 const Details = styled.div(
 	({ color }: { color: string }) => css`
 		flex-direction: column;
 		padding: ${spacing[10]} ${spacing[16]};
 		margin: ${spacing[28]} 0 ${spacing[56]};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		border: 1px solid ${color};
 
 		& > * {
