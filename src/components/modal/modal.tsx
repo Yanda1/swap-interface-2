@@ -3,9 +3,9 @@ import styled, { css } from 'styled-components';
 import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { defaultBorderRadius, useStore } from '../../helpers';
 
-const ModalWrapper = styled.div(({width, showModal, background}: Props) => {
+const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	return css`
@@ -32,7 +32,7 @@ const ModalWrapper = styled.div(({width, showModal, background}: Props) => {
 
 const CloseIcon = styled.div(() => {
 		const {
-			state: {theme}
+			state: { theme }
 		} = useStore();
 
 		return css`
@@ -56,13 +56,7 @@ type Props = {
 	children?: ReactNode;
 };
 
-export const Modal = ({
-												showModal,
-												setShowModal,
-												width = 'large',
-												background,
-												children
-											}: Props) => {
+export const Modal = ({ showModal, setShowModal, width = 'large', background, children }: Props) => {
 	const handleClose = () => {
 		setShowModal(false);
 	};

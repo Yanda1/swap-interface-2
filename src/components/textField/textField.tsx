@@ -13,9 +13,9 @@ type StyledProps = {
 	type: TypeProps;
 };
 
-const StyledTextField = styled.input(({align, error, type}: StyledProps) => {
+const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	const isTypeNumber = type === 'number';
@@ -96,7 +96,7 @@ export const TextField = ({
 														align = 'center'
 													}: Props) => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 	const [isActive, setIsActive] = useState(false);
 

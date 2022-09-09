@@ -50,7 +50,7 @@ type IndividualProps = PrimaryProps | SecondaryProps | PureProps;
 type Props = IndividualProps & CommonProps;
 
 const StyledButton = styled.button(
-	({variant = 'primary', color = 'default', disabled = false, icon}: Props) => {
+	({ variant = 'primary', color = 'default', disabled = false, icon }: Props) => {
 		const isPrimary = variant === 'primary';
 		const isSecondary = variant === 'secondary';
 		const isPure = variant === 'pure';
@@ -59,7 +59,7 @@ const StyledButton = styled.button(
 		const isPrimaryTransparent = variant === 'primary' && color === 'transparent';
 		const isSecondaryDefault = isSecondary && setColor === 'default';
 		const {
-			state: {theme}
+			state: { theme }
 		} = useStore();
 
 		return css`
@@ -126,7 +126,7 @@ export const Button = ({
 	return (
 		// @ts-ignore
 		<StyledButton icon={icon} color={color} variant={variant} disabled={disabled} onClick={onClick}>
-			{icon && <img src={icons?.[icon]} alt={icon}/>}
+			{icon && <img src={icons?.[icon]} alt={icon} />}
 			{children}
 		</StyledButton>
 	);

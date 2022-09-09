@@ -67,7 +67,7 @@ type Props = {
 
 const Icon = styled.button(() => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	return css`
@@ -95,7 +95,7 @@ const Icon = styled.button(() => {
 	`;
 });
 
-const Img = styled.img(({iconOnly}: Props) => {
+const Img = styled.img(({ iconOnly }: Props) => {
 	return css`
 		height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
 		width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
@@ -104,18 +104,18 @@ const Img = styled.img(({iconOnly}: Props) => {
 	`;
 });
 
-export const IconButton = ({disabled = false, icon, onClick, iconOnly}: Props) => {
+export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
 	return !iconOnly ? (
 		<Icon disabled={disabled} onClick={onClick}>
 			{!icon || icon === 'Select Token' ? (
-				<QuestionMark style={{width: 42, height: 42}} />
+				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
 				// @ts-ignore
 				<Img src={icons[icon]} alt={icon} />
 			)}
 		</Icon>
 	) : !icon || icon === 'Select Token' ? (
-		<QuestionMark style={{width: 42, height: 42}} />
+		<QuestionMark style={{ width: 42, height: 42 }} />
 	) : (
 		// @ts-ignore
 		<Img src={icons[icon]} alt={icon} iconOnly />

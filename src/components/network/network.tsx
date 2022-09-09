@@ -1,8 +1,8 @@
-import {Modal} from '../modal/modal';
-import {SelectList} from '../selectList/selectList';
-import {Button} from '../button/button';
+import { Modal } from '../modal/modal';
+import { SelectList } from '../selectList/selectList';
+import { Button } from '../button/button';
 import styled from 'styled-components';
-import {fontSize, pxToRem, spacing} from '../../styles';
+import { fontSize, pxToRem, spacing } from '../../styles';
 
 type Props = {
 	showModal: boolean;
@@ -24,7 +24,7 @@ const SelectWrapper = styled.div`
 	margin-bottom: ${pxToRem(32)};
 `;
 
-export const Network = ({showModal, setShowModal}: Props) => {
+export const Network = ({ showModal, setShowModal }: Props) => {
 
 	const handleClick = () => {
 		setShowModal(!showModal);

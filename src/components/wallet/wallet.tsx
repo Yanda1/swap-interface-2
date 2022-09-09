@@ -13,7 +13,7 @@ const StyledJazzIcon = styled.div`
 	width: ${pxToRem(16)};
 `;
 
-export const JazzIcon = ({account}: { account: string }) => {
+export const JazzIcon = ({ account }: { account: string }) => {
 	const ref = useRef<HTMLDivElement>();
 
 	useEffect(() => {
@@ -23,7 +23,7 @@ export const JazzIcon = ({account}: { account: string }) => {
 		}
 	}, [account]);
 
-	return <StyledJazzIcon ref={ref as any}/>;
+	return <StyledJazzIcon ref={ref as any} />;
 };
 
 type StyledProps = {
@@ -73,34 +73,34 @@ type Props = {
 	account: string;
 };
 
-export const Wallet = ({token, account}: Props) => {
+export const Wallet = ({ token, account }: Props) => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	const etherBalance = useEtherBalance(account);
 	const balance = etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3);
-	const {isBreakpointWidth: isMobile} = useBreakpoint('s');
+	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (
 		<>
-			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account}/>
+			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-				<JazzIcon account={account}/>
+				<JazzIcon account={account} />
 			</Account>
 		</>
 	) : (
 		<Wrapper theme={theme}>
-			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account}/>
+			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Amount theme={theme}>
 				{balance} {token}
 			</Amount>
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-				<JazzIcon account={account}/>
+				<JazzIcon account={account} />
 			</Account>
 		</Wrapper>
 	);

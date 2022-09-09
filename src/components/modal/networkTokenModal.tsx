@@ -26,14 +26,14 @@ type Props = {
 	setShowModal: (prev: boolean) => void;
 };
 
-export const NetworkTokenModal = ({showModal, setShowModal}: Props) => {
-	const {isBreakpointWidth} = useBreakpoint('xs');
+export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
+	const { isBreakpointWidth } = useBreakpoint('xs');
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isMobile, setIsMobile] = useState(isBreakpointWidth);
 	const [isShowList, setIsShowList] = useState(true);
 	const {
 		dispatch,
-		state: {destinationNetwork, destinationToken}
+		state: { destinationNetwork, destinationToken }
 	} = useStore();
 	useEffect(() => {
 		setIsMobile(isBreakpointWidth);
@@ -56,7 +56,7 @@ export const NetworkTokenModal = ({showModal, setShowModal}: Props) => {
 
 	const handleBack = () => {
 		setIsShowList(true);
-		dispatch({type: DestinationNetworkEnum.TOKEN, payload: 'Select Token'});
+		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 	};
 
 	return !isMobile ? (

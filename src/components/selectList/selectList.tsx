@@ -7,7 +7,7 @@ import { TextField } from '../textField/textField';
 
 const Wrapper = styled.div(() => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	return css`
@@ -31,7 +31,7 @@ type Props = {
 
 const Title = styled.div(() => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore(); // TODO: refactor theme export
 
 	return css`
@@ -55,7 +55,7 @@ const List = styled.ul`
 
 const Item = styled.li((props: any) => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	return css`
@@ -72,24 +72,24 @@ const Item = styled.li((props: any) => {
 	`;
 });
 
-export const SelectList = ({data, placeholder, value}: Props) => {
+export const SelectList = ({ data, placeholder, value }: Props) => {
 	const [search, setSearch] = useState('');
 	const dataList =
 		data &&
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: {destinationToken, destinationNetwork, destinationWallet}
+		state: { destinationToken, destinationNetwork, destinationWallet }
 	} = useStore();
 
 	const handleClick = useCallback(
 		(e: any) => {
 			if (value === 'WALLET') {
-				dispatch({type: DestinationNetworkEnum.WALLET, payload: e.target.textContent});
+				dispatch({ type: DestinationNetworkEnum.WALLET, payload: e.target.textContent });
 			}
-			dispatch({type: DestinationNetworkEnum[value], payload: e.target.textContent});
+			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
 			if (value === 'NETWORK') {
-				dispatch({type: DestinationNetworkEnum.TOKEN, payload: 'Select Token'});
+				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 			}
 		},
 		[destinationToken, destinationNetwork, destinationWallet]

@@ -32,7 +32,7 @@ const ModalContainer = styled.div``;
 
 const AccountTitle = styled.div
 (() => {
-	const {state: {theme}} = useStore();
+	const { state: { theme } } = useStore();
 
 	return css`
 		font-size: ${fontSize[16]};
@@ -68,7 +68,7 @@ const Account = styled.div`
 `;
 
 const AccountNumber = styled.div(() => {
-	const {state: {theme}} = useStore();
+	const { state: { theme } } = useStore();
 
 	return css`
 		color: ${theme.font.pure};
@@ -77,7 +77,7 @@ const AccountNumber = styled.div(() => {
 });
 
 const IconContainer = styled.div(() => {
-	const {state: {theme}} = useStore();
+	const { state: { theme } } = useStore();
 
 	return css`
 		height: ${pxToRem(8)};
@@ -107,9 +107,9 @@ const CopyText = styled.p.attrs((props: { isCopied: boolean }) => props)`
 	line-height: ${fontSize[20]};
 `;
 
-export const WalletModal = ({showModal, setShowModal, account}: Props) => {
-	const {deactivate} = useEthers();
-	const {dispatch} = useStore();
+export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
+	const { deactivate } = useEthers();
+	const { dispatch } = useStore();
 	const [isCopied, setIsCopied] = useState(false);
 
 	const handleCopy = () => {

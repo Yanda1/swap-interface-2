@@ -26,8 +26,8 @@ type Props = {
 	onDismiss: () => void;
 };
 
-const Toast = ({message, onDismiss, type}: Props) => {
-	const {state: {theme}} = useStore();
+const Toast = ({ message, onDismiss, type }: Props) => {
+	const { state: { theme } } = useStore();
 	const icon = type.toUpperCase();
 
 	return <div
@@ -54,7 +54,7 @@ const Toast = ({message, onDismiss, type}: Props) => {
 
 let toastCount = 0;
 
-export const ToastProvider: React.FC<{ children: ReactNode }> = ({children}) => {
+export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>([{
 		message: 'Hello it`s a brand new toast',
 		id: 100,
@@ -64,8 +64,8 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({children}) => 
 
 	const addToast = (message: string, type: string, timer = 5000) => {
 		const id = toastCount++;
-		const toast = {message, id, type, timer};
-		console.log({message, timer});
+		const toast = { message, id, type, timer };
+		console.log({ message, timer });
 		setToasts([...toasts, toast]);
 	};
 	const remove = (id: number) => {
@@ -84,10 +84,10 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({children}) => 
 
 	return (
 		// @ts-ignore
-		<ToastContext.Provider value={{addToast, remove}}>
+		<ToastContext.Provider value={{ addToast, remove }}>
 			{children}
 			<ToastContainer>
-				{toasts.map(({message, id, type}: { message: string; id: number; type: any }) => (
+				{toasts.map(({ message, id, type }: { message: string; id: number; type: any }) => (
 					<Toast key={id} message={message} type={type} onDismiss={onDismiss(id)} />
 				))}
 			</ToastContainer>

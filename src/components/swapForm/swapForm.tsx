@@ -48,7 +48,7 @@ const SwapInput = styled.div`
 `;
 
 const SwapNames = styled.div(
-	({pos = 'start'}: { pos?: string }) => `
+	({ pos = 'start' }: { pos?: string }) => `
 	display: flex;
 	flex-direction: column;
 	align-items: flex-${pos};
@@ -61,13 +61,13 @@ const SwapNames = styled.div(
 );
 
 const Name = styled.div(
-	({color}: { color: string }) => `
+	({ color }: { color: string }) => `
 	color: ${color};
 `
 );
 
 const ExchangeRate = styled.div(
-	({color}: { color: string }) => `
+	({ color }: { color: string }) => `
 	margin: ${spacing[28]} 0;
 	color: ${color};
 
@@ -90,7 +90,7 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
-	const {allPrices} = useBinanceApi();
+	const { allPrices } = useBinanceApi();
 	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
@@ -176,9 +176,9 @@ export const SwapForm = () => {
 					</SwapNames>
 				</Swap>
 				{isLightTheme(theme) ? (
-					<SwapperLight style={{marginBottom: 38}} />
+					<SwapperLight style={{ marginBottom: 38 }} />
 				) : (
-					<SwapperDark style={{marginBottom: 38}} />
+					<SwapperDark style={{ marginBottom: 38 }} />
 				)}
 				<Swap>
 					<SwapInput>
@@ -209,13 +209,13 @@ export const SwapForm = () => {
 				}
 			/>
 			{hasMemo && (
-				<div style={{marginTop: 24}}>
+				<div style={{ marginTop: 24 }}>
 					<TextField
 						value={destinationMemo}
 						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
-							dispatch({type: DestinationNetworkEnum.MEMO, payload: e.target.value})
+							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })
 						}
 					/>
 				</div>

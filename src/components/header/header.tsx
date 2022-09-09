@@ -91,12 +91,12 @@ const Menu = styled.ul`
 `;
 
 export const Header = () => {
-	const {isBreakpointWidth} = useBreakpoint('s');
-	const {state, dispatch} = useStore();
-	const {theme, buttonStatus, isUserVerified} = state;
+	const { isBreakpointWidth } = useBreakpoint('s');
+	const { state, dispatch } = useStore();
+	const { theme, buttonStatus, isUserVerified } = state;
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH); // TODO: check logic for default value
 	// @ts-ignore
-	const {addToast} = useToasts();
+	const { addToast } = useToasts();
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showModal, setShowModal] = useState(false);
@@ -106,7 +106,7 @@ export const Header = () => {
 	const menuRef = useRef<HTMLUListElement | null>(null);
 
 	const isLight = isLightTheme(theme);
-	const {activateBrowserWallet, library, account, chainId, switchNetwork} = useEthers();
+	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
 
 	const checkNetwork = async () => {
 		const NETWORK_PARAMS = [
@@ -134,21 +134,21 @@ export const Header = () => {
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
 		if (localStorageTheme) {
-			dispatch({type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) as Theme});
+			dispatch({ type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) as Theme });
 		}
 	}, []);
 
 	useEffect(() => {
 		if (account) {
-			dispatch({type: VerificationEnum.ACCOUNT, payload: true});
+			dispatch({ type: VerificationEnum.ACCOUNT, payload: true });
 		} else {
-			dispatch({type: VerificationEnum.ACCOUNT, payload: false});
+			dispatch({ type: VerificationEnum.ACCOUNT, payload: false });
 		}
 
 		if (chainId) {
-			dispatch({type: VerificationEnum.NETWORK, payload: true});
+			dispatch({ type: VerificationEnum.NETWORK, payload: true });
 		} else {
-			dispatch({type: VerificationEnum.NETWORK, payload: false});
+			dispatch({ type: VerificationEnum.NETWORK, payload: false });
 			void checkNetwork();
 		}
 	}, [account, chainId, dispatch]);
@@ -175,14 +175,14 @@ export const Header = () => {
 						type: ButtonEnum.BUTTON,
 						payload: buttonType.PASS_KYC
 					});
-					dispatch({type: VerificationEnum.USER, payload: false});
+					dispatch({ type: VerificationEnum.USER, payload: false });
 					addToast(
 						'Please sign in with the account that has already passed KYC or start the KYC process again'
 						, 'warning');
 				} else {
 					// @ts-ignore
 					if (storage.isKyced) {
-						dispatch({type: KycEnum.STATUS, payload: KycStatusEnum.PASS});
+						dispatch({ type: KycEnum.STATUS, payload: KycStatusEnum.PASS });
 					} else {
 						try {
 							const tokenRes: any = await axios.request({
@@ -201,7 +201,7 @@ export const Header = () => {
 							});
 							if (tokenRes.status === 200 && statusRes.status === 200) {
 								makeBinanceKycCall(tokenRes.data.token);
-								dispatch({type: KycEnum.STATUS, payload: statusRes.data.statusInfo.kycStatus}); // check typing
+								dispatch({ type: KycEnum.STATUS, payload: statusRes.data.statusInfo.kycStatus }); // check typing
 								// @ts-ignore
 								setStorage({
 									...storage,
@@ -256,13 +256,13 @@ export const Header = () => {
 
 	const changeTheme = (): void => {
 		const getTheme = isLight ? darkTheme : lightTheme;
-		dispatch({type: ThemeEnum.THEME, payload: getTheme});
+		dispatch({ type: ThemeEnum.THEME, payload: getTheme });
 		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(getTheme));
 	};
 
 	const handleShowMenu = (): void => {
 		if (!showMenu) {
-			document.addEventListener('click', handleOutsideClick, {capture: true});
+			document.addEventListener('click', handleOutsideClick, { capture: true });
 		} else {
 			document.removeEventListener('click', handleOutsideClick, {
 				capture: true
@@ -323,20 +323,20 @@ export const Header = () => {
 	return (
 		<StyledHeader theme={theme}>
 			{isBreakpointWidth ? (
-				<LogoMobile style={{marginRight: 'auto'}}/>
+				<LogoMobile style={{ marginRight: 'auto' }} />
 			) : isLight ? (
-				<LogoLight style={{marginRight: 'auto'}}/>
+				<LogoLight style={{ marginRight: 'auto' }} />
 			) : (
-				<LogoDark style={{marginRight: 'auto'}}/>
+				<LogoDark style={{ marginRight: 'auto' }} />
 			)}
 			{!isBreakpointWidth && (
 				<Button variant="pure" onClick={() => console.log('header')}>
 					Transaction History
 				</Button>
 			)}
-			{showModal && <Network showModal={showModal} setShowModal={setShowModal}/>}
+			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account ? (
-				<Wallet token="GLMR" account={account}/>
+				<Wallet token="GLMR" account={account} />
 			) : (
 				<Button
 					variant="secondary"
@@ -347,11 +347,11 @@ export const Header = () => {
 			)}
 
 			<ThemeButton theme={theme} onClick={changeTheme}>
-				{isLight ? <Moon/> : <Sun/>}
+				{isLight ? <Moon /> : <Sun />}
 			</ThemeButton>
 
 			{isBreakpointWidth &&
-				(isLight ? <MenuLight onClick={handleShowMenu}/> : <MenuDark onClick={handleShowMenu}/>)}
+				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
 			{showMenu && (
 				<Menu theme={theme} ref={menuRef}>
 					<li>Transaction History</li>
