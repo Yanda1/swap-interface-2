@@ -16,6 +16,7 @@ import {
 	BASE_URL,
 	ButtonEnum,
 	buttonType,
+	defaultBorderRadius,
 	getAuthTokensFromNonce,
 	isLightTheme,
 	KycEnum,
@@ -32,7 +33,7 @@ import {
 	VerificationEnum
 } from '../../helpers';
 import type { ColorType } from '../../components';
-import { Button, Wallet, useToasts } from '../../components';
+import { Button, Network, useToasts, Wallet } from '../../components';
 import axios from 'axios';
 
 type Props = {
@@ -80,10 +81,9 @@ const Menu = styled.ul`
 	background: ${(props: Props) => props.theme.background.default};
 	text-align: right;
 	padding: ${spacing[14]};
-	border-radius: ${pxToRem(6)};
+	border-radius: ${defaultBorderRadius};
 	cursor: pointer;
-	border: 1px solid
-		${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
+	border: 1px solid ${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -178,7 +178,7 @@ export const Header = () => {
 					dispatch({ type: VerificationEnum.USER, payload: false });
 					addToast(
 						'Please sign in with the account that has already passed KYC or start the KYC process again'
-					);
+						, 'warning');
 				} else {
 					// @ts-ignore
 					if (storage.isKyced) {
@@ -241,11 +241,11 @@ export const Header = () => {
 										});
 									}
 								} catch (err: any) {
-									addToast('We are sorry, something went wrong');
+									addToast('Sorry, something went wrong', 'error');
 								}
 							}
 						} catch (err: any) {
-							addToast('We are sorry, something went wrong');
+							addToast('Sorry, something went wrong', 'error');
 						}
 					}
 				}
@@ -312,10 +312,10 @@ export const Header = () => {
 					});
 					makeBinanceKycCall(tokenRes.data.token);
 				} catch (err: any) {
-					addToast('We are sorry, something went wrong');
+					addToast('Sorry, something went wrong', 'error');
 				}
 			} catch (err: any) {
-				addToast('Something went wrong in handleButtonClick call');
+				addToast('Something went wrong in handleButtonClick call', 'error');
 			}
 		}
 	};
@@ -334,6 +334,7 @@ export const Header = () => {
 					Transaction History
 				</Button>
 			)}
+			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account ? (
 				<Wallet token="GLMR" account={account} />
 			) : (

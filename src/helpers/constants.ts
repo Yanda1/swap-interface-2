@@ -1,3 +1,5 @@
+import { pxToRem } from '../styles';
+
 export const LOCAL_STORAGE_THEME = 'current-theme';
 export const LOCAL_STORAGE_AUTH = 'tiwanaku';
 
@@ -35,3 +37,7 @@ export const makeId = (length: number) => {
 
 	return result;
 };
+
+export const defaultBorderRadius = pxToRem(6);
+
+export const horizontalPadding = 10;

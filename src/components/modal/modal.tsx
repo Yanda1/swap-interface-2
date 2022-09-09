@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
-import { useStore } from '../../helpers';
+import { defaultBorderRadius, useStore } from '../../helpers';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
@@ -21,7 +21,7 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 		max-width: calc(100% - ${spacing[64]});
 		background-color: ${theme.background[background]};
 		border: 1px solid ${theme.default};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		padding: ${spacing[12]};
 
 		${mediaQuery('xxs')} {
@@ -56,13 +56,7 @@ type Props = {
 	children?: ReactNode;
 };
 
-export const Modal = ({
-												showModal,
-												setShowModal,
-												width = 'large',
-												background,
-												children
-											}: Props) => {
+export const Modal = ({ showModal, setShowModal, width = 'large', background, children }: Props) => {
 	const handleClose = () => {
 		setShowModal(false);
 	};

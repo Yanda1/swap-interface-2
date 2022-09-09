@@ -111,7 +111,6 @@ exports[`SelectList should render a select list with 3 items 1`] = `
   </div>
   <input
     class="c2"
-    lang="en"
     placeholder="Network Name"
     type="text"
     value=""
@@ -126,7 +125,7 @@ exports[`SelectList should render a select list with 3 items 1`] = `
       <img
         alt="ETH"
         class="c5"
-        src="ETH.png"
+        src="eth.png"
       />
       ETH
     </li>
@@ -137,7 +136,7 @@ exports[`SelectList should render a select list with 3 items 1`] = `
       <img
         alt="BTC"
         class="c5"
-        src="BTC.png"
+        src="btc.png"
       />
       BTC
     </li>
@@ -148,7 +147,7 @@ exports[`SelectList should render a select list with 3 items 1`] = `
       <img
         alt="USDT"
         class="c5"
-        src="USDT.png"
+        src="usdt.png"
       />
       USDT
     </li>
@@ -230,7 +229,6 @@ exports[`SelectList should render an empty select list 1`] = `
   </div>
   <input
     class="c2"
-    lang="en"
     placeholder="Network Name"
     type="text"
     value=""

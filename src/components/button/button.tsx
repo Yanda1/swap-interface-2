@@ -3,7 +3,7 @@ import { fontFamily, pxToRem } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
-import { isLightTheme, useStore } from '../../helpers';
+import { defaultBorderRadius, isLightTheme, useStore } from '../../helpers';
 
 const icons = {
 	moonbeam,
@@ -76,20 +76,19 @@ const StyledButton = styled.button(
 			color: ${isPure
 				? theme.pure
 				: isSecondaryDefault || isPrimaryTransparent
-				? theme.button.default
-				: '#FFF'};
+					? theme.button.default
+					: '#FFF'};
 			background-color: ${disabled
 				? theme.button.disabled
 				: isPure || isSecondaryDefault
-				? theme.button.transparent
-				: theme.button[setColor]};
-			border: 1px solid
-				${isSecondaryDefault || isPrimaryTransparent
-					? theme.button.default
-					: isPure || isColorDefault
+					? theme.button.transparent
+					: theme.button[setColor]};
+			border: 1px solid ${isSecondaryDefault || isPrimaryTransparent
+				? theme.button.default
+				: isPure || isColorDefault
 					? theme.button.transparent
 					: '#FFF'};
-			border-radius: ${pxToRem(6)};
+			border-radius: ${defaultBorderRadius};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
 
@@ -100,14 +99,13 @@ const StyledButton = styled.button(
 
 			&:focus-visible {
 				outline-offset: 2px;
-				outline: 1px solid
-					${isPrimary
-						? theme.button.default
-						: isPure
+				outline: 1px solid ${isPrimary
+					? theme.button.default
+					: isPure
 						? theme.pure
 						: isLightTheme(theme)
-						? theme.button[setColor]
-						: '#FFF'};
+							? theme.button[setColor]
+							: '#FFF'};
 			}
 
 			&:active {
@@ -118,13 +116,13 @@ const StyledButton = styled.button(
 );
 
 export const Button = ({
-	children,
-	variant = 'primary',
-	color = 'default',
-	disabled = false,
-	icon,
-	onClick
-}: Props) => {
+												 children,
+												 variant = 'primary',
+												 color = 'default',
+												 disabled = false,
+												 icon,
+												 onClick
+											 }: Props) => {
 	return (
 		// @ts-ignore
 		<StyledButton icon={icon} color={color} variant={variant} disabled={disabled} onClick={onClick}>

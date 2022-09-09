@@ -1,18 +1,19 @@
-import { useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
 import { useEtherBalance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
-import { useStore, useBreakpoint, isLightTheme } from '../../helpers';
-import { pxToRem, spacing } from '../../styles';
+import { defaultBorderRadius, isLightTheme, useBreakpoint, useStore } from '../../helpers';
 import type { Theme } from '../../styles';
+import { pxToRem, spacing } from '../../styles';
+import { WalletModal } from '../modal/walletModal';
 
 const StyledJazzIcon = styled.div`
 	height: ${pxToRem(16)};
 	width: ${pxToRem(16)};
 `;
 
-const JazzIcon = ({ account }: { account: string }) => {
+export const JazzIcon = ({ account }: { account: string }) => {
 	const ref = useRef<HTMLDivElement>();
 
 	useEffect(() => {
@@ -31,7 +32,7 @@ type StyledProps = {
 
 const Wrapper = styled.div`
 	border: ${(props: StyledProps) => `1px solid ${props.theme.button.wallet}`};
-	border-radius: ${pxToRem(6)};
+	border-radius: ${defaultBorderRadius};
 	display: flex;
 	align-items: center;
 	margin-left: -1px;
@@ -46,12 +47,11 @@ const Account = styled.button`
 	outline: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
 	border: 1px solid transparent;
 	color: ${(props: StyledProps) => props.theme.font.pure};
-	border-radius: ${pxToRem(6)};
+	border-radius: ${defaultBorderRadius};
 	display: flex;
 	gap: ${spacing[4]};
-	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))}
-		// TODO: mixing spacing & pxToRem is far from ideal
-		${spacing[10]};
+	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))} // TODO: mixing spacing & pxToRem is far from ideal
+	${spacing[10]};
 	cursor: pointer;
 	margin-right: -1px;
 
@@ -74,6 +74,8 @@ type Props = {
 };
 
 export const Wallet = ({ token, account }: Props) => {
+	const [showModal, setShowModal] = useState(false);
+	const openModal = () => setShowModal(!showModal);
 	const {
 		state: { theme }
 	} = useStore();
@@ -83,16 +85,20 @@ export const Wallet = ({ token, account }: Props) => {
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (
-		<Account theme={theme} onClick={() => alert('here goes your modal, Ali :)')}>
-			{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-			<JazzIcon account={account} />
-		</Account>
+		<>
+			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
+			<Account theme={theme} onClick={openModal}>
+				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
+				<JazzIcon account={account} />
+			</Account>
+		</>
 	) : (
 		<Wrapper theme={theme}>
+			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Amount theme={theme}>
 				{balance} {token}
 			</Amount>
-			<Account theme={theme} onClick={() => alert('here goes your modal, Ali :)')}>
+			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
 				<JazzIcon account={account} />
 			</Account>

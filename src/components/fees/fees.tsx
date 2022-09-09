@@ -1,23 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useEthers, useGasPrice } from '@usedapp/core';
-import { utils, BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import styled, { css } from 'styled-components';
 import {
+	BINANCE_FEE,
 	CONTRACT_ADDRESSES,
-	PROTOCOL_FEE,
-	makeId,
-	useStore,
-	serviceAddress,
+	defaultBorderRadius,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
-	useBinanceApi,
 	Graph,
+	makeId,
+	PROTOCOL_FEE,
+	serviceAddress,
 	startToken,
-	BINANCE_FEE
+	useBinanceApi,
+	useStore
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
-import { pxToRem, spacing, Theme } from '../../styles';
+import { spacing, Theme } from '../../styles';
 
 const Summary = styled.summary(
 	({ color, theme }: { color: string; theme: Theme }) => css`
@@ -41,7 +42,7 @@ const Details = styled.div(
 		flex-direction: column;
 		padding: ${spacing[10]} ${spacing[16]};
 		margin-bottom: ${spacing[56]};
-		border-radius: ${pxToRem(6)};
+		border-radius: ${defaultBorderRadius};
 		border: 1px solid ${color};
 
 		& > * {

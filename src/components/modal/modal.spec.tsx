@@ -6,7 +6,7 @@ import { darkTheme, pxToRem, spacing } from '../../styles';
 
 describe('Modal', () => {
 	it('should render a modal with background mobile and large size', () => {
-		const { getByTestId, getByText } = render(
+		const {getByTestId, getByText} = render(
 			<AuthProvider>
 				<Modal showModal setShowModal={() => console.log()} background="mobile" width="large" />
 			</AuthProvider>
@@ -34,22 +34,7 @@ describe('Modal', () => {
 
 		const mobileMedia = '(max-width:375px)';
 
-		expect(modal).toHaveStyleRule('max-width', `${pxToRem(347)}`, {
-			media: mobileMedia
-		});
 		expect(modal).toHaveStyleRule('width', `calc(100% - ${pxToRem(10)})`, {
-			media: mobileMedia
-		});
-		expect(modal).toHaveStyleRule('border-radius', `${pxToRem(28)}`, {
-			media: mobileMedia
-		});
-		expect(modal).toHaveStyleRule('border', 'none', {
-			media: mobileMedia
-		});
-		expect(modal).toHaveStyleRule('margin', '0 auto', {
-			media: mobileMedia
-		});
-		expect(modal).toHaveStyleRule('margin-top', `${spacing[48]}`, {
 			media: mobileMedia
 		});
 
@@ -67,7 +52,7 @@ describe('Modal', () => {
 	});
 
 	it('should render modal with small size and default background', () => {
-		const { getByTestId } = render(
+		const {getByTestId} = render(
 			<AuthProvider>
 				<Modal showModal setShowModal={() => console.log()} background="default" width="small" />
 			</AuthProvider>
