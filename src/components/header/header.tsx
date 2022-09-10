@@ -83,7 +83,8 @@ const Menu = styled.ul`
 	padding: ${spacing[14]};
 	border-radius: ${defaultBorderRadius};
 	cursor: pointer;
-	border: 1px solid ${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
+	border: 1px solid
+		${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -177,8 +178,9 @@ export const Header = () => {
 					});
 					dispatch({ type: VerificationEnum.USER, payload: false });
 					addToast(
-						'Please sign in with the account that has already passed KYC or start the KYC process again'
-						, 'warning');
+						'Please sign in with the account that has already passed KYC or start the KYC process again',
+						'warning'
+					);
 				} else {
 					// @ts-ignore
 					if (storage.isKyced) {
@@ -295,7 +297,6 @@ export const Header = () => {
 			try {
 				const res: { access: string; is_kyced: boolean; refresh: string } =
 					await getAuthTokensFromNonce(account, library);
-				console.log('res', res);
 				// @ts-ignore
 				setStorage({
 					account,

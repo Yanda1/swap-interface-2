@@ -9,6 +9,7 @@ import {
 	BINANCE_PRICE_TICKER
 } from './index';
 import axios from 'axios';
+import destinationNetworks from '../data/destinationNetworks.json';
 
 export enum STATUS_ENUM {
 	NONCE = 'NONCE',
@@ -171,7 +172,11 @@ export const useKyc = (
 
 export const useBinanceApi = () => {
 	const [allPrices, setAllPrices] = useState<{ symbol: string; price: string }[]>([]);
+	const [allFilteredPrices, setAllFilteredPrices] = useState<{ symbol: string; price: string }[]>(
+		[]
+	);
 	const [allPairs, setAllPairs] = useState([]);
+	const [allFilteredPairs, setAllFilteredPairs] = useState([]);
 
 	const getExchangeInfo = async () => {
 		try {
@@ -191,10 +196,51 @@ export const useBinanceApi = () => {
 		}
 	};
 
+	const uniqueTokens: string[] = Object.keys(destinationNetworks).reduce(
+		(tokens: string[], network: string) => {
+			// @ts-ignore
+			const networkTokens = Object.keys(destinationNetworks?.[network]?.['tokens']);
+
+			const allTokens = [...tokens, networkTokens];
+
+			return [...new Set(allTokens.flat(1))];
+		},
+		['GLMR']
+	);
+
+	const isSymbol = (symbol: string): boolean => {
+		let k = 0;
+		for (let i = 0; i < uniqueTokens.length - 1; i++) {
+			k++;
+			for (let j = k; j < uniqueTokens.length; j++) {
+				if (
+					uniqueTokens[i] + uniqueTokens[j] === symbol ||
+					uniqueTokens[j] + uniqueTokens[i] === symbol
+				) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	};
+
 	useEffect(() => {
 		void getExchangeInfo();
 		void getTickerData();
 	}, []);
 
-	return { allPairs, allPrices };
+	useEffect(() => {
+		if (allPairs) {
+			const filteredPairs = allPairs.filter((pair: any) => isSymbol(pair.symbol));
+			setAllFilteredPairs(filteredPairs);
+		}
+
+		if (allPrices) {
+			const filteredPrices = allPrices.filter((price: any) => isSymbol(price.symbol));
+			setAllFilteredPrices(filteredPrices);
+		}
+	}, [allPairs, allPrices]);
+
+	return { allFilteredPairs, allFilteredPrices };
 };

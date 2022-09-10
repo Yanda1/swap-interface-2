@@ -73,7 +73,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			destinationToken
 		}
 	} = useStore();
-	const { allPairs, allPrices } = useBinanceApi();
+	const { allFilteredPairs, allFilteredPrices } = useBinanceApi();
 
 	const [networkFee, setNetworkFee] = useState({ amount: 0, currency: 'GLMR' });
 	const [cexFee, setCexFee] = useState([{ amount: 0, currency: 'GLMR' }]);
@@ -135,15 +135,15 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	useEffect(() => {
 		const localGraph = new Graph();
-		for (let i = 0; i < allPairs.length; i++) {
+		for (let i = 0; i < allFilteredPairs.length; i++) {
 			// @ts-ignore
-			localGraph.addEdge(allPairs[i].baseAsset, allPairs[i].quoteAsset);
-			if (allPairs.length === localGraph.edges) {
+			localGraph.addEdge(allFilteredPairs[i].baseAsset, allFilteredPairs[i].quoteAsset);
+			if (allFilteredPairs.length === localGraph.edges) {
 				// @ts-ignore
 				setCexGraph(localGraph);
 			}
 		}
-	}, [allPairs]);
+	}, [allFilteredPairs]);
 
 	useEffect(() => {
 		const estimateCexFee = () => {
@@ -153,19 +153,19 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 					token
 				);
 
-				if (graphPath && allPrices) {
+				if (graphPath && allFilteredPrices) {
 					let result = Number(amount);
 					const allCexFees: { amount: number; currency: string }[] = [];
 					for (let i = 0; i < graphPath.distance; i++) {
 						let edgePrice = 0;
-						let ticker: undefined | { symbol: string; price: string } = allPrices.find(
+						let ticker: undefined | { symbol: string; price: string } = allFilteredPrices.find(
 							(x: { symbol: string; price: string }) =>
 								x.symbol === graphPath.path[i] + graphPath.path[i + 1]
 						);
 						if (ticker) {
 							edgePrice = Number(ticker?.price);
 						} else {
-							ticker = allPrices.find(
+							ticker = allFilteredPrices.find(
 								(x: any) => x.symbol === graphPath.path[i + 1] + graphPath.path[i]
 							);
 							edgePrice = 1 / Number(ticker?.price);
@@ -178,7 +178,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			}
 		};
 		estimateCexFee();
-	}, [token, cexGraph, amount, allPrices]);
+	}, [token, cexGraph, amount, allFilteredPrices]);
 
 	useEffect(() => {
 		if (isTokenSelected(token) && isNetworkSelected(network)) {
@@ -194,13 +194,13 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	useEffect(() => {
 		const amount = [...cexFee, networkFee, withdrawlFee, protocolFee].reduce((total, fee) => {
-			const ticker = allPrices.find(
+			const ticker = allFilteredPrices.find(
 				(pair: { symbol: string; price: string }) => pair.symbol === `${fee.currency}${feeCurrency}`
 			);
 			if (ticker) {
 				return (total += +ticker.price * fee.amount);
 			} else {
-				const reverseTicker = allPrices.find(
+				const reverseTicker = allFilteredPrices.find(
 					(pair: { symbol: string; price: string }) =>
 						pair.symbol === `${fee.currency}${feeCurrency}`
 				);

@@ -92,7 +92,7 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
-	const { allPrices } = useBinanceApi();
+	const { allFilteredPrices } = useBinanceApi();
 	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
@@ -107,7 +107,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		const convertDestinationAmount = () => {
 			if (isTokenSelected(destinationToken)) {
-				const getSymbol: any = allPrices.find(
+				const getSymbol: any = allFilteredPrices.find(
 					(pair: { symbol: string; price: string }) =>
 						pair.symbol === `${startToken}${destinationToken}`
 				);
