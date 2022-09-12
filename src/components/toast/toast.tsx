@@ -27,40 +27,41 @@ type Props = {
 };
 
 const Toast = ({ message, onDismiss, type }: Props) => {
-	const { state: { theme } } = useStore();
+	const {
+		state: { theme }
+	} = useStore();
 	const icon = type.toUpperCase();
 
-	return <div
-		style={{
-			display: 'flex',
-			alignItems: 'center',
-			background: `${theme.button[type]}`,
-			color: `${theme.font.pure}`,
-			cursor: 'pointer',
-			fontSize: `${fontSize[14]}`,
-			margin: `${spacing[10]}`,
-			padding: `${spacing[10]}`,
-			borderRadius: `${defaultBorderRadius}`
-		}}
-		onClick={onDismiss}>
-		<IconButton
-			// @ts-ignore
-			icon={icon}
-			iconOnly
-		/>
-		{message}
-	</div>;
+	return (
+		<div
+			style={{
+				display: 'flex',
+				alignItems: 'center',
+				background: `${theme.button[type]}`,
+				color: `${theme.font.pure}`,
+				cursor: 'pointer',
+				fontSize: `${fontSize[14]}`,
+				margin: `${spacing[10]}`,
+				padding: `${spacing[10]}`,
+				borderRadius: `${defaultBorderRadius}`
+			}}
+			onClick={onDismiss}>
+			<IconButton
+				// @ts-ignore
+				icon={icon}
+				iconOnly
+			/>
+			{message}
+		</div>
+	);
 };
 
 let toastCount = 0;
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>([{
-		message: 'Hello it`s a brand new toast',
-		id: 100,
-		type: 'success',
-		timer: 1000000
-	}]);
+	const [toasts, setToasts] = useState<
+		{ message: string; id: number; type: string; timer: number }[]
+	>([]);
 
 	const addToast = (message: string, type: string, timer = 5000) => {
 		const id = toastCount++;
@@ -78,7 +79,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
 	if (toasts.length > 0) {
 		setTimeout(() => {
-			setToasts(prev => prev.filter(toast => toast !== toasts[toasts.length - 1]));
+			setToasts((prev) => prev.filter((toast) => toast !== toasts[toasts.length - 1]));
 		}, toasts[toasts.length - 1].timer);
 	}
 

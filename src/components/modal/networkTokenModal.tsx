@@ -5,7 +5,13 @@ import { Button } from '..';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
-import { DestinationNetworkEnum, useBreakpoint, useStore } from '../../helpers';
+import {
+	DestinationNetworkEnum,
+	isNetworkSelected,
+	isTokenSelected,
+	useBreakpoint,
+	useStore
+} from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -40,13 +46,13 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	}, [isBreakpointWidth]);
 	useEffect(() => {
 		setIsDisabled(
-			() => destinationNetwork === 'Select Network' || destinationToken === 'Select Token'
+			() => !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken)
 		);
 	}, [destinationNetwork, destinationToken]);
 
 	const networksList = Object.keys(destinationNetworks);
 	const networkTokensList =
-		destinationNetwork !== 'Select Network' &&
+		isNetworkSelected(destinationNetwork) &&
 		// @ts-ignore
 		Object.keys(destinationNetworks?.[destinationNetwork]?.['tokens']);
 
@@ -97,8 +103,8 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 						<Button
 							onClick={() => setIsShowList(false)}
 							// @ts-ignore
-							color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
-							disabled={destinationNetwork === 'Select Network'}>
+							color={isNetworkSelected(destinationNetwork) ? 'transparent' : 'default'}
+							disabled={!isNetworkSelected(destinationNetwork)}>
 							NEXT
 						</Button>
 					)}

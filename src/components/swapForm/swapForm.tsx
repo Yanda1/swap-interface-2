@@ -7,6 +7,8 @@ import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
 	DestinationNetworkEnum,
 	isLightTheme,
+	isNetworkSelected,
+	isTokenSelected,
 	realParseFloat,
 	removeZeros,
 	startToken,
@@ -90,7 +92,7 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
-	const { allPrices } = useBinanceApi();
+	const { allFilteredPrices } = useBinanceApi();
 	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
@@ -104,8 +106,8 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		const convertDestinationAmount = () => {
-			if (destinationToken !== 'Select Token') {
-				const getSymbol: any = allPrices.find(
+			if (isTokenSelected(destinationToken)) {
+				const getSymbol: any = allFilteredPrices.find(
 					(pair: { symbol: string; price: string }) =>
 						pair.symbol === `${startToken}${destinationToken}`
 				);
@@ -125,7 +127,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		// @ts-ignore
 		const hasTag = destinationNetworks?.[destinationNetwork]?.['hasTag'];
-		setHasMemo(destinationNetwork === 'Select Network' ? false : hasTag);
+		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
 	}, [destinationNetwork]);
 
 	useEffect(() => {
@@ -149,10 +151,8 @@ export const SwapForm = () => {
 	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken, currentPrice]);
 
 	const handleSwap = (): void => {
-		if (destinationAddressIsValid && destinationMemoIsValid && +amount >= minAmount) {
-			// @ts-ignore
-			swapButtonRef.current.onSubmit();
-		} // TODO - @daniel: should we add a toast or disable the button?
+		// @ts-ignore
+		swapButtonRef.current.onSubmit();
 	};
 
 	return (
@@ -188,12 +188,12 @@ export const SwapForm = () => {
 					</SwapInput>
 					<SwapNames pos="end">
 						<Name color={theme.font.pure}>{destinationToken}</Name>
-						<Name color={theme.font.default}>{destinationNetwork}</Name>
+						<Name color={theme.font.default}>({destinationNetwork})</Name>
 					</SwapNames>
 				</Swap>
 			</Trader>
 			<ExchangeRate color={theme.font.pure}>
-				{destinationToken === 'Select Token'
+				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
 					: `1 GLMR = ${removeZeros(currentPrice)} ${destinationToken}`}
 			</ExchangeRate>
@@ -204,7 +204,7 @@ export const SwapForm = () => {
 				onChange={(e) =>
 					dispatch({
 						type: DestinationNetworkEnum.ADDRESS,
-						payload: e.target.value
+						payload: e.target.value.trim()
 					})
 				}
 			/>
@@ -215,7 +215,7 @@ export const SwapForm = () => {
 						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
-							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })
+							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value.trim() })
 						}
 					/>
 				</div>
@@ -228,14 +228,12 @@ export const SwapForm = () => {
 					address={destinationAddress}
 				/>
 			)}
-			{isUserVerified && (
-				<SwapButton
-					ref={swapButtonRef}
-					hasMemo={hasMemo}
-					amount={amount.toString()}
-					onSubmit={handleSwap}
-				/>
-			)}
+			<SwapButton
+				ref={swapButtonRef}
+				validInputs={destinationMemoIsValid && destinationAddressIsValid && +amount >= minAmount}
+				amount={amount.toString()}
+				onClick={handleSwap}
+			/>
 		</Wrapper>
 	);
 };
