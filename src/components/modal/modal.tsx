@@ -62,12 +62,12 @@ export const Modal = ({ showModal, setShowModal, width = 'large', background, ch
 	};
 
 	return (
-		// @ts-ignore
 		<ModalWrapper
 			width={width}
 			showModal={showModal}
 			background={background}
 			data-testid="modal-container"
+			setShowModal={setShowModal}
 		>
 			<CloseIcon onClick={handleClose}>&#x2716;</CloseIcon>
 			{children}

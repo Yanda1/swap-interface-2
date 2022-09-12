@@ -21,6 +21,10 @@ const ChildWrapper = styled.div`
 	}
 `;
 
+const NextBtnContainer = styled.div`
+	margin: ${spacing[40]} 0;
+`;
+
 type Props = {
 	showModal: boolean;
 	setShowModal: (prev: boolean) => void;
@@ -59,6 +63,14 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 	};
 
+	useEffect(() => {
+		if (isShowList) {
+			if (destinationNetwork !== 'Select Network' && destinationToken === 'Select Token') {
+				dispatch({ type: DestinationNetworkEnum.NETWORK, payload: 'Select Network' });
+			}
+		}
+	}, [showModal]);
+
 	return !isMobile ? (
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
@@ -94,13 +106,14 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 						<div>No available networks...</div>
 					)}
 					{isShowList && (
-						<Button
-							onClick={() => setIsShowList(false)}
-							// @ts-ignore
-							color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
-							disabled={destinationNetwork === 'Select Network'}>
-							NEXT
-						</Button>
+						<NextBtnContainer>
+							<Button
+								onClick={() => setIsShowList(false)}
+								color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
+								disabled={destinationNetwork === 'Select Network'}>
+								NEXT
+							</Button>
+						</NextBtnContainer>
 					)}
 					{!isShowList && (
 						<Button disabled={isDisabled} onClick={handleSubmit} color="default">

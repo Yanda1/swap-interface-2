@@ -45,6 +45,7 @@ const Title = styled.div(() => {
 const List = styled.ul`
 	overflow-y: auto;
 	padding: 0;
+	height: ${pxToRem(478)};
 
 	&::-webkit-scrollbar,
 	&::-webkit-scrollbar-track,
@@ -96,43 +97,40 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	);
 
 	return (
-		<>
-			<Wrapper data-testid="custom">
-				<Title>SELECT {value}</Title>
-				<TextField
-					align="left"
-					value={search}
-					placeholder={placeholder}
-					onChange={(event) => setSearch(event.target.value)}
-				/>
-				{data.length > 0 ? (
-					<List>
-						{data.length > 0 &&
-							dataList.map((el: string) => {
-								const hasActiveBorder =
-									value === 'NETWORK' ? destinationNetwork === el : value === 'TOKEN' ? destinationToken === el : destinationWallet === el;
+		<Wrapper data-testid="custom">
+			<Title>SELECT {value}</Title>
+			<TextField
+				align="left"
+				value={search}
+				placeholder={placeholder}
+				onChange={(event) => setSearch(event.target.value)}
+			/>
+			{data.length > 0 ? (
+				<List>
+					{dataList.map((el: string) => {
+						const hasActiveBorder =
+							value === 'NETWORK' ? destinationNetwork === el : value === 'TOKEN' ? destinationToken === el : destinationWallet === el;
 
-								return (
-									<Item
-										value={value}
-										// @ts-ignore
-										activeBorder={hasActiveBorder}
-										onClick={(e) => handleClick(e)}
-										key={el}>
-										<IconButton
-											// @ts-ignore
-											icon={el}
-											iconOnly
-										/>
-										{el}
-									</Item>
-								);
-							})}
-					</List>
-				) : (
-					<Title>Please choose network.</Title>
-				)}
-			</Wrapper>
-		</>
+						return (
+							<Item
+								value={value}
+								// @ts-ignore
+								activeBorder={hasActiveBorder}
+								onClick={(e) => handleClick(e)}
+								key={el}>
+								<IconButton
+									// @ts-ignore
+									icon={el}
+									iconOnly
+								/>
+								{el}
+							</Item>
+						);
+					})}
+				</List>
+			) : (
+				<Title>Please choose network.</Title>
+			)}
+		</Wrapper>
 	);
 };
