@@ -20,43 +20,38 @@ const ButtonWrapper = styled.div`
 `;
 
 type Props = {
-	hasMemo: boolean;
+	validInputs: boolean;
 	amount: string;
-	onSubmit: () => void;
+	onClick: () => void;
 };
 
-export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref) => {
+export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
+	const {
+		state: { destinationNetwork, destinationToken, destinationAddress, destinationMemo }
+	} = useStore();
+	const isDisabled =
+		!validInputs ||
+		!isNetworkSelected(destinationNetwork) ||
+		!isTokenSelected(destinationToken) ||
+		!amount ||
+		!destinationAddress;
 	const { account, chainId, library: web3Provider } = useEthers();
-	// const toast = useToast();
 	// @ts-ignore
-	const contractAddress = CONTRACT_ADDRESSES[chainId];
+	const contractAddress = CONTRACT_ADDRESSES?.[chainId] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 	if (web3Provider) {
 		contract.connect(web3Provider.getSigner());
 	}
 	const { send: sendCreateProcess } = useContractFunction(
-		// TODO: add state for logs?
 		// @ts-ignore
 		contract,
 		'createProcess',
 		{ transactionName: 'Request Swap' }
 	);
 	const { sendTransaction } = useSendTransaction({
-		// TODO: add state for logs?
 		transactionName: 'Deposit'
 	});
-
-	const {
-		state: { destinationNetwork, destinationToken, destinationAddress, destinationMemo },
-		dispatch
-	} = useStore();
-	const isDisabled =
-		!isNetworkSelected(destinationNetwork) ||
-		!isTokenSelected(destinationToken) ||
-		!amount ||
-		!destinationAddress ||
-		(hasMemo && !destinationMemo);
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
@@ -67,7 +62,8 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 				samt: utils.parseEther(amount).toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
-				daddr: destinationAddress
+				daddr: destinationAddress,
+				tag: destinationMemo
 			};
 
 			const shortNamedValues = JSON.stringify(namedValues);
@@ -84,7 +80,7 @@ export const SwapButton = forwardRef(({ hasMemo, amount, onSubmit }: Props, ref)
 
 	return (
 		<ButtonWrapper>
-			<Button onClick={onSubmit} disabled={isDisabled} color="default">
+			<Button disabled={isDisabled} color="default" onClick={onClick}>
 				SWAP
 			</Button>
 		</ButtonWrapper>

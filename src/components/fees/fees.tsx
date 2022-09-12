@@ -70,7 +70,8 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			destinationMemo,
 			destinationAmount,
 			destinationNetwork,
-			destinationToken
+			destinationToken,
+			isNetworkConnected
 		}
 	} = useStore();
 	const { allFilteredPairs, allFilteredPrices } = useBinanceApi();
@@ -85,18 +86,17 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	const { chainId, library: web3Provider } = useEthers();
 	const gasPrice: any = useGasPrice();
 	// @ts-ignore
-	const contractAddress = CONTRACT_ADDRESSES[chainId];
+	const contractAddress = CONTRACT_ADDRESSES?.[chainId] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
-
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
-	if (web3Provider) {
+	if (web3Provider && isNetworkConnected) {
 		contract.connect(web3Provider.getSigner());
 	}
 
 	useEffect(() => {
 		const estimateNetworkFee = async (): Promise<void> => {
-			if (isNetworkSelected(network) && isTokenSelected(token) && address && amount) {
+			if (isNetworkSelected(network) && isTokenSelected(token) && address && amount && contract) {
 				const namedValues = {
 					scoin: 'GLMR',
 					samt: utils.parseEther(amount).toString(),
@@ -131,7 +131,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			}
 		};
 		void estimateNetworkFee();
-	}, [amount, token, network, address]);
+	}, [amount, address, network, token]);
 
 	useEffect(() => {
 		const localGraph = new Graph();

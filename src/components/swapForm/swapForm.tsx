@@ -151,10 +151,8 @@ export const SwapForm = () => {
 	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken, currentPrice]);
 
 	const handleSwap = (): void => {
-		if (destinationAddressIsValid && destinationMemoIsValid && +amount >= minAmount) {
-			// @ts-ignore
-			swapButtonRef.current.onSubmit();
-		}
+		// @ts-ignore
+		swapButtonRef.current.onSubmit();
 	};
 
 	return (
@@ -206,7 +204,7 @@ export const SwapForm = () => {
 				onChange={(e) =>
 					dispatch({
 						type: DestinationNetworkEnum.ADDRESS,
-						payload: e.target.value
+						payload: e.target.value.trim()
 					})
 				}
 			/>
@@ -217,26 +215,24 @@ export const SwapForm = () => {
 						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
-							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value })
+							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value.trim() })
 						}
 					/>
 				</div>
 			)}
-			{isUserVerified &&
-				isNetworkSelected(destinationNetwork) &&
-				isTokenSelected(destinationToken) && (
-					<Fees
-						amount={amount}
-						token={destinationToken}
-						network={destinationNetwork}
-						address={destinationAddress}
-					/>
-				)}
+			{isUserVerified && (
+				<Fees
+					amount={amount}
+					token={destinationToken}
+					network={destinationNetwork}
+					address={destinationAddress}
+				/>
+			)}
 			<SwapButton
 				ref={swapButtonRef}
-				hasMemo={hasMemo}
+				validInputs={destinationMemoIsValid && destinationAddressIsValid && +amount >= minAmount}
 				amount={amount.toString()}
-				onSubmit={handleSwap}
+				onClick={handleSwap}
 			/>
 		</Wrapper>
 	);
