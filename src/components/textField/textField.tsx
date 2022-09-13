@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
-import type { Theme } from '../../styles';
 import { fontSize, pxToRem, spacing } from '../../styles';
+import type { ThemeProps } from '../../styles';
 import { defaultBorderRadius, horizontalPadding, useStore } from '../../helpers';
 
 type AlignProps = 'left' | 'right' | 'center';
@@ -65,10 +65,6 @@ const Description = styled.div`
 	margin: ${spacing[4]} 0;
 `;
 
-type ThemeProps = {
-	theme: Theme;
-};
-
 const Error = styled.div`
 	margin: ${spacing[4]} 0;
 	color: ${(props: ThemeProps) => props.theme.button.error};
@@ -86,15 +82,15 @@ type Props = {
 };
 
 export const TextField = ({
-														placeholder,
-														disabled = false,
-														type = 'text',
-														value,
-														onChange,
-														description,
-														error,
-														align = 'center'
-													}: Props) => {
+	placeholder,
+	disabled = false,
+	type = 'text',
+	value,
+	onChange,
+	description,
+	error,
+	align = 'center'
+}: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -109,6 +105,7 @@ export const TextField = ({
 				align={align}
 				value={value}
 				type={type}
+				min="0"
 				// @ts-ignore
 				error={error}
 				onBlur={() => setIsActive(true)}

@@ -3,6 +3,9 @@ import { useState, useLayoutEffect } from 'react';
 import { breakpoint } from './../styles';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
+export const isNetworkSelected = (network: string) =>
+	network !== 'Select Network' && network !== '';
+export const isTokenSelected = (token: string) => token !== 'Select Token' && token !== '';
 
 export const removeZeros = (n: string): string => Number(n).toString();
 

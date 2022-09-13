@@ -1,6 +1,11 @@
 import { useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, DestinationNetworkEnum, horizontalPadding, useStore } from '../../helpers';
+import {
+	defaultBorderRadius,
+	DestinationNetworkEnum,
+	horizontalPadding,
+	useStore
+} from '../../helpers';
 import { fontSize, pxToRem, spacing } from '../../styles';
 import { IconButton } from '../iconButton/iconButton';
 import { TextField } from '../textField/textField';
@@ -32,7 +37,7 @@ type Props = {
 const Title = styled.div(() => {
 	const {
 		state: { theme }
-	} = useStore(); // TODO: refactor theme export
+	} = useStore();
 
 	return css`
 		font-size: ${fontSize[16]};
@@ -97,40 +102,44 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	);
 
 	return (
-		<Wrapper data-testid="custom">
-			<Title>SELECT {value}</Title>
-			<TextField
-				align="left"
-				value={search}
-				placeholder={placeholder}
-				onChange={(event) => setSearch(event.target.value)}
-			/>
-			{data.length > 0 ? (
-				<List>
-					{dataList.map((el: string) => {
-						const hasActiveBorder =
-							value === 'NETWORK' ? destinationNetwork === el : value === 'TOKEN' ? destinationToken === el : destinationWallet === el;
+			<Wrapper data-testid="custom">
+				<Title>SELECT {value}</Title>
+				<TextField
+					align="left"
+					value={search}
+					placeholder={placeholder}
+					onChange={(event) => setSearch(event.target.value)}
+				/>
+				{data.length > 0 ? (
+					<List>
+						{dataList.map((el: string) => {
+								const hasActiveBorder =
+									value === 'NETWORK'
+										? destinationNetwork === el
+										: value === 'TOKEN'
+										? destinationToken === el
+										: destinationWallet === el;
 
-						return (
-							<Item
-								value={value}
-								// @ts-ignore
-								activeBorder={hasActiveBorder}
-								onClick={(e) => handleClick(e)}
-								key={el}>
-								<IconButton
-									// @ts-ignore
-									icon={el}
-									iconOnly
-								/>
-								{el}
-							</Item>
-						);
-					})}
-				</List>
-			) : (
-				<Title>Please choose network.</Title>
-			)}
-		</Wrapper>
+								return (
+									<Item
+										value={value}
+										// @ts-ignore
+										activeBorder={hasActiveBorder}
+										onClick={(e) => handleClick(e)}
+										key={el}>
+										<IconButton
+											// @ts-ignore
+											icon={el}
+											iconOnly
+										/>
+										{el}
+									</Item>
+								);
+							})}
+					</List>
+				) : (
+					<Title>Please choose network.</Title>
+				)}
+			</Wrapper>
 	);
 };

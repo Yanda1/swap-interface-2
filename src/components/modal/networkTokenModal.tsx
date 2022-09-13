@@ -5,7 +5,13 @@ import { Button } from '..';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
-import { DestinationNetworkEnum, useBreakpoint, useStore } from '../../helpers';
+import {
+	DestinationNetworkEnum,
+	isNetworkSelected,
+	isTokenSelected,
+	useBreakpoint,
+	useStore
+} from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -44,13 +50,13 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	}, [isBreakpointWidth]);
 	useEffect(() => {
 		setIsDisabled(
-			() => destinationNetwork === 'Select Network' || destinationToken === 'Select Token'
+			() => !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken)
 		);
 	}, [destinationNetwork, destinationToken]);
 
 	const networksList = Object.keys(destinationNetworks);
 	const networkTokensList =
-		destinationNetwork !== 'Select Network' &&
+		isNetworkSelected(destinationNetwork) &&
 		// @ts-ignore
 		Object.keys(destinationNetworks?.[destinationNetwork]?.['tokens']);
 
@@ -63,27 +69,19 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 	};
 
-	useEffect(() => {
-		if (isShowList) {
-			if (destinationNetwork !== 'Select Network' && destinationToken === 'Select Token') {
-				dispatch({ type: DestinationNetworkEnum.NETWORK, payload: 'Select Network' });
-			}
-		}
-	}, [showModal]);
-
 	return !isMobile ? (
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
 					{networksList && networksList.length > 0 ? (
 						<>
-							<SelectList value='NETWORK' data={networksList} placeholder='Network Name' />
-							<SelectList value='TOKEN' data={networkTokensList} placeholder='Token Name' />
+							<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
+							<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />
 						</>
 					) : (
 						<div>No available networks...</div>
 					)}
-					<Button disabled={isDisabled} onClick={handleSubmit} color='default'>
+					<Button disabled={isDisabled} onClick={handleSubmit} color="default">
 						{isDisabled ? 'Please select Network and Token' : 'Select'}
 					</Button>
 				</ChildWrapper>
@@ -107,12 +105,13 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 					)}
 					{isShowList && (
 						<NextBtnContainer>
-							<Button
-								onClick={() => setIsShowList(false)}
-								color={destinationNetwork !== 'Select Network' ? 'transparent' : 'default'}
-								disabled={destinationNetwork === 'Select Network'}>
-								NEXT
-							</Button>
+						<Button
+							onClick={() => setIsShowList(false)}
+							// @ts-ignore
+							color={isNetworkSelected(destinationNetwork) ? 'transparent' : 'default'}
+							disabled={!isNetworkSelected(destinationNetwork)}>
+							NEXT
+						</Button>
 						</NextBtnContainer>
 					)}
 					{!isShowList && (
