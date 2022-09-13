@@ -23,21 +23,6 @@ import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
 import { spacing, Theme } from '../../styles';
 
-const Details = styled.div(
-	({ color }: { color: string }) => css`
-		flex-direction: column;
-		padding: ${spacing[10]} ${spacing[16]};
-		margin: ${spacing[28]} 0 ${spacing[56]};
-		border-radius: ${defaultBorderRadius};
-		border: 1px solid ${color};
-
-		& > * {
-			display: flex;
-			justify-content: space-between;
-		}
-	`
-);
-
 const Summary = styled.summary(
 	({ color, theme }: { color: string; theme: Theme }) => css`
 		color: ${theme.pure};
@@ -51,6 +36,21 @@ const Summary = styled.summary(
 
 		&:active {
 			outline: none;
+		}
+	`
+);
+
+const Details = styled.div(
+	({ color }: { color: string }) => css`
+		flex-direction: column;
+		padding: ${spacing[10]} ${spacing[16]};
+		margin: ${spacing[28]} 0 ${spacing[56]};
+		border-radius: ${defaultBorderRadius};
+		border: 1px solid ${color};
+
+		& > * {
+			display: flex;
+			justify-content: space-between;
 		}
 	`
 );

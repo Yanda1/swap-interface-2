@@ -27,11 +27,13 @@ describe('Helpers should return the correct values', () => {
 
 	it('isNetworkSelected() function should return the correct value', () => {
 		expect(isNetworkSelected('Select Network')).toBe(false);
+		expect(isNetworkSelected('')).toBe(false);
 		expect(isNetworkSelected('BNB')).toBe(true);
 	});
 
 	it('isTokenSelected() function should return the correct value', () => {
 		expect(isTokenSelected('Select Token')).toBe(false);
+		expect(isTokenSelected('')).toBe(false);
 		expect(isTokenSelected('ETH')).toBe(true);
 	});
 });

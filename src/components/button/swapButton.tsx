@@ -30,11 +30,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		state: { destinationNetwork, destinationToken, destinationAddress, destinationMemo }
 	} = useStore();
 	const isDisabled =
-		!validInputs ||
-		!isNetworkSelected(destinationNetwork) ||
-		!isTokenSelected(destinationToken) ||
-		!amount ||
-		!destinationAddress;
+		!validInputs || !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken);
+
 	const { account, chainId, library: web3Provider } = useEthers();
 	// @ts-ignore
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId] || '';

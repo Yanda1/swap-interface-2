@@ -3,7 +3,7 @@ import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { defaultBorderRadius, useStore, DestinationNetworkEnum } from '../../helpers';
-import type { ThemeProps } from '../../components';
+import type { ThemeProps } from '../../styles';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
