@@ -65,7 +65,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 		{ message: string; id: number; type: string; timer: number }[]
 	>([]);
 
-	const addToast = (message: string, type = 'error', timer = 3000) => {
+	const addToast = (message: string, type = 'error', timer = 5000) => {
 		const id = toastCount++;
 		const toast = { message, id, type, timer };
 		setToasts([...toasts, toast]);

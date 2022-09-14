@@ -19,40 +19,41 @@ export const useAxios = () => {
 		headers: { Authorization: `Bearer ${storage?.access}` }
 	});
 
-	axiosInstance.interceptors.request.use(
-		async (req) => {
-			const accessToken: JwtType = jwt_decode(storage?.access);
-			const isAccessTokenExpired = dayjs.unix(accessToken?.exp).diff(dayjs()) < 1;
+	axiosInstance.interceptors.request.use(async (req) => {
+		const accessToken: JwtType = jwt_decode(storage?.access);
+		const isAccessTokenExpired = dayjs.unix(accessToken?.exp).diff(dayjs()) < 1;
 
-			if (!isAccessTokenExpired) return req;
+		if (!isAccessTokenExpired) return req;
 
-			req.headers!.Authorization = `Bearer ${storage?.refresh}`;
+		req.headers!.Authorization = `Bearer ${storage?.refresh}`;
 
-			const refreshToken: JwtType = jwt_decode(storage?.refresh);
-			const isRefreshTokenExpired = dayjs.unix(refreshToken?.exp).diff(dayjs()) < 1;
+		const refreshToken: JwtType = jwt_decode(storage?.refresh);
+		const isRefreshTokenExpired = dayjs.unix(refreshToken?.exp).diff(dayjs()) < 1;
 
-			if (!isRefreshTokenExpired) return req;
+		if (!isRefreshTokenExpired) return req;
 
-			const newTokens = await axios.post(
-				`${BASE_URL}${routes.refresh}`,
-				{},
-				{
-					headers: {
-						Authorization: `Bearer ${storage.refresh}`,
-						'Content-Type': 'application/json',
-						'Access-Control-Allow-Origin': '*'
-					}
+		const newTokens = await axios.post(
+			`${BASE_URL}${routes.refresh}`,
+			{},
+			{
+				headers: {
+					Authorization: `Bearer ${storage.refresh}`,
+					'Content-Type': 'application/json',
+					'Access-Control-Allow-Origin': '*'
 				}
-			);
-			setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
-			req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
+			}
+		);
+		setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
+		req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
 
-			return req;
-		},
-		(err) => {
-			console.log('err', err.response);
-		}
-	);
+		return req;
+	});
+
+	// axiosInstance.interceptors.response.use((res) => {
+	// 	console.log('res', res.data);
+
+	// 	return res;
+	// });
 
 	return axiosInstance;
 };

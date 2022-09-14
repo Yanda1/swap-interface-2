@@ -31,7 +31,8 @@ export enum KycStatusEnum {
 	REVIEW = 'REVIEW',
 	REFUSED = 'REFUSED',
 	PASS = 'PASS',
-	DISABLE = 'DISABLE'
+	DISABLE = 'DISABLE',
+	REJECT = 'REJECT'
 }
 
 export enum BasicStatus {
@@ -190,7 +191,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		}
 
 		if (
-			(kycStatus === KycStatusEnum.REFUSED || kycStatus === KycStatusEnum.PROCESS) &&
+			(kycStatus === KycStatusEnum.REJECT ||
+				kycStatus === KycStatusEnum.REFUSED ||
+				kycStatus === KycStatusEnum.PROCESS) &&
 			isNetworkConnected &&
 			isAccountConnected
 		) {

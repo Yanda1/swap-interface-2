@@ -12,15 +12,11 @@ import { ReactComponent as Moon } from '../../assets/moon.svg';
 import type { ApiAuthType, Theme } from '../../styles';
 import { darkTheme, lightTheme, mediaQuery, pxToRem, spacing } from '../../styles';
 import {
-	BASE_URL,
 	ButtonEnum,
-	buttonType,
 	defaultBorderRadius,
 	getAuthTokensFromNonce,
 	initialStorage,
 	isLightTheme,
-	KycEnum,
-	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
@@ -32,11 +28,13 @@ import {
 	useBreakpoint,
 	useLocalStorage,
 	useStore,
-	VerificationEnum
+	VerificationEnum,
+	buttonType,
+	KycStatusEnum,
+	KycEnum
 } from '../../helpers';
 import type { ColorType } from '../../components';
 import { Button, Network, useToasts, Wallet } from '../../components';
-import axios from 'axios';
 
 type Props = {
 	theme: Theme;
@@ -163,7 +161,6 @@ export const Header = () => {
 	}, []);
 
 	useEffect(() => {
-		console.log('%c IN MAKE BINANCE CALL HOOK', 'background-color: yellow');
 		if (binanceScriptLoaded && binanceToken) {
 			makeBinanceKycCall(binanceToken);
 		}
@@ -171,11 +168,32 @@ export const Header = () => {
 
 	useEffect(() => {
 		const checkUsersKycStatus = async () => {
-			const call = await api.get('status');
-			console.log('call', call);
+			if (storage.account === account) {
+				try {
+					const status = await api.get(routes.kycStatus);
+					dispatch({
+						type: KycEnum.STATUS,
+						payload: status.data.statusInfo.kycStatus
+					});
+				} catch (err: any) {
+					console.log('err', err.message);
+				}
+			}
 		};
 		void checkUsersKycStatus();
-	}, [account, chainId]); // TODO: what other dependencies?
+	}, [account, chainId]);
+
+	useEffect(() => {
+		if (account && storage.account && storage.account !== account) {
+			addToast(
+				'Please login to the account that has already passed KYC or check your KYC process again',
+				'warning'
+			);
+			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
+			dispatch({ type: KycEnum.STATUS, payload: KycStatusEnum.PROCESS });
+			setStorage({ account, isKyced: false, access: '', refresh: '' });
+		}
+	}, [account]);
 
 	const changeTheme = (): void => {
 		const getTheme = isLight ? darkTheme : lightTheme;
@@ -203,7 +221,6 @@ export const Header = () => {
 
 	const handleButtonClick = async () => {
 		if (!account) {
-			console.log('%c !! IN BUTTON: SETS ACCOUNT !!', 'color: lightblue');
 			try {
 				activateBrowserWallet();
 			} catch (error) {
@@ -212,19 +229,21 @@ export const Header = () => {
 		}
 
 		if (!chainId) {
-			console.log('%c !! IN BUTTON: SETS NETWORK !!', 'color: marineblue');
 			await checkNetwork();
 		}
 
 		if (account && chainId && library) {
 			try {
 				const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
-				console.log('RES FROM AUTH', res);
 				setStorage({
 					account,
 					access: res.access,
 					refresh: res.refresh,
 					isKyced: res.is_kyced
+				});
+				dispatch({
+					type: KycEnum.STATUS,
+					payload: res.is_kyced ? KycStatusEnum.PASS : KycStatusEnum.PROCESS
 				});
 			} catch (err: any) {
 				addToast('Oops, Looks like something went wrong. Please reload and try again!');
