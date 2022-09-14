@@ -3,6 +3,13 @@ import { pxToRem } from '../styles';
 export const LOCAL_STORAGE_THEME = 'current-theme';
 export const LOCAL_STORAGE_AUTH = 'tiwanaku';
 
+export const initialStorage = {
+	access: '',
+	refresh: '',
+	account: '',
+	isKyced: false
+};
+
 export const BIZ_ENTRY_KEY = 'YANDA';
 export const BINANCE_PROD_URL = 'https://api.commonservice.io';
 export const BINANCE_DEV_URL = 'https://dip-qacb.sdtaop.com';
@@ -40,6 +47,8 @@ export const makeId = (length: number) => {
 	return result;
 };
 
-export const defaultBorderRadius = pxToRem(6);
+// TODO: move to correct file
 
-export const horizontalPadding = 10;
+export const defaultBorderRadius = pxToRem(6); // TODO: move to correct file
+
+export const horizontalPadding = 10; // TODO: move to correct file

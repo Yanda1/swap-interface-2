@@ -228,12 +228,14 @@ export const SwapForm = () => {
 					address={destinationAddress}
 				/>
 			)}
-			<SwapButton
-				ref={swapButtonRef}
-				validInputs={destinationMemoIsValid && destinationAddressIsValid && +amount >= minAmount}
-				amount={amount.toString()}
-				onClick={handleSwap}
-			/>
+			{isUserVerified && (
+				<SwapButton
+					ref={swapButtonRef}
+					validInputs={destinationMemoIsValid && destinationAddressIsValid && +amount >= minAmount}
+					amount={amount.toString()}
+					onClick={handleSwap}
+				/>
+			)}
 		</Wrapper>
 	);
 };

@@ -6,3 +6,5 @@ export type ThemeProps = {
 };
 
 export type networks = typeof destinationNetworks;
+
+export type ApiAuthType = { access: string; is_kyced: boolean; refresh: string };
