@@ -189,7 +189,7 @@ export const Header = () => {
 				'Please login to the account that has already passed KYC or check your KYC process again',
 				'warning'
 			);
-			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
+			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC }); // TODO: difference between check and pass in UI
 			dispatch({ type: KycEnum.STATUS, payload: KycStatusEnum.PROCESS });
 			setStorage({ account, isKyced: false, access: '', refresh: '' });
 		}
@@ -245,6 +245,10 @@ export const Header = () => {
 					type: KycEnum.STATUS,
 					payload: res.is_kyced ? KycStatusEnum.PASS : KycStatusEnum.PROCESS
 				});
+				if (!res.is_kyced) {
+					const res = await api.get(routes.kycToken);
+					setBinanceToken(res.data.token);
+				}
 			} catch (err: any) {
 				addToast('Oops, Looks like something went wrong. Please reload and try again!');
 			}
@@ -280,7 +284,7 @@ export const Header = () => {
 			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}
 			</ThemeButton>
-
+			{/* TODO: do we show this now? */}
 			{isBreakpointWidth &&
 				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
 			{showMenu && (
