@@ -27,12 +27,20 @@ export enum KycEnum {
 }
 
 export enum KycStatusEnum {
-	INITIAL = 'INITIAL',
-	SKIP = 'SKIP',
-	REVIEW = 'REVIEW',
 	PROCESS = 'PROCESS',
+	REVIEW = 'REVIEW',
+	REFUSED = 'REFUSED',
 	PASS = 'PASS',
-	REJECT = 'REJECT'
+	DISABLE = 'DISABLE'
+}
+
+export enum BasicStatus {
+	INITIAL = 'INITIAL',
+	PROCESS = 'PROCESS',
+	REVIEW = 'REVIEW',
+	PASS = 'PASS',
+	REJECT = 'REJECT',
+	SKIP = 'SKIP'
 }
 
 export enum ButtonEnum {
@@ -115,7 +123,7 @@ const initialState: State = {
 	isUserVerified: false,
 	isAccountConnected: false,
 	isNetworkConnected: false,
-	kycStatus: KycStatusEnum.INITIAL, // TOOD: from localStorage?
+	kycStatus: KycStatusEnum.PROCESS,
 	buttonStatus: buttonType.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: 'Select Wallet',
@@ -182,7 +190,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		}
 
 		if (
-			(kycStatus === KycStatusEnum.REJECT || kycStatus === KycStatusEnum.INITIAL) &&
+			(kycStatus === KycStatusEnum.REFUSED || kycStatus === KycStatusEnum.PROCESS) &&
 			isNetworkConnected &&
 			isAccountConnected
 		) {
@@ -192,11 +200,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			});
 		}
 
-		if (
-			kycStatus === KycStatusEnum.SKIP || // TODO: what is skip used for / does it exist?
-			kycStatus === KycStatusEnum.PROCESS ||
-			kycStatus === KycStatusEnum.REVIEW
-		) {
+		if (kycStatus === KycStatusEnum.DISABLE || kycStatus === KycStatusEnum.REVIEW) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
 				payload: buttonType.CHECK_KYC

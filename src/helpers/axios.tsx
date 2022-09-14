@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 import {
 	BASE_URL,
@@ -10,6 +10,7 @@ import {
 } from './index';
 import axios from 'axios';
 import destinationNetworks from '../data/destinationNetworks.json';
+import type { ApiAuthType } from '../styles';
 
 export enum STATUS_ENUM {
 	NONCE = 'NONCE',
@@ -17,19 +18,12 @@ export enum STATUS_ENUM {
 	PASS = 'PASS'
 }
 
-type LocalStorageProps = {
-	isKyced: boolean;
-	refresh: string;
-	access: string;
-	account: string;
-};
-
-export const apiCall = {
+export const routes = {
 	getNonce: 'nonce?address=',
 	auth: 'auth',
 	kycToken: 'kyc/token',
 	kycStatus: 'kyc/status',
-	refresh: 'refresh'
+	refresh: 'auth/refresh'
 };
 
 export const getMetamaskMessage = (nonce: string): string =>
@@ -65,49 +59,22 @@ export const makeBinanceKycCall = (authToken: string) => {
 	});
 };
 
-const getStorageValue = (key: string) => {
-	const defaultValue = {
-		access: '',
-		refresh: '',
-		account: '',
-		isKyced: false
-	} as LocalStorageProps;
-
-	if (typeof window !== 'undefined') {
-		const saved = localStorage.getItem(key);
-
-		return saved ? (JSON.parse(saved) as LocalStorageProps) : defaultValue;
-	}
-};
-
-export const useLocalStorage = (key: string) => {
-	const [value, setValue] = useState(() => {
-		return getStorageValue(key);
-	});
-
-	useEffect(() => {
-		localStorage.setItem(key, JSON.stringify(value));
-	}, [key, value]);
-
-	return [value, setValue];
-};
-
 export const getAuthTokensFromNonce = async (account: string, library: any) => {
 	try {
 		const res = await axios.request({
-			url: `${BASE_URL}${apiCall.getNonce}${account}`
+			url: `${BASE_URL}${routes.getNonce}${account}`
 		});
 		try {
 			const msg = getMetamaskMessage(res.data.nonce);
 			const signature = await library?.send('personal_sign', [account, msg]);
 			try {
 				const tokenRes = await axios.request({
-					url: `${BASE_URL}${apiCall.auth}`,
+					url: `${BASE_URL}${routes.auth}`,
 					method: 'POST',
 					data: { address: account, signature }
 				});
 
-				return tokenRes.data as { access: string; is_kyced: boolean; refresh: string }; // TODO: define Type
+				return tokenRes.data as ApiAuthType;
 			} catch (err: any) {
 				throw new Error(err);
 			}
@@ -117,57 +84,6 @@ export const getAuthTokensFromNonce = async (account: string, library: any) => {
 	} catch (err: any) {
 		throw new Error(err);
 	}
-};
-
-export const useKyc = (
-	authToken: string
-): { loading: boolean; error: any; kycStatus: string; kycToken: string } => {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
-	const [kycStatus, setKycStatus] = useState('');
-	const [kycToken, setKycToken] = useState('');
-
-	const fetchData = useCallback(
-		async (authToken: string): Promise<void> => {
-			try {
-				setLoading(true);
-				const statusRes = await axios.request({
-					// TODO: check typing and if kycStatus is from right place
-					url: `${BASE_URL}${apiCall.kycStatus}`,
-					headers: {
-						Authorization: `Bearer ${authToken}`
-					}
-				});
-				setKycStatus(statusRes.data.statusInfo.kycStatus);
-			} catch (err: any) {
-				setError(err);
-			} finally {
-				setLoading(false);
-			}
-
-			try {
-				setLoading(true);
-				const tokenRes = await axios.request({
-					url: `${BASE_URL}${apiCall.kycToken}`,
-					headers: {
-						Authorization: `Bearer ${authToken}`
-					}
-				});
-				setKycToken(tokenRes.data.token);
-			} catch (err: any) {
-				setError(err);
-			} finally {
-				setLoading(false);
-			}
-		},
-		[authToken]
-	);
-
-	useEffect(() => {
-		void fetchData(authToken);
-	}, [fetchData]);
-
-	return { loading, error, kycStatus, kycToken };
 };
 
 export const useBinanceApi = () => {
