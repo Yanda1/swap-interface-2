@@ -130,26 +130,24 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	};
 
 	return (
-		<>
-			<Modal showModal={showModal} setShowModal={setShowModal} background='default' width='small'>
-				<ModalWrapper>
-					<ModalContainer>
-						<AccountTitle>Account</AccountTitle>
-						<StatusContainer>Connected with Metamask</StatusContainer>
-						<Account>
-							<AccountNumber>
-								{account?.substring(0, 12)}...{account?.substring(37)}
-							</AccountNumber>
-							<JazzIcon account={account} />
-						</Account>
-						<CopyContainer>
-							<IconContainer />
-							<CopyText onClick={handleCopy} isCopied={isCopied}>{!isCopied ? 'Copy Address' : 'Copied!'}</CopyText>
-						</CopyContainer>
-					</ModalContainer>
-					<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
-				</ModalWrapper>
-			</Modal>
-		</>
+		<Modal showModal={showModal} setShowModal={setShowModal} background='default' width='small'>
+			<ModalWrapper>
+				<ModalContainer>
+					<AccountTitle>Account</AccountTitle>
+					<StatusContainer>Connected with Metamask</StatusContainer>
+					<Account>
+						<AccountNumber>
+							{account?.substring(0, 12)}...{account?.substring(37)}
+						</AccountNumber>
+						<JazzIcon account={account} />
+					</Account>
+					<CopyContainer>
+						<IconContainer />
+						<CopyText onClick={handleCopy} isCopied={isCopied}>{!isCopied ? 'Copy Address' : 'Copied!'}</CopyText>
+					</CopyContainer>
+				</ModalContainer>
+				<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
+			</ModalWrapper>
+		</Modal>
 	);
 };
