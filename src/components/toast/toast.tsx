@@ -23,7 +23,7 @@ const ToastContainer = styled.div`
 
 type Props = {
 	message: string;
-	type?: 'default' | 'warning' | 'error' | 'success';
+	type?: 'info' | 'warning' | 'error' | 'success';
 	timer?: number;
 	onDismiss: () => void;
 };
@@ -33,13 +33,14 @@ const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 		state: { theme }
 	} = useStore();
 	const icon = type?.toUpperCase();
+	const color = type === 'info' ? 'default' : type;
 
 	return (
 		<div
 			style={{
 				display: 'flex',
 				alignItems: 'center',
-				background: `${theme.button[type]}`,
+				background: `${theme.button[color]}`,
 				color: `${theme.font.pure}`,
 				cursor: 'pointer',
 				fontSize: `${fontSize[14]}`,

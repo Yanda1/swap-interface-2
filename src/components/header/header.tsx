@@ -31,7 +31,8 @@ import {
 	VerificationEnum,
 	buttonType,
 	KycStatusEnum,
-	KycEnum
+	KycEnum,
+	BasicStatusEnum
 } from '../../helpers';
 import type { ColorType } from '../../components';
 import { Button, Network, useToasts, Wallet } from '../../components';
@@ -152,6 +153,20 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.NETWORK, payload: false });
 			void checkNetwork();
 		}
+
+		// const callNonce = async () => {
+		// 	if (account && chainId && !storage.access) {
+		// 		const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
+		// 		setStorage({
+		// 			account,
+		// 			access: res.access,
+		// 			refresh: res.refresh,
+		// 			isKyced: res.is_kyced
+		// 		});
+		// 	}
+		// };
+
+		// void callNonce();
 	}, [account, chainId, dispatch]);
 
 	useEffect(() => {
@@ -161,38 +176,71 @@ export const Header = () => {
 	}, []);
 
 	useEffect(() => {
+		if (account && storage.account && storage.account !== account) {
+			addToast(
+				'Please login to the account that has already passed KYC or connect wallet again',
+				'warning'
+			);
+			// dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC }); // TODO: difference between check and pass in UI
+			dispatch({ type: KycEnum.STATUS, payload: KycStatusEnum.PROCESS });
+
+			setStorage({ account, isKyced: false, access: '', refresh: '' });
+		}
+	}, [account]);
+
+	useEffect(() => {
+		if (account && storage.account !== account) {
+			addToast(
+				'Please login to the account that has already passed KYC or connect wallet again',
+				'warning'
+			);
+			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CONNECT_WALLET }); // TODO: difference between check and pass in UI
+			// dispatch({ type: KycEnum.STATUS, payload: KycStatusEnum.PROCESS });
+			setStorage({ account, isKyced: false, access: '', refresh: '' });
+		}
+	}, [account]);
+
+	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
 			makeBinanceKycCall(binanceToken);
 		}
 	}, [binanceToken, binanceScriptLoaded]);
 
-	useEffect(() => {
-		const checkUsersKycStatus = async () => {
-			if (storage.account === account) {
-				try {
-					const status = await api.get(routes.kycStatus);
-					dispatch({
-						type: KycEnum.STATUS,
-						payload: status.data.statusInfo.kycStatus
-					});
-				} catch (err: any) {
-					console.log('err', err.message);
-				}
+	const checkUsersKycStatus = async () => {
+		try {
+			const res = await api.get(routes.kycStatus);
+			const status = res.data.statusInfo;
+			console.log('status', status.kycStatus, status.basicStatus);
+			// TODO: chain kyc logic: basicStatus === INITIAL && kycStatus === PROCESS => only then it's initial
+			if (
+				status.kycStatus === KycStatusEnum.PROCESS &&
+				status.basicStatus === BasicStatusEnum.INITIAL
+			)
+				dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
+			// TODO: add toast for REJECT status
+			if (status.kycStatus === KycStatusEnum.REJECT) {
+				addToast('You have been rejected - please start KYC process again', 'info');
+				dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
 			}
-		};
-		void checkUsersKycStatus();
-	}, [account, chainId]);
-
-	useEffect(() => {
-		if (account && storage.account && storage.account !== account) {
-			addToast(
-				'Please login to the account that has already passed KYC or check your KYC process again',
-				'warning'
-			);
-			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC }); // TODO: difference between check and pass in UI
-			dispatch({ type: KycEnum.STATUS, payload: KycStatusEnum.PROCESS });
-			setStorage({ account, isKyced: false, access: '', refresh: '' });
+			// TODO: chain kyc logic: basicStatus !== INITIAL && kycStatus === PROCESS || REVIEW => check KYC
+			if (
+				(status.kycStatus === KycStatusEnum.PROCESS || status.kycStatus === KycStatusEnum.REVIEW) &&
+				status.basicStatus !== BasicStatusEnum.INITIAL
+			)
+				dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
+			// TODO: add toast for transaction status
+			console.log('status', status);
+			dispatch({
+				type: KycEnum.STATUS,
+				payload: status.kycStatus
+			});
+		} catch (error: any) {
+			throw new Error(error);
+			// dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.GET_NONCE });
 		}
+	};
+	useEffect(() => {
+		void checkUsersKycStatus();
 	}, [account]);
 
 	const changeTheme = (): void => {
@@ -232,8 +280,17 @@ export const Header = () => {
 			await checkNetwork();
 		}
 
-		if (account && chainId && library) {
-			try {
+		if (account === storage.account && storage.access) {
+			await checkUsersKycStatus();
+
+			if (!storage.isKyced) {
+				const token = await api.get(routes.kycToken);
+				setBinanceToken(token.data.token);
+			}
+		} else {
+			if (account && chainId && library) {
+				// TODO: sign nonce immediately if connect wallet button clicked
+				// TODO: if token still valid avoid nonce
 				const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
 				setStorage({
 					account,
@@ -246,11 +303,11 @@ export const Header = () => {
 					payload: res.is_kyced ? KycStatusEnum.PASS : KycStatusEnum.PROCESS
 				});
 				if (!res.is_kyced) {
-					const res = await api.get(routes.kycToken);
-					setBinanceToken(res.data.token);
+					console.log('%c IN BUTTON FUNCTION => RES: ', 'background-color: red', res);
+					const token = await api.get(routes.kycToken);
+					setBinanceToken(token.data.token);
 				}
-			} catch (err: any) {
-				addToast('Oops, Looks like something went wrong. Please reload and try again!');
+				// addToast('Oops, Looks like something went wrong. Please reload and try again!');
 			}
 		}
 	};
