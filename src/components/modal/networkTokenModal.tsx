@@ -2,16 +2,10 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Button } from '..';
-import { mediaQuery, spacing } from '../../styles';
+import { spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
-import {
-	DestinationNetworkEnum,
-	isNetworkSelected,
-	isTokenSelected,
-	useBreakpoint,
-	useStore
-} from '../../helpers';
+import { DestinationNetworkEnum, isNetworkSelected, isTokenSelected, useStore, useWindowSize } from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -21,7 +15,7 @@ const ChildWrapper = styled.div`
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};
 
-	${mediaQuery('xs')} {
+	@media (max-width: 491px) {
 		flex-direction: column;
 		flex-wrap: nowrap;
 	}
@@ -37,17 +31,24 @@ type Props = {
 };
 
 export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
-	const { isBreakpointWidth } = useBreakpoint('xs');
 	const [isDisabled, setIsDisabled] = useState(true);
-	const [isMobile, setIsMobile] = useState(isBreakpointWidth);
+	const [isMobile, setIsMobile] = useState(false);
 	const [isShowList, setIsShowList] = useState(true);
+	const size = useWindowSize();
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken }
 	} = useStore();
+
 	useEffect(() => {
-		setIsMobile(isBreakpointWidth);
-	}, [isBreakpointWidth]);
+		if (size[0] <= 491 && size[0] !== 0) {
+			setIsMobile(true);
+			setIsShowList(true);
+		} else {
+			setIsMobile(false);
+		}
+	}, [size]);
+
 	useEffect(() => {
 		setIsDisabled(
 			() => !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken)
@@ -69,11 +70,15 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 	};
 
+	useEffect(() => {
+		setIsShowList(true);
+	}, [showModal]);
+
 	return !isMobile ? (
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
-					{networksList && networksList.length > 0 ? (
+					{networksList.length > 0 ? (
 						<>
 							<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 							<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />
@@ -105,13 +110,12 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 					)}
 					{isShowList && (
 						<NextBtnContainer>
-						<Button
-							onClick={() => setIsShowList(false)}
-							// @ts-ignore
-							color={isNetworkSelected(destinationNetwork) ? 'transparent' : 'default'}
-							disabled={!isNetworkSelected(destinationNetwork)}>
-							NEXT
-						</Button>
+							<Button
+								onClick={() => setIsShowList(false)}
+								color={isNetworkSelected(destinationNetwork) ? 'transparent' : 'transparent'}
+								disabled={!isNetworkSelected(destinationNetwork)}>
+								NEXT
+							</Button>
 						</NextBtnContainer>
 					)}
 					{!isShowList && (

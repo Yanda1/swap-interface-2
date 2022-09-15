@@ -1,6 +1,6 @@
 import type { Breakpoint, Theme } from './../styles';
-import { useState, useLayoutEffect } from 'react';
 import { breakpoint } from './../styles';
+import { useLayoutEffect, useState } from 'react';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 export const isNetworkSelected = (network: string) =>
@@ -9,7 +9,7 @@ export const isTokenSelected = (token: string) => token !== 'Select Token' && to
 
 export const removeZeros = (n: string): string => Number(n).toString();
 
-const useWindowSize = () => {
+export const useWindowSize = () => {
 	const [size, setSize] = useState([0, 0]);
 	useLayoutEffect(() => {
 		const updateSize = () => {

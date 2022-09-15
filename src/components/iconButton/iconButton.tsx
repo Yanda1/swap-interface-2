@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, useStore, isTokenSelected } from '../../helpers';
+import { defaultBorderRadius, isTokenSelected, useStore } from '../../helpers';
 import USDT from '../../assets/usdt.png';
 import GLMR from '../../assets/glmr.png';
 import BTC from '../../assets/btc.png';
@@ -61,7 +61,8 @@ type Props = {
 		| 'SUCCESS'
 		| 'ERROR'
 		| 'Select Token';
-	onClick?: () => void;
+	onClick?: (e?: any) => void;
+	value?: string;
 	iconOnly?: boolean;
 };
 
@@ -104,14 +105,14 @@ const Img = styled.img(({ iconOnly }: Props) => {
 	`;
 });
 
-export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
+export const IconButton = ({ disabled = false, icon, onClick, iconOnly, value }: Props) => {
 	return !iconOnly ? (
 		<Icon disabled={disabled} onClick={onClick}>
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
 				// @ts-ignore
-				<Img src={icons[icon]} alt={icon} />
+				<Img src={icons[icon]} alt={icon} onClick={onClick} value={value} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (

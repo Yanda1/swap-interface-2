@@ -4,6 +4,7 @@ exports[`TextField should match snapshot 1`] = `
 <input
   class="sc-bczRLJ gApknb"
   disabled=""
+  min="0"
   placeholder="placeholder"
   type="number"
   value="Test Value"

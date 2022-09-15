@@ -59,14 +59,11 @@ const Toast = ({ message, onDismiss, type }: Props) => {
 let toastCount = 0;
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [toasts, setToasts] = useState<
-		{ message: string; id: number; type: string; timer: number }[]
-	>([]);
+	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>([]);
 
 	const addToast = (message: string, type: string, timer = 5000) => {
 		const id = toastCount++;
 		const toast = { message, id, type, timer };
-		console.log({ message, timer });
 		setToasts([...toasts, toast]);
 	};
 	const remove = (id: number) => {

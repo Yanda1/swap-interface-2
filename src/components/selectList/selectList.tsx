@@ -1,11 +1,6 @@
 import { useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import {
-	defaultBorderRadius,
-	DestinationNetworkEnum,
-	horizontalPadding,
-	useStore
-} from '../../helpers';
+import { defaultBorderRadius, DestinationNetworkEnum, horizontalPadding, useStore } from '../../helpers';
 import { fontSize, pxToRem, spacing } from '../../styles';
 import { IconButton } from '../iconButton/iconButton';
 import { TextField } from '../textField/textField';
@@ -88,12 +83,17 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		state: { destinationToken, destinationNetwork, destinationWallet }
 	} = useStore();
 
-	const handleClick = useCallback(
-		(e: any) => {
+	const handleClick = useCallback((e: any) => {
 			if (value === 'WALLET') {
-				dispatch({ type: DestinationNetworkEnum.WALLET, payload: e.target.textContent });
+				dispatch({
+					type: DestinationNetworkEnum.WALLET,
+					payload: e.target.textContent ? e.target.textContent : e.target.alt
+				});
 			}
-			dispatch({ type: DestinationNetworkEnum[value], payload: e.target.textContent });
+			dispatch({
+				type: DestinationNetworkEnum[value],
+				payload: e.target.textContent ? e.target.textContent : e.target.alt
+			});
 			if (value === 'NETWORK') {
 				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 			}
@@ -102,44 +102,46 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	);
 
 	return (
-			<Wrapper data-testid="custom">
-				<Title>SELECT {value}</Title>
-				<TextField
-					align="left"
-					value={search}
-					placeholder={placeholder}
-					onChange={(event) => setSearch(event.target.value)}
-				/>
-				{data.length > 0 ? (
-					<List>
-						{dataList.map((el: string) => {
-								const hasActiveBorder =
-									value === 'NETWORK'
-										? destinationNetwork === el
-										: value === 'TOKEN'
-										? destinationToken === el
-										: destinationWallet === el;
+		<Wrapper data-testid="custom">
+			<Title>SELECT {value}</Title>
+			<TextField
+				align="left"
+				value={search}
+				placeholder={placeholder}
+				onChange={(event) => setSearch(event.target.value)}
+			/>
+			{data.length > 0 ? (
+				<List>
+					{dataList.map((el: string) => {
+						const hasActiveBorder =
+							value === 'NETWORK'
+								? destinationNetwork === el
+								: value === 'TOKEN'
+									? destinationToken === el
+									: destinationWallet === el;
 
-								return (
-									<Item
-										value={value}
-										// @ts-ignore
-										activeBorder={hasActiveBorder}
-										onClick={(e) => handleClick(e)}
-										key={el}>
-										<IconButton
-											// @ts-ignore
-											icon={el}
-											iconOnly
-										/>
-										{el}
-									</Item>
-								);
-							})}
-					</List>
-				) : (
-					<Title>Please choose network.</Title>
-				)}
-			</Wrapper>
+						return (
+							<Item
+								value={value}
+								// @ts-ignore
+								activeBorder={hasActiveBorder}
+								onClick={(e) => handleClick(e)}
+								key={el}>
+								<IconButton
+									// @ts-ignore
+									icon={el}
+									value={value}
+									iconOnly
+									onClick={(e) => handleClick(e)}
+								/>
+								{el}
+							</Item>
+						);
+					})}
+				</List>
+			) : (
+				<Title>Please choose network.</Title>
+			)}
+		</Wrapper>
 	);
 };
