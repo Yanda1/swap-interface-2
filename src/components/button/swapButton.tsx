@@ -68,7 +68,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			await sendCreateProcess(serviceAddress, productId, shortNamedValues);
 			const filter = contract.filters.CostResponse(account, serviceAddress, productId);
 			console.log('filter', filter);
-			contract.on(filter, (cost) => {
+			contract.on(filter, (customer, service, productId, cost) => {
 				console.log('Oracle deposit estimation:', utils.formatEther(cost));
 				void sendTransaction({ to: contractAddress, value: cost });
 			});
