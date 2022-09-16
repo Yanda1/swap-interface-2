@@ -58,8 +58,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const networksList = Object.keys(destinationNetworks);
 	const networkTokensList =
 		isNetworkSelected(destinationNetwork) &&
-		// @ts-ignore
-		Object.keys(destinationNetworks?.[destinationNetwork]?.['tokens']);
+		Object.keys(destinationNetworks?.[destinationNetwork as keyof typeof destinationNetworks]?.['tokens']);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);

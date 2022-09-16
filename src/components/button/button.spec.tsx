@@ -36,11 +36,9 @@ const onCheckStyles = (button: string) => {
 				lightTheme.button.error
 			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
 		);
-	} else if (button === 'secondary primary disabled') {
-		return expect(screen.getByText(/Secondary primary disabled/)).toHaveStyle(
-			`background-color: ${
-				lightTheme.button.disabled
-			}; color: #FFF; border: 1px solid transparent; max-width: ${pxToRem(428)}`
+	} else if (button === 'primary disabled') {
+		return expect(screen.getByText(/Primary disabled Button/)).toHaveStyle(
+			`background-color: ${lightTheme.button.transparent}; color: ${lightTheme.button.disabled}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${pxToRem(428)}`
 		);
 	} else if (button === 'secondary pure') {
 		return expect(screen.getByText(/Secondary pure Button/)).toHaveStyle(
@@ -151,17 +149,17 @@ describe('Button', () => {
 		const { getByText } = render(
 			<AuthProvider>
 				<Button onClick={() => console.log('test')} variant="primary" color="default" disabled>
-					Secondary primary disabled Button
+					Primary disabled Button
 				</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('secondary primary disabled');
+		onCheckStyles('primary disabled');
 
-		expect(getByText(/Secondary primary disabled Button/)).toMatchSnapshot();
+		expect(getByText(/Primary disabled Button/)).toMatchSnapshot();
 
-		const btn = getByText(/Secondary primary disabled Button/);
+		const btn = getByText(/Primary disabled Button/);
 		await userEvent.hover(btn);
-
+		expect(btn).toMatchSnapshot();
 		expect(btn).toHaveStyleRule('opacity', '0.8', {
 			modifier: ':hover'
 		});

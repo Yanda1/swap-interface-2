@@ -19,6 +19,7 @@ import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
+import destinationNetworks from '../../data/destinationNetworks.json';
 
 const icons = {
 	BSC,
@@ -42,7 +43,7 @@ const icons = {
 
 type Props = {
 	disabled?: boolean;
-	icon:
+	icon?:
 		| 'BSC'
 		| 'USDT'
 		| 'GLMR'
@@ -111,14 +112,12 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly, value }:
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
-				// @ts-ignore
-				<Img src={icons[icon]} alt={icon} onClick={onClick} value={value} />
+				<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} onClick={onClick} value={value} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
 		<QuestionMark style={{ width: 42, height: 42 }} />
 	) : (
-		// @ts-ignore
-		<Img src={icons[icon]} alt={icon} iconOnly />
+		<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} iconOnly />
 	);
 };
