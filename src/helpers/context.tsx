@@ -6,7 +6,9 @@ import type { ColorType } from '../components';
 export enum VerificationEnum {
 	ACCOUNT = 'SET_ACCOUNT_CONNECTED',
 	NETWORK = 'SET_NETWORK_CONNECTED',
-	USER = 'SET_USER_VERIFIED'
+	USER = 'SET_USER_VERIFIED',
+	ACCESS = 'SET_ACCESS_TOKEN',
+	REFRESH = 'SET_REFRESH_TOKEN'
 }
 
 export enum ThemeEnum {
@@ -28,6 +30,7 @@ export enum KycEnum {
 
 export enum KycStatusEnum {
 	PROCESS = 'PROCESS',
+	INITIAL = 'INITIAL',
 	REVIEW = 'REVIEW',
 	REFUSED = 'REFUSED',
 	PASS = 'PASS',
@@ -50,7 +53,7 @@ export enum ButtonEnum {
 
 type VerificationAction = {
 	type: VerificationEnum;
-	payload: boolean;
+	payload: boolean | string;
 };
 
 type KycAction = {
@@ -82,9 +85,11 @@ type Action =
 
 type State = {
 	isUserVerified: boolean;
-	isAccountConnected: boolean;
+	account: string;
 	isNetworkConnected: boolean;
 	kycStatus: KycStatusEnum;
+	accessToken: string;
+	refreshToken: string;
 	buttonStatus: { color: string; text: string };
 	theme: Theme;
 	destinationWallet: string;
@@ -101,29 +106,31 @@ type ButtonStatus = {
 	CHANGE_NETWORK: { color: ColorType; text: string };
 	PASS_KYC: { color: ColorType; text: string };
 	CHECK_KYC: { color: ColorType; text: string };
-	// GET_NONCE: { color: ColorType; text: string };
+	LOGIN: { color: ColorType; text: string };
 };
 
 export const buttonText = {
 	CONNECT_WALLET: 'Connect Wallet',
 	CHANGE_NETWORK: 'Change Network',
 	PASS_KYC: 'Pass KYC',
-	CHECK_KYC: 'Check KYC'
-	// GET_NONCE: 'Get Nonce'
+	CHECK_KYC: 'Check KYC',
+	LOGIN: 'Login'
 };
 
 export const buttonType: ButtonStatus = {
 	CONNECT_WALLET: { color: 'default', text: buttonText.CONNECT_WALLET },
 	CHANGE_NETWORK: { color: 'error', text: buttonText.CHANGE_NETWORK },
 	PASS_KYC: { color: 'warning', text: buttonText.PASS_KYC },
-	CHECK_KYC: { color: 'success', text: buttonText.CHECK_KYC }
-	// GET_NONCE: { color: 'default', text: buttonText.GET_NONCE }
+	CHECK_KYC: { color: 'success', text: buttonText.CHECK_KYC },
+	LOGIN: { color: 'default', text: buttonText.LOGIN }
 };
 
 const initialState: State = {
 	isUserVerified: false,
-	isAccountConnected: false,
+	account: '',
 	isNetworkConnected: false,
+	accessToken: '',
+	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
 	buttonStatus: buttonType.CONNECT_WALLET,
 	theme: darkTheme,
@@ -142,15 +149,19 @@ const AuthContext = createContext<{ state: State; dispatch: Dispatch } | undefin
 const authReducer = (state: State, action: Action): State => {
 	switch (action.type) {
 		case VerificationEnum.ACCOUNT:
-			return { ...state, isAccountConnected: action.payload };
+			return { ...state, account: action.payload as string };
 		case VerificationEnum.NETWORK:
-			return { ...state, isNetworkConnected: action.payload };
+			return { ...state, isNetworkConnected: action.payload as boolean };
+		case VerificationEnum.USER:
+			return { ...state, isUserVerified: action.payload as boolean };
+		case VerificationEnum.ACCESS:
+			return { ...state, accessToken: action.payload as string };
+		case VerificationEnum.REFRESH:
+			return { ...state, refreshToken: action.payload as string };
 		case KycEnum.STATUS:
 			return { ...state, kycStatus: action.payload };
 		case ButtonEnum.BUTTON:
 			return { ...state, buttonStatus: action.payload };
-		case VerificationEnum.USER:
-			return { ...state, isUserVerified: action.payload };
 		case ThemeEnum.THEME:
 			return { ...state, theme: action.payload };
 		case DestinationNetworkEnum.WALLET:
@@ -173,51 +184,31 @@ const authReducer = (state: State, action: Action): State => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [state, dispatch] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
-	const { isAccountConnected, isNetworkConnected, kycStatus } = state;
+	const { account, isNetworkConnected, kycStatus } = state;
 
 	useEffect(() => {
-		if (!isAccountConnected) {
+		if (!account) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
 				payload: buttonType.CONNECT_WALLET
 			});
 		}
 
-		if (!isNetworkConnected && isAccountConnected) {
+		if (!isNetworkConnected && account) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
 				payload: buttonType.CHANGE_NETWORK
 			});
 		}
 
-		// if (
-		// 	(kycStatus === KycStatusEnum.REJECT ||
-		// 		kycStatus === KycStatusEnum.REFUSED ||
-		// 		kycStatus === KycStatusEnum.PROCESS) &&
-		// 	isNetworkConnected &&
-		// 	isAccountConnected
-		// ) {
-		// 	dispatch({
-		// 		type: ButtonEnum.BUTTON,
-		// 		payload: buttonType.PASS_KYC
-		// 	});
-		// }
-
-		// if (kycStatus === KycStatusEnum.DISABLE || kycStatus === KycStatusEnum.REVIEW) {
-		// 	dispatch({
-		// 		type: ButtonEnum.BUTTON,
-		// 		payload: buttonType.CHECK_KYC
-		// 	});
-		// }
-
-		if (kycStatus === KycStatusEnum.PASS && isNetworkConnected && isAccountConnected) {
+		if (kycStatus === KycStatusEnum.PASS && isNetworkConnected && account) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		}
 
-		if (kycStatus !== KycStatusEnum.PASS || !isNetworkConnected || !isAccountConnected) {
+		if (kycStatus !== KycStatusEnum.PASS || !isNetworkConnected || !account) {
 			dispatch({ type: VerificationEnum.USER, payload: false });
 		}
-	}, [isAccountConnected, isNetworkConnected, kycStatus]);
+	}, [account, isNetworkConnected, kycStatus]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
