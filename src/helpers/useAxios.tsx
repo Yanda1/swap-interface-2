@@ -18,6 +18,10 @@ type JwtType = {
 	type: string;
 };
 
+export const message = {
+	ignore: 'ignore'
+};
+
 export const useAxios = () => {
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, initialStorage);
 	const {
@@ -70,12 +74,9 @@ export const useAxios = () => {
 	axiosInstance.interceptors.response.use(
 		(res) => res,
 		(error) => {
-			if (error.response.status === 401) {
-				// TODO: without condition?
-				console.log('error', error);
+			error.message = message.ignore;
 
-				return Promise.reject(error);
-			}
+			return Promise.reject(error);
 		}
 	);
 

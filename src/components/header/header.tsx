@@ -32,7 +32,8 @@ import {
 	KycEnum,
 	useAxios,
 	routes,
-	BasicStatusEnum
+	BasicStatusEnum,
+	message
 } from '../../helpers';
 import type { ColorType } from '../../components';
 import { Button, Network, useToasts, Wallet } from '../../components';
@@ -170,7 +171,6 @@ export const Header = () => {
 				setStorage({ account, access: res.access, isKyced: res.is_kyced, refresh: res.refresh });
 			} catch (error: any) {
 				// TODO: do we need toast here?
-				console.log('%c Teil 4', 'color: blue', error);
 				addToast('You have rejected signing the nonce. To proceed login again!', 'info');
 			}
 		}
@@ -197,7 +197,6 @@ export const Header = () => {
 	};
 
 	const checkStatus = async () => {
-		console.log('musqt be here');
 		if (!accessToken && !refreshToken) {
 			await setTokensInStorageAndContext();
 		}
@@ -228,8 +227,9 @@ export const Header = () => {
 						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
 				}
 			} catch (error: any) {
-				console.log('%c Teil 3', 'color: red', error);
-				await setTokensInStorageAndContext();
+				if (error?.message !== message.ignore) {
+					await setTokensInStorageAndContext();
+				}
 			}
 		}
 	};
@@ -316,7 +316,6 @@ export const Header = () => {
 				type: KycEnum.STATUS,
 				payload: KycStatusEnum.INITIAL
 			});
-			setBinanceToken('');
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
 	}, [account, chainId]);
