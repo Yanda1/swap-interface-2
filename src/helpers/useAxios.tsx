@@ -39,7 +39,7 @@ export const useAxios = () => {
 
 			req.headers!.Authorization = `Bearer ${refreshToken}`;
 
-			const refresh: JwtType = jwt_decode(storage?.refresh);
+			const refresh: JwtType = jwt_decode(refreshToken);
 			const isRefreshTokenExpired = dayjs.unix(refresh?.exp).diff(dayjs()) < 1;
 
 			if (!isRefreshTokenExpired) return req;
@@ -71,8 +71,8 @@ export const useAxios = () => {
 		(res) => res,
 		(error) => {
 			if (error.response.status === 401) {
-				// do something
-				console.log('%c in interceptor', 'background-color: orange', error.response);
+				// TODO: without condition?
+				console.log('error', error);
 
 				return Promise.reject(error);
 			}

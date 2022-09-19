@@ -7,7 +7,7 @@ import {
 	BIZ_ENTRY_KEY,
 	BINANCE_EXCHANGE_INFO,
 	BINANCE_PRICE_TICKER
-} from './index';
+} from '../helpers';
 import axios from 'axios';
 import destinationNetworks from '../data/destinationNetworks.json';
 import type { ApiAuthType } from '../styles';

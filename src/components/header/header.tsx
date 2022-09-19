@@ -160,7 +160,7 @@ export const Header = () => {
 	};
 
 	const setTokensInStorageAndContext = async () => {
-		if (account && !accessToken && !refreshToken) {
+		if (account) {
 			try {
 				const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
 				dispatch({ type: VerificationEnum.ACCESS, payload: res.access });
@@ -179,47 +179,53 @@ export const Header = () => {
 	const getBinanceToken = async () => {
 		try {
 			const res = await api.get(routes.kycToken);
-			console.log('res', res);
-			setBinanceToken(res.data.token);
+
+			if (res) {
+				setBinanceToken(res?.data?.token);
+			}
 		} catch (error: any) {
-			addToast('Oops, something went wrong. Please reload and try again!', 'error');
+			await setTokensInStorageAndContext();
+			try {
+				const res = await api.get(routes.kycToken);
+				setBinanceToken(res.data.token);
+			} catch (e: any) {
+				addToast('Oops, something went wrong. Please reload and try again!', 'error');
+			}
 		}
 	};
 
 	const checkStatus = async () => {
-		await setTokensInStorageAndContext();
+		if (!accessToken && !refreshToken) {
+			await setTokensInStorageAndContext();
+		}
 
 		if (!isUserVerified) {
 			try {
 				const res = await api.get(routes.kycStatus);
-				const { kycStatus: kyc, basicStatus: basic } = res.data.statusInfo;
-				dispatch({
-					type: KycEnum.STATUS,
-					payload: kyc
-				});
-				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
+				if (res) {
+					const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
+					dispatch({
+						type: KycEnum.STATUS,
+						payload: kyc
+					});
+					setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
 
-				if (kycStatus === KycStatusEnum.REJECT) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
-					addToast('Your KYC process has been rejected - please start again!', 'warning');
-					await getBinanceToken();
+					if (kycStatus === KycStatusEnum.REJECT) {
+						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
+						addToast('Your KYC process has been rejected - please start again!', 'warning');
+					}
+					if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
+						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
+					}
+					if (
+						kycStatus !== KycStatusEnum.REJECT &&
+						kycStatus !== KycStatusEnum.PASS &&
+						basic !== BasicStatusEnum.INITIAL
+					)
+						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
 				}
-				if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
-					await getBinanceToken();
-				}
-				if (
-					kycStatus !== KycStatusEnum.REJECT &&
-					kycStatus !== KycStatusEnum.PASS &&
-					basic !== BasicStatusEnum.INITIAL
-				)
-					dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
 			} catch (error: any) {
-				if (error.response.status === 401) {
-					await setTokensInStorageAndContext();
-				} else {
-					addToast('Oops, something went wrong. Please reload and try again!', 'error');
-				}
+				await setTokensInStorageAndContext();
 			}
 		}
 	};
@@ -234,12 +240,15 @@ export const Header = () => {
 		}
 
 		if (!chainId) {
-			console.log('NETWORK IN');
 			await checkNetwork();
 		}
 
 		if (chainId && account) {
-			void checkStatus();
+			if (buttonStatus === buttonType.PASS_KYC) {
+				await getBinanceToken();
+			} else {
+				void checkStatus();
+			}
 		}
 	};
 
@@ -306,11 +315,11 @@ export const Header = () => {
 			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
-	}, [account, buttonType]);
+	}, [account]);
 
 	useEffect(() => {
 		void checkStatus();
-	}, [account, chainId, storage]);
+	}, [kycStatus, refreshToken, accessToken]);
 
 	return (
 		<StyledHeader theme={theme}>
