@@ -96,7 +96,6 @@ export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
 	const { state, dispatch } = useStore();
 	const { theme, buttonStatus, isUserVerified, accessToken, refreshToken, kycStatus } = state;
-	// eslint-disable-next-line
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, initialStorage);
 	// @ts-ignore
 	const { addToast } = useToasts();
@@ -105,7 +104,6 @@ export const Header = () => {
 	const [showMenu, setShowMenu] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 
-	// eslint-disable-next-line
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
 	const menuRef = useRef<HTMLUListElement | null>(null);
@@ -171,7 +169,9 @@ export const Header = () => {
 				});
 				setStorage({ account, access: res.access, isKyced: res.is_kyced, refresh: res.refresh });
 			} catch (error: any) {
-				addToast('Oops, something went wrong. Please reload and try again!', 'error');
+				// TODO: do we need toast here?
+				console.log('%c Teil 4', 'color: blue', error);
+				addToast('You have rejected signing the nonce. To proceed login again!', 'info');
 			}
 		}
 	};
@@ -187,7 +187,9 @@ export const Header = () => {
 			await setTokensInStorageAndContext();
 			try {
 				const res = await api.get(routes.kycToken);
-				setBinanceToken(res.data.token);
+				if (res) {
+					setBinanceToken(res.data.token);
+				}
 			} catch (e: any) {
 				addToast('Oops, something went wrong. Please reload and try again!', 'error');
 			}
@@ -195,6 +197,7 @@ export const Header = () => {
 	};
 
 	const checkStatus = async () => {
+		console.log('musqt be here');
 		if (!accessToken && !refreshToken) {
 			await setTokensInStorageAndContext();
 		}
@@ -225,6 +228,7 @@ export const Header = () => {
 						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
 				}
 			} catch (error: any) {
+				console.log('%c Teil 3', 'color: red', error);
 				await setTokensInStorageAndContext();
 			}
 		}
@@ -259,6 +263,7 @@ export const Header = () => {
 	}, [binanceToken, binanceScriptLoaded]);
 
 	useEffect(() => {
+		// TODO: encode Tokens for localStorage?
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
 		const localStorageAuth = localStorage.getItem(LOCAL_STORAGE_AUTH);
 
@@ -299,10 +304,8 @@ export const Header = () => {
 		if (account && chainId) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.LOGIN });
 		}
-	}, [account, chainId]);
 
-	useEffect(() => {
-		if (account && storage.account && storage.account !== account) {
+		if (account && storage && storage?.account !== account) {
 			addToast(
 				'Please login to the account that has already passed KYC or connect wallet again',
 				'warning'
@@ -313,9 +316,10 @@ export const Header = () => {
 				type: KycEnum.STATUS,
 				payload: KycStatusEnum.INITIAL
 			});
+			setBinanceToken('');
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
-	}, [account]);
+	}, [account, chainId]);
 
 	useEffect(() => {
 		void checkStatus();
@@ -350,7 +354,6 @@ export const Header = () => {
 			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}
 			</ThemeButton>
-			{/* TODO: do we show this now? */}
 			{isBreakpointWidth &&
 				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
 			{showMenu && (

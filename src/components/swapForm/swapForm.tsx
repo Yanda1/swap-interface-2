@@ -183,7 +183,6 @@ export const SwapForm = () => {
 				<Swap>
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
-						{/* TODO: check if comma stays the same for dynamic input*/}
 						<TextField disabled value={removeZeros(destinationAmount)} />
 					</SwapInput>
 					<SwapNames pos="end">
