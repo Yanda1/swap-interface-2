@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Button } from '..';
-import { pxToRem, spacing } from '../../styles';
+import { mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
 import { DestinationNetworkEnum, isNetworkSelected, isTokenSelected, useStore, useWindowSize } from '../../helpers';
@@ -15,7 +15,7 @@ const ChildWrapper = styled.div`
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};
 
-	@media (max-width: ${pxToRem(491)}) {
+	${mediaQuery(491)} {
 		flex-direction: column;
 		flex-wrap: nowrap;
 	}
@@ -35,14 +35,13 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const [isMobile, setIsMobile] = useState(false);
 	const [isShowList, setIsShowList] = useState(true);
 	const size = useWindowSize()[0];
-	
+
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken }
 	} = useStore();
-
+// TODO: useBreakPoint (number)
 	useEffect(() => {
-
 		if (size <= 491 && size !== 0) {
 			setIsMobile(true);
 			setIsShowList(true);
@@ -79,7 +78,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
-					{networksList.length > 0 ? (
+					{networksList?.length > 0 ? (
 						<>
 							<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 							<SelectList value="TOKEN" data={networkTokensList} placeholder="Token Name" />
@@ -97,7 +96,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
-					{networksList && networksList.length > 0 ? (
+					{networksList?.length > 0 ? (
 						<>
 							{isShowList && (
 								<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />

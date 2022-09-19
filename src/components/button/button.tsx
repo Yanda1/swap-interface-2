@@ -74,17 +74,14 @@ const StyledButton = styled.button(
 			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)}; // same here for font-size = 14
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
-			color: ${disabled
-				? theme.button.disabled
-				: isPure
-					? theme.pure
-					: isSecondaryDefault || isPrimaryTransparent
-						? theme.button.default
-						: '#FFF'};
-			background-color: ${disabled
+			color: ${isPure || isPrimaryDisabled
+				? theme.pure
+				: isSecondaryDefault || isPrimaryTransparent
+					? theme.button.default
+					: '#FFF'};
+			background-color: ${isPure || isSecondaryDefault || isPrimaryTransparent
 				? theme.button.transparent
-				: isPure || isSecondaryDefault
-					? theme.button.transparent
+				: disabled ? theme.button.disabled
 					: theme.button[setColor]};
 			border: 1px solid ${isPrimaryDisabled
 				? theme.button.disabled

@@ -67,12 +67,13 @@ type Props = {
 	iconOnly?: boolean;
 };
 
-const Icon = styled.button(() => {
+const Icon = styled.button(({ disabled }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return css`
+		cursor: ${!disabled && 'pointer'};
 		padding: ${spacing[8]};
 		border: 1px solid ${theme.default};
 		border-radius: ${defaultBorderRadius};
