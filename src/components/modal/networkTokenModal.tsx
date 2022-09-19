@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Button } from '..';
-import { spacing } from '../../styles';
+import { pxToRem, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
 import { DestinationNetworkEnum, isNetworkSelected, isTokenSelected, useStore, useWindowSize } from '../../helpers';
@@ -15,7 +15,7 @@ const ChildWrapper = styled.div`
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};
 
-	@media (max-width: 491px) {
+	@media (max-width: ${pxToRem(491)}) {
 		flex-direction: column;
 		flex-wrap: nowrap;
 	}
@@ -34,14 +34,16 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 	const [isShowList, setIsShowList] = useState(true);
-	const size = useWindowSize();
+	const size = useWindowSize()[0];
+	
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken }
 	} = useStore();
 
 	useEffect(() => {
-		if (size[0] <= 491 && size[0] !== 0) {
+
+		if (size <= 491 && size !== 0) {
 			setIsMobile(true);
 			setIsShowList(true);
 		} else {
