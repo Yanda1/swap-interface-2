@@ -83,3 +83,5 @@ export const darkTheme: Theme = {
 		default: '#212426'
 	}
 };
+
+export const theme: { light: Theme; dark: Theme } = { light: lightTheme, dark: darkTheme };

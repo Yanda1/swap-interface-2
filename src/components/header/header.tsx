@@ -10,7 +10,7 @@ import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
 import type { ApiAuthType, Theme, ColorType } from '../../styles';
-import { darkTheme, lightTheme, mediaQuery, pxToRem, spacing } from '../../styles';
+import { mediaQuery, pxToRem, spacing, theme as defaultTheme } from '../../styles';
 import {
 	ButtonEnum,
 	defaultBorderRadius,
@@ -113,9 +113,8 @@ export const Header = () => {
 	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
 
 	const changeTheme = (): void => {
-		const getTheme = isLight ? darkTheme : lightTheme;
-		dispatch({ type: ThemeEnum.THEME, payload: getTheme });
-		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(getTheme));
+		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
+		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(!isLight));
 	};
 
 	const handleShowMenu = (): void => {
@@ -264,12 +263,14 @@ export const Header = () => {
 	}, [binanceToken, binanceScriptLoaded]);
 
 	useEffect(() => {
-		// TODO: encode Tokens for localStorage?
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
 		const localStorageAuth = localStorage.getItem(LOCAL_STORAGE_AUTH);
 
 		if (localStorageTheme) {
-			dispatch({ type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) });
+			dispatch({
+				type: ThemeEnum.THEME,
+				payload: JSON.parse(localStorageTheme) ? defaultTheme.dark : defaultTheme.light
+			});
 		}
 		if (localStorageAuth) {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: JSON.parse(localStorageAuth).account });

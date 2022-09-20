@@ -50,8 +50,9 @@ const Account = styled.button`
 	border-radius: ${defaultBorderRadius};
 	display: flex;
 	gap: ${spacing[4]};
-	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))} // TODO: mixing spacing & pxToRem is far from ideal
-	${spacing[10]};
+	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))}
+		// TODO: mixing spacing & pxToRem is far from ideal
+		${spacing[10]};
 	cursor: pointer;
 	margin-right: -1px;
 

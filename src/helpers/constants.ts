@@ -1,7 +1,7 @@
 import { pxToRem } from '../styles';
 
-export const LOCAL_STORAGE_THEME = 'current-theme';
-export const LOCAL_STORAGE_AUTH = 'tiwanaku';
+export const LOCAL_STORAGE_THEME = 'darkMode';
+export const LOCAL_STORAGE_AUTH = 'auth';
 
 export const initialStorage = {
 	access: '',
@@ -32,7 +32,6 @@ export const serviceAddress = '0xeB56c1d19855cc0346f437028e6ad09C80128e02';
 export const CONTRACT_ADDRESSES = {
 	1284: '0x76df36994aA2C3551895679D15F5e99d064A90fB',
 	1287: '0x2d249342F1F6D549CE8253782c8A2b9218c68fB2',
-	// 1281: '0xb91C2eeaA0c475115069a6ED4bc601337a22788E',
 	31337: '0x0165878A594ca255338adfa4d48449f69242Eb8F'
 };
 
@@ -46,8 +45,6 @@ export const makeId = (length: number) => {
 
 	return result;
 };
-
-// TODO: move to correct file
 
 export const defaultBorderRadius = pxToRem(6); // TODO: move to correct file
 
