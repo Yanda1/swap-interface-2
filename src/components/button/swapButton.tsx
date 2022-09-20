@@ -27,10 +27,19 @@ type Props = {
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
 	const {
-		state: { destinationNetwork, destinationToken, destinationAddress, destinationMemo }
+		state: {
+			destinationNetwork,
+			destinationToken,
+			destinationAddress,
+			destinationMemo,
+			isUserVerified
+		}
 	} = useStore();
 	const isDisabled =
-		!validInputs || !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken);
+		!validInputs ||
+		!isNetworkSelected(destinationNetwork) ||
+		!isTokenSelected(destinationToken) ||
+		!isUserVerified;
 
 	const { account, chainId, library: web3Provider } = useEthers();
 	// @ts-ignore

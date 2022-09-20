@@ -22,8 +22,8 @@ root.render(
 	<React.StrictMode>
 		<DAppProvider config={config}>
 			<AuthProvider>
+				<FontStyles />
 				<ToastProvider>
-					<FontStyles />
 					<App />
 				</ToastProvider>
 			</AuthProvider>
