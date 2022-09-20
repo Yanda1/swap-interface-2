@@ -5,7 +5,7 @@ import { Button } from '..';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
-import { DestinationNetworkEnum, isNetworkSelected, isTokenSelected, useStore, useWindowSize } from '../../helpers';
+import { DestinationNetworkEnum, isNetworkSelected, isTokenSelected, useBreakpoint, useStore } from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -34,21 +34,20 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 	const [isShowList, setIsShowList] = useState(true);
-	const size = useWindowSize()[0];
-
+	const { isBreakpointWidth } = useBreakpoint(491);
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken }
 	} = useStore();
-// TODO: useBreakPoint (number)
+
 	useEffect(() => {
-		if (size <= 491 && size !== 0) {
+		if (isBreakpointWidth) {
 			setIsMobile(true);
 			setIsShowList(true);
 		} else {
 			setIsMobile(false);
 		}
-	}, [size]);
+	}, [isBreakpointWidth]);
 
 	useEffect(() => {
 		setIsDisabled(

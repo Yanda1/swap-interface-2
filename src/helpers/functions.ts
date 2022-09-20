@@ -1,4 +1,4 @@
-import type { Breakpoint, Theme } from './../styles';
+import type { Breakpoint, BreakpointOrNumber, Theme } from './../styles';
 import { breakpoint } from './../styles';
 import { useLayoutEffect, useState } from 'react';
 
@@ -24,12 +24,13 @@ export const useWindowSize = () => {
 	return size;
 };
 
-export const useBreakpoint = (size: Breakpoint) => {
+export const useBreakpoint = (size: BreakpointOrNumber) => {
 	const [windowWidth, windowHeight] = useWindowSize();
+	const isString = typeof size === typeof 'string';
 
 	return {
-		isBreakpointWidth: windowWidth < breakpoint[size],
-		isBreakpointHeight: windowHeight < breakpoint[size]
+		isBreakpointWidth: windowWidth < (isString ? breakpoint[size as Breakpoint] : size),
+		isBreakpointHeight: windowHeight < (isString ? breakpoint[size as Breakpoint] : size),
 	};
 };
 

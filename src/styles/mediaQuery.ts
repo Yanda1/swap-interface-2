@@ -20,7 +20,7 @@ export const viewport = {
 	1920: '120rem'
 };
 
-type BreakpointOrNumber = Breakpoint | number;
+export type BreakpointOrNumber = Breakpoint | number;
 
 export const mediaQuery = (
 	maxBreakpoint: BreakpointOrNumber,
@@ -29,8 +29,8 @@ export const mediaQuery = (
 	`${
 		minBreakpoint
 			? `@media (min-width: ${
-					typeof minBreakpoint !== 'number' && breakpoint[minBreakpoint]
-			  }px) and `
+				typeof minBreakpoint !== 'number' && breakpoint[minBreakpoint]
+			}px) and `
 			: ''
 	}${!minBreakpoint ? '@media ' : ''}(max-width: ${
 		(typeof maxBreakpoint !== 'number' && breakpoint[maxBreakpoint]) || maxBreakpoint
