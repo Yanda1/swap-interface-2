@@ -27,10 +27,19 @@ type Props = {
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
 	const {
-		state: { destinationNetwork, destinationToken, destinationAddress, destinationMemo }
+		state: {
+			destinationNetwork,
+			destinationToken,
+			destinationAddress,
+			destinationMemo,
+			isUserVerified
+		}
 	} = useStore();
 	const isDisabled =
-		!validInputs || !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken);
+		!validInputs ||
+		!isNetworkSelected(destinationNetwork) ||
+		!isTokenSelected(destinationToken) ||
+		!isUserVerified;
 
 	const { account, chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
@@ -67,7 +76,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			await sendCreateProcess(serviceAddress, productId, shortNamedValues);
 			const filter = contract.filters.CostResponse(account, serviceAddress, productId);
 			console.log('filter', filter);
-			contract.on(filter, (cost) => {
+			contract.on(filter, (customer, service, productId, cost) => {
 				console.log('Oracle deposit estimation:', utils.formatEther(cost));
 				void sendTransaction({ to: contractAddress, value: cost });
 			});

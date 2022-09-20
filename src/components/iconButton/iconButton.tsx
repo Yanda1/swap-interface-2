@@ -13,7 +13,7 @@ import MATIC from '../../assets/matic.png';
 import XTZ from '../../assets/xtz.png';
 import AVAXC from '../../assets/avaxc.png';
 import SEGWIT from '../../assets/segwit.png';
-import DEFAULT from '../../assets/default.svg';
+import INFO from '../../assets/default.svg';
 import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
@@ -35,7 +35,7 @@ const icons = {
 	AVAXC,
 	SEGWIT,
 	XTZ,
-	DEFAULT,
+	INFO,
 	WARNING,
 	SUCCESS,
 	ERROR
@@ -57,7 +57,7 @@ type Props = {
 		| 'AVAXC'
 		| 'SEGWIT'
 		| 'XTZ'
-		| 'DEFAULT'
+		| 'INFO'
 		| 'WARNING'
 		| 'SUCCESS'
 		| 'ERROR'

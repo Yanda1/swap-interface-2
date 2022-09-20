@@ -8,12 +8,14 @@ const ToastContext = createContext({});
 
 const ToastContainer = styled.div`
 	position: fixed;
-	right: 0;
-	bottom: 0;
+	right: ${spacing[40]};
+	bottom: ${spacing[48]};
 	overflow-wrap: break-word;
 	max-width: 335px;
 
 	${mediaQuery('xs')} {
+		right: 0;
+		bottom: 0;
 		width: 100%;
 		max-width: none;
 	}
@@ -21,23 +23,24 @@ const ToastContainer = styled.div`
 
 type Props = {
 	message: string;
-	type: 'default' | 'warning' | 'error' | 'success';
+	type?: 'info' | 'warning' | 'error' | 'success';
 	timer?: number;
 	onDismiss: () => void;
 };
 
-const Toast = ({ message, onDismiss, type }: Props) => {
+const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const icon = type.toUpperCase();
+	const icon = type?.toUpperCase();
+	const color = type === 'info' ? 'default' : type;
 
 	return (
 		<div
 			style={{
 				display: 'flex',
 				alignItems: 'center',
-				background: `${theme.button[type]}`,
+				background: `${theme.button[color]}`,
 				color: `${theme.font.pure}`,
 				cursor: 'pointer',
 				fontSize: `${fontSize[14]}`,
@@ -61,7 +64,7 @@ let toastCount = 0;
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>([]);
 
-	const addToast = (message: string, type: string, timer = 5000) => {
+	const addToast = (message: string, type = 'error', timer = 5000) => {
 		const id = toastCount++;
 		const toast = { message, id, type, timer };
 		setToasts([...toasts, toast]);
