@@ -73,7 +73,7 @@ const StyledButton = styled.button(
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
 			color: ${isPure
-				? theme.pure
+				? theme.font.pure
 				: isSecondaryDefault || isPrimaryTransparent
 				? theme.button.default
 				: '#FFF'};
@@ -103,7 +103,7 @@ const StyledButton = styled.button(
 					${isPrimary
 						? theme.button.default
 						: isPure
-						? theme.pure
+						? theme.font.pure
 						: isLightTheme(theme)
 						? theme.button[setColor]
 						: '#FFF'};

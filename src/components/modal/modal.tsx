@@ -22,7 +22,7 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 		width: ${pxToRem(width === 'large' ? 605 : 478)};
 		max-width: calc(100% - ${spacing[64]});
 		background-color: ${theme.background[background]};
-		border: 1px solid ${theme.default};
+		border: 1px solid ${theme.font.default};
 		border-radius: ${defaultBorderRadius};
 		padding: ${spacing[12]};
 

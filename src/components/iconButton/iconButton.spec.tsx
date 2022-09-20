@@ -27,7 +27,7 @@ describe('IconButton', () => {
 			`
 			background: ${darkTheme.icon.default};
 			padding: ${spacing[8]};
-			border: 1px solid ${darkTheme.default};
+			border: 1px solid ${darkTheme.font.default};
 			border-radius: ${pxToRem(6)};
 			`
 		);
@@ -42,7 +42,7 @@ describe('IconButton', () => {
 		expect(btn).toHaveStyleRule('outline', 'none', {
 			modifier: ':active'
 		});
-		expect(btn).toHaveStyleRule('outline', `1px solid ${darkTheme.default}`, {
+		expect(btn).toHaveStyleRule('outline', `1px solid ${darkTheme.font.default}`, {
 			modifier: ':focus-visible'
 		});
 	});

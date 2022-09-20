@@ -25,7 +25,7 @@ import { spacing, Theme } from '../../styles';
 
 const Summary = styled.summary(
 	({ color, theme }: { color: string; theme: Theme }) => css`
-		color: ${theme.pure};
+		color: ${theme.font.pure};
 		margin-top: ${spacing[28]};
 		cursor: pointer;
 
@@ -227,10 +227,10 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	return (
 		<details>
-			<Summary color={theme.default} theme={theme}>
+			<Summary color={theme.font.default} theme={theme}>
 				Fee: {feeSum.amount.toFixed(4)} {feeSum.currency}
 			</Summary>
-			<Details color={theme.default}>
+			<Details color={theme.font.default}>
 				<div>
 					<p>Network fee:</p>
 					<p>

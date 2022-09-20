@@ -8,7 +8,7 @@ import { darkTheme, fontSize, pxToRem, spacing } from '../../styles';
 describe('SelectList', () => {
 	const networksList = ['ETH', 'BTC', 'USDT'];
 	it('should render a select list with 3 items', () => {
-		const {getByRole, getByText, getAllByRole, getByTestId} = render(
+		const { getByRole, getByText, getAllByRole, getByTestId } = render(
 			<AuthProvider>
 				<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 			</AuthProvider>
@@ -19,14 +19,14 @@ describe('SelectList', () => {
 		const input = getByRole('textbox');
 		const list = getByRole('list');
 		const listItem = getByText('ETH');
-		const icon = getByRole('img', {name: 'ETH'});
+		const icon = getByRole('img', { name: 'ETH' });
 
 		expect(element).toMatchSnapshot();
 		expect(element).toHaveStyle(`
 			display: flex;
 			flex-direction: column;
 			flex: 0 1 ${pxToRem(178)};
-			border: 1px solid ${darkTheme.default};
+			border: 1px solid ${darkTheme.font.default};
 			height: ${pxToRem(478)};
 			padding: 0 ${spacing[horizontalPadding]};
 			background: ${darkTheme.background.default};
@@ -51,7 +51,7 @@ describe('SelectList', () => {
 			line-height: ${fontSize[20]};
 			padding: ${spacing[18]} ${spacing[horizontalPadding]};
 			color: ${darkTheme.font.pure};
-			border: 1px solid ${darkTheme.default};
+			border: 1px solid ${darkTheme.font.default};
 			border-radius: ${pxToRem(6)};
 			cursor: pointer;
 			transition: all 0.2s ease-in-out;
@@ -109,7 +109,7 @@ describe('SelectList', () => {
 
 	it('should render an empty select list', () => {
 		const networksList: any = [];
-		const {getByTestId} = render(
+		const { getByTestId } = render(
 			<AuthProvider>
 				<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 			</AuthProvider>

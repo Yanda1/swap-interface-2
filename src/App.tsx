@@ -25,7 +25,7 @@ export const GlobalStyles = createGlobalStyle`
 		line-height: ${fontSize[18]};
 		max-width: ${viewport[1760]};
 		min-height: 100vh;
-		color: ${(props: Props) => props.theme.default};
+		color: ${(props: Props) => props.theme.font.default};
 		box-sizing: border-box;
 		scroll-behavior: smooth;
 		-ms-overflow-style: none; /* IE and Edge */
@@ -49,7 +49,9 @@ export const GlobalStyles = createGlobalStyle`
 `;
 
 const App = () => {
-	const { state: { theme } } = useStore();
+	const {
+		state: { theme }
+	} = useStore();
 
 	return (
 		<>

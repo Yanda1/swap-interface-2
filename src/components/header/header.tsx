@@ -66,7 +66,7 @@ const ThemeButton = styled.button`
 
 	&:focus-visible {
 		outline-offset: 2px;
-		outline: 1px solid ${(props: Props) => props.theme.default};
+		outline: 1px solid ${(props: Props) => props.theme.font.default};
 	}
 
 	&:active {
@@ -85,7 +85,8 @@ const Menu = styled.ul`
 	border-radius: ${defaultBorderRadius};
 	cursor: pointer;
 	border: 1px solid
-		${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
+		${(props: Props) =>
+			isLightTheme(props.theme) ? props.theme.font.default : props.theme.font.pure};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};

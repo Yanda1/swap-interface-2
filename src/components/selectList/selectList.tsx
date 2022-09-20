@@ -19,7 +19,7 @@ const Wrapper = styled.div(() => {
 		display: flex;
 		flex-direction: column;
 		flex: 0 1 ${pxToRem(178)};
-		border: 1px solid ${theme.default};
+		border: 1px solid ${theme.font.default};
 		height: ${pxToRem(478)};
 		padding: 0 ${spacing[horizontalPadding]};
 		background: ${theme.background.default};

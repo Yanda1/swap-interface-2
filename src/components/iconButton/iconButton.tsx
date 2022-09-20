@@ -72,7 +72,7 @@ const Icon = styled.button(() => {
 
 	return css`
 		padding: ${spacing[8]};
-		border: 1px solid ${theme.default};
+		border: 1px solid ${theme.font.default};
 		border-radius: ${defaultBorderRadius};
 		display: flex;
 		align-items: center;
@@ -90,7 +90,7 @@ const Icon = styled.button(() => {
 
 		&:focus-visible {
 			outline-offset: 2px;
-			outline: 1px solid ${theme.default};
+			outline: 1px solid ${theme.font.default};
 		}
 	`;
 });

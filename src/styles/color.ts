@@ -2,8 +2,6 @@ export type ThemeName = 'light' | 'dark';
 
 export type Theme = {
 	name: ThemeName;
-	default: string;
-	pure: string;
 	font: {
 		default: string;
 		pure: string;
@@ -32,8 +30,6 @@ export type Theme = {
 
 export const lightTheme: Theme = {
 	name: 'light',
-	default: '#5A5A5A',
-	pure: '#5A5A5A',
 	font: {
 		default: '#5A5A5A',
 		pure: '#5A5A5A'
@@ -62,8 +58,6 @@ export const lightTheme: Theme = {
 
 export const darkTheme: Theme = {
 	name: 'dark',
-	default: '#8C8D8F', // TODO: refactor font colors
-	pure: '#FFF', // TODO: refactor font colors
 	font: {
 		default: '#8C8D8F',
 		pure: '#FFF'

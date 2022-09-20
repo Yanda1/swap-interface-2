@@ -27,7 +27,7 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 		line-height: ${fontSize[20]};
 		padding: ${spacing[18]} ${spacing[horizontalPadding]};
 		color: ${theme.font.pure};
-		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.default};
+		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.font.default};
 		border-radius: ${defaultBorderRadius};
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
@@ -41,7 +41,7 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 
 		&:focus-visible {
 			outline-offset: 2px;
-			outline: 1px solid ${error && isTypeNumber ? theme.button.error : theme.default};
+			outline: 1px solid ${error && isTypeNumber ? theme.button.error : theme.font.default};
 		}
 
 		&-webkit-outer-spin-button,
