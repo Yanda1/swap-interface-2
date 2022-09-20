@@ -10,7 +10,7 @@ import {
 } from '../helpers';
 import axios from 'axios';
 import destinationNetworks from '../data/destinationNetworks.json';
-import type { ApiAuthType } from '../styles';
+import type { ApiAuthType, DestinationNetworks } from '../styles';
 
 export enum STATUS_ENUM {
 	NONCE = 'NONCE',
@@ -114,8 +114,9 @@ export const useBinanceApi = () => {
 
 	const uniqueTokens: string[] = Object.keys(destinationNetworks).reduce(
 		(tokens: string[], network: string) => {
-			// @ts-ignore
-			const networkTokens = Object.keys(destinationNetworks?.[network]?.['tokens']);
+			const networkTokens = Object.keys(
+				destinationNetworks?.[network as DestinationNetworks]?.['tokens']
+			);
 
 			const allTokens = [...tokens, networkTokens];
 

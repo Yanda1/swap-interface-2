@@ -72,7 +72,6 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 		setToasts([...toasts, toast]);
 	};
 	const remove = (id: number) => {
-		// @ts-ignore
 		const newToasts = toasts.filter((t) => t.id !== id);
 		setToasts(newToasts);
 	};

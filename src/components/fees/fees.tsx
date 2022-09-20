@@ -85,8 +85,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	const { chainId, library: web3Provider } = useEthers();
 	const gasPrice: any = useGasPrice();
-	// @ts-ignore
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId] || '';
+	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
@@ -139,7 +138,6 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			// @ts-ignore
 			localGraph.addEdge(allFilteredPairs[i].baseAsset, allFilteredPairs[i].quoteAsset);
 			if (allFilteredPairs.length === localGraph.edges) {
-				// @ts-ignore
 				setCexGraph(localGraph);
 			}
 		}

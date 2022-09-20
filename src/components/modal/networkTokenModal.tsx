@@ -102,8 +102,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 					{isShowList && (
 						<Button
 							onClick={() => setIsShowList(false)}
-							// @ts-ignore
-							color={isNetworkSelected(destinationNetwork) ? 'transparent' : 'default'}
+							color={isNetworkSelected(destinationNetwork) ? 'transparent' : 'default'} // TODO: use color object
 							disabled={!isNetworkSelected(destinationNetwork)}>
 							NEXT
 						</Button>

@@ -14,6 +14,7 @@ import {
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import styled from 'styled-components';
 import { spacing } from '../../styles';
+import type { ContractAdress } from '../../styles';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -42,8 +43,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isUserVerified;
 
 	const { account, chainId, library: web3Provider } = useEthers();
-	// @ts-ignore
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId] || '';
+	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 	if (web3Provider) {

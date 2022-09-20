@@ -1,7 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
-import type { Theme } from '../styles';
+import type { Theme, ColorType } from '../styles';
 import { darkTheme } from '../styles';
-import type { ColorType } from '../components';
 
 export enum VerificationEnum {
 	ACCOUNT = 'SET_ACCOUNT_CONNECTED',

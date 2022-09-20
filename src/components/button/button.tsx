@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { fontFamily, pxToRem } from '../../styles';
+import type { ColorType } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
@@ -9,8 +10,6 @@ const icons = {
 	moonbeam,
 	metamask
 };
-
-export type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'success';
 
 interface CommonProps {
 	disabled?: boolean;

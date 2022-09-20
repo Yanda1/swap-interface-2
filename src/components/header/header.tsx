@@ -9,7 +9,7 @@ import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
-import type { ApiAuthType, Theme } from '../../styles';
+import type { ApiAuthType, Theme, ColorType } from '../../styles';
 import { darkTheme, lightTheme, mediaQuery, pxToRem, spacing } from '../../styles';
 import {
 	ButtonEnum,
@@ -35,7 +35,6 @@ import {
 	BasicStatusEnum,
 	message
 } from '../../helpers';
-import type { ColorType } from '../../components';
 import { Button, Network, useToasts, Wallet } from '../../components';
 
 type Props = {
