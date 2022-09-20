@@ -74,7 +74,7 @@ export const useAxios = () => {
 	axiosInstance.interceptors.response.use(
 		(res) => res,
 		(error) => {
-			error.message = message.ignore;
+			if (Object.keys(error).length === 1 && 'message' in error) error.message = message.ignore;
 
 			return Promise.reject(error);
 		}

@@ -228,6 +228,7 @@ export const Header = () => {
 				}
 			} catch (error: any) {
 				if (error?.message !== message.ignore) {
+					addToast('Oops, something went wrong - please try again', 'warning');
 					await setTokensInStorageAndContext();
 				}
 			}
