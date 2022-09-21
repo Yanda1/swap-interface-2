@@ -46,6 +46,6 @@ export const makeId = (length: number) => {
 	return result;
 };
 
-export const defaultBorderRadius = pxToRem(6); // TODO: move to correct file
-
+export const defaultBorderRadius = pxToRem(6);
+export const mainMaxWidth = pxToRem(450);
 export const horizontalPadding = 10; // TODO: move to correct file

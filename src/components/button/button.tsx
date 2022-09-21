@@ -4,7 +4,7 @@ import type { ColorType } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
-import { defaultBorderRadius, isLightTheme, useStore } from '../../helpers';
+import { defaultBorderRadius, isLightTheme, mainMaxWidth, useStore } from '../../helpers';
 
 const icons = {
 	moonbeam,
@@ -65,7 +65,7 @@ const StyledButton = styled.button(
 			display: ${icon ? 'inline-flex' : 'inline-block'};
 			align-items: center;
 			justify-content: space-between;
-			max-width: ${isPrimary ? pxToRem(428) : pxToRem(160)};
+			max-width: ${isPrimary ? mainMaxWidth : pxToRem(160)};
 			width: 100%;
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
 			font-family: ${fontFamily}; // somehow this is not applied from GLOBAL_STYLES

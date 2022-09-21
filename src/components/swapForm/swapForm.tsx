@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, pxToRem, spacing } from '../../styles';
+import { mediaQuery, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
@@ -9,6 +9,7 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
+	mainMaxWidth,
 	realParseFloat,
 	removeZeros,
 	startToken,
@@ -19,7 +20,7 @@ import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../.
 
 const Wrapper = styled.main`
 	margin: 0 auto;
-	max-width: ${pxToRem(428)};
+	max-width: ${mainMaxWidth};
 `;
 
 const Trader = styled.div`
@@ -43,23 +44,28 @@ const Swap = styled.div`
 	}
 `;
 
+const NamesWrapper = styled.div(
+	({ single = true }: { single?: boolean }) => css`
+		display: flex;
+		justify-content: ${single ? 'flex-start' : 'space-between'};
+
+		&:nth-child(2) {
+			margin-left: ${single ? 'auto' : ''};
+		}
+	`
+);
+
 const SwapInput = styled.div`
 	display: flex;
 	gap: ${spacing[8]};
-	justify-content: space-between;
 `;
 
 const SwapNames = styled.div(
-	({ pos = 'start' }: { pos?: string }) => `
-	display: flex;
-	flex-direction: column;
-	align-items: flex-${pos};
-
-	${mediaQuery('xs')} {
-		align-items: flex-start;
-		width: 100%;
-	}
-`
+	({ pos = 'start' }: { pos?: string }) => css`
+		display: flex;
+		flex-direction: column;
+		align-items: flex-${pos};
+	`
 );
 
 const Name = styled.div(
@@ -170,10 +176,16 @@ export const SwapForm = () => {
 							onChange={(e) => setAmount(() => realParseFloat(e.target.value))}
 						/>
 					</SwapInput>
-					<SwapNames>
-						<Name color={theme.font.pure}>GLMR</Name>
-						<Name color={theme.font.default}>(Moonbeam)</Name>
-					</SwapNames>
+					<NamesWrapper single={false}>
+						<SwapNames>
+							<Name color={theme.font.pure}>GLMR</Name>
+							<Name color={theme.font.default}>(Moonbeam)</Name>
+						</SwapNames>
+						<SwapNames pos="end">
+							<Name color={theme.font.pure}>Min. Amount</Name>
+							<Name color={theme.font.default}>324234.34</Name>
+						</SwapNames>
+					</NamesWrapper>
 				</Swap>
 				{isLightTheme(theme) ? (
 					<SwapperLight style={{ marginBottom: 38 }} />
@@ -185,10 +197,12 @@ export const SwapForm = () => {
 						<IconButton onClick={openModal} icon={destinationToken as any} />
 						<TextField disabled value={removeZeros(destinationAmount)} />
 					</SwapInput>
-					<SwapNames pos="end">
-						<Name color={theme.font.pure}>{destinationToken}</Name>
-						<Name color={theme.font.default}>({destinationNetwork})</Name>
-					</SwapNames>
+					<NamesWrapper>
+						<SwapNames pos="end">
+							<Name color={theme.font.pure}>{destinationToken}</Name>
+							<Name color={theme.font.default}>({destinationNetwork})</Name>
+						</SwapNames>
+					</NamesWrapper>
 				</Swap>
 			</Trader>
 			<ExchangeRate color={theme.font.pure}>

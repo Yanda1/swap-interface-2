@@ -18,7 +18,7 @@ const Wrapper = styled.div(() => {
 	return css`
 		display: flex;
 		flex-direction: column;
-		flex: 0 1 ${pxToRem(178)};
+		flex: 0 1 ${pxToRem(450 / 2 - 36)}; // TODO: refactor so that the 450 / first value comes from mainMaxWidth
 		border: 1px solid ${theme.font.default};
 		height: ${pxToRem(478)};
 		padding: 0 ${spacing[horizontalPadding]};
