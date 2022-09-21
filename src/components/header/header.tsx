@@ -114,7 +114,7 @@ export const Header = () => {
 
 	const changeTheme = (): void => {
 		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
-		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(!isLight));
+		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(isLight));
 	};
 
 	const handleShowMenu = (): void => {

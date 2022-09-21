@@ -40,7 +40,7 @@ export const useAxios = () => {
 			const isAccessTokenExpired = dayjs.unix(access?.exp).diff(dayjs()) < 1;
 
 			if (!isAccessTokenExpired) return req;
-
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			req.headers!.Authorization = `Bearer ${refreshToken}`;
 
 			const refresh: JwtType = jwt_decode(refreshToken);
@@ -62,6 +62,7 @@ export const useAxios = () => {
 			dispatch({ type: VerificationEnum.ACCESS, payload: newTokens.data.access });
 			dispatch({ type: VerificationEnum.REFRESH, payload: newTokens.data.refresh });
 			setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
 
 			return req;
