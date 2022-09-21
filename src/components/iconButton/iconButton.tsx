@@ -62,7 +62,7 @@ type Props = {
 		| 'SUCCESS'
 		| 'ERROR'
 		| 'Select Token';
-	onClick?: (e?: any) => void;
+	onClick?: () => void;
 	value?: string;
 	iconOnly?: boolean;
 };
@@ -107,13 +107,13 @@ const Img = styled.img(({ iconOnly }: Props) => {
 	`;
 });
 
-export const IconButton = ({ disabled = false, icon, onClick, iconOnly, value }: Props) => {
+export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
 	return !iconOnly ? (
 		<Icon disabled={disabled} onClick={onClick}>
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
-				<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} onClick={onClick} value={value} />
+				<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} onClick={onClick} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (

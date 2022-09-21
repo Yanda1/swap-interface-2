@@ -87,7 +87,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 			if (value === 'WALLET') {
 				dispatch({
 					type: DestinationNetworkEnum.WALLET,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt // TODO: refactor after iconButton refactored
+					payload: e.target.textContent ? e.target.textContent : e.target.alt
 				});
 			}
 			dispatch({
@@ -130,9 +130,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 								<IconButton
 									// @ts-ignore
 									icon={el}
-									value={value}
 									iconOnly
-									onClick={(e) => handleClick(e)}
 								/>
 								{el}
 							</Item>
