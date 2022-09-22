@@ -1,7 +1,15 @@
-import { useEffect, useState } from 'react';
-import { useLocalStorage, BINANCE_EXCHANGE_INFO, BINANCE_PRICE_TICKER } from '../helpers';
+import { useEffect, useState, useMemo } from 'react';
+import {
+	useLocalStorage,
+	BINANCE_EXCHANGE_INFO,
+	BINANCE_PRICE_TICKER,
+	isTokenSelected,
+	isNetworkSelected
+} from '../helpers';
 import { DestinationNetworks } from '../styles';
 import destinationNetworks from '../data/destinationNetworks.json';
+import { useEtherBalance, useEthers } from '@usedapp/core';
+import { formatEther } from '@ethersproject/units';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
 import dayjs from 'dayjs';
@@ -12,8 +20,9 @@ import {
 	BASE_URL,
 	routes,
 	useStore,
-	VerificationEnum
-} from '.';
+	VerificationEnum,
+	startToken
+} from '../helpers';
 
 type JwtType = {
 	iss: string;
@@ -24,6 +33,15 @@ type JwtType = {
 export const message = {
 	ignore: 'ignore'
 };
+
+type Ticker = {
+	baseAsset: string;
+	symbol: string;
+	quoteAsset: string;
+	filters: any[];
+};
+
+export type Price = { symbol: string; price: string };
 
 export const useAxios = () => {
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, initialStorage);
@@ -88,12 +106,16 @@ export const useAxios = () => {
 };
 
 export const useBinanceApi = () => {
-	const [allPrices, setAllPrices] = useState<{ symbol: string; price: string }[]>([]);
-	const [allFilteredPrices, setAllFilteredPrices] = useState<{ symbol: string; price: string }[]>(
-		[]
-	);
-	const [allPairs, setAllPairs] = useState([]);
-	const [allFilteredPairs, setAllFilteredPairs] = useState([]);
+	// TODO: error handling if API calls fail
+	const [allPrices, setAllPrices] = useState<Price[]>([]);
+	const [allFilteredPrices, setAllFilteredPrices] = useState<Price[]>([]);
+	const [allPairs, setAllPairs] = useState<Ticker[]>([]);
+	const [allFilteredPairs, setAllFilteredPairs] = useState<Ticker[]>([]);
+	const {
+		state: { destinationToken, destinationNetwork }
+	} = useStore();
+	const { account } = useEthers();
+	const walletBalance = useEtherBalance(account);
 
 	const getExchangeInfo = async () => {
 		try {
@@ -143,6 +165,52 @@ export const useBinanceApi = () => {
 		return false;
 	};
 
+	const getPrice = () => {
+		// TODO: convert to helper and use it in fee.tsx as well
+		let edgePrice = 0;
+		let ticker: undefined | Price = allFilteredPrices.find(
+			(x: Price) => x.symbol === startToken + destinationToken
+		);
+		if (ticker) {
+			edgePrice = Number(ticker?.price);
+		} else {
+			ticker = allFilteredPrices.find((x: any) => x.symbol === destinationToken + startToken);
+			edgePrice = 1 / Number(ticker?.price);
+		}
+
+		return edgePrice;
+	};
+
+	const marginalCosts = useMemo(() => {
+		let minAmount = '';
+		let maxAmount = '';
+		if (isTokenSelected(destinationToken) && isNetworkSelected(destinationNetwork) && account) {
+			const tokenMinAmount =
+				// @ts-ignore
+				destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'];
+			const [pair] = allFilteredPairs.filter(
+				(pair: Ticker) =>
+					pair.symbol === startToken + destinationToken ||
+					pair.symbol === destinationToken + startToken
+			);
+			const { filters } = pair; // TODO: app broke once
+			const [lot, notional] = filters;
+			const notionalMinAmount = notional.minNotional;
+			const { minQty, maxQty } = lot;
+			const lotSizeMinAmount = minQty * getPrice();
+			const lotSizeMaxAmount = maxQty * getPrice();
+			const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
+
+			minAmount = Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount).toString();
+			maxAmount = Math.min(lotSizeMaxAmount, Number(walletMaxAmount)).toString();
+			console.log({ minAmount, maxAmount });
+
+			return { minAmount, maxAmount };
+		}
+
+		return null;
+	}, [destinationToken, account]);
+
 	useEffect(() => {
 		void getExchangeInfo();
 		void getTickerData();
@@ -150,7 +218,19 @@ export const useBinanceApi = () => {
 
 	useEffect(() => {
 		if (allPairs) {
-			const filteredPairs = allPairs.filter((pair: any) => isSymbol(pair.symbol));
+			const filteredPairs = allPairs
+				.filter((pair: any) => isSymbol(pair.symbol))
+				.map((pair: any) => {
+					return {
+						baseAsset: pair.baseAsset,
+						quoteAsset: pair.quoteAsset,
+						symbol: pair.symbol,
+						filters: pair.filters.filter(
+							(filter: any) =>
+								filter.filterType === 'LOT_SIZE' || filter.filterType === 'MIN_NOTIONAL'
+						)
+					};
+				});
 			setAllFilteredPairs(filteredPairs);
 		}
 
@@ -160,5 +240,5 @@ export const useBinanceApi = () => {
 		}
 	}, [allPairs, allPrices]);
 
-	return { allFilteredPairs, allFilteredPrices };
+	return { ...marginalCosts, allFilteredPairs, allFilteredPrices };
 };

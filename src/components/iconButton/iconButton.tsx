@@ -40,31 +40,6 @@ const icons = {
 	ERROR
 };
 
-type Props = {
-	disabled?: boolean;
-	icon:
-		| 'BSC'
-		| 'USDT'
-		| 'GLMR'
-		| 'BTC'
-		| 'BNB'
-		| 'ETH'
-		| 'SOL'
-		| 'BUSD'
-		| 'TRX'
-		| 'MATIC'
-		| 'AVAXC'
-		| 'SEGWIT'
-		| 'XTZ'
-		| 'INFO'
-		| 'WARNING'
-		| 'SUCCESS'
-		| 'ERROR'
-		| 'Select Token';
-	onClick?: () => void;
-	iconOnly?: boolean;
-};
-
 const Icon = styled.button(() => {
 	const {
 		state: { theme }
@@ -103,6 +78,31 @@ const Img = styled.img(({ iconOnly }: Props) => {
 		cursor: pointer;
 	`;
 });
+
+type Props = {
+	disabled?: boolean;
+	icon:
+		| 'BSC'
+		| 'USDT'
+		| 'GLMR'
+		| 'BTC'
+		| 'BNB'
+		| 'ETH'
+		| 'SOL'
+		| 'BUSD'
+		| 'TRX'
+		| 'MATIC'
+		| 'AVAXC'
+		| 'SEGWIT'
+		| 'XTZ'
+		| 'INFO'
+		| 'WARNING'
+		| 'SUCCESS'
+		| 'ERROR'
+		| 'Select Token';
+	onClick?: () => void;
+	iconOnly?: boolean;
+};
 
 export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
 	return !iconOnly ? (

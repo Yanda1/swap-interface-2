@@ -18,6 +18,7 @@ import {
 	useStore,
 	feeCurrency
 } from '../../helpers';
+import type { Price } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
@@ -75,7 +76,6 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 		}
 	} = useStore();
 	const { allFilteredPairs, allFilteredPrices } = useBinanceApi();
-
 	const [networkFee, setNetworkFee] = useState({ amount: 0, currency: 'GLMR' });
 	const [cexFee, setCexFee] = useState([{ amount: 0, currency: 'GLMR' }]);
 	const [withdrawlFee, setWithdrawlFee] = useState({ amount: 0, currency: 'GLMR' });
@@ -156,9 +156,8 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 					const allCexFees: { amount: number; currency: string }[] = [];
 					for (let i = 0; i < graphPath.distance; i++) {
 						let edgePrice = 0;
-						let ticker: undefined | { symbol: string; price: string } = allFilteredPrices.find(
-							(x: { symbol: string; price: string }) =>
-								x.symbol === graphPath.path[i] + graphPath.path[i + 1]
+						let ticker: undefined | Price = allFilteredPrices.find(
+							(x: Price) => x.symbol === graphPath.path[i] + graphPath.path[i + 1]
 						);
 						if (ticker) {
 							edgePrice = Number(ticker?.price);
@@ -193,14 +192,13 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	useEffect(() => {
 		const amount = [...cexFee, networkFee, withdrawlFee, protocolFee].reduce((total, fee) => {
 			const ticker = allFilteredPrices.find(
-				(pair: { symbol: string; price: string }) => pair.symbol === `${fee.currency}${feeCurrency}`
+				(pair: Price) => pair.symbol === `${fee.currency}${feeCurrency}`
 			);
 			if (ticker) {
 				return (total += +ticker.price * fee.amount);
 			} else {
 				const reverseTicker = allFilteredPrices.find(
-					(pair: { symbol: string; price: string }) =>
-						pair.symbol === `${fee.currency}${feeCurrency}`
+					(pair: Price) => pair.symbol === `${fee.currency}${feeCurrency}`
 				);
 				if (reverseTicker) {
 					return (total += fee.amount / +reverseTicker.price);

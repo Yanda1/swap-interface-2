@@ -85,6 +85,8 @@ const ExchangeRate = styled.div(
 `
 );
 
+type Limit = { name: string; value: string; error: boolean };
+
 export const SwapForm = () => {
 	const {
 		state: {
@@ -98,6 +100,7 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
+	const swapButtonRef = useRef();
 	const { allFilteredPrices } = useBinanceApi();
 	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
@@ -105,23 +108,39 @@ export const SwapForm = () => {
 	const [currentPrice, setCurrentPrice] = useState('');
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
-	const [minAmount, setMinAmount] = useState(0);
-	const swapButtonRef = useRef();
+	const { minAmount, maxAmount } = useBinanceApi();
+	const [limit, setLimit] = useState<Limit>({ name: '', value: '', error: false });
 
 	const openModal = () => setShowModal(!showModal);
 
+	const convertDestinationAmount = () => {
+		if (isTokenSelected(destinationToken)) {
+			const getSymbol: any = allFilteredPrices.find(
+				(pair: { symbol: string; price: string }) =>
+					pair.symbol === `${startToken}${destinationToken}`
+			);
+			setCurrentPrice(getSymbol?.price);
+		}
+	};
+
 	useEffect(() => {
-		const convertDestinationAmount = () => {
-			if (isTokenSelected(destinationToken)) {
-				const getSymbol: any = allFilteredPrices.find(
-					(pair: { symbol: string; price: string }) =>
-						pair.symbol === `${startToken}${destinationToken}`
-				);
-				setCurrentPrice(getSymbol?.price);
-			}
-		};
 		convertDestinationAmount();
-	}, [destinationToken]);
+
+		console.log(typeof (+amount < Number(minAmount) || +amount > Number(maxAmount)));
+
+		if (isTokenSelected(destinationToken) && minAmount) {
+			console.log('amount, minAmount', amount, minAmount);
+			setLimit({
+				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
+				value:
+					(+minAmount < +amount ? Number(maxAmount).toFixed(3) : Number(minAmount).toFixed(3)) ||
+					'0',
+				error: +amount < +minAmount || +amount > Number(maxAmount)
+			});
+		} else {
+			setLimit({ name: '', value: '', error: false });
+		}
+	}, [destinationToken, amount]);
 
 	useEffect(() => {
 		dispatch({
@@ -146,15 +165,9 @@ export const SwapForm = () => {
 			destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
 		);
 
-		const calculateAmount =
-			// @ts-ignore
-			+destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'] /
-			+currentPrice;
-		setMinAmount(+calculateAmount || 0);
-
 		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
 		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
-	}, [destinationAddress, destinationMemo, destinationNetwork, destinationToken, currentPrice]);
+	}, [destinationAddress, destinationMemo, destinationToken, currentPrice]);
 
 	const handleSwap = (): void => {
 		// @ts-ignore
@@ -170,8 +183,8 @@ export const SwapForm = () => {
 						<IconButton disabled icon="GLMR" />
 						<TextField
 							type="number"
-							placeholder={`> ${minAmount.toFixed(4)}`}
-							error={+amount < minAmount}
+							placeholder="Amount"
+							error={limit.error}
 							value={amount}
 							onChange={(e) => setAmount(() => realParseFloat(e.target.value))}
 						/>
@@ -182,8 +195,10 @@ export const SwapForm = () => {
 							<Name color={theme.font.default}>(Moonbeam)</Name>
 						</SwapNames>
 						<SwapNames pos="end">
-							<Name color={theme.font.pure}>Min. Amount</Name>
-							<Name color={theme.font.default}>324234.34</Name>
+							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
+							<Name color={limit.error ? theme.button.error : theme.font.default}>
+								{limit.value}
+							</Name>
 						</SwapNames>
 					</NamesWrapper>
 				</Swap>
@@ -244,7 +259,7 @@ export const SwapForm = () => {
 			{isUserVerified && (
 				<SwapButton
 					ref={swapButtonRef}
-					validInputs={destinationMemoIsValid && destinationAddressIsValid && +amount >= minAmount}
+					validInputs={destinationMemoIsValid && destinationAddressIsValid && !limit.error}
 					amount={amount.toString()}
 					onClick={handleSwap}
 				/>
