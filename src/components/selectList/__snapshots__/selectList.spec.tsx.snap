@@ -72,6 +72,7 @@ exports[`SelectList should render a select list with 3 items 1`] = `
 .c3 {
   overflow-y: auto;
   padding: 0;
+  height: 29.875rem;
 }
 
 .c3::-webkit-scrollbar,
@@ -111,6 +112,7 @@ exports[`SelectList should render a select list with 3 items 1`] = `
   </div>
   <input
     class="c2"
+    min="0"
     placeholder="Network Name"
     type="text"
     value=""
@@ -229,6 +231,7 @@ exports[`SelectList should render an empty select list 1`] = `
   </div>
   <input
     class="c2"
+    min="0"
     placeholder="Network Name"
     type="text"
     value=""

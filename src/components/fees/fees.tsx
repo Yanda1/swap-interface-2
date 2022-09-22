@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useEthers, useGasPrice } from '@usedapp/core';
-import { utils, BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import styled, { css } from 'styled-components';
 import {
 	BINANCE_FEE,
 	CONTRACT_ADDRESSES,
 	defaultBorderRadius,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
+	feeCurrency,
 	Graph,
+	isNetworkSelected,
+	isTokenSelected,
 	makeId,
 	PROTOCOL_FEE,
 	serviceAddress,
 	startToken,
-	isTokenSelected,
-	isNetworkSelected,
 	useBinanceApi,
-	useStore,
-	feeCurrency
+	useStore
 } from '../../helpers';
 import type { Price } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';

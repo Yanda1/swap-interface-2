@@ -19,6 +19,7 @@ import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
+import destinationNetworks from '../../data/destinationNetworks.json';
 
 const icons = {
 	BSC,
@@ -40,12 +41,13 @@ const icons = {
 	ERROR
 };
 
-const Icon = styled.button(() => {
+const Icon = styled.button(({ disabled }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return css`
+		cursor: ${!disabled && 'pointer'};
 		padding: ${spacing[8]};
 		border: 1px solid ${theme.font.default};
 		border-radius: ${defaultBorderRadius};
@@ -110,14 +112,12 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props)
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
-				// @ts-ignore
-				<Img src={icons[icon]} alt={icon} />
+				<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} onClick={onClick} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
 		<QuestionMark style={{ width: 42, height: 42 }} />
 	) : (
-		// @ts-ignore
-		<Img src={icons[icon]} alt={icon} iconOnly />
+		<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} iconOnly />
 	);
 };

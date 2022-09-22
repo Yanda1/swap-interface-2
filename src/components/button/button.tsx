@@ -56,6 +56,7 @@ const StyledButton = styled.button(
 		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isPrimaryTransparent = variant === 'primary' && color === 'transparent';
+		const isPrimaryDisabled = variant === 'primary' && disabled;
 		const isSecondaryDefault = isSecondary && setColor === 'default';
 		const {
 			state: { theme }
@@ -65,32 +66,33 @@ const StyledButton = styled.button(
 			display: ${icon ? 'inline-flex' : 'inline-block'};
 			align-items: center;
 			justify-content: space-between;
-			max-width: ${isPrimary ? mainMaxWidth : pxToRem(160)};
+			max-width: ${isPrimary ? pxToRem(428) : pxToRem(160)};
 			width: 100%;
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
 			font-family: ${fontFamily}; // somehow this is not applied from GLOBAL_STYLES
 			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)}; // same here for font-size = 14
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
-			color: ${isPure
+			color: ${isPure || isPrimaryDisabled
 				? theme.font.pure
 				: isSecondaryDefault || isPrimaryTransparent
-				? theme.button.default
-				: '#FFF'};
-			background-color: ${disabled
-				? theme.button.disabled
-				: isPure || isSecondaryDefault
+					? theme.button.default
+					: '#FFF'};
+			background-color: ${isPure || isSecondaryDefault || isPrimaryTransparent
 				? theme.button.transparent
-				: theme.button[setColor]};
-			border: 1px solid
-				${isSecondaryDefault || isPrimaryTransparent
+				: disabled ? theme.button.disabled
+					: theme.button[setColor]};
+			border: 1px solid ${isPrimaryDisabled
+				? theme.button.disabled
+				: isSecondaryDefault || isPrimaryTransparent
 					? theme.button.default
 					: isPure || isColorDefault
-					? theme.button.transparent
-					: '#FFF'};
+						? theme.button.transparent
+						: '#FFF'};
 			border-radius: ${defaultBorderRadius};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
+			cursor: ${disabled && 'not-allowed'};
 
 			&:hover {
 				opacity: ${!isSecondaryDefault && '0.8'};
@@ -99,14 +101,13 @@ const StyledButton = styled.button(
 
 			&:focus-visible {
 				outline-offset: 2px;
-				outline: 1px solid
-					${isPrimary
-						? theme.button.default
-						: isPure
+				outline: 1px solid ${isPrimary
+					? theme.button.default
+					: isPure
 						? theme.font.pure
 						: isLightTheme(theme)
-						? theme.button[setColor]
-						: '#FFF'};
+							? theme.button[setColor]
+							: '#FFF'};
 			}
 
 			&:active {

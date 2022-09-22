@@ -30,10 +30,9 @@ const ModalWrapper = styled.div`
 
 const ModalContainer = styled.div``;
 
-const AccountTitle = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
+const AccountTitle = styled.div
+(() => {
+	const { state: { theme } } = useStore();
 
 	return css`
 		font-size: ${fontSize[16]};
@@ -69,9 +68,7 @@ const Account = styled.div`
 `;
 
 const AccountNumber = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
+	const { state: { theme } } = useStore();
 
 	return css`
 		color: ${theme.font.pure};
@@ -80,9 +77,7 @@ const AccountNumber = styled.div(() => {
 });
 
 const IconContainer = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
+	const { state: { theme } } = useStore();
 
 	return css`
 		height: ${pxToRem(8)};
@@ -107,7 +102,7 @@ const IconContainer = styled.div(() => {
 });
 
 const CopyText = styled.p.attrs((props: { isCopied: boolean }) => props)`
-	opacity: ${(props) => (props.isCopied ? '0.5' : '1')};
+	opacity: ${(props) => props.isCopied ? '0.5' : '1'};;
 	font-size: ${fontSize[14]};
 	line-height: ${fontSize[20]};
 `;
@@ -135,30 +130,24 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	};
 
 	return (
-		<>
-			<Modal showModal={showModal} setShowModal={setShowModal} background="default" width="small">
-				<ModalWrapper>
-					<ModalContainer>
-						<AccountTitle>Account</AccountTitle>
-						<StatusContainer>Connected with Metamask</StatusContainer>
-						<Account>
-							<AccountNumber>
-								{account?.substring(0, 12)}...{account?.substring(37)}
-							</AccountNumber>
-							<JazzIcon account={account} />
-						</Account>
-						<CopyContainer>
-							<IconContainer />
-							<CopyText onClick={handleCopy} isCopied={isCopied}>
-								{!isCopied ? 'Copy Address' : 'Copied!'}
-							</CopyText>
-						</CopyContainer>
-					</ModalContainer>
-					<Button variant="secondary" onClick={handleDisconnect}>
-						Disconnect
-					</Button>
-				</ModalWrapper>
-			</Modal>
-		</>
+		<Modal showModal={showModal} setShowModal={setShowModal} background='default' width='small'>
+			<ModalWrapper>
+				<ModalContainer>
+					<AccountTitle>Account</AccountTitle>
+					<StatusContainer>Connected with Metamask</StatusContainer>
+					<Account>
+						<AccountNumber>
+							{account?.substring(0, 12)}...{account?.substring(37)}
+						</AccountNumber>
+						<JazzIcon account={account} />
+					</Account>
+					<CopyContainer>
+						<IconContainer />
+						<CopyText onClick={handleCopy} isCopied={isCopied}>{!isCopied ? 'Copy Address' : 'Copied!'}</CopyText>
+					</CopyContainer>
+				</ModalContainer>
+				<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
+			</ModalWrapper>
+		</Modal>
 	);
 };
