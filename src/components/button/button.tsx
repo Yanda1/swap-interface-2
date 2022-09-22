@@ -57,6 +57,7 @@ const StyledButton = styled.button(
 		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isPrimaryTransparent = variant === 'primary' && color === 'transparent';
+		const isPrimaryDisabled = variant === 'primary' && disabled;
 		const isSecondaryDefault = isSecondary && setColor === 'default';
 		const {
 			state: { theme }
@@ -73,25 +74,26 @@ const StyledButton = styled.button(
 			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)}; // same here for font-size = 14
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
-			color: ${isPure
+			color: ${isPure || isPrimaryDisabled
 				? theme.pure
 				: isSecondaryDefault || isPrimaryTransparent
-				? theme.button.default
-				: '#FFF'};
-			background-color: ${disabled
-				? theme.button.disabled
-				: isPure || isSecondaryDefault
+					? theme.button.default
+					: '#FFF'};
+			background-color: ${isPure || isSecondaryDefault || isPrimaryTransparent
 				? theme.button.transparent
-				: theme.button[setColor]};
-			border: 1px solid
-				${isSecondaryDefault || isPrimaryTransparent
+				: disabled ? theme.button.disabled
+					: theme.button[setColor]};
+			border: 1px solid ${isPrimaryDisabled
+				? theme.button.disabled
+				: isSecondaryDefault || isPrimaryTransparent
 					? theme.button.default
 					: isPure || isColorDefault
-					? theme.button.transparent
-					: '#FFF'};
+						? theme.button.transparent
+						: '#FFF'};
 			border-radius: ${defaultBorderRadius};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
+			cursor: ${disabled && 'not-allowed'};
 
 			&:hover {
 				opacity: ${!isSecondaryDefault && '0.8'};
@@ -100,14 +102,13 @@ const StyledButton = styled.button(
 
 			&:focus-visible {
 				outline-offset: 2px;
-				outline: 1px solid
-					${isPrimary
-						? theme.button.default
-						: isPure
+				outline: 1px solid ${isPrimary
+					? theme.button.default
+					: isPure
 						? theme.pure
 						: isLightTheme(theme)
-						? theme.button[setColor]
-						: '#FFF'};
+							? theme.button[setColor]
+							: '#FFF'};
 			}
 
 			&:active {
@@ -118,13 +119,13 @@ const StyledButton = styled.button(
 );
 
 export const Button = ({
-	children,
-	variant = 'primary',
-	color = 'default',
-	disabled = false,
-	icon,
-	onClick
-}: Props) => {
+												 children,
+												 variant = 'primary',
+												 color = 'default',
+												 disabled = false,
+												 icon,
+												 onClick
+											 }: Props) => {
 	return (
 		// @ts-ignore
 		<StyledButton icon={icon} color={color} variant={variant} disabled={disabled} onClick={onClick}>

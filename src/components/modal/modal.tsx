@@ -78,12 +78,13 @@ export const Modal = ({
 	};
 
 	return (
-		// @ts-ignore
 		<ModalWrapper
 			width={width}
 			showModal={showModal}
 			background={background}
-			data-testid="modal-container">
+			data-testid="modal-container"
+			setShowModal={setShowModal}
+		>
 			<CloseIcon onClick={handleClose} theme={theme}>
 				&#x2716;
 			</CloseIcon>

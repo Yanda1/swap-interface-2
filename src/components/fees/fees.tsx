@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useEthers, useGasPrice } from '@usedapp/core';
-import { utils, BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import styled, { css } from 'styled-components';
 import {
 	BINANCE_FEE,
 	CONTRACT_ADDRESSES,
 	defaultBorderRadius,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
+	feeCurrency,
 	Graph,
+	isNetworkSelected,
+	isTokenSelected,
 	makeId,
 	PROTOCOL_FEE,
 	serviceAddress,
 	startToken,
-	isTokenSelected,
-	isNetworkSelected,
 	useBinanceApi,
-	useStore,
-	feeCurrency
+	useStore
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
@@ -85,8 +85,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	const { chainId, library: web3Provider } = useEthers();
 	const gasPrice: any = useGasPrice();
-	// @ts-ignore
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId] || '';
+	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 

@@ -4,7 +4,7 @@ import { fontSize, mediaQuery, spacing } from '../../styles';
 import { defaultBorderRadius, useStore } from '../../helpers';
 import { IconButton } from '../iconButton/iconButton';
 
-const ToastContext = createContext(null);
+const ToastContext = createContext({});
 
 const ToastContainer = styled.div`
 	position: fixed;
@@ -62,9 +62,7 @@ const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 let toastCount = 0;
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [toasts, setToasts] = useState<
-		{ message: string; id: number; type: string; timer: number }[]
-	>([]);
+	const [toasts, setToasts] = useState<{ message: string; id: number; type: string; timer: number }[]>([]);
 
 	const addToast = (message: string, type = 'error', timer = 5000) => {
 		const id = toastCount++;
@@ -72,7 +70,6 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 		setToasts([...toasts, toast]);
 	};
 	const remove = (id: number) => {
-		// @ts-ignore
 		const newToasts = toasts.filter((t) => t.id !== id);
 		setToasts(newToasts);
 	};
@@ -86,7 +83,6 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 	}
 
 	return (
-		// @ts-ignore
 		<ToastContext.Provider value={{ addToast, remove }}>
 			{children}
 			<ToastContainer>

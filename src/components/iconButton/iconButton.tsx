@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, useStore, isTokenSelected } from '../../helpers';
+import { defaultBorderRadius, isTokenSelected, useStore } from '../../helpers';
 import USDT from '../../assets/usdt.png';
 import GLMR from '../../assets/glmr.png';
 import BTC from '../../assets/btc.png';
@@ -19,6 +19,7 @@ import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { pxToRem, spacing } from '../../styles';
+import destinationNetworks from '../../data/destinationNetworks.json';
 
 const icons = {
 	BSC,
@@ -42,7 +43,7 @@ const icons = {
 
 type Props = {
 	disabled?: boolean;
-	icon:
+	icon?:
 		| 'BSC'
 		| 'USDT'
 		| 'GLMR'
@@ -62,15 +63,17 @@ type Props = {
 		| 'ERROR'
 		| 'Select Token';
 	onClick?: () => void;
+	value?: string;
 	iconOnly?: boolean;
 };
 
-const Icon = styled.button(() => {
+const Icon = styled.button(({ disabled }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return css`
+		cursor: ${!disabled && 'pointer'};
 		padding: ${spacing[8]};
 		border: 1px solid ${theme.default};
 		border-radius: ${defaultBorderRadius};
@@ -110,14 +113,12 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props)
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
-				// @ts-ignore
-				<Img src={icons[icon]} alt={icon} />
+				<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} onClick={onClick} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
 		<QuestionMark style={{ width: 42, height: 42 }} />
 	) : (
-		// @ts-ignore
-		<Img src={icons[icon]} alt={icon} iconOnly />
+		<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} iconOnly />
 	);
 };
