@@ -21,7 +21,8 @@ const ChildWrapper = styled.div`
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};
 
-	${mediaQuery(491)} {
+	${mediaQuery(515)} {
+		// TODO: all 515 values should be one const
 		flex-direction: column;
 		flex-wrap: nowrap;
 	}
@@ -40,7 +41,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 	const [isShowList, setIsShowList] = useState(true);
-	const { isBreakpointWidth } = useBreakpoint(491);
+	const { isBreakpointWidth } = useBreakpoint(516);
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken }

@@ -66,7 +66,7 @@ const StyledButton = styled.button(
 			display: ${icon ? 'inline-flex' : 'inline-block'};
 			align-items: center;
 			justify-content: space-between;
-			max-width: ${isPrimary ? pxToRem(428) : pxToRem(160)};
+			max-width: ${isPrimary ? mainMaxWidth : pxToRem(160)};
 			width: 100%;
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
 			font-family: ${fontFamily}; // somehow this is not applied from GLOBAL_STYLES
@@ -76,19 +76,21 @@ const StyledButton = styled.button(
 			color: ${isPure || isPrimaryDisabled
 				? theme.font.pure
 				: isSecondaryDefault || isPrimaryTransparent
-					? theme.button.default
-					: '#FFF'};
+				? theme.button.default
+				: '#FFF'};
 			background-color: ${isPure || isSecondaryDefault || isPrimaryTransparent
 				? theme.button.transparent
-				: disabled ? theme.button.disabled
-					: theme.button[setColor]};
-			border: 1px solid ${isPrimaryDisabled
+				: disabled
 				? theme.button.disabled
-				: isSecondaryDefault || isPrimaryTransparent
+				: theme.button[setColor]};
+			border: 1px solid
+				${isPrimaryDisabled
+					? theme.button.disabled
+					: isSecondaryDefault || isPrimaryTransparent
 					? theme.button.default
 					: isPure || isColorDefault
-						? theme.button.transparent
-						: '#FFF'};
+					? theme.button.transparent
+					: '#FFF'};
 			border-radius: ${defaultBorderRadius};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
@@ -101,13 +103,14 @@ const StyledButton = styled.button(
 
 			&:focus-visible {
 				outline-offset: 2px;
-				outline: 1px solid ${isPrimary
-					? theme.button.default
-					: isPure
+				outline: 1px solid
+					${isPrimary
+						? theme.button.default
+						: isPure
 						? theme.font.pure
 						: isLightTheme(theme)
-							? theme.button[setColor]
-							: '#FFF'};
+						? theme.button[setColor]
+						: '#FFF'};
 			}
 
 			&:active {

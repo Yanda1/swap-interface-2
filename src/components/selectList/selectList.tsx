@@ -1,6 +1,11 @@
 import { useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, DestinationNetworkEnum, horizontalPadding, useStore } from '../../helpers';
+import {
+	defaultBorderRadius,
+	DestinationNetworkEnum,
+	horizontalPadding,
+	useStore
+} from '../../helpers';
 import { fontSize, pxToRem, spacing } from '../../styles';
 import { IconButton } from '../iconButton/iconButton';
 import { TextField } from '../textField/textField';
@@ -45,7 +50,7 @@ const Title = styled.div(() => {
 const List = styled.ul`
 	overflow-y: auto;
 	padding: 0;
-	height: ${pxToRem(478)};
+	height: ${pxToRem(478)}; // TODO: refactor to one const
 
 	&::-webkit-scrollbar,
 	&::-webkit-scrollbar-track,
@@ -83,7 +88,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		state: { destinationToken, destinationNetwork, destinationWallet }
 	} = useStore();
 
-	const handleClick = useCallback((e: any) => {
+	const handleClick = useCallback(
+		(e: any) => {
 			if (value === 'WALLET') {
 				dispatch({
 					type: DestinationNetworkEnum.WALLET,
@@ -117,8 +123,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 							value === 'NETWORK'
 								? destinationNetwork === el
 								: value === 'TOKEN'
-									? destinationToken === el
-									: destinationWallet === el;
+								? destinationToken === el
+								: destinationWallet === el;
 
 						return (
 							<Item

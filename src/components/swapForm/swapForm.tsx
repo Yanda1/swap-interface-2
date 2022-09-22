@@ -44,27 +44,37 @@ const Swap = styled.div`
 	}
 `;
 
+const SwapInput = styled.div`
+	display: flex;
+	gap: ${spacing[8]};
+`;
+
 const NamesWrapper = styled.div(
 	({ single = true }: { single?: boolean }) => css`
 		display: flex;
 		justify-content: ${single ? 'flex-start' : 'space-between'};
 
 		&:nth-child(2) {
-			margin-left: ${single ? 'auto' : ''};
+			margin-left: ${single ? 'auto' : '0'};
+		}
+
+		${mediaQuery('xs')} {
+			&:nth-child(2) {
+				margin-left: 0;
+			}
 		}
 	`
 );
 
-const SwapInput = styled.div`
-	display: flex;
-	gap: ${spacing[8]};
-`;
-
 const SwapNames = styled.div(
-	({ pos = 'start' }: { pos?: string }) => css`
+	({ pos = 'start', single = true }: { pos?: string; single?: boolean }) => css`
 		display: flex;
 		flex-direction: column;
 		align-items: flex-${pos};
+
+		${mediaQuery('xs')} {
+			align-items: ${single ? 'flex-start' : `flex-${pos}`};
+		}
 	`
 );
 
@@ -130,8 +140,11 @@ export const SwapForm = () => {
 			setLimit({
 				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
 				value:
-					(+minAmount < +amount ? Number(maxAmount).toFixed(3) : Number(minAmount).toFixed(3)) ||
-					'0',
+					minAmount && maxAmount
+						? +minAmount < +amount
+							? removeZeros(maxAmount, 8)
+							: removeZeros(minAmount, 8)
+						: '0',
 				error: +amount < +minAmount || +amount > Number(maxAmount)
 			});
 		} else {
@@ -191,7 +204,7 @@ export const SwapForm = () => {
 							<Name color={theme.font.pure}>GLMR</Name>
 							<Name color={theme.font.default}>(Moonbeam)</Name>
 						</SwapNames>
-						<SwapNames pos="end">
+						<SwapNames pos="end" single={false}>
 							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
 							<Name color={limit.error ? theme.button.error : theme.font.default}>
 								{limit.value}
