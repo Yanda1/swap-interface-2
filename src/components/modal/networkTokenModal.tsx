@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Button } from '..';
-import { mediaQuery, spacing } from '../../styles';
+import { DestinationNetworks, mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
 import {
@@ -64,7 +64,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const networksList = Object.keys(destinationNetworks);
 	const networkTokensList =
 		isNetworkSelected(destinationNetwork) &&
-		Object.keys(destinationNetworks?.[destinationNetwork as keyof typeof destinationNetworks]?.['tokens']);
+		Object.keys(destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['tokens']);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);

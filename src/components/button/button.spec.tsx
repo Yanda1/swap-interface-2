@@ -38,7 +38,9 @@ const onCheckStyles = (button: string) => {
 		);
 	} else if (button === 'primary disabled') {
 		return expect(screen.getByText(/Primary disabled Button/)).toHaveStyle(
-			`background-color: ${lightTheme.button.disabled}; color: ${darkTheme.pure}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${pxToRem(428)}`
+			`background-color: ${lightTheme.button.disabled}; color: ${
+				darkTheme.font.pure
+			}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${pxToRem(428)}`
 		);
 	} else if (button === 'secondary pure') {
 		return expect(screen.getByText(/Secondary pure Button/)).toHaveStyle(

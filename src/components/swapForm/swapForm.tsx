@@ -126,10 +126,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		convertDestinationAmount();
 
-		console.log(typeof (+amount < Number(minAmount) || +amount > Number(maxAmount)));
-
 		if (isTokenSelected(destinationToken) && minAmount) {
-			console.log('amount, minAmount', amount, minAmount);
 			setLimit({
 				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
 				value:
