@@ -1,9 +1,8 @@
-import { ReactNode, useEffect } from 'react';
-import { useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
-import { defaultBorderRadius, useStore, DestinationNetworkEnum } from '../../helpers';
 import type { ThemeProps } from '../../styles';
+import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import { defaultBorderRadius, DestinationNetworkEnum, useStore } from '../../helpers';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
@@ -11,6 +10,7 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	} = useStore();
 
 	return css`
+		font-family: Helvetica, sans-serif;
 		position: fixed;
 		top: 50%;
 		left: 50%;
@@ -53,12 +53,12 @@ type Props = {
 };
 
 export const Modal = ({
-	showModal,
-	setShowModal,
-	width = 'large',
-	background,
-	children
-}: Props) => {
+												showModal,
+												setShowModal,
+												width = 'large',
+												background,
+												children
+											}: Props) => {
 	const [selectedTokenNetwork, setSelectedTokenNetwork] = useState({ network: '', token: '' });
 	const {
 		state: { theme, destinationNetwork, destinationToken },
