@@ -53,7 +53,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.bold};
-		src: url(${OpenSansBold}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansBold}) format("truetype");
 		font-display: swap;
 	}
 
@@ -61,7 +61,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.italic};
 		font-weight: ${fontWeight.bold};
-		src: url(${OpenSansBoldItalic}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansBoldItalic}) format("truetype");
 		font-display: swap;
 	}
 
@@ -69,7 +69,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.extrabold};
-		src: url(${OpenSansExtraBold}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansExtraBold}) format("truetype");
 		font-display: swap;
 	}
 
@@ -77,7 +77,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.italic};
 		font-weight: ${fontWeight.extrabold};
-		src: url(${OpenSansExtraBoldItalic}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansExtraBoldItalic}) format("truetype");
 		font-display: swap;
 	}
 
@@ -85,7 +85,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.italic};
 		font-weight: ${fontWeight.regular};
-		src: url(${OpenSansItalic}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansItalic}) format("truetype");
 		font-display: swap;
 	}
 
@@ -93,7 +93,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.thin};
-		src: url(${OpenSansLight}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansLight}) format("truetype");
 		font-display: swap;
 	}
 
@@ -101,7 +101,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.italic};
 		font-weight: ${fontWeight.thin};
-		src: url(${OpenSansLightItalic}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansLightItalic}) format("truetype");
 		font-display: swap;
 	}
 
@@ -109,7 +109,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.regular};
-		src: url(${OpenSansRegular}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansRegular}) format("truetype");
 		font-display: swap;
 	}
 
@@ -117,7 +117,7 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.semibold};
-		src: url(${OpenSansSemiBold}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansSemiBold}) format("truetype");
 		font-display: swap;
 	}
 
@@ -125,6 +125,6 @@ export const FontStyles = createGlobalStyle`
 		font-family: "Open Sans";
 		font-style: ${fontStyle.italic};
 		font-weight: ${fontWeight.semibold};
-		src: url(${OpenSansSemiBoldItalic}) format("truetype");
+		src: local("Open Sans"), url(${OpenSansSemiBoldItalic}) format("truetype");
 		font-display: swap;
 	}`;
