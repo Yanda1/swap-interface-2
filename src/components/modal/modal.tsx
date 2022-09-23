@@ -10,7 +10,6 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	} = useStore();
 
 	return css`
-		font-family: Helvetica, sans-serif;
 		position: fixed;
 		top: 50%;
 		left: 50%;
