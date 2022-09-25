@@ -1,7 +1,9 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
+import destinationNetworks from '../data/destinationNetworks.json';
 import { darkTheme } from '../styles';
 import type { ColorType, Theme } from '../styles';
 import { FEE_CURRENCY } from './constants';
+import { isTokenSelected } from '../helpers';
 
 export enum VerificationEnum {
 	ACCOUNT = 'SET_ACCOUNT_CONNECTED',
@@ -13,6 +15,10 @@ export enum VerificationEnum {
 
 export enum ThemeEnum {
 	THEME = 'SET_THEME'
+}
+
+export enum AmountEnum {
+	AMOUNT = 'SET_AMOUNT'
 }
 
 export enum FeeEnum {
@@ -80,6 +86,11 @@ type DestinationNetworkAction = {
 	payload: string;
 };
 
+type AmountAction = {
+	type: AmountEnum;
+	payload: string;
+};
+
 enum FeeNames {
 	NETWORK = 'NETWORK',
 	PROTOCOL = 'PROTOCOL',
@@ -99,7 +110,8 @@ type Action =
 	| KycAction
 	| ThemeAction
 	| DestinationNetworkAction
-	| FeesAction;
+	| FeesAction
+	| AmountAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -117,6 +129,7 @@ type State = {
 	destinationAmount: string;
 	destinationMemo: string;
 	fees: FeeTypes;
+	amount: string;
 };
 
 type ButtonStatus = {
@@ -165,7 +178,8 @@ const initialState: State = {
 		WITHDRAW: { amount: 0, currency: FEE_CURRENCY },
 		NETWORK: { amount: 0, currency: FEE_CURRENCY },
 		TOTAL: { amount: 0, currency: FEE_CURRENCY }
-	}
+	},
+	amount: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -192,6 +206,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, theme: action.payload };
 		case FeeEnum.ALL:
 			return { ...state, fees: action.payload };
+		case AmountEnum.AMOUNT:
+			return { ...state, amount: action.payload };
 		case DestinationNetworkEnum.WALLET:
 			return { ...state, destinationWallet: action.payload };
 		case DestinationNetworkEnum.NETWORK:
@@ -212,7 +228,8 @@ const authReducer = (state: State, action: Action): State => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [state, dispatch] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
-	const { account, isNetworkConnected, kycStatus } = state;
+	const { account, isNetworkConnected, kycStatus, destinationToken, fees, destinationNetwork } =
+		state;
 
 	useEffect(() => {
 		if (!account) {
@@ -237,6 +254,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			dispatch({ type: VerificationEnum.USER, payload: false });
 		}
 	}, [account, isNetworkConnected, kycStatus]);
+
+	useEffect(() => {
+		if (isTokenSelected(destinationToken)) {
+			const withdrawFee =
+				// @ts-ignore
+				destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawFee'];
+			dispatch({
+				type: FeeEnum.ALL,
+				payload: {
+					...fees,
+					WITHDRAW: { amount: Number(withdrawFee), currency: destinationToken }
+				}
+			});
+		}
+	}, [destinationToken]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

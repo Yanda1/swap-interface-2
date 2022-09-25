@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, spacing, mainMaxWidth } from '../../styles';
+import { mediaQuery, spacing, mainMaxWidth, DestinationNetworks } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
+	AmountEnum,
 	BINANCE_FEE,
 	DestinationNetworkEnum,
 	isLightTheme,
@@ -107,13 +108,13 @@ export const SwapForm = () => {
 			destinationAmount,
 			destinationMemo,
 			isUserVerified,
-			fees
+			fees,
+			amount
 		},
 		dispatch
 	} = useStore();
 	const swapButtonRef = useRef();
 	const { allFilteredPrices } = useBinanceApi();
-	const [amount, setAmount] = useState('');
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
@@ -127,6 +128,7 @@ export const SwapForm = () => {
 	const convertDestinationAmount = () => {
 		if (isTokenSelected(destinationToken)) {
 			const getSymbol: any = allFilteredPrices.find(
+				// TODO: use getPrice() to be more precise if order of base and quote asset is vice versa
 				(pair: { symbol: string; price: string }) =>
 					pair.symbol === `${START_TOKEN}${destinationToken}`
 			);
@@ -165,8 +167,7 @@ export const SwapForm = () => {
 	}, [amount, currentPrice]);
 
 	useEffect(() => {
-		// @ts-ignore
-		const hasTag = destinationNetworks?.[destinationNetwork]?.['hasTag'];
+		const hasTag = destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['hasTag'];
 		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
 	}, [destinationNetwork]);
 
@@ -201,7 +202,9 @@ export const SwapForm = () => {
 							placeholder="Amount"
 							error={limit.error}
 							value={amount}
-							onChange={(e) => setAmount(() => realParseFloat(e.target.value))}
+							onChange={(e) =>
+								dispatch({ type: AmountEnum.AMOUNT, payload: realParseFloat(e.target.value) })
+							}
 						/>
 					</SwapInput>
 					<NamesWrapper single={false}>
@@ -263,14 +266,7 @@ export const SwapForm = () => {
 					/>
 				</div>
 			)}
-			{isUserVerified && (
-				<Fees
-					amount={amount}
-					token={destinationToken}
-					network={destinationNetwork}
-					address={destinationAddress}
-				/>
-			)}
+			{isUserVerified && <Fees />}
 			{isUserVerified && (
 				<SwapButton
 					ref={swapButtonRef}

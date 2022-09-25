@@ -23,7 +23,6 @@ import type { Price } from '../../helpers';
 import { defaultBorderRadius, spacing } from '../../styles';
 import type { Theme } from '../../styles';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
-import destinationNetworks from '../../data/destinationNetworks.json';
 import { Contract } from '@ethersproject/contracts';
 
 const Summary = styled.summary(
@@ -58,23 +57,17 @@ const Details = styled.div(
 	`
 );
 
-type Props = {
-	amount: string;
-	token: string;
-	address: string;
-	network: string;
-};
-
-export const Fees = ({ amount, token, address, network }: Props) => {
+export const Fees = () => {
 	const {
 		state: {
 			theme,
 			destinationAddress,
-			destinationMemo,
-			destinationAmount,
+			destinationNetwork,
 			destinationToken,
 			isNetworkConnected,
-			fees
+			destinationAmount,
+			fees,
+			amount
 		},
 		dispatch
 	} = useStore();
@@ -92,13 +85,19 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 	}
 
 	const estimateNetworkFee = async (): Promise<void> => {
-		if (isNetworkSelected(network) && isTokenSelected(token) && address && amount && contract) {
+		if (
+			isNetworkSelected(destinationNetwork) &&
+			isTokenSelected(destinationToken) &&
+			destinationAddress &&
+			amount &&
+			contract
+		) {
 			const namedValues = {
 				scoin: 'GLMR',
 				samt: utils.parseEther(amount).toString(),
-				fcoin: token,
-				net: network,
-				daddr: address
+				fcoin: destinationToken,
+				net: destinationNetwork,
+				daddr: destinationAddress
 			};
 			const shortNamedValues = JSON.stringify(namedValues);
 			const productId = utils.id(makeId(32));
@@ -128,6 +127,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 					}
 				});
 			} catch (err: any) {
+				console.log('!!! ERRROR !!!', err);
 				throw new Error(err); // TODO: handle all throw new Error with Toast?
 			}
 		}
@@ -135,7 +135,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 
 	useEffect(() => {
 		void estimateNetworkFee();
-	}, [amount, address, token]);
+	}, [destinationAddress, destinationToken, destinationAmount]);
 
 	useEffect(() => {
 		const localGraph = new Graph();
@@ -148,55 +148,41 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 		}
 	}, [allFilteredPairs]);
 
-	const estimateCexFee = () => {
-		if (cexGraph) {
-			const graphPath: false | { distance: number; path: string[] } = cexGraph.bfs(
-				START_TOKEN,
-				token
-			);
+	useEffect(() => {
+		const estimateCexFee = () => {
+			if (cexGraph) {
+				const graphPath: false | { distance: number; path: string[] } = cexGraph.bfs(
+					START_TOKEN,
+					destinationToken
+				);
 
-			if (graphPath && allFilteredPrices) {
-				let result = Number(amount);
-				const allCexFees: Fee[] = [];
-				for (let i = 0; i < graphPath.distance; i++) {
-					let edgePrice = 0;
-					let ticker: undefined | Price = allFilteredPrices.find(
-						(x: Price) => x.symbol === graphPath.path[i] + graphPath.path[i + 1]
-					);
-					if (ticker) {
-						edgePrice = Number(ticker?.price);
-					} else {
-						ticker = allFilteredPrices.find(
-							(x: any) => x.symbol === graphPath.path[i + 1] + graphPath.path[i]
+				if (graphPath && allFilteredPrices) {
+					let result = Number(amount);
+					const allCexFees: Fee[] = [];
+					for (let i = 0; i < graphPath.distance; i++) {
+						let edgePrice = 0;
+						let ticker: undefined | Price = allFilteredPrices.find(
+							(x: Price) => x.symbol === graphPath.path[i] + graphPath.path[i + 1]
 						);
-						edgePrice = 1 / Number(ticker?.price);
+						if (ticker) {
+							edgePrice = Number(ticker?.price);
+						} else {
+							ticker = allFilteredPrices.find(
+								(x: any) => x.symbol === graphPath.path[i + 1] + graphPath.path[i]
+							);
+							edgePrice = 1 / Number(ticker?.price);
+						}
+						result *= edgePrice;
+						allCexFees.push({ amount: result * BINANCE_FEE, currency: graphPath.path[i + 1] });
 					}
-					result *= edgePrice;
-					allCexFees.push({ amount: result * BINANCE_FEE, currency: graphPath.path[i + 1] });
+					console.log('allCexFees', allCexFees);
+					dispatch({ type: FeeEnum.ALL, payload: { ...fees, CEX: allCexFees } });
 				}
-				dispatch({ type: FeeEnum.ALL, payload: { ...fees, CEX: allCexFees } });
 			}
-		}
-	};
+		};
 
-	useEffect(() => {
 		estimateCexFee();
-	}, [token, cexGraph, amount]);
-
-	useEffect(() => {
-		if (isTokenSelected(token) && isNetworkSelected(network)) {
-			// @ts-ignore
-			const tokenDetails = destinationNetworks[network]['tokens'][token];
-
-			dispatch({
-				type: FeeEnum.ALL,
-				payload: {
-					...fees,
-					WITHDRAW: { amount: Number(tokenDetails?.['withdrawFee']), currency: 'schwerin' }
-				}
-			});
-		}
-	}, [token]);
+	}, [destinationToken, cexGraph, amount]);
 
 	useEffect(() => {
 		dispatch({
@@ -233,7 +219,7 @@ export const Fees = ({ amount, token, address, network }: Props) => {
 			type: FeeEnum.ALL,
 			payload: { ...fees, TOTAL: { ...fees.TOTAL, amount } }
 		});
-	}, [destinationAddress, destinationMemo, destinationAmount, destinationToken]);
+	}, [fees.CEX, fees.NETWORK, fees.PROTOCOL, fees.WITHDRAW]);
 
 	return (
 		<details>

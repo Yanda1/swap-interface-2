@@ -216,8 +216,6 @@ export const useBinanceApi = () => {
 				const lotSizeMaxAmount = maxQty;
 				const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
 
-				console.log({ minQty, price: getPrice(), notionalMinAmount, allFilteredPairs });
-
 				minAmount = (
 					Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
 				).toString();
