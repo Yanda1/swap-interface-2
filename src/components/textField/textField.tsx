@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, pxToRem, spacing } from '../../styles';
+import { defaultBorderRadius, horizontalPadding, fontSize, pxToRem, spacing } from '../../styles';
 import type { ThemeProps } from '../../styles';
-import { defaultBorderRadius, horizontalPadding, useStore } from '../../helpers';
+import { useStore } from '../../helpers';
 
 type AlignProps = 'left' | 'right' | 'center';
 type TypeProps = 'text' | 'number';
