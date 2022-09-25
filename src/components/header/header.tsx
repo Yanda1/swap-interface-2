@@ -10,12 +10,17 @@ import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
 import type { ApiAuthType, Theme, ColorType } from '../../styles';
-import { mediaQuery, pxToRem, spacing, theme as defaultTheme } from '../../styles';
+import {
+	mediaQuery,
+	pxToRem,
+	spacing,
+	defaultBorderRadius,
+	theme as defaultTheme
+} from '../../styles';
 import {
 	ButtonEnum,
-	defaultBorderRadius,
 	getAuthTokensFromNonce,
-	initialStorage,
+	INITIAL_STORAGE,
 	isLightTheme,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
@@ -97,7 +102,7 @@ export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
 	const { state, dispatch } = useStore();
 	const { theme, buttonStatus, isUserVerified, accessToken, refreshToken, kycStatus } = state;
-	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, initialStorage);
+	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	// @ts-ignore
 	const { addToast } = useToasts();
 	const api = useAxios();

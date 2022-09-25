@@ -1,9 +1,7 @@
-import { pxToRem } from '../styles';
-
 export const LOCAL_STORAGE_THEME = 'darkMode';
 export const LOCAL_STORAGE_AUTH = 'auth';
 
-export const initialStorage = {
+export const INITIAL_STORAGE = {
 	access: '',
 	refresh: '',
 	account: '',
@@ -23,8 +21,9 @@ export const MOONBEAM_URL = 'https://rpc.api.moonbeam.network';
 
 export const PROTOCOL_FEE = 0.002;
 export const BINANCE_FEE = 0.002;
-export const startToken = 'GLMR';
-export const feeCurrency = 'USDT';
+export const PROTOCOL_FEE_FACTOR = 1 / (1 - PROTOCOL_FEE);
+export const START_TOKEN = 'GLMR';
+export const FEE_CURRENCY = 'USDT';
 
 export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
 export const serviceAddress = '0xeB56c1d19855cc0346f437028e6ad09C80128e02';
@@ -45,7 +44,3 @@ export const makeId = (length: number) => {
 
 	return result;
 };
-
-export const defaultBorderRadius = pxToRem(6);
-export const mainMaxWidth = pxToRem(450);
-export const horizontalPadding = 10; // TODO: move to correct file

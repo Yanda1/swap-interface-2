@@ -1,12 +1,7 @@
 import { useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import {
-	defaultBorderRadius,
-	DestinationNetworkEnum,
-	horizontalPadding,
-	useStore
-} from '../../helpers';
-import { fontSize, pxToRem, spacing } from '../../styles';
+import { DestinationNetworkEnum, useStore } from '../../helpers';
+import { fontSize, pxToRem, spacing, defaultBorderRadius, horizontalPadding } from '../../styles';
 import { IconButton } from '../iconButton/iconButton';
 import { TextField } from '../textField/textField';
 

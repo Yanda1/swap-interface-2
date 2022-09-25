@@ -1,9 +1,9 @@
 import 'jest-styled-components';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
-import { AuthProvider, horizontalPadding } from '../../helpers';
+import { AuthProvider } from '../../helpers';
 import { SelectList } from './selectList';
-import { darkTheme, fontSize, pxToRem, spacing } from '../../styles';
+import { darkTheme, fontSize, pxToRem, spacing, horizontalPadding } from '../../styles';
 
 describe('SelectList', () => {
 	const networksList = ['ETH', 'BTC', 'USDT'];

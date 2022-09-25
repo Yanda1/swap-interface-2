@@ -4,7 +4,8 @@ import type { ColorType } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
-import { defaultBorderRadius, isLightTheme, mainMaxWidth, useStore } from '../../helpers';
+import { defaultBorderRadius, mainMaxWidth } from '../../styles';
+import { isLightTheme, useStore } from '../../helpers';
 
 const icons = {
 	moonbeam,

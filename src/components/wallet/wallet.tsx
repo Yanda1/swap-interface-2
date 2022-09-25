@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
 import { useEtherBalance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
-import { defaultBorderRadius, isLightTheme, useBreakpoint, useStore } from '../../helpers';
+import { isLightTheme, useBreakpoint, useStore } from '../../helpers';
 import type { Theme } from '../../styles';
-import { pxToRem, spacing } from '../../styles';
+import { pxToRem, spacing, defaultBorderRadius } from '../../styles';
 import { WalletModal } from '../modal/walletModal';
 
 const StyledJazzIcon = styled.div`

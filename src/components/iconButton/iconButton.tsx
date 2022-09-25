@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, useStore, isTokenSelected } from '../../helpers';
+import { useStore, isTokenSelected } from '../../helpers';
 import USDT from '../../assets/usdt.png';
 import GLMR from '../../assets/glmr.png';
 import BTC from '../../assets/btc.png';
@@ -18,7 +18,7 @@ import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
-import { DestinationNetworks, pxToRem, spacing } from '../../styles';
+import { DestinationNetworks, pxToRem, spacing, defaultBorderRadius } from '../../styles';
 
 const icons = {
 	BSC,
