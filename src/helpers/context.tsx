@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
 import { darkTheme } from '../styles';
 import type { ColorType, Theme } from '../styles';
+import { FEE_CURRENCY } from './constants';
 
 export enum VerificationEnum {
 	ACCOUNT = 'SET_ACCOUNT_CONNECTED',
@@ -12,6 +13,10 @@ export enum VerificationEnum {
 
 export enum ThemeEnum {
 	THEME = 'SET_THEME'
+}
+
+export enum FeeEnum {
+	ALL = 'SET_FEES'
 }
 
 export enum DestinationNetworkEnum {
@@ -75,12 +80,26 @@ type DestinationNetworkAction = {
 	payload: string;
 };
 
+enum FeeNames {
+	NETWORK = 'NETWORK',
+	PROTOCOL = 'PROTOCOL',
+	WITHDRAW = 'WITHDRAW',
+	TOAOL = 'TOTAL'
+}
+export type Fee = { amount: number; currency: string };
+type FeeTypes = { [key in FeeNames]: Fee } & { CEX: Fee[] };
+type FeesAction = {
+	type: FeeEnum;
+	payload: FeeTypes;
+};
+
 type Action =
 	| VerificationAction
 	| ButtonAction
 	| KycAction
 	| ThemeAction
-	| DestinationNetworkAction;
+	| DestinationNetworkAction
+	| FeesAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -97,6 +116,7 @@ type State = {
 	destinationAddress: string;
 	destinationAmount: string;
 	destinationMemo: string;
+	fees: FeeTypes;
 };
 
 type ButtonStatus = {
@@ -138,7 +158,14 @@ const initialState: State = {
 	destinationToken: 'Select Token',
 	destinationAddress: '',
 	destinationAmount: '',
-	destinationMemo: ''
+	destinationMemo: '',
+	fees: {
+		CEX: [{ amount: 0, currency: FEE_CURRENCY }],
+		PROTOCOL: { amount: 0, currency: FEE_CURRENCY },
+		WITHDRAW: { amount: 0, currency: FEE_CURRENCY },
+		NETWORK: { amount: 0, currency: FEE_CURRENCY },
+		TOTAL: { amount: 0, currency: FEE_CURRENCY }
+	}
 };
 
 type Dispatch = (action: Action) => void;
@@ -163,6 +190,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, buttonStatus: action.payload };
 		case ThemeEnum.THEME:
 			return { ...state, theme: action.payload };
+		case FeeEnum.ALL:
+			return { ...state, fees: action.payload };
 		case DestinationNetworkEnum.WALLET:
 			return { ...state, destinationWallet: action.payload };
 		case DestinationNetworkEnum.NETWORK:

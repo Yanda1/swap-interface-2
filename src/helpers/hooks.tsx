@@ -4,7 +4,8 @@ import {
 	BINANCE_EXCHANGE_INFO,
 	BINANCE_PRICE_TICKER,
 	isTokenSelected,
-	isNetworkSelected
+	isNetworkSelected,
+	PROTOCOL_FEE_FACTOR
 } from '../helpers';
 import { DestinationNetworks } from '../styles';
 import destinationNetworks from '../data/destinationNetworks.json';
@@ -15,13 +16,13 @@ import jwt_decode from 'jwt-decode';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import {
-	initialStorage,
+	INITIAL_STORAGE,
 	LOCAL_STORAGE_AUTH,
 	BASE_URL,
 	routes,
 	useStore,
 	VerificationEnum,
-	startToken
+	START_TOKEN
 } from '../helpers';
 
 type JwtType = {
@@ -44,7 +45,7 @@ type Ticker = {
 export type Price = { symbol: string; price: string };
 
 export const useAxios = () => {
-	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, initialStorage);
+	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	const {
 		state: { accessToken, refreshToken },
 		dispatch
@@ -69,24 +70,31 @@ export const useAxios = () => {
 
 			if (!isRefreshTokenExpired) return req;
 
-			const newTokens = await axios.post(
-				`${BASE_URL}${routes.refresh}`,
-				{},
-				{
-					headers: {
-						Authorization: `Bearer ${refreshToken}`,
-						'Content-Type': 'application/json',
-						'Access-Control-Allow-Origin': '*'
+			try {
+				const newTokens = await axios.post(
+					`${BASE_URL}${routes.refresh}`,
+					{},
+					{
+						headers: {
+							Authorization: `Bearer ${refreshToken}`,
+							'Content-Type': 'application/json',
+							'Access-Control-Allow-Origin': '*'
+						}
 					}
-				}
-			);
-			dispatch({ type: VerificationEnum.ACCESS, payload: newTokens.data.access });
-			dispatch({ type: VerificationEnum.REFRESH, payload: newTokens.data.refresh });
-			setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
+				);
 
-			return req;
+				dispatch({ type: VerificationEnum.ACCESS, payload: newTokens.data.access });
+				dispatch({ type: VerificationEnum.REFRESH, payload: newTokens.data.refresh });
+				setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
+
+				return req;
+			} catch (error: any) {
+				error.message = message.ignore;
+
+				return Promise.reject(error);
+			}
 		},
 		(error) => {
 			return Promise.reject(error);
@@ -96,6 +104,7 @@ export const useAxios = () => {
 	axiosInstance.interceptors.response.use(
 		(res) => res,
 		(error) => {
+			// TODO: check for auth urls how to handle to not throw 401 fo refresh etc.
 			if (Object.keys(error).length === 1 && 'message' in error) error.message = message.ignore;
 
 			return Promise.reject(error);
@@ -112,7 +121,7 @@ export const useBinanceApi = () => {
 	const [allPairs, setAllPairs] = useState<Ticker[]>([]);
 	const [allFilteredPairs, setAllFilteredPairs] = useState<Ticker[]>([]);
 	const {
-		state: { destinationToken, destinationNetwork }
+		state: { destinationToken, destinationNetwork, fees }
 	} = useStore();
 	const { account } = useEthers();
 	const walletBalance = useEtherBalance(account);
@@ -169,12 +178,12 @@ export const useBinanceApi = () => {
 		// TODO: convert to helper and use it in fee.tsx as well
 		let edgePrice = 0;
 		let ticker: undefined | Price = allFilteredPrices.find(
-			(x: Price) => x.symbol === startToken + destinationToken
+			(x: Price) => x.symbol === START_TOKEN + destinationToken
 		);
 		if (ticker) {
 			edgePrice = Number(ticker?.price);
 		} else {
-			ticker = allFilteredPrices.find((x: any) => x.symbol === destinationToken + startToken);
+			ticker = allFilteredPrices.find((x: any) => x.symbol === destinationToken + START_TOKEN);
 			edgePrice = 1 / Number(ticker?.price);
 		}
 
@@ -184,32 +193,44 @@ export const useBinanceApi = () => {
 	const marginalCosts = useMemo(() => {
 		let minAmount = '';
 		let maxAmount = '';
-		if (isTokenSelected(destinationToken) && isNetworkSelected(destinationNetwork) && account) {
+		if (
+			isTokenSelected(destinationToken) &&
+			isNetworkSelected(destinationNetwork) &&
+			account &&
+			allFilteredPairs
+		) {
 			const tokenMinAmount =
 				// @ts-ignore
 				destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'];
 			const [pair] = allFilteredPairs.filter(
 				(pair: Ticker) =>
-					pair.symbol === startToken + destinationToken ||
-					pair.symbol === destinationToken + startToken
+					pair.symbol === START_TOKEN + destinationToken ||
+					pair.symbol === destinationToken + START_TOKEN
 			);
-			const { filters } = pair; // TODO: app broke once
-			const [lot, notional] = filters;
-			const notionalMinAmount = notional.minNotional;
-			const { minQty, maxQty } = lot;
-			const lotSizeMinAmount = minQty * getPrice();
-			const lotSizeMaxAmount = maxQty * getPrice();
-			const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
+			if (pair) {
+				const { filters } = pair; // TODO: app broke
+				const [lot, notional] = filters;
+				const notionalMinAmount = notional.minNotional * getPrice();
+				const { minQty, maxQty } = lot;
+				const lotSizeMinAmount = minQty; // TODO: once we offer more than GLMR this has to be refined => minQty * baseAsset (which is already GLMR)
+				const lotSizeMaxAmount = maxQty;
+				const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
 
-			minAmount = Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount).toString();
-			maxAmount = Math.min(lotSizeMaxAmount, Number(walletMaxAmount)).toString();
-			console.log({ minAmount, maxAmount });
+				console.log({ minQty, price: getPrice(), notionalMinAmount, allFilteredPairs });
 
-			return { minAmount, maxAmount };
+				minAmount = (
+					Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
+				).toString();
+				maxAmount = (
+					Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - fees.NETWORK.amount
+				).toString();
+
+				return { minAmount, maxAmount };
+			}
 		}
 
 		return null;
-	}, [destinationToken, account]);
+	}, [destinationToken, account, allFilteredPairs]);
 
 	useEffect(() => {
 		void getExchangeInfo();

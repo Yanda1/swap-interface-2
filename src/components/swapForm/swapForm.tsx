@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, spacing } from '../../styles';
+import { mediaQuery, spacing, mainMaxWidth } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
+	BINANCE_FEE,
 	DestinationNetworkEnum,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
-	mainMaxWidth,
 	realParseFloat,
 	removeZeros,
-	startToken,
+	START_TOKEN,
 	useBinanceApi,
 	useStore
 } from '../../helpers';
@@ -106,7 +106,8 @@ export const SwapForm = () => {
 			destinationAddress,
 			destinationAmount,
 			destinationMemo,
-			isUserVerified
+			isUserVerified,
+			fees
 		},
 		dispatch
 	} = useStore();
@@ -127,7 +128,7 @@ export const SwapForm = () => {
 		if (isTokenSelected(destinationToken)) {
 			const getSymbol: any = allFilteredPrices.find(
 				(pair: { symbol: string; price: string }) =>
-					pair.symbol === `${startToken}${destinationToken}`
+					pair.symbol === `${START_TOKEN}${destinationToken}`
 			);
 			setCurrentPrice(getSymbol?.price);
 		}
@@ -155,7 +156,11 @@ export const SwapForm = () => {
 	useEffect(() => {
 		dispatch({
 			type: DestinationNetworkEnum.AMOUNT,
-			payload: realParseFloat((+amount * +currentPrice).toFixed(8).toString())
+			payload: realParseFloat(
+				((+amount / (1 + BINANCE_FEE)) * +currentPrice - fees.WITHDRAW.amount - fees.CEX[0].amount) // TODO: add logic if more than one edge in Graph
+					.toFixed(8)
+					.toString()
+			)
 		});
 	}, [amount, currentPrice]);
 
