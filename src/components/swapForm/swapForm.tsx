@@ -159,7 +159,11 @@ export const SwapForm = () => {
 		dispatch({
 			type: DestinationNetworkEnum.AMOUNT,
 			payload: realParseFloat(
-				((+amount / (1 + BINANCE_FEE)) * +currentPrice - fees.WITHDRAW.amount - fees.CEX[0].amount) // TODO: add logic if more than one edge in Graph
+				(
+					(+amount / (1 + BINANCE_FEE)) * +currentPrice -
+					fees.WITHDRAW?.amount -
+					fees.CEX[0]?.amount
+				) // TODO: add logic if more than one edge in Graph
 					.toFixed(8)
 					.toString()
 			)

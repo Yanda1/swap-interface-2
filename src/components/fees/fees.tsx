@@ -73,6 +73,7 @@ export const Fees = () => {
 	} = useStore();
 	const { allFilteredPairs, allFilteredPrices } = useBinanceApi();
 	const [cexGraph, setCexGraph] = useState<Graph>();
+	const [graph, setGraph] = useState<false | { distance: number; path: string[] }>();
 	const { chainId, library: web3Provider } = useEthers();
 	// @ts-ignore
 	const gasPrice: any = useGasPrice();
@@ -149,40 +150,48 @@ export const Fees = () => {
 	}, [allFilteredPairs]);
 
 	useEffect(() => {
-		const estimateCexFee = () => {
-			if (cexGraph) {
-				const graphPath: false | { distance: number; path: string[] } = cexGraph.bfs(
-					START_TOKEN,
-					destinationToken
+		if (cexGraph) {
+			const graphPath: false | { distance: number; path: string[] } = cexGraph.bfs(
+				START_TOKEN,
+				destinationToken
+			);
+			setGraph(graphPath);
+		}
+	}, [destinationToken]);
+
+	const estimateCexFee = (): void => {
+		if (graph && allFilteredPrices) {
+			let result = Number(amount);
+			const allCexFees: Fee[] = [];
+			for (let i = 0; i < graph.distance; i++) {
+				let edgePrice = 0;
+				let ticker: undefined | Price = allFilteredPrices.find(
+					(x: Price) => x.symbol === graph.path[i] + graph.path[i + 1]
 				);
-
-				if (graphPath && allFilteredPrices) {
-					let result = Number(amount);
-					const allCexFees: Fee[] = [];
-					for (let i = 0; i < graphPath.distance; i++) {
-						let edgePrice = 0;
-						let ticker: undefined | Price = allFilteredPrices.find(
-							(x: Price) => x.symbol === graphPath.path[i] + graphPath.path[i + 1]
-						);
-						if (ticker) {
-							edgePrice = Number(ticker?.price);
-						} else {
-							ticker = allFilteredPrices.find(
-								(x: any) => x.symbol === graphPath.path[i + 1] + graphPath.path[i]
-							);
-							edgePrice = 1 / Number(ticker?.price);
-						}
-						result *= edgePrice;
-						allCexFees.push({ amount: result * BINANCE_FEE, currency: graphPath.path[i + 1] });
-					}
-					console.log('allCexFees', allCexFees);
-					dispatch({ type: FeeEnum.ALL, payload: { ...fees, CEX: allCexFees } });
+				if (ticker) {
+					edgePrice = Number(ticker?.price);
+				} else {
+					ticker = allFilteredPrices.find(
+						(x: any) => x.symbol === graph.path[i + 1] + graph.path[i]
+					);
+					edgePrice = 1 / Number(ticker?.price);
 				}
+				result *= edgePrice;
+				allCexFees.push({
+					amount: result * BINANCE_FEE,
+					currency: graph.path[i + 1]
+				});
 			}
-		};
+			dispatch({
+				type: FeeEnum.ALL,
+				payload: { ...fees, CEX: allCexFees }
+			});
+		}
+	};
 
+	useEffect(() => {
 		estimateCexFee();
-	}, [destinationToken, cexGraph, amount]);
+	}, [amount, graph]);
 
 	useEffect(() => {
 		dispatch({
@@ -192,7 +201,7 @@ export const Fees = () => {
 	}, [amount]);
 
 	useEffect(() => {
-		const amount = [...fees.CEX, fees.NETWORK, fees.WITHDRAW, fees.PROTOCOL].reduce(
+		const totalAmount = [...fees.CEX, fees.NETWORK, fees.WITHDRAW, fees.PROTOCOL].reduce(
 			(total, fee) => {
 				const ticker = allFilteredPrices.find(
 					(pair: Price) => pair.symbol === `${fee.currency}${FEE_CURRENCY}`
@@ -217,7 +226,10 @@ export const Fees = () => {
 		);
 		dispatch({
 			type: FeeEnum.ALL,
-			payload: { ...fees, TOTAL: { ...fees.TOTAL, amount } }
+			payload: {
+				...fees,
+				TOTAL: { ...fees.TOTAL, amount: totalAmount, currency: fees.TOTAL.currency }
+			}
 		});
 	}, [fees.CEX, fees.NETWORK, fees.PROTOCOL, fees.WITHDRAW]);
 

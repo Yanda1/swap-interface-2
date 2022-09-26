@@ -20,13 +20,13 @@ const config: Config = {
 
 root.render(
 	<React.StrictMode>
-		<DAppProvider config={config}>
-			<AuthProvider>
+		<AuthProvider>
+			<DAppProvider config={config}>
 				<FontStyles />
 				<ToastProvider>
 					<App />
 				</ToastProvider>
-			</AuthProvider>
-		</DAppProvider>
+			</DAppProvider>
+		</AuthProvider>
 	</React.StrictMode>
 );
