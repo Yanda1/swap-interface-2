@@ -52,12 +52,12 @@ type Props = {
 };
 
 export const Modal = ({
-												showModal,
-												setShowModal,
-												width = 'large',
-												background,
-												children
-											}: Props) => {
+	showModal,
+	setShowModal,
+	width = 'large',
+	background,
+	children
+}: Props) => {
 	const [selectedTokenNetwork, setSelectedTokenNetwork] = useState({ network: '', token: '' });
 	const {
 		state: { theme, destinationNetwork, destinationToken },
@@ -82,8 +82,7 @@ export const Modal = ({
 			showModal={showModal}
 			background={background}
 			data-testid="modal-container"
-			setShowModal={setShowModal}
-		>
+			setShowModal={setShowModal}>
 			<CloseIcon onClick={handleClose} theme={theme}>
 				&#x2716;
 			</CloseIcon>
