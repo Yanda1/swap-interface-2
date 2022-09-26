@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { fontFamily, pxToRem } from '../../styles';
+import { pxToRem } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
@@ -70,26 +70,27 @@ const StyledButton = styled.button(
 			max-width: ${isPrimary ? pxToRem(428) : pxToRem(160)};
 			width: 100%;
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
-			font-family: ${fontFamily}; // somehow this is not applied from GLOBAL_STYLES
-			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)}; // same here for font-size = 14
+			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)};
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
 			color: ${isPure || isPrimaryDisabled
 				? theme.pure
 				: isSecondaryDefault || isPrimaryTransparent
-					? theme.button.default
-					: '#FFF'};
+				? theme.button.default
+				: '#FFF'};
 			background-color: ${isPure || isSecondaryDefault || isPrimaryTransparent
 				? theme.button.transparent
-				: disabled ? theme.button.disabled
-					: theme.button[setColor]};
-			border: 1px solid ${isPrimaryDisabled
+				: disabled
 				? theme.button.disabled
-				: isSecondaryDefault || isPrimaryTransparent
+				: theme.button[setColor]};
+			border: 1px solid
+				${isPrimaryDisabled
+					? theme.button.disabled
+					: isSecondaryDefault || isPrimaryTransparent
 					? theme.button.default
 					: isPure || isColorDefault
-						? theme.button.transparent
-						: '#FFF'};
+					? theme.button.transparent
+					: '#FFF'};
 			border-radius: ${defaultBorderRadius};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
@@ -102,13 +103,14 @@ const StyledButton = styled.button(
 
 			&:focus-visible {
 				outline-offset: 2px;
-				outline: 1px solid ${isPrimary
-					? theme.button.default
-					: isPure
+				outline: 1px solid
+					${isPrimary
+						? theme.button.default
+						: isPure
 						? theme.pure
 						: isLightTheme(theme)
-							? theme.button[setColor]
-							: '#FFF'};
+						? theme.button[setColor]
+						: '#FFF'};
 			}
 
 			&:active {
@@ -119,13 +121,13 @@ const StyledButton = styled.button(
 );
 
 export const Button = ({
-												 children,
-												 variant = 'primary',
-												 color = 'default',
-												 disabled = false,
-												 icon,
-												 onClick
-											 }: Props) => {
+	children,
+	variant = 'primary',
+	color = 'default',
+	disabled = false,
+	icon,
+	onClick
+}: Props) => {
 	return (
 		// @ts-ignore
 		<StyledButton icon={icon} color={color} variant={variant} disabled={disabled} onClick={onClick}>

@@ -1,9 +1,8 @@
-import { ReactNode, useEffect } from 'react';
-import { useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
-import { defaultBorderRadius, useStore, DestinationNetworkEnum } from '../../helpers';
 import type { ThemeProps } from '../../styles';
+import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import { defaultBorderRadius, DestinationNetworkEnum, useStore } from '../../helpers';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
@@ -83,8 +82,7 @@ export const Modal = ({
 			showModal={showModal}
 			background={background}
 			data-testid="modal-container"
-			setShowModal={setShowModal}
-		>
+			setShowModal={setShowModal}>
 			<CloseIcon onClick={handleClose} theme={theme}>
 				&#x2716;
 			</CloseIcon>
