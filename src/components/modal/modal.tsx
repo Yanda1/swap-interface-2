@@ -1,9 +1,8 @@
-import { ReactNode, useEffect } from 'react';
-import { useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, pxToRem, spacing, defaultBorderRadius } from '../../styles';
-import { useStore, DestinationNetworkEnum } from '../../helpers';
 import type { ThemeProps } from '../../styles';
+import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import { defaultBorderRadius, useStore, DestinationNetworkEnum } from '../../helpers';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {

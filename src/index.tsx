@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import type { Config } from '@usedapp/core';
 import { DAppProvider, Moonbeam } from '@usedapp/core';
 import App from './App';
-import { FontStyles } from './styles';
 import { AuthProvider } from './helpers';
 import { ToastProvider } from './components';
 
@@ -20,13 +19,12 @@ const config: Config = {
 
 root.render(
 	<React.StrictMode>
-		<AuthProvider>
-			<DAppProvider config={config}>
-				<FontStyles />
+		<DAppProvider config={config}>
+			<AuthProvider>
 				<ToastProvider>
 					<App />
 				</ToastProvider>
-			</DAppProvider>
-		</AuthProvider>
+			</AuthProvider>
+		</DAppProvider>
 	</React.StrictMode>
 );

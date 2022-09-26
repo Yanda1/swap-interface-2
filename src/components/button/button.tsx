@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react';
-import { fontFamily, pxToRem } from '../../styles';
 import type { ColorType } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
-import { defaultBorderRadius, mainMaxWidth } from '../../styles';
+import { defaultBorderRadius, pxToRem, mainMaxWidth } from '../../styles';
 import { isLightTheme, useStore } from '../../helpers';
 
 const icons = {
@@ -70,8 +69,7 @@ const StyledButton = styled.button(
 			max-width: ${isPrimary ? mainMaxWidth : pxToRem(160)};
 			width: 100%;
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
-			font-family: ${fontFamily}; // somehow this is not applied from GLOBAL_STYLES
-			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)}; // same here for font-size = 14
+			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)};
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
 			color: ${isPure || isPrimaryDisabled
