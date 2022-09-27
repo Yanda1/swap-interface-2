@@ -99,7 +99,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 			}
 		},
-		[destinationToken, destinationNetwork, destinationWallet]
+		[destinationToken, destinationNetwork, destinationWallet] // TODO: do we need destinationWallet?
 	);
 
 	return (

@@ -1,7 +1,15 @@
 import './styles/fonts/font.css';
 import { createGlobalStyle } from 'styled-components';
 import type { Theme } from './styles';
-import { fontFamily, fontSize, fontStyle, fontWeight, mediaQuery, pxToRem, viewport } from './styles';
+import {
+	fontFamily,
+	fontSize,
+	fontStyle,
+	fontWeight,
+	mediaQuery,
+	pxToRem,
+	viewport
+} from './styles';
 import { Header, SwapForm } from './components';
 import { useStore } from './helpers';
 

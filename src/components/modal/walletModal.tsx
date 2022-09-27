@@ -4,7 +4,7 @@ import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles
 import { Button } from '../button/button';
 import { JazzIcon } from '../wallet/wallet';
 import { useState } from 'react';
-import { ButtonEnum, buttonType, useStore } from '../../helpers';
+import { ButtonEnum, button, useStore } from '../../helpers';
 import { useEthers } from '@usedapp/core';
 
 type Props = {
@@ -30,9 +30,10 @@ const ModalWrapper = styled.div`
 
 const ModalContainer = styled.div``;
 
-const AccountTitle = styled.div
-(() => {
-	const { state: { theme } } = useStore();
+const AccountTitle = styled.div(() => {
+	const {
+		state: { theme }
+	} = useStore();
 
 	return css`
 		font-size: ${fontSize[16]};
@@ -68,7 +69,9 @@ const Account = styled.div`
 `;
 
 const AccountNumber = styled.div(() => {
-	const { state: { theme } } = useStore();
+	const {
+		state: { theme }
+	} = useStore();
 
 	return css`
 		color: ${theme.font.pure};
@@ -77,7 +80,9 @@ const AccountNumber = styled.div(() => {
 });
 
 const IconContainer = styled.div(() => {
-	const { state: { theme } } = useStore();
+	const {
+		state: { theme }
+	} = useStore();
 
 	return css`
 		height: ${pxToRem(8)};
@@ -102,7 +107,7 @@ const IconContainer = styled.div(() => {
 });
 
 const CopyText = styled.p.attrs((props: { isCopied: boolean }) => props)`
-	opacity: ${(props) => props.isCopied ? '0.5' : '1'};;
+	opacity: ${(props) => (props.isCopied ? '0.5' : '1')};
 	font-size: ${fontSize[14]};
 	line-height: ${fontSize[20]};
 `;
@@ -125,12 +130,12 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 		setShowModal(false);
 		dispatch({
 			type: ButtonEnum.BUTTON,
-			payload: buttonType.CONNECT_WALLET
+			payload: button.CONNECT_WALLET
 		});
 	};
 
 	return (
-		<Modal showModal={showModal} setShowModal={setShowModal} background='default' width='small'>
+		<Modal showModal={showModal} setShowModal={setShowModal} background="default" width="small">
 			<ModalWrapper>
 				<ModalContainer>
 					<AccountTitle>Account</AccountTitle>
@@ -143,10 +148,14 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 					</Account>
 					<CopyContainer>
 						<IconContainer />
-						<CopyText onClick={handleCopy} isCopied={isCopied}>{!isCopied ? 'Copy Address' : 'Copied!'}</CopyText>
+						<CopyText onClick={handleCopy} isCopied={isCopied}>
+							{!isCopied ? 'Copy Address' : 'Copied!'}
+						</CopyText>
 					</CopyContainer>
 				</ModalContainer>
-				<Button variant='secondary' onClick={handleDisconnect}>Disconnect</Button>
+				<Button variant="secondary" onClick={handleDisconnect}>
+					Disconnect
+				</Button>
 			</ModalWrapper>
 		</Modal>
 	);

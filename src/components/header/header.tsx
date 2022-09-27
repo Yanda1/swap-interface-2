@@ -32,7 +32,7 @@ import {
 	useLocalStorage,
 	useStore,
 	VerificationEnum,
-	buttonType,
+	button,
 	KycStatusEnum,
 	KycEnum,
 	routes,
@@ -217,18 +217,18 @@ export const Header = () => {
 					setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
 
 					if (kycStatus === KycStatusEnum.REJECT) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
+						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 						addToast('Your KYC process has been rejected - please start again!', 'warning');
 					}
 					if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
+						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					}
 					if (
 						kycStatus !== KycStatusEnum.REJECT &&
 						kycStatus !== KycStatusEnum.PASS &&
 						basic !== BasicStatusEnum.INITIAL
 					)
-						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
+						dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				}
 			} catch (error: any) {
 				if (error?.message !== MESSAGE.ignore) {
@@ -253,7 +253,7 @@ export const Header = () => {
 		}
 
 		if (chainId && account) {
-			if (buttonStatus === buttonType.PASS_KYC) {
+			if (buttonStatus === button.PASS_KYC) {
 				await getBinanceToken();
 			} else {
 				void checkStatus();
@@ -309,7 +309,7 @@ export const Header = () => {
 		}
 
 		if (account && chainId) {
-			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.LOGIN });
+			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
 
 		if (account && storage && storage?.account !== account) {

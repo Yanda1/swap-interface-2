@@ -8,6 +8,7 @@ import {
 	AmountEnum,
 	BINANCE_FEE,
 	DestinationNetworkEnum,
+	Fee,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
@@ -17,8 +18,8 @@ import {
 	useStore
 } from '../../helpers';
 import type { DestinationNetworks } from '../../helpers';
-import { useBinance } from '../../hooks';
-import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../../components';
+import { useFees } from '../../hooks';
+import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -109,13 +110,12 @@ export const SwapForm = () => {
 			destinationAmount,
 			destinationMemo,
 			isUserVerified,
-			fees,
 			amount
 		},
 		dispatch
 	} = useStore();
 	const swapButtonRef = useRef();
-	const { allFilteredPrices, minAmount, maxAmount } = useBinance();
+	const { withdrawFee, allFilteredPrices, minAmount, maxAmount, cexFee } = useFees();
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
@@ -124,6 +124,8 @@ export const SwapForm = () => {
 	const [limit, setLimit] = useState<Limit>({ name: '', value: '', error: false });
 
 	const openModal = () => setShowModal(!showModal);
+
+	// console.log({ withdrawFee, protocolFee, networkFee, cexFee });
 
 	const convertDestinationAmount = () => {
 		if (isTokenSelected(destinationToken)) {
@@ -161,9 +163,9 @@ export const SwapForm = () => {
 			payload: realParseFloat(
 				(
 					(+amount / (1 + BINANCE_FEE)) * +currentPrice -
-					fees.WITHDRAW?.amount -
-					fees.CEX[0]?.amount
-				) // TODO: add logic if more than one edge in Graph
+					withdrawFee.amount -
+					cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
+				)
 					.toFixed(8)
 					.toString()
 			)
