@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import { BASE_URL, BINANCE_DEV_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY } from '../helpers';
 import axios from 'axios';
-import type { ApiAuthType } from '../styles';
+import type { ApiAuthType } from '../helpers';
 
 export enum STATUS_ENUM {
 	NONCE = 'NONCE',

@@ -14,7 +14,7 @@ import {
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import styled from 'styled-components';
 import { spacing } from '../../styles';
-import type { ContractAdress } from '../../styles';
+import type { ContractAdress } from '../../helpers';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};

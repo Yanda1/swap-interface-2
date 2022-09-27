@@ -9,7 +9,7 @@ import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
-import type { ApiAuthType, Theme, ColorType } from '../../styles';
+import type { Theme, ColorType } from '../../styles';
 import {
 	mediaQuery,
 	pxToRem,
@@ -35,12 +35,12 @@ import {
 	buttonType,
 	KycStatusEnum,
 	KycEnum,
-	useAxios,
 	routes,
-	BasicStatusEnum,
-	message
+	BasicStatusEnum
 } from '../../helpers';
+import { ApiAuthType, MESSAGE } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
+import { useAxios } from '../../hooks';
 
 type Props = {
 	theme: Theme;
@@ -231,7 +231,7 @@ export const Header = () => {
 						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
 				}
 			} catch (error: any) {
-				if (error?.message !== message.ignore) {
+				if (error?.message !== MESSAGE.ignore) {
 					addToast('Oops, something went wrong - please try again', 'warning');
 					await setTokensInStorageAndContext();
 				}

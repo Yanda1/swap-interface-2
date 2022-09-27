@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { Button } from '..';
-import { DestinationNetworks, mediaQuery, spacing } from '../../styles';
+import { mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
 import {
@@ -12,6 +12,7 @@ import {
 	useBreakpoint,
 	useStore
 } from '../../helpers';
+import type { DestinationNetworks } from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, spacing, mainMaxWidth, DestinationNetworks } from '../../styles';
+import { mediaQuery, spacing, mainMaxWidth } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
@@ -14,9 +14,10 @@ import {
 	realParseFloat,
 	removeZeros,
 	START_TOKEN,
-	useBinanceApi,
 	useStore
 } from '../../helpers';
+import type { DestinationNetworks } from '../../helpers';
+import { useBinance } from '../../hooks';
 import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../../components';
 
 const Wrapper = styled.main`
@@ -114,13 +115,12 @@ export const SwapForm = () => {
 		dispatch
 	} = useStore();
 	const swapButtonRef = useRef();
-	const { allFilteredPrices } = useBinanceApi();
+	const { allFilteredPrices, minAmount, maxAmount } = useBinance();
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [currentPrice, setCurrentPrice] = useState('');
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
-	const { minAmount, maxAmount } = useBinanceApi();
 	const [limit, setLimit] = useState<Limit>({ name: '', value: '', error: false });
 
 	const openModal = () => setShowModal(!showModal);

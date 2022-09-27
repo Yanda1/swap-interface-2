@@ -18,7 +18,8 @@ import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
-import { DestinationNetworks, pxToRem, spacing, defaultBorderRadius } from '../../styles';
+import { pxToRem, spacing, defaultBorderRadius } from '../../styles';
+import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
 	BSC,

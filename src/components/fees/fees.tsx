@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useEthers, useGasPrice } from '@usedapp/core';
 import { BigNumber, utils } from 'ethers';
 import styled, { css } from 'styled-components';
+import destinationNetworks from '../../data/destinationNetworks.json';
 import {
 	BINANCE_FEE,
 	CONTRACT_ADDRESSES,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
-	Fee,
 	FeeEnum,
 	FEE_CURRENCY,
 	Graph,
@@ -16,10 +16,10 @@ import {
 	PROTOCOL_FEE,
 	serviceAddress,
 	START_TOKEN,
-	useBinanceApi,
 	useStore
 } from '../../helpers';
-import type { Price } from '../../helpers';
+import { useBinance } from '../../hooks';
+import type { Price, Fee } from '../../helpers';
 import { defaultBorderRadius, spacing } from '../../styles';
 import type { Theme } from '../../styles';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
@@ -71,7 +71,7 @@ export const Fees = () => {
 		},
 		dispatch
 	} = useStore();
-	const { allFilteredPairs, allFilteredPrices } = useBinanceApi();
+	const { allFilteredPairs, allFilteredPrices } = useBinance();
 	const [cexGraph, setCexGraph] = useState<Graph>();
 	const [graph, setGraph] = useState<false | { distance: number; path: string[] }>();
 	const { chainId, library: web3Provider } = useEthers();
@@ -150,14 +150,14 @@ export const Fees = () => {
 	}, [allFilteredPairs]);
 
 	useEffect(() => {
-		if (cexGraph) {
+		if (cexGraph && isTokenSelected(destinationToken)) {
 			const graphPath: false | { distance: number; path: string[] } = cexGraph.bfs(
 				START_TOKEN,
 				destinationToken
 			);
 			setGraph(graphPath);
 		}
-	}, [destinationToken]);
+	}, [destinationToken, cexGraph]);
 
 	const estimateCexFee = (): void => {
 		if (graph && allFilteredPrices) {
@@ -189,9 +189,26 @@ export const Fees = () => {
 		}
 	};
 
+	estimateCexFee();
+
 	useEffect(() => {
 		estimateCexFee();
-	}, [amount, graph]);
+	}, []);
+
+	useEffect(() => {
+		if (isTokenSelected(destinationToken)) {
+			const withdrawFee =
+				// @ts-ignore
+				destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawFee'];
+			dispatch({
+				type: FeeEnum.ALL,
+				payload: {
+					...fees,
+					WITHDRAW: { amount: Number(withdrawFee), currency: destinationToken }
+				}
+			});
+		}
+	}, [destinationToken]);
 
 	useEffect(() => {
 		dispatch({

@@ -4,4 +4,4 @@ export * from './constants';
 export * from './auth';
 export * from './graph';
 export * from './storage';
-export * from './hooks';
+export * from './types';

@@ -8,6 +8,10 @@ export const INITIAL_STORAGE = {
 	isKyced: false
 };
 
+export const MESSAGE = {
+	ignore: 'ignore'
+};
+
 export const BIZ_ENTRY_KEY = 'YANDA';
 export const BINANCE_PROD_URL = 'https://api.commonservice.io';
 export const BINANCE_DEV_URL = 'https://dip-qacb.sdtaop.com';
