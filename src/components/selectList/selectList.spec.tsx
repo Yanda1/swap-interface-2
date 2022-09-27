@@ -25,7 +25,7 @@ describe('SelectList', () => {
 		expect(element).toHaveStyle(`
 			display: flex;
 			flex-direction: column;
-			flex: 0 1 ${pxToRem(178)};
+			flex: 0 1 ${pxToRem(450 / 2 - 36)};
 			border: 1px solid ${darkTheme.font.default};
 			height: ${pxToRem(478)};
 			padding: 0 ${spacing[horizontalPadding]};
