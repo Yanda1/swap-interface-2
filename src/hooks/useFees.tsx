@@ -22,11 +22,10 @@ import destinationNetworks from '../data/destinationNetworks.json';
 import { useEthers, useGasPrice, useEtherBalance } from '@usedapp/core';
 import { BigNumber, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
-// import { formatEther } from '@ethersproject/units';
+import { formatEther } from '@ethersproject/units';
 import { useStore } from '../helpers';
 import type { Price } from '../helpers';
 import axios from 'axios';
-import { formatEther } from 'ethers/lib/utils';
 
 type Ticker = {
 	baseAsset: string;
@@ -141,44 +140,6 @@ export const useFees = () => {
 			}
 		}
 	};
-
-	const marginalCosts = useMemo(() => {
-		let minAmount = '';
-		let maxAmount = '';
-		if (
-			isTokenSelected(destinationToken) &&
-			isNetworkSelected(destinationNetwork) &&
-			account &&
-			allFilteredPairs
-		) {
-			const tokenMinAmount =
-				// @ts-ignore
-				destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'];
-			const [pair] = allFilteredPairs.filter(
-				(pair: Ticker) =>
-					pair.symbol === START_TOKEN + destinationToken ||
-					pair.symbol === destinationToken + START_TOKEN
-			);
-			if (pair) {
-				const { filters } = pair; // TODO: app broke
-				const [lot, notional] = filters;
-				const notionalMinAmount = notional.minNotional * getPrice(destinationToken, START_TOKEN);
-				const { minQty, maxQty } = lot;
-				const lotSizeMinAmount = minQty * getPrice(START_TOKEN, START_TOKEN);
-				const lotSizeMaxAmount = maxQty * getPrice(START_TOKEN, START_TOKEN);
-				const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
-
-				minAmount = (
-					Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
-				).toString();
-				maxAmount = (
-					Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
-				).toString();
-			}
-		}
-
-		return { minAmount, maxAmount };
-	}, [destinationToken, account, allFilteredPairs]);
 
 	useEffect(() => {
 		if (allPairs) {
@@ -330,14 +291,51 @@ export const useFees = () => {
 		return { amount: allFees, currency: FEE_CURRENCY };
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
+	const marginalCosts = useMemo(() => {
+		let minAmount = '';
+		let maxAmount = '';
+		if (
+			isTokenSelected(destinationToken) &&
+			isNetworkSelected(destinationNetwork) &&
+			account &&
+			allFilteredPairs
+		) {
+			const tokenMinAmount =
+				// @ts-ignore
+				destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'];
+			const [pair] = allFilteredPairs.filter(
+				(pair: Ticker) =>
+					pair.symbol === START_TOKEN + destinationToken ||
+					pair.symbol === destinationToken + START_TOKEN
+			);
+			if (pair) {
+				const { filters } = pair; // TODO: app broke
+				const [lot, notional] = filters;
+				const notionalMinAmount = +notional.minNotional * getPrice(destinationToken, START_TOKEN);
+				const { minQty, maxQty } = lot;
+				const lotSizeMinAmount = +minQty * getPrice(START_TOKEN, START_TOKEN);
+				const lotSizeMaxAmount = +maxQty * getPrice(START_TOKEN, START_TOKEN);
+				const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
+
+				minAmount = (
+					Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
+				).toString();
+				maxAmount = (
+					Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
+				).toString();
+			}
+		}
+
+		return { minAmount, maxAmount };
+	}, [destinationToken, account, networkFee]);
+
 	return {
 		...marginalCosts,
-		allFilteredPairs,
-		allFilteredPrices,
 		withdrawFee,
 		protocolFee,
 		networkFee,
 		cexFee,
-		allFees
+		allFees,
+		getPrice
 	};
 };

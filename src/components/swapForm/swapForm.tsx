@@ -115,33 +115,17 @@ export const SwapForm = () => {
 		dispatch
 	} = useStore();
 	const swapButtonRef = useRef();
-	const { withdrawFee, allFilteredPrices, minAmount, maxAmount, cexFee } = useFees();
+	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
 	const [showModal, setShowModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
-	const [currentPrice, setCurrentPrice] = useState('');
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ name: '', value: '', error: false });
 
 	const openModal = () => setShowModal(!showModal);
 
-	// console.log({ withdrawFee, protocolFee, networkFee, cexFee });
-
-	const convertDestinationAmount = () => {
-		if (isTokenSelected(destinationToken)) {
-			const getSymbol: any = allFilteredPrices.find(
-				// TODO: use getPrice() to be more precise if order of base and quote asset is vice versa
-				(pair: { symbol: string; price: string }) =>
-					pair.symbol === `${START_TOKEN}${destinationToken}`
-			);
-			setCurrentPrice(getSymbol?.price);
-		}
-	};
-
 	useEffect(() => {
-		convertDestinationAmount();
-
-		if (isTokenSelected(destinationToken) && minAmount) {
+		if (isTokenSelected(destinationToken)) {
 			setLimit({
 				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
 				value:
@@ -158,19 +142,21 @@ export const SwapForm = () => {
 	}, [destinationToken, amount]);
 
 	useEffect(() => {
-		dispatch({
-			type: DestinationNetworkEnum.AMOUNT,
-			payload: realParseFloat(
-				(
-					(+amount / (1 + BINANCE_FEE)) * +currentPrice -
-					withdrawFee.amount -
-					cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
+		if (isTokenSelected(destinationToken) && amount) {
+			dispatch({
+				type: DestinationNetworkEnum.AMOUNT,
+				payload: realParseFloat(
+					(
+						(+amount / (1 + BINANCE_FEE)) * getPrice(START_TOKEN, destinationToken) -
+						withdrawFee.amount -
+						cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
+					)
+						.toFixed(8)
+						.toString()
 				)
-					.toFixed(8)
-					.toString()
-			)
-		});
-	}, [amount, currentPrice]);
+			});
+		}
+	}, [amount, destinationToken]);
 
 	useEffect(() => {
 		const hasTag = destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['hasTag'];
@@ -189,7 +175,7 @@ export const SwapForm = () => {
 
 		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
 		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
-	}, [destinationAddress, destinationMemo, destinationToken, currentPrice]);
+	}, [destinationAddress, destinationMemo, destinationToken]);
 
 	const handleSwap = (): void => {
 		// @ts-ignore
@@ -247,7 +233,9 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
-					: `1 GLMR = ${removeZeros(currentPrice)} ${destinationToken}`}
+					: `1 GLMR = ${removeZeros(
+							getPrice(START_TOKEN, destinationToken).toString()
+					  )} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
