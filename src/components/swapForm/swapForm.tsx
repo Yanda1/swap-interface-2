@@ -15,7 +15,7 @@ import {
 	useBinanceApi,
 	useStore
 } from '../../helpers';
-import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../../components';
+import { Fees, IconButton, NetworkTokenModal, SwapButton, Tabs, TextField } from '../../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -235,6 +235,22 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
+			<Tabs
+				data={[
+					{
+						costRequestCounter: 1,
+						depositBlock: 15,
+						// orders: [{ t: 1, a: 0, s: 'GLMRBTC', q: '13.0000', p: '11.29', ts: 165580999.011 }]
+						action: 0
+					},
+					{
+						costRequestCounter: 2,
+						depositBlock: 30,
+						orders: [{ t: 1, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+						action: 1
+					}
+				]}
+			/>
 		</Wrapper>
 	);
 };
