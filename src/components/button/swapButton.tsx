@@ -8,7 +8,7 @@ import {
 	isNetworkSelected,
 	isTokenSelected,
 	makeId,
-	serviceAddress,
+	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
@@ -74,8 +74,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 			const shortNamedValues = JSON.stringify(namedValues);
 
-			await sendCreateProcess(serviceAddress, productId, shortNamedValues);
-			const filter = contract.filters.CostResponse(account, serviceAddress, productId);
+			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+			const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, productId);
 			console.log('filter', filter);
 			contract.on(filter, (customer, service, productId, cost) => {
 				console.log('Oracle deposit estimation:', utils.formatEther(cost));

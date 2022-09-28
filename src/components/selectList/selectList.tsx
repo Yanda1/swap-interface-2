@@ -1,7 +1,14 @@
 import { useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { DestinationNetworkEnum, useStore } from '../../helpers';
-import { fontSize, pxToRem, spacing, defaultBorderRadius, horizontalPadding } from '../../styles';
+import {
+	fontSize,
+	pxToRem,
+	spacing,
+	DEFAULT_BORDER_RADIUS,
+	HORIZONTAL_PADDING,
+	SELECT_LIST_HEIGHT
+} from '../../styles';
 import { IconButton } from '../iconButton/iconButton';
 import { TextField } from '../textField/textField';
 
@@ -13,12 +20,12 @@ const Wrapper = styled.div(() => {
 	return css`
 		display: flex;
 		flex-direction: column;
-		flex: 0 1 ${pxToRem(450 / 2 - 36)}; // TODO: refactor so that the 450 / first value comes from mainMaxWidth
+		flex: 0 1 ${pxToRem(450 / 2 - 36)}; // TODO: refactor so that the 450 / first value comes from MAIN_MAX_WIDTH
 		border: 1px solid ${theme.font.default};
-		height: ${pxToRem(478)};
-		padding: 0 ${spacing[horizontalPadding]};
+		height: ${SELECT_LIST_HEIGHT};
+		padding: 0 ${spacing[HORIZONTAL_PADDING]};
 		background: ${theme.background.default};
-		border-radius: ${defaultBorderRadius};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 	`;
 });
 
@@ -45,7 +52,7 @@ const Title = styled.div(() => {
 const List = styled.ul`
 	overflow-y: auto;
 	padding: 0;
-	height: ${pxToRem(478)}; // TODO: refactor to one const
+	height: ${SELECT_LIST_HEIGHT};
 
 	&::-webkit-scrollbar,
 	&::-webkit-scrollbar-track,
@@ -67,8 +74,8 @@ const Item = styled.li((props: any) => {
 		color: ${theme.font.pure};
 		line-height: ${fontSize[22]};
 		margin: ${spacing[10]} 0;
-		border-radius: ${defaultBorderRadius};
-		padding: ${spacing[12]} ${spacing[horizontalPadding]};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		padding: ${spacing[12]} ${spacing[HORIZONTAL_PADDING]};
 		border: 1px solid ${props.activeBorder ? theme.button.default : theme.button.transparent};
 	`;
 });
@@ -99,7 +106,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
 			}
 		},
-		[destinationToken, destinationNetwork, destinationWallet] // TODO: do we need destinationWallet?
+		[destinationToken, destinationNetwork, destinationWallet]
 	);
 
 	return (

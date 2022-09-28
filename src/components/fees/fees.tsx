@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useFees } from '../../hooks';
-import { defaultBorderRadius, spacing } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, spacing } from '../../styles';
 import type { Theme } from '../../styles';
 import { Fee, useStore } from '../../helpers';
 
@@ -26,7 +26,7 @@ const Details = styled.div(
 		flex-direction: column;
 		padding: ${spacing[10]} ${spacing[16]};
 		margin: ${spacing[28]} 0 ${spacing[56]};
-		border-radius: ${defaultBorderRadius};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 		border: 1px solid ${color};
 
 		& > * {

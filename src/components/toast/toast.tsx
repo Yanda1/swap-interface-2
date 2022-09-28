@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled from 'styled-components';
-import { fontSize, mediaQuery, spacing, defaultBorderRadius } from '../../styles';
+import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import { useStore } from '../../helpers';
 import { IconButton } from '../iconButton/iconButton';
 
@@ -46,7 +46,7 @@ const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 				fontSize: `${fontSize[14]}`,
 				margin: `${spacing[10]}`,
 				padding: `${spacing[10]}`,
-				borderRadius: `${defaultBorderRadius}`
+				borderRadius: `${DEFAULT_BORDER_RADIUS}`
 			}}
 			onClick={onDismiss}>
 			<IconButton

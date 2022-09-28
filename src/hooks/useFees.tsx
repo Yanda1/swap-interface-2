@@ -8,7 +8,7 @@ import {
 	isTokenSelected,
 	makeId,
 	PROTOCOL_FEE,
-	serviceAddress,
+	SERVICE_ADDRESS,
 	START_TOKEN,
 	Graph,
 	BINANCE_FEE,
@@ -126,21 +126,6 @@ export const useFees = () => {
 		[uniqueTokens]
 	);
 
-	const getPrice = (base: string, quote: string): number => {
-		const ticker = allFilteredPrices.find((x: Price) => x.symbol === base + quote);
-		if (ticker) {
-			return +ticker.price;
-		} else {
-			const reverseTicker = allFilteredPrices.find((x: Price) => x.symbol === quote + base);
-
-			if (reverseTicker) {
-				return 1 / +reverseTicker.price;
-			} else {
-				return 1;
-			}
-		}
-	};
-
 	useEffect(() => {
 		if (allPairs) {
 			const filteredPairs = allPairs
@@ -166,6 +151,21 @@ export const useFees = () => {
 			setAllFilteredPrices(filteredPrices);
 		}
 	}, [allPrices]);
+
+	const getPrice = (base: string, quote: string): number => {
+		const ticker = allFilteredPrices.find((x: Price) => x.symbol === base + quote);
+		if (ticker) {
+			return +ticker.price;
+		} else {
+			const reverseTicker = allFilteredPrices.find((x: Price) => x.symbol === quote + base);
+
+			if (reverseTicker) {
+				return 1 / +reverseTicker.price;
+			} else {
+				return 1;
+			}
+		}
+	};
 
 	const withdrawFee = useMemo((): Fee => {
 		if (isTokenSelected(destinationToken)) {
@@ -200,7 +200,7 @@ export const useFees = () => {
 			const productId = utils.id(makeId(32));
 
 			contract.estimateGas
-				.createProcess(serviceAddress, productId, shortNamedValues)
+				.createProcess(SERVICE_ADDRESS, productId, shortNamedValues)
 				.then((gas: any) => {
 					setGasAmount(gas);
 				})
@@ -235,7 +235,6 @@ export const useFees = () => {
 	useEffect(() => {
 		const localGraph = new Graph();
 		for (let i = 0; i < allFilteredPairs.length; i++) {
-			// @ts-ignore
 			localGraph.addEdge(allFilteredPairs[i].baseAsset, allFilteredPairs[i].quoteAsset);
 			if (allFilteredPairs.length === localGraph.edges) {
 				setCexGraph(localGraph);

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, spacing, mainMaxWidth } from '../../styles';
+import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import {
@@ -23,7 +23,7 @@ import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../.
 
 const Wrapper = styled.main`
 	margin: 0 auto;
-	max-width: ${mainMaxWidth};
+	max-width: ${MAIN_MAX_WIDTH};
 `;
 
 const Trader = styled.div`

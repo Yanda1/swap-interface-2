@@ -14,7 +14,7 @@ import {
 	mediaQuery,
 	pxToRem,
 	spacing,
-	defaultBorderRadius,
+	DEFAULT_BORDER_RADIUS,
 	theme as defaultTheme
 } from '../../styles';
 import {
@@ -87,7 +87,7 @@ const Menu = styled.ul`
 	background: ${(props: Props) => props.theme.background.default};
 	text-align: right;
 	padding: ${spacing[14]};
-	border-radius: ${defaultBorderRadius};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
 	cursor: pointer;
 	border: 1px solid
 		${(props: Props) =>

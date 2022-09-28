@@ -2,7 +2,7 @@ import 'jest-styled-components';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider } from '../../helpers';
-import { darkTheme, lightTheme, mainMaxWidth, pxToRem } from '../../styles';
+import { darkTheme, lightTheme, MAIN_MAX_WIDTH, pxToRem } from '../../styles';
 import { Button } from './button';
 
 const onCheckStyles = (button: string) => {
@@ -38,7 +38,7 @@ const onCheckStyles = (button: string) => {
 		);
 	} else if (button === 'primary disabled') {
 		return expect(screen.getByText(/Primary disabled Button/)).toHaveStyle(
-			`background-color: ${lightTheme.button.disabled}; color: ${darkTheme.font.pure}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${mainMaxWidth}`
+			`background-color: ${lightTheme.button.disabled}; color: ${darkTheme.font.pure}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${MAIN_MAX_WIDTH}`
 		);
 	} else if (button === 'secondary pure') {
 		return expect(screen.getByText(/Secondary pure Button/)).toHaveStyle(

@@ -18,7 +18,7 @@ import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
-import { pxToRem, spacing, defaultBorderRadius } from '../../styles';
+import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
@@ -50,7 +50,7 @@ const Icon = styled.button(({ disabled }: Props) => {
 		cursor: ${!disabled && 'pointer'};
 		padding: ${spacing[8]};
 		border: 1px solid ${theme.font.default};
-		border-radius: ${defaultBorderRadius};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 		display: flex;
 		align-items: center;
 		justify-content: center;
