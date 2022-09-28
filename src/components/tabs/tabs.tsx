@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, useStore } from '../../helpers';
+import { useStore } from '../../helpers';
 import { useState } from 'react';
-import { pxToRem, spacing } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -27,7 +27,7 @@ const Tab = styled.div(({ active }: any) => {
 	return css`
 		z-index: 10;
 		cursor: pointer;
-		color: ${theme.pure};
+		color: ${theme.font.pure};
 		padding: ${spacing[6]} ${spacing[30]};
 		text-align: center;
 		max-width: ${pxToRem(115)};
@@ -47,7 +47,7 @@ const TabContent = styled.div(() => {
 	} = useStore();
 
 	return css`
-		color: ${theme.pure};
+		color: ${theme.font.pure};
 		padding: 20px;
 		display: block;
 		background: ${theme.background.mobile};
@@ -86,7 +86,7 @@ const ContentTitle = styled.h3.attrs((props: { action: number }) => props)`
 		width: 6px;
 		height: 6px;
 		background-color: #7c7c7c;
-		border-radius: ${defaultBorderRadius};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 	}
 `;
 
@@ -96,7 +96,7 @@ const ContentLink = styled.a(() => {
 	} = useStore();
 
 	return css`
-		color: ${theme.pure};
+		color: ${theme.font.pure};
 		text-decoration: underline;
 	`;
 });
