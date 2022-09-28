@@ -1,8 +1,14 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, pxToRem, spacing } from '../../styles';
+import {
+	DEFAULT_BORDER_RADIUS,
+	HORIZONTAL_PADDING,
+	fontSize,
+	pxToRem,
+	spacing
+} from '../../styles';
 import type { ThemeProps } from '../../styles';
-import { defaultBorderRadius, horizontalPadding, useStore } from '../../helpers';
+import { useStore } from '../../helpers';
 
 type AlignProps = 'left' | 'right' | 'center';
 type TypeProps = 'text' | 'number';
@@ -25,13 +31,13 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 		text-align: ${align};
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
-		padding: ${spacing[18]} ${spacing[horizontalPadding]};
+		padding: ${spacing[18]} ${spacing[HORIZONTAL_PADDING]};
 		color: ${theme.font.pure};
-		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.default};
-		border-radius: ${defaultBorderRadius};
+		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.font.default};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
-		width: calc(100% - ${pxToRem(horizontalPadding * 2 + 2)});
+		width: calc(100% - ${pxToRem(HORIZONTAL_PADDING * 2 + 2)});
 
 		&:hover,
 		&:active {
@@ -41,7 +47,7 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 
 		&:focus-visible {
 			outline-offset: 2px;
-			outline: 1px solid ${error && isTypeNumber ? theme.button.error : theme.default};
+			outline: 1px solid ${error && isTypeNumber ? theme.button.error : theme.font.default};
 		}
 
 		&-webkit-outer-spin-button,

@@ -9,13 +9,18 @@ import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
-import type { ApiAuthType, Theme } from '../../styles';
-import { darkTheme, lightTheme, mediaQuery, pxToRem, spacing } from '../../styles';
+import type { Theme, ColorType } from '../../styles';
+import {
+	mediaQuery,
+	pxToRem,
+	spacing,
+	DEFAULT_BORDER_RADIUS,
+	theme as defaultTheme
+} from '../../styles';
 import {
 	ButtonEnum,
-	defaultBorderRadius,
 	getAuthTokensFromNonce,
-	initialStorage,
+	INITIAL_STORAGE,
 	isLightTheme,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
@@ -27,16 +32,15 @@ import {
 	useLocalStorage,
 	useStore,
 	VerificationEnum,
-	buttonType,
+	button,
 	KycStatusEnum,
 	KycEnum,
-	useAxios,
 	routes,
-	BasicStatusEnum,
-	message
+	BasicStatusEnum
 } from '../../helpers';
-import type { ColorType } from '../../components';
+import { ApiAuthType, MESSAGE } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
+import { useAxios } from '../../hooks';
 
 type Props = {
 	theme: Theme;
@@ -67,7 +71,7 @@ const ThemeButton = styled.button`
 
 	&:focus-visible {
 		outline-offset: 2px;
-		outline: 1px solid ${(props: Props) => props.theme.default};
+		outline: 1px solid ${(props: Props) => props.theme.font.default};
 	}
 
 	&:active {
@@ -83,10 +87,11 @@ const Menu = styled.ul`
 	background: ${(props: Props) => props.theme.background.default};
 	text-align: right;
 	padding: ${spacing[14]};
-	border-radius: ${defaultBorderRadius};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
 	cursor: pointer;
 	border: 1px solid
-		${(props: Props) => (isLightTheme(props.theme) ? props.theme.default : props.theme.pure)};
+		${(props: Props) =>
+			isLightTheme(props.theme) ? props.theme.font.default : props.theme.font.pure};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -97,7 +102,7 @@ export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
 	const { state, dispatch } = useStore();
 	const { theme, buttonStatus, isUserVerified, accessToken, refreshToken, kycStatus } = state;
-	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, initialStorage);
+	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	// @ts-ignore
 	const { addToast } = useToasts();
 	const api = useAxios();
@@ -113,9 +118,8 @@ export const Header = () => {
 	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
 
 	const changeTheme = (): void => {
-		const getTheme = isLight ? darkTheme : lightTheme;
-		dispatch({ type: ThemeEnum.THEME, payload: getTheme });
-		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(getTheme));
+		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
+		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(isLight));
 	};
 
 	const handleShowMenu = (): void => {
@@ -213,21 +217,21 @@ export const Header = () => {
 					setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
 
 					if (kycStatus === KycStatusEnum.REJECT) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
+						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 						addToast('Your KYC process has been rejected - please start again!', 'warning');
 					}
 					if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.PASS_KYC });
+						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					}
 					if (
 						kycStatus !== KycStatusEnum.REJECT &&
 						kycStatus !== KycStatusEnum.PASS &&
 						basic !== BasicStatusEnum.INITIAL
 					)
-						dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.CHECK_KYC });
+						dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				}
 			} catch (error: any) {
-				if (error?.message !== message.ignore) {
+				if (error?.message !== MESSAGE.ignore) {
 					addToast('Oops, something went wrong - please try again', 'warning');
 					await setTokensInStorageAndContext();
 				}
@@ -249,7 +253,7 @@ export const Header = () => {
 		}
 
 		if (chainId && account) {
-			if (buttonStatus === buttonType.PASS_KYC) {
+			if (buttonStatus === button.PASS_KYC) {
 				await getBinanceToken();
 			} else {
 				void checkStatus();
@@ -264,12 +268,14 @@ export const Header = () => {
 	}, [binanceToken, binanceScriptLoaded]);
 
 	useEffect(() => {
-		// TODO: encode Tokens for localStorage?
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
 		const localStorageAuth = localStorage.getItem(LOCAL_STORAGE_AUTH);
 
 		if (localStorageTheme) {
-			dispatch({ type: ThemeEnum.THEME, payload: JSON.parse(localStorageTheme) });
+			dispatch({
+				type: ThemeEnum.THEME,
+				payload: JSON.parse(localStorageTheme) ? defaultTheme.dark : defaultTheme.light
+			});
 		}
 		if (localStorageAuth) {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: JSON.parse(localStorageAuth).account });
@@ -303,7 +309,7 @@ export const Header = () => {
 		}
 
 		if (account && chainId) {
-			dispatch({ type: ButtonEnum.BUTTON, payload: buttonType.LOGIN });
+			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
 
 		if (account && storage && storage?.account !== account) {

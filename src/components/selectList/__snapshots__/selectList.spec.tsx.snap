@@ -52,9 +52,9 @@ exports[`SelectList should render a select list with 3 items 1`] = `
   -webkit-flex-direction: column;
   -ms-flex-direction: column;
   flex-direction: column;
-  -webkit-flex: 0 1 11.125rem;
-  -ms-flex: 0 1 11.125rem;
-  flex: 0 1 11.125rem;
+  -webkit-flex: 0 1 11.8125rem;
+  -ms-flex: 0 1 11.8125rem;
+  flex: 0 1 11.8125rem;
   border: 1px solid #8C8D8F;
   height: 29.875rem;
   padding: 0 0.625rem;
@@ -202,9 +202,9 @@ exports[`SelectList should render an empty select list 1`] = `
   -webkit-flex-direction: column;
   -ms-flex-direction: column;
   flex-direction: column;
-  -webkit-flex: 0 1 11.125rem;
-  -ms-flex: 0 1 11.125rem;
-  flex: 0 1 11.125rem;
+  -webkit-flex: 0 1 11.8125rem;
+  -ms-flex: 0 1 11.8125rem;
+  flex: 0 1 11.8125rem;
   border: 1px solid #8C8D8F;
   height: 29.875rem;
   padding: 0 0.625rem;

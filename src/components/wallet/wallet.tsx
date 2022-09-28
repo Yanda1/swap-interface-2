@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
 import { useEtherBalance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
-import { defaultBorderRadius, isLightTheme, useBreakpoint, useStore } from '../../helpers';
+import { isLightTheme, useBreakpoint, useStore } from '../../helpers';
 import type { Theme } from '../../styles';
-import { pxToRem, spacing } from '../../styles';
+import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import { WalletModal } from '../modal/walletModal';
 
 const StyledJazzIcon = styled.div`
@@ -32,7 +32,7 @@ type StyledProps = {
 
 const Wrapper = styled.div`
 	border: ${(props: StyledProps) => `1px solid ${props.theme.button.wallet}`};
-	border-radius: ${defaultBorderRadius};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
 	display: flex;
 	align-items: center;
 	margin-left: -1px;
@@ -47,11 +47,12 @@ const Account = styled.button`
 	outline: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
 	border: 1px solid transparent;
 	color: ${(props: StyledProps) => props.theme.font.pure};
-	border-radius: ${defaultBorderRadius};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
 	display: flex;
 	gap: ${spacing[4]};
-	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))} // TODO: mixing spacing & pxToRem is far from ideal
-	${spacing[10]};
+	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))}
+		// TODO: mixing spacing & pxToRem is far from ideal
+		${spacing[10]};
 	cursor: pointer;
 	margin-right: -1px;
 

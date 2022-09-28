@@ -11,7 +11,7 @@ exports[`Button should render a default button 1`] = `
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  max-width: 26.75rem;
+  max-width: 28.125rem;
   width: 100%;
   cursor: pointer;
   font-size: 1rem;
@@ -57,7 +57,7 @@ exports[`Button should render a primary disabled button 1`] = `
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  max-width: 26.75rem;
+  max-width: 28.125rem;
   width: 100%;
   cursor: not-allowed;
   font-size: 1rem;
@@ -105,7 +105,7 @@ exports[`Button should render a primary disabled button 2`] = `
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  max-width: 26.75rem;
+  max-width: 28.125rem;
   width: 100%;
   cursor: not-allowed;
   font-size: 1rem;

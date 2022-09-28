@@ -1,16 +1,15 @@
 import type { ReactNode } from 'react';
-import { pxToRem } from '../../styles';
+import type { ColorType } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
-import { defaultBorderRadius, isLightTheme, useStore } from '../../helpers';
+import { DEFAULT_BORDER_RADIUS, pxToRem, MAIN_MAX_WIDTH } from '../../styles';
+import { isLightTheme, useStore } from '../../helpers';
 
 const icons = {
 	moonbeam,
 	metamask
 };
-
-export type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'success';
 
 interface CommonProps {
 	disabled?: boolean;
@@ -67,14 +66,14 @@ const StyledButton = styled.button(
 			display: ${icon ? 'inline-flex' : 'inline-block'};
 			align-items: center;
 			justify-content: space-between;
-			max-width: ${isPrimary ? pxToRem(428) : pxToRem(160)};
+			max-width: ${isPrimary ? MAIN_MAX_WIDTH : pxToRem(160)};
 			width: 100%;
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
 			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)};
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
 			color: ${isPure || isPrimaryDisabled
-				? theme.pure
+				? theme.font.pure
 				: isSecondaryDefault || isPrimaryTransparent
 				? theme.button.default
 				: '#FFF'};
@@ -91,7 +90,7 @@ const StyledButton = styled.button(
 					: isPure || isColorDefault
 					? theme.button.transparent
 					: '#FFF'};
-			border-radius: ${defaultBorderRadius};
+			border-radius: ${DEFAULT_BORDER_RADIUS};
 			transition: all 0.2s ease-in-out;
 			margin: ${isSecondaryDefault && '1px'};
 			cursor: ${disabled && 'not-allowed'};
@@ -107,7 +106,7 @@ const StyledButton = styled.button(
 					${isPrimary
 						? theme.button.default
 						: isPure
-						? theme.pure
+						? theme.font.pure
 						: isLightTheme(theme)
 						? theme.button[setColor]
 						: '#FFF'};

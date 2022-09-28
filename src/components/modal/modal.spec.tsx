@@ -2,11 +2,17 @@ import 'jest-styled-components';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
 import { Modal } from './modal';
-import { darkTheme, pxToRem, spacing } from '../../styles';
+import {
+	darkTheme,
+	DEFAULT_BORDER_RADIUS,
+	pxToRem,
+	SELECT_LIST_HEIGHT,
+	spacing
+} from '../../styles';
 
 describe('Modal', () => {
 	it('should render a modal with background mobile and large size', () => {
-		const {getByTestId, getByText} = render(
+		const { getByTestId, getByText } = render(
 			<AuthProvider>
 				<Modal showModal setShowModal={() => console.log()} background="mobile" width="large" />
 			</AuthProvider>
@@ -27,8 +33,8 @@ describe('Modal', () => {
 			width: ${pxToRem(605)};
 			max-width: calc(100% - ${spacing[64]});
 			background-color: ${darkTheme.background.mobile};
-			border: 1px solid ${darkTheme.default};
-			border-radius: ${pxToRem(6)};
+			border: 1px solid ${darkTheme.font.default};
+			border-radius: ${DEFAULT_BORDER_RADIUS};
 			padding: ${spacing[12]};
 			`);
 
@@ -52,7 +58,7 @@ describe('Modal', () => {
 	});
 
 	it('should render modal with small size and default background', () => {
-		const {getByTestId} = render(
+		const { getByTestId } = render(
 			<AuthProvider>
 				<Modal showModal setShowModal={() => console.log()} background="default" width="small" />
 			</AuthProvider>
@@ -60,7 +66,7 @@ describe('Modal', () => {
 
 		const modal = getByTestId('modal-container');
 		expect(modal).toHaveStyle(`
-			width: ${pxToRem(478)};
+			width: ${SELECT_LIST_HEIGHT};
 			background-color: ${darkTheme.background.default};
 			`);
 	});

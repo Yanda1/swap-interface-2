@@ -1,10 +1,7 @@
-import type { Theme } from '.';
-import destinationNetworks from '../data/destinationNetworks.json';
+import type { Theme } from '../styles';
 
 export type ThemeProps = {
 	theme: Theme;
 };
 
-export type networks = typeof destinationNetworks;
-
-export type ApiAuthType = { access: string; is_kyced: boolean; refresh: string };
+export type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'success';

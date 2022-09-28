@@ -5,7 +5,14 @@ import { Button } from '..';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList } from '../../components';
 import { Modal } from './modal';
-import { DestinationNetworkEnum, isNetworkSelected, isTokenSelected, useBreakpoint, useStore } from '../../helpers';
+import {
+	DestinationNetworkEnum,
+	isNetworkSelected,
+	isTokenSelected,
+	useBreakpoint,
+	useStore
+} from '../../helpers';
+import type { DestinationNetworks } from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -15,7 +22,8 @@ const ChildWrapper = styled.div`
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};
 
-	${mediaQuery(491)} {
+	${mediaQuery(515)} {
+		// TODO: all 515 values should be one const
 		flex-direction: column;
 		flex-wrap: nowrap;
 	}
@@ -34,7 +42,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isMobile, setIsMobile] = useState(false);
 	const [isShowList, setIsShowList] = useState(true);
-	const { isBreakpointWidth } = useBreakpoint(491);
+	const { isBreakpointWidth } = useBreakpoint(516);
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken }
@@ -58,7 +66,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal }: Props) => {
 	const networksList = Object.keys(destinationNetworks);
 	const networkTokensList =
 		isNetworkSelected(destinationNetwork) &&
-		Object.keys(destinationNetworks?.[destinationNetwork as keyof typeof destinationNetworks]?.['tokens']);
+		Object.keys(destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['tokens']);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);

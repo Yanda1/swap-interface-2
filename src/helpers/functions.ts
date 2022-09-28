@@ -7,7 +7,8 @@ export const isNetworkSelected = (network: string) =>
 	network !== 'Select Network' && network !== '';
 export const isTokenSelected = (token: string) => token !== 'Select Token' && token !== '';
 
-export const removeZeros = (n: string): string => Number(n).toString();
+export const removeZeros = (n: string, digits?: number): string =>
+	digits ? Number(Number(n).toFixed(digits).toString()).toString() : Number(n).toString();
 
 export const useWindowSize = () => {
 	const [size, setSize] = useState([0, 0]);
@@ -30,7 +31,7 @@ export const useBreakpoint = (size: BreakpointOrNumber) => {
 
 	return {
 		isBreakpointWidth: windowWidth < (isString ? breakpoint[size as Breakpoint] : size),
-		isBreakpointHeight: windowHeight < (isString ? breakpoint[size as Breakpoint] : size),
+		isBreakpointHeight: windowHeight < (isString ? breakpoint[size as Breakpoint] : size)
 	};
 };
 

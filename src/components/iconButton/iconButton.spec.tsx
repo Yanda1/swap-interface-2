@@ -2,7 +2,7 @@ import 'jest-styled-components';
 import { render } from '@testing-library/react';
 import { IconButton } from './iconButton';
 import { AuthProvider } from '../../helpers';
-import { darkTheme, pxToRem, spacing } from '../../styles';
+import { darkTheme, DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import userEvent from '@testing-library/user-event';
 
 describe('IconButton', () => {
@@ -27,8 +27,8 @@ describe('IconButton', () => {
 			`
 			background: ${darkTheme.icon.default};
 			padding: ${spacing[8]};
-			border: 1px solid ${darkTheme.default};
-			border-radius: ${pxToRem(6)};
+			border: 1px solid ${darkTheme.font.default};
+			border-radius: ${DEFAULT_BORDER_RADIUS};
 			`
 		);
 
@@ -42,7 +42,7 @@ describe('IconButton', () => {
 		expect(btn).toHaveStyleRule('outline', 'none', {
 			modifier: ':active'
 		});
-		expect(btn).toHaveStyleRule('outline', `1px solid ${darkTheme.default}`, {
+		expect(btn).toHaveStyleRule('outline', `1px solid ${darkTheme.font.default}`, {
 			modifier: ':focus-visible'
 		});
 	});
