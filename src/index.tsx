@@ -1,4 +1,4 @@
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import type { Config } from '@usedapp/core';
 import { DAppProvider, Moonbeam } from '@usedapp/core';
@@ -18,7 +18,7 @@ const config: Config = {
 };
 
 root.render(
-	<React.StrictMode>
+	<StrictMode>
 		<DAppProvider config={config}>
 			<AuthProvider>
 				<ToastProvider>
@@ -26,5 +26,5 @@ root.render(
 				</ToastProvider>
 			</AuthProvider>
 		</DAppProvider>
-	</React.StrictMode>
+	</StrictMode>
 );

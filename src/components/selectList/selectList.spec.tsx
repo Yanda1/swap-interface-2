@@ -1,14 +1,22 @@
 import 'jest-styled-components';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
-import { AuthProvider, horizontalPadding } from '../../helpers';
+import { AuthProvider } from '../../helpers';
 import { SelectList } from './selectList';
-import { darkTheme, fontSize, pxToRem, spacing } from '../../styles';
+import {
+	darkTheme,
+	fontSize,
+	pxToRem,
+	spacing,
+	HORIZONTAL_PADDING,
+	DEFAULT_BORDER_RADIUS,
+	SELECT_LIST_HEIGHT
+} from '../../styles';
 
 describe('SelectList', () => {
 	const networksList = ['ETH', 'BTC', 'USDT'];
 	it('should render a select list with 3 items', () => {
-		const {getByRole, getByText, getAllByRole, getByTestId} = render(
+		const { getByRole, getByText, getAllByRole, getByTestId } = render(
 			<AuthProvider>
 				<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 			</AuthProvider>
@@ -19,18 +27,18 @@ describe('SelectList', () => {
 		const input = getByRole('textbox');
 		const list = getByRole('list');
 		const listItem = getByText('ETH');
-		const icon = getByRole('img', {name: 'ETH'});
+		const icon = getByRole('img', { name: 'ETH' });
 
 		expect(element).toMatchSnapshot();
 		expect(element).toHaveStyle(`
 			display: flex;
 			flex-direction: column;
-			flex: 0 1 ${pxToRem(178)};
-			border: 1px solid ${darkTheme.default};
-			height: ${pxToRem(478)};
-			padding: 0 ${spacing[horizontalPadding]};
+			flex: 0 1 ${pxToRem(450 / 2 - 36)};
+			border: 1px solid ${darkTheme.font.default};
+			height: ${SELECT_LIST_HEIGHT};
+			padding: 0 ${spacing[HORIZONTAL_PADDING]};
 			background: ${darkTheme.background.default};
-			border-radius: ${pxToRem(6)};
+			border-radius: ${DEFAULT_BORDER_RADIUS};
 		`);
 
 		expect(title).toHaveTextContent('SELECT NETWORK');
@@ -49,10 +57,10 @@ describe('SelectList', () => {
 			text-align: left;
 			font-size: ${fontSize[16]};
 			line-height: ${fontSize[20]};
-			padding: ${spacing[18]} ${spacing[horizontalPadding]};
+			padding: ${spacing[18]} ${spacing[HORIZONTAL_PADDING]};
 			color: ${darkTheme.font.pure};
-			border: 1px solid ${darkTheme.default};
-			border-radius: ${pxToRem(6)};
+			border: 1px solid ${darkTheme.font.default};
+			border-radius: ${DEFAULT_BORDER_RADIUS};
 			cursor: pointer;
 			transition: all 0.2s ease-in-out;
 			width: calc(100% - ${pxToRem(22)});
@@ -91,8 +99,8 @@ describe('SelectList', () => {
 			color: ${darkTheme.font.pure};
 			line-height: ${fontSize[22]};
 			margin: ${spacing[10]} 0;
-			border-radius: ${pxToRem(6)};
-			padding: ${spacing[12]} ${spacing[horizontalPadding]};
+			border-radius: ${DEFAULT_BORDER_RADIUS};
+			padding: ${spacing[12]} ${spacing[HORIZONTAL_PADDING]};
 			border: 1px solid transparent;`
 		);
 
@@ -109,7 +117,7 @@ describe('SelectList', () => {
 
 	it('should render an empty select list', () => {
 		const networksList: any = [];
-		const {getByTestId} = render(
+		const { getByTestId } = render(
 			<AuthProvider>
 				<SelectList value="NETWORK" data={networksList} placeholder="Network Name" />
 			</AuthProvider>

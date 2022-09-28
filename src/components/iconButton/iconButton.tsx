@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { defaultBorderRadius, isTokenSelected, useStore } from '../../helpers';
+import { useStore, isTokenSelected } from '../../helpers';
 import USDT from '../../assets/usdt.png';
 import GLMR from '../../assets/glmr.png';
 import BTC from '../../assets/btc.png';
@@ -18,8 +18,8 @@ import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
-import { pxToRem, spacing } from '../../styles';
-import destinationNetworks from '../../data/destinationNetworks.json';
+import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
 	BSC,
@@ -40,6 +40,46 @@ const icons = {
 	SUCCESS,
 	ERROR
 };
+
+const Icon = styled.button(({ disabled }: Props) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		cursor: ${!disabled && 'pointer'};
+		padding: ${spacing[8]};
+		border: 1px solid ${theme.font.default};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: ${theme.icon.default};
+		transition: all 0.2s ease-in-out;
+
+		&:hover {
+			opacity: 0.8;
+		}
+
+		&:active {
+			outline: none;
+		}
+
+		&:focus-visible {
+			outline-offset: 2px;
+			outline: 1px solid ${theme.font.default};
+		}
+	`;
+});
+
+const Img = styled.img(({ iconOnly }: Props) => {
+	return css`
+		height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
+		width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
+		margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
+		cursor: pointer;
+	`;
+});
 
 type Props = {
 	disabled?: boolean;
@@ -63,49 +103,8 @@ type Props = {
 		| 'ERROR'
 		| 'Select Token';
 	onClick?: () => void;
-	value?: string;
 	iconOnly?: boolean;
 };
-
-const Icon = styled.button(({ disabled }: Props) => {
-	const {
-		state: { theme }
-	} = useStore();
-
-	return css`
-		cursor: ${!disabled && 'pointer'};
-		padding: ${spacing[8]};
-		border: 1px solid ${theme.default};
-		border-radius: ${defaultBorderRadius};
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: ${theme.icon.default};
-		transition: all 0.2s ease-in-out;
-
-		&:hover {
-			opacity: 0.8;
-		}
-
-		&:active {
-			outline: none;
-		}
-
-		&:focus-visible {
-			outline-offset: 2px;
-			outline: 1px solid ${theme.default};
-		}
-	`;
-});
-
-const Img = styled.img(({ iconOnly }: Props) => {
-	return css`
-		height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
-		width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
-		margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
-		cursor: pointer;
-	`;
-});
 
 export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
 	return !iconOnly ? (
@@ -113,12 +112,12 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props)
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 42, height: 42 }} />
 			) : (
-				<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} onClick={onClick} />
+				<Img src={icons[icon as DestinationNetworks]} alt={icon} onClick={onClick} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
 		<QuestionMark style={{ width: 42, height: 42 }} />
 	) : (
-		<Img src={icons[icon as keyof typeof destinationNetworks]} alt={icon} iconOnly />
+		<Img src={icons[icon as DestinationNetworks]} alt={icon} iconOnly />
 	);
 };

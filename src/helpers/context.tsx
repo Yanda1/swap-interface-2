@@ -1,8 +1,8 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
-import type { Theme } from '../styles';
 import { darkTheme } from '../styles';
-import type { ColorType } from '../components';
+import type { ColorType, Theme } from '../styles';
 
+// TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
 	ACCOUNT = 'SET_ACCOUNT_CONNECTED',
 	NETWORK = 'SET_NETWORK_CONNECTED',
@@ -13,6 +13,10 @@ export enum VerificationEnum {
 
 export enum ThemeEnum {
 	THEME = 'SET_THEME'
+}
+
+export enum AmountEnum {
+	AMOUNT = 'SET_AMOUNT'
 }
 
 export enum DestinationNetworkEnum {
@@ -76,12 +80,18 @@ type DestinationNetworkAction = {
 	payload: string;
 };
 
+type AmountAction = {
+	type: AmountEnum;
+	payload: string;
+};
+
 type Action =
 	| VerificationAction
 	| ButtonAction
 	| KycAction
 	| ThemeAction
-	| DestinationNetworkAction;
+	| DestinationNetworkAction
+	| AmountAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -98,31 +108,25 @@ type State = {
 	destinationAddress: string;
 	destinationAmount: string;
 	destinationMemo: string;
+	amount: string;
 };
 
-type ButtonStatus = {
-	// TODO: refactor type
-	CONNECT_WALLET: { color: ColorType; text: string };
-	CHANGE_NETWORK: { color: ColorType; text: string };
-	PASS_KYC: { color: ColorType; text: string };
-	CHECK_KYC: { color: ColorType; text: string };
-	LOGIN: { color: ColorType; text: string };
-};
+enum ButtonName {
+	CONNECT_WALLET = 'CONNECT_WALLET',
+	CHANGE_NETWORK = 'CHANGE_NETWORK',
+	PASS_KYC = 'PASS_KYC',
+	CHECK_KYC = 'CHECK_KYC',
+	LOGIN = 'LOGIN'
+}
 
-export const buttonText = {
-	CONNECT_WALLET: 'Connect Wallet',
-	CHANGE_NETWORK: 'Change Network',
-	PASS_KYC: 'Pass KYC',
-	CHECK_KYC: 'Check KYC',
-	LOGIN: 'Login'
-};
+type ButtonStatus = { [key in ButtonName]: { color: ColorType; text: string } };
 
-export const buttonType: ButtonStatus = {
-	CONNECT_WALLET: { color: 'default', text: buttonText.CONNECT_WALLET },
-	CHANGE_NETWORK: { color: 'error', text: buttonText.CHANGE_NETWORK },
-	PASS_KYC: { color: 'warning', text: buttonText.PASS_KYC },
-	CHECK_KYC: { color: 'success', text: buttonText.CHECK_KYC },
-	LOGIN: { color: 'default', text: buttonText.LOGIN }
+export const button: ButtonStatus = {
+	CONNECT_WALLET: { color: 'default', text: 'Connect Wallet' },
+	CHANGE_NETWORK: { color: 'error', text: 'Change Network' },
+	PASS_KYC: { color: 'warning', text: 'Pass KYC' },
+	CHECK_KYC: { color: 'success', text: 'Check KYC' },
+	LOGIN: { color: 'default', text: 'Login' }
 };
 
 const initialState: State = {
@@ -132,14 +136,15 @@ const initialState: State = {
 	accessToken: '',
 	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
-	buttonStatus: buttonType.CONNECT_WALLET,
+	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: 'Select Wallet',
 	destinationNetwork: 'Select Network',
 	destinationToken: 'Select Token',
 	destinationAddress: '',
 	destinationAmount: '',
-	destinationMemo: ''
+	destinationMemo: '',
+	amount: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -164,6 +169,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, buttonStatus: action.payload };
 		case ThemeEnum.THEME:
 			return { ...state, theme: action.payload };
+		case AmountEnum.AMOUNT:
+			return { ...state, amount: action.payload };
 		case DestinationNetworkEnum.WALLET:
 			return { ...state, destinationWallet: action.payload };
 		case DestinationNetworkEnum.NETWORK:
@@ -190,14 +197,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		if (!account) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
-				payload: buttonType.CONNECT_WALLET
+				payload: button.CONNECT_WALLET
 			});
 		}
 
 		if (!isNetworkConnected && account) {
 			dispatch({
 				type: ButtonEnum.BUTTON,
-				payload: buttonType.CHANGE_NETWORK
+				payload: button.CHANGE_NETWORK
 			});
 		}
 

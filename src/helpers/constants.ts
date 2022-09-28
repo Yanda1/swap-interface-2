@@ -1,13 +1,15 @@
-import { pxToRem } from '../styles';
+export const LOCAL_STORAGE_THEME = 'darkMode';
+export const LOCAL_STORAGE_AUTH = 'auth';
 
-export const LOCAL_STORAGE_THEME = 'current-theme';
-export const LOCAL_STORAGE_AUTH = 'tiwanaku';
-
-export const initialStorage = {
+export const INITIAL_STORAGE = {
 	access: '',
 	refresh: '',
 	account: '',
 	isKyced: false
+};
+
+export const MESSAGE = {
+	ignore: 'ignore'
 };
 
 export const BIZ_ENTRY_KEY = 'YANDA';
@@ -23,16 +25,16 @@ export const MOONBEAM_URL = 'https://rpc.api.moonbeam.network';
 
 export const PROTOCOL_FEE = 0.002;
 export const BINANCE_FEE = 0.002;
-export const startToken = 'GLMR';
-export const feeCurrency = 'USDT';
+export const PROTOCOL_FEE_FACTOR = 1 / (1 - PROTOCOL_FEE);
+export const START_TOKEN = 'GLMR';
+export const FEE_CURRENCY = 'USDT';
 
 export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
-export const serviceAddress = '0xeB56c1d19855cc0346f437028e6ad09C80128e02';
+export const SERVICE_ADDRESS = '0xeB56c1d19855cc0346f437028e6ad09C80128e02';
 
 export const CONTRACT_ADDRESSES = {
 	1284: '0x4cB60D5337AbE781aDfBD2a2c1FB4c8ffF5F7264',
 	1287: '0x2d249342F1F6D549CE8253782c8A2b9218c68fB2',
-	// 1281: '0xb91C2eeaA0c475115069a6ED4bc601337a22788E',
 	31337: '0x0165878A594ca255338adfa4d48449f69242Eb8F'
 };
 
@@ -46,9 +48,3 @@ export const makeId = (length: number) => {
 
 	return result;
 };
-
-// TODO: move to correct file
-
-export const defaultBorderRadius = pxToRem(6); // TODO: move to correct file
-
-export const horizontalPadding = 10; // TODO: move to correct file

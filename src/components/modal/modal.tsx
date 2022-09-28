@@ -1,8 +1,8 @@
 import { ReactNode, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import type { ThemeProps } from '../../styles';
-import { fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
-import { defaultBorderRadius, DestinationNetworkEnum, useStore } from '../../helpers';
+import { fontSize, mediaQuery, pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import { useStore, DestinationNetworkEnum } from '../../helpers';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
@@ -21,8 +21,8 @@ const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 		width: ${pxToRem(width === 'large' ? 605 : 478)};
 		max-width: calc(100% - ${spacing[64]});
 		background-color: ${theme.background[background]};
-		border: 1px solid ${theme.default};
-		border-radius: ${defaultBorderRadius};
+		border: 1px solid ${theme.font.default};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 		padding: ${spacing[12]};
 
 		${mediaQuery('xxs')} {

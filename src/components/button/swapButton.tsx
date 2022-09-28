@@ -8,12 +8,13 @@ import {
 	isNetworkSelected,
 	isTokenSelected,
 	makeId,
-	serviceAddress,
+	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import styled from 'styled-components';
 import { spacing } from '../../styles';
+import type { ContractAdress } from '../../helpers';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -42,7 +43,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isUserVerified;
 
 	const { account, chainId, library: web3Provider } = useEthers();
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
+	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 	if (web3Provider) {
@@ -73,8 +74,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 			const shortNamedValues = JSON.stringify(namedValues);
 
-			await sendCreateProcess(serviceAddress, productId, shortNamedValues);
-			const filter = contract.filters.CostResponse(account, serviceAddress, productId);
+			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+			const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, productId);
 			console.log('filter', filter);
 			contract.on(filter, (customer, service, productId, cost) => {
 				console.log('Oracle deposit estimation:', utils.formatEther(cost));
