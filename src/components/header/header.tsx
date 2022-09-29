@@ -114,6 +114,8 @@ export const Header = () => {
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
 	const menuRef = useRef<HTMLUListElement | null>(null);
 
+	const noKycStatusMessage = 'kyc verify not exist';
+
 	const isLight = isLightTheme(theme);
 	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
 
@@ -209,6 +211,9 @@ export const Header = () => {
 			try {
 				const res = await api.get(routes.kycStatus);
 				if (res) {
+					if (res.data.errorData === noKycStatusMessage) {
+						await getBinanceToken();
+					}
 					const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
 					dispatch({
 						type: KycEnum.STATUS,

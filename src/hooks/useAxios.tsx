@@ -45,6 +45,7 @@ export const useAxios = () => {
 
 			if (!isRefreshTokenExpired) return req;
 
+			// don't use refresh, fetch new access token from refresh API, set them in localStorage nad make a new call with new accessToken
 			try {
 				const newTokens = await axios.post(
 					`${BASE_URL}${routes.refresh}`,
