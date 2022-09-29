@@ -8,20 +8,23 @@ import { isLightTheme, useStore } from '../../helpers';
 
 type SpinnerProps = {
 	size?: 'small' | 'medium';
+	color?: string;
 };
 
-const Spinner = styled.div(({ size = 'small' }: SpinnerProps) => {
+const Spinner = styled.div(({ size = 'small', color = 'default' }: SpinnerProps) => {
 	const {
 		state: { theme }
 	} = useStore();
+	const borderColor = color === 'warning' ? '#FFF' : theme.button[color as ColorType];
+	const borderTopColor = color === 'warning' ? theme.button[color as ColorType] : theme.font.pure;
 
 	return css`
 		display: inline-block;
 		width: ${pxToRem(size === 'small' ? 16 : 24)};
 		height: ${pxToRem(size === 'small' ? 16 : 24)};
-		border: 2px solid ${theme.button.default};
+		border: 2px solid ${borderColor};
 		border-radius: 50%;
-		border-top-color: ${theme.font.pure};
+		border-top-color: ${borderTopColor};
 		animation: spin 1s ease-in-out infinite;
 		-webkit-animation: spin 1s ease-in-out infinite;
 
@@ -171,7 +174,7 @@ export const Button = ({
 			onClick={onClick}
 			isLoading={isLoading}>
 			{icon && <img src={icons?.[icon]} alt={icon} />}
-			{isLoading ? <Spinner /> : children}
+			{isLoading ? <Spinner color={color} /> : children}
 		</StyledButton>
 	);
 };
