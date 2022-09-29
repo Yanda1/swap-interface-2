@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLocalStorage } from '../helpers';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
@@ -37,43 +38,32 @@ export const useAxios = () => {
 			const isAccessTokenExpired = dayjs.unix(access?.exp).diff(dayjs()) < 1;
 
 			if (!isAccessTokenExpired) return req;
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			req.headers!.Authorization = `Bearer ${refreshToken}`;
 
-			const refresh: JwtType = jwt_decode(refreshToken);
-			const isRefreshTokenExpired = dayjs.unix(refresh?.exp).diff(dayjs()) < 1;
-
-			if (!isRefreshTokenExpired) return req;
-
-			// don't use refresh, fetch new access token from refresh API, set them in localStorage nad make a new call with new accessToken
-			try {
-				const newTokens = await axios.post(
-					`${BASE_URL}${routes.refresh}`,
-					{},
-					{
-						headers: {
-							Authorization: `Bearer ${refreshToken}`,
-							'Content-Type': 'application/json',
-							'Access-Control-Allow-Origin': '*'
-						}
+			const newTokens = await axios.post(
+				`${BASE_URL}${routes.refresh}`,
+				{},
+				{
+					headers: {
+						Authorization: `Bearer ${refreshToken}`,
+						'Content-Type': 'application/json',
+						'Access-Control-Allow-Origin': '*'
 					}
-				);
+				}
+			);
 
+			if (newTokens) {
 				dispatch({ type: VerificationEnum.ACCESS, payload: newTokens.data.access });
 				dispatch({ type: VerificationEnum.REFRESH, payload: newTokens.data.refresh });
 				setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
+
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
 
 				return req;
-			} catch (error: any) {
-				error.message = MESSAGE.ignore;
-
-				return Promise.reject(error);
 			}
 		},
 		(error) => {
-			return Promise.reject(error);
+			return Promise.reject(error.request);
 		}
 	);
 
