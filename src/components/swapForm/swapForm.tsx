@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../../styles';
+import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
+import type { DestinationNetworks, Fee } from '../../helpers';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -16,9 +17,8 @@ import {
 	START_TOKEN,
 	useStore
 } from '../../helpers';
-import type { DestinationNetworks, Fee } from '../../helpers';
 import { useFees } from '../../hooks';
-import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees, Tabs } from '../../components';
+import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -268,22 +268,6 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
-			<Tabs
-				data={[
-					{
-						costRequestCounter: 1,
-						depositBlock: 15,
-						// orders: [{ t: 1, a: 0, s: 'GLMRBTC', q: '13.0000', p: '11.29', ts: 165580999.011 }]
-						action: 0
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						orders: [{ t: 1, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						action: 1
-					}
-				]}
-			/>
 		</Wrapper>
 	);
 };

@@ -1,9 +1,10 @@
 import { Tabs } from './tabs';
 import styled from 'styled-components';
-import { spacing } from '../../styles';
+import { MAIN_MAX_WIDTH } from '../../styles';
 
 const Wrapper = styled.div`
-	margin-top: ${spacing[76]};
+	max-width: ${MAIN_MAX_WIDTH};
+	margin: 0 auto;
 `;
 
 const Paragraph = styled.p`
