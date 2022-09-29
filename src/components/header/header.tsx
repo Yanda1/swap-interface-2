@@ -109,6 +109,7 @@ export const Header = () => {
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showModal, setShowModal] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
@@ -166,6 +167,7 @@ export const Header = () => {
 
 	const setTokensInStorageAndContext = async () => {
 		if (account) {
+			setIsLoading(true);
 			try {
 				const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
 				dispatch({ type: VerificationEnum.ACCESS, payload: res.access });
@@ -179,14 +181,17 @@ export const Header = () => {
 				// TODO: do we need toast here?
 				addToast('You have rejected signing the nonce. To proceed login again!', 'info');
 			}
+			setIsLoading(false);
 		}
 	};
 
 	const getBinanceToken = async () => {
 		try {
+			setIsLoading(true);
 			const res = await api.get(routes.kycToken);
 
 			setBinanceToken(res?.data?.token);
+			setIsLoading(false);
 		} catch (error: any) {
 			await setTokensInStorageAndContext();
 		}
@@ -194,6 +199,7 @@ export const Header = () => {
 
 	const checkStatus = async () => {
 		if (!isUserVerified) {
+			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
 				if (res.data.errorData === noKycStatusMessage) {
@@ -224,6 +230,7 @@ export const Header = () => {
 					await setTokensInStorageAndContext();
 				}
 			}
+			setIsLoading(false);
 		}
 	};
 
@@ -340,6 +347,7 @@ export const Header = () => {
 				<Wallet token="GLMR" account={account} />
 			) : (
 				<Button
+					isLoading={isLoading}
 					variant="secondary"
 					onClick={handleButtonClick}
 					color={buttonStatus.color as ColorType}>
