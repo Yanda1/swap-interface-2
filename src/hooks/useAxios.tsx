@@ -21,19 +21,16 @@ type JwtType = {
 
 export const useAxios = () => {
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
-	const {
-		state: { accessToken, refreshToken },
-		dispatch
-	} = useStore();
+	const { dispatch } = useStore();
 
 	const axiosInstance = axios.create({
 		baseURL: BASE_URL,
-		headers: { Authorization: `Bearer ${accessToken}` }
+		headers: { Authorization: `Bearer ${storage.access}` }
 	});
 
 	axiosInstance.interceptors.request.use(
 		async (req) => {
-			const access: JwtType = jwt_decode(accessToken);
+			const access: JwtType = jwt_decode(storage.access);
 			const isAccessTokenExpired = dayjs.unix(access?.exp).diff(dayjs()) < 1;
 
 			if (!isAccessTokenExpired) return req;
@@ -43,7 +40,7 @@ export const useAxios = () => {
 				{},
 				{
 					headers: {
-						Authorization: `Bearer ${refreshToken}`,
+						Authorization: `Bearer ${storage.refresh}`,
 						'Content-Type': 'application/json',
 						'Access-Control-Allow-Origin': '*'
 					}

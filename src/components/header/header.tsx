@@ -101,7 +101,14 @@ const Menu = styled.ul`
 export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
 	const { state, dispatch } = useStore();
-	const { theme, buttonStatus, isUserVerified, accessToken, refreshToken, kycStatus } = state;
+	const {
+		theme,
+		buttonStatus,
+		isUserVerified,
+		accessToken,
+		kycStatus,
+		account: userAccount
+	} = state;
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	// @ts-ignore
 	const { addToast } = useToasts();
@@ -198,7 +205,7 @@ export const Header = () => {
 	};
 
 	const checkStatus = async () => {
-		if (!isUserVerified) {
+		if (!isUserVerified && account === userAccount) {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
@@ -215,16 +222,13 @@ export const Header = () => {
 				if (kycStatus === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					addToast('Your KYC process has been rejected - please start again!', 'warning');
-				}
-				if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
+				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				} else if (kycStatus === KycStatusEnum.REVIEW) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
+				} else {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				}
-				if (
-					kycStatus !== KycStatusEnum.REJECT &&
-					kycStatus !== KycStatusEnum.PASS &&
-					basic !== BasicStatusEnum.INITIAL
-				)
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
 					await setTokensInStorageAndContext();
@@ -326,7 +330,7 @@ export const Header = () => {
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, accessToken, account]);
+	}, [kycStatus, accessToken, account, userAccount]);
 
 	return (
 		<StyledHeader theme={theme}>
