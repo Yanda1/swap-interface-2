@@ -6,6 +6,38 @@ import metamask from '../../assets/metamask.svg';
 import { DEFAULT_BORDER_RADIUS, pxToRem, MAIN_MAX_WIDTH } from '../../styles';
 import { isLightTheme, useStore } from '../../helpers';
 
+type SpinnerProps = {
+	size?: 'small' | 'medium';
+};
+
+const Spinner = styled.div(({ size = 'small' }: SpinnerProps) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		display: inline-block;
+		width: ${pxToRem(size === 'small' ? 16 : 24)};
+		height: ${pxToRem(size === 'small' ? 16 : 24)};
+		border: 2px solid ${theme.button.default};
+		border-radius: 50%;
+		border-top-color: ${theme.font.pure};
+		animation: spin 1s ease-in-out infinite;
+		-webkit-animation: spin 1s ease-in-out infinite;
+
+		@keyframes spin {
+			to {
+				-webkit-transform: rotate(360deg);
+			}
+		}
+		@-webkit-keyframes spin {
+			to {
+				-webkit-transform: rotate(360deg);
+			}
+		}
+	`;
+});
+
 const icons = {
 	moonbeam,
 	metamask
@@ -14,6 +46,7 @@ const icons = {
 interface CommonProps {
 	disabled?: boolean;
 	children?: ReactNode;
+	isLoading?: boolean;
 	onClick: () => void;
 }
 
@@ -49,7 +82,7 @@ type IndividualProps = PrimaryProps | SecondaryProps | PureProps;
 type Props = IndividualProps & CommonProps;
 
 const StyledButton = styled.button(
-	({ variant = 'primary', color = 'default', disabled = false, icon }: Props) => {
+	({ variant = 'primary', color = 'default', disabled = false, icon, isLoading }: Props) => {
 		const isPrimary = variant === 'primary';
 		const isSecondary = variant === 'secondary';
 		const isPure = variant === 'pure';
@@ -63,9 +96,9 @@ const StyledButton = styled.button(
 		} = useStore();
 
 		return css`
-			display: ${icon ? 'inline-flex' : 'inline-block'};
+			display: ${icon || isLoading ? 'inline-flex' : 'inline-block'};
 			align-items: center;
-			justify-content: space-between;
+			justify-content: ${isLoading ? 'center' : 'space-between'};
 			max-width: ${isPrimary ? MAIN_MAX_WIDTH : pxToRem(160)};
 			width: 100%;
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
@@ -125,13 +158,20 @@ export const Button = ({
 	color = 'default',
 	disabled = false,
 	icon,
+	isLoading,
 	onClick
 }: Props) => {
 	return (
 		// @ts-ignore
-		<StyledButton icon={icon} color={color} variant={variant} disabled={disabled} onClick={onClick}>
+		<StyledButton
+			icon={icon}
+			color={color}
+			variant={variant}
+			disabled={disabled}
+			onClick={onClick}
+			isLoading={isLoading}>
 			{icon && <img src={icons?.[icon]} alt={icon} />}
-			{children}
+			{isLoading ? <Spinner /> : children}
 		</StyledButton>
 	);
 };
