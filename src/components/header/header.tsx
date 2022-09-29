@@ -38,7 +38,7 @@ import {
 	routes,
 	BasicStatusEnum
 } from '../../helpers';
-import { ApiAuthType, MESSAGE } from '../../helpers';
+import { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
 import { useAxios } from '../../hooks';
 
@@ -186,58 +186,41 @@ export const Header = () => {
 		try {
 			const res = await api.get(routes.kycToken);
 
-			if (res) {
-				setBinanceToken(res?.data?.token);
-			}
+			setBinanceToken(res?.data?.token);
 		} catch (error: any) {
 			await setTokensInStorageAndContext();
-			try {
-				const res = await api.get(routes.kycToken);
-				if (res) {
-					setBinanceToken(res.data.token);
-				}
-			} catch (e: any) {
-				addToast('Oops, something went wrong. Please reload and try again!', 'error');
-			}
 		}
 	};
 
 	const checkStatus = async () => {
-		if (!accessToken && !refreshToken) {
-			await setTokensInStorageAndContext();
-		}
-
 		if (!isUserVerified) {
 			try {
 				const res = await api.get(routes.kycStatus);
-				if (res) {
-					if (res.data.errorData === noKycStatusMessage) {
-						await getBinanceToken();
-					}
-					const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
-					dispatch({
-						type: KycEnum.STATUS,
-						payload: kyc
-					});
-					setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
-
-					if (kycStatus === KycStatusEnum.REJECT) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-						addToast('Your KYC process has been rejected - please start again!', 'warning');
-					}
-					if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-					}
-					if (
-						kycStatus !== KycStatusEnum.REJECT &&
-						kycStatus !== KycStatusEnum.PASS &&
-						basic !== BasicStatusEnum.INITIAL
-					)
-						dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
+				if (res.data.errorData === noKycStatusMessage) {
+					await getBinanceToken();
 				}
+				const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
+				dispatch({
+					type: KycEnum.STATUS,
+					payload: kyc
+				});
+				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
+				// TODO: move this part to context?
+				if (kycStatus === KycStatusEnum.REJECT) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+					addToast('Your KYC process has been rejected - please start again!', 'warning');
+				}
+				if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				}
+				if (
+					kycStatus !== KycStatusEnum.REJECT &&
+					kycStatus !== KycStatusEnum.PASS &&
+					basic !== BasicStatusEnum.INITIAL
+				)
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 			} catch (error: any) {
-				if (error?.message !== MESSAGE.ignore) {
-					addToast('Oops, something went wrong - please try again', 'warning');
+				if (error?.response?.status === 401) {
 					await setTokensInStorageAndContext();
 				}
 			}
@@ -260,6 +243,8 @@ export const Header = () => {
 		if (chainId && account) {
 			if (buttonStatus === button.PASS_KYC) {
 				await getBinanceToken();
+			} else if (buttonStatus === button.LOGIN) {
+				await setTokensInStorageAndContext();
 			} else {
 				void checkStatus();
 			}
@@ -334,7 +319,7 @@ export const Header = () => {
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, refreshToken, accessToken]);
+	}, [kycStatus, accessToken, account]);
 
 	return (
 		<StyledHeader theme={theme}>

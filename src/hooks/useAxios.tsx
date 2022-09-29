@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useLocalStorage } from '../helpers';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
@@ -51,16 +50,14 @@ export const useAxios = () => {
 				}
 			);
 
-			if (newTokens) {
-				dispatch({ type: VerificationEnum.ACCESS, payload: newTokens.data.access });
-				dispatch({ type: VerificationEnum.REFRESH, payload: newTokens.data.refresh });
-				setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
+			dispatch({ type: VerificationEnum.ACCESS, payload: newTokens.data.access });
+			dispatch({ type: VerificationEnum.REFRESH, payload: newTokens.data.refresh });
+			setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
 
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
 
-				return req;
-			}
+			return req;
 		},
 		(error) => {
 			return Promise.reject(error.request);
@@ -70,7 +67,6 @@ export const useAxios = () => {
 	axiosInstance.interceptors.response.use(
 		(res) => res,
 		(error) => {
-			// TODO: check for auth urls how to handle to not throw 401 fo refresh etc.
 			if (Object.keys(error).length === 1 && 'message' in error) error.message = MESSAGE.ignore;
 
 			return Promise.reject(error);
