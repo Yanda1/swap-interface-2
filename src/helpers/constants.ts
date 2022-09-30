@@ -9,7 +9,8 @@ export const INITIAL_STORAGE = {
 };
 
 export const MESSAGE = {
-	ignore: 'ignore'
+	ignore: 'ignore',
+	failed: 'Request failed'
 };
 
 export const BIZ_ENTRY_KEY = 'YANDA';
