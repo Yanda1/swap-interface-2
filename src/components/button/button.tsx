@@ -16,7 +16,8 @@ const Spinner = styled.div(({ size = 'small', color = 'default' }: SpinnerProps)
 		state: { theme }
 	} = useStore();
 	const borderColor = color === 'warning' ? '#FFF' : theme.button[color as ColorType];
-	const borderTopColor = color === 'warning' ? theme.button[color as ColorType] : theme.font.pure;
+	const borderTopColor =
+		color === 'warning' ? theme.button[color as ColorType] : theme.background.default;
 
 	return css`
 		display: inline-block;
