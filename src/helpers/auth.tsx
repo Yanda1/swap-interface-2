@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { BASE_URL, BINANCE_DEV_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY } from '../helpers';
+import { BASE_URL, BINANCE_PROD_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY } from '../helpers';
 import axios from 'axios';
 import type { ApiAuthType } from '../helpers';
 
@@ -41,7 +41,7 @@ export const makeBinanceKycCall = (authToken: string) => {
 	const binanceKyc = new BinanceKyc({
 		authToken,
 		bizEntityKey: BIZ_ENTRY_KEY,
-		apiHost: BINANCE_DEV_URL,
+		apiHost: BINANCE_PROD_URL,
 		onMessage: ({ typeCode }: any) => {
 			if (typeCode === '102') {
 				binanceKyc.switchVisible(true);
