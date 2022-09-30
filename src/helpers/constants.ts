@@ -13,7 +13,7 @@ export const MESSAGE = {
 	failed: 'Request failed'
 };
 
-export const BIZ_ENTRY_KEY = 'YANDA';
+export const BIZ_ENTRY_KEY = 'BMYBIT';
 export const BINANCE_PROD_URL = 'https://api.commonservice.io';
 export const BINANCE_DEV_URL = 'https://dip-qacb.sdtaop.com';
 export const BINANCE_SCRIPT =
