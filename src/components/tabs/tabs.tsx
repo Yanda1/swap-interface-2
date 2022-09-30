@@ -52,7 +52,8 @@ const TabContent = styled.div(() => {
 });
 
 type Props = {
-	data: any;
+	data?: any;
+	color?: number;
 };
 
 const ContentList = styled.ul`
@@ -60,7 +61,7 @@ const ContentList = styled.ul`
 	padding: 0;
 `;
 
-const ContentItem = styled.li(() => {
+const ContentItem = styled.li(({ color }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -95,6 +96,7 @@ const ContentItem = styled.li(() => {
 
 		&:last-child:before {
 			left: -6px;
+			background-color: ${color ? theme.button.default : theme.font.default};
 		}
 	`;
 });
@@ -148,27 +150,32 @@ export const Tabs = ({ data }: Props) => {
 								return (
 									<ContentList>
 										<ContentItem key={Math.random()}>
-											<ContentItemTitle>Successful Deposit!</ContentItemTitle>
-											<ContentItemText>Gas Fee: 82912</ContentItemText>
+											<ContentItemTitle>
+												Swap Request Validation ({data[toggle].costRequestCounter}/2)
+											</ContentItemTitle>
+											<ContentItemText>Your Swap request successfully validated.</ContentItemText>
 										</ContentItem>
 										<ContentItem key={Math.random()}>
 											<ContentItemTitle>
-												Order {item.t === 1 ? 'Sell' : 'Buy'} {item.s}
+												Deposit confirmation ({data[toggle].depositBlock}/30)
 											</ContentItemTitle>
-											<ContentItemText>{item.q}</ContentItemText>
-											<ContentItemText>Network fee: </ContentItemText>
-											<ContentItemText>{item.ts}</ContentItemText>
-											<ContentItemText>Time: 10.05.2022 10:54:33 UTC</ContentItemText>
-											<ContentItemText>Cex fee: </ContentItemText>
+											<ContentItemText>Your Swap request successfully validated.</ContentItemText>
+										</ContentItem>
+										<ContentItem key={Math.random()}>
+											<ContentItemTitle>Conversion GLMR {destinationToken}</ContentItemTitle>
+											<ContentItemText>Type: {item.t === 1 ? 'Sell' : 'Buy'}</ContentItemText>
+											<ContentItemText>Pair: GLMR{destinationToken}</ContentItemText>
+											<ContentItemText>Quantity: {item.q}</ContentItemText>
 											<ContentItemText>Price: {item.p}</ContentItemText>
+											<ContentItemText>Time: 10.05.2022 10:54:33 UTC</ContentItemText>
 										</ContentItem>
 										<ContentItem key={Math.random()}>
-											<ContentItemLink>Withdraw transaction link</ContentItemLink>
-											<ContentItemText>Withdrawal fee: </ContentItemText>
+											<ContentItemLink>Withdrawal confirmed!</ContentItemLink>
+											<ContentItemText>You can check transaction by link</ContentItemText>
 										</ContentItem>
-										<ContentItem key={Math.random()}>
-											<ContentItemText color={item.t}>
-												{item.t === 1 ? 'Successful' : 'Unsuccessful'} swap!
+										<ContentItem key={Math.random()} color={data[toggle].action}>
+											<ContentItemText color={data[toggle].action}>
+												{data[toggle].action === 1 ? 'Successful' : 'Unsuccessful'} swap!
 											</ContentItemText>
 										</ContentItem>
 									</ContentList>
