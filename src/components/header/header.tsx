@@ -252,7 +252,7 @@ export const Header = () => {
 		}
 
 		if (chainId && account) {
-			if (buttonStatus === button.PASS_KYC) {
+			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
 			} else if (buttonStatus === button.LOGIN) {
 				await setTokensInStorageAndContext();
