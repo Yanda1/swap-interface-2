@@ -9,6 +9,7 @@ export type Theme = {
 	background: {
 		default: string;
 		mobile: string;
+		history: string;
 	};
 	icon: {
 		default: string;
@@ -36,7 +37,8 @@ export const lightTheme: Theme = {
 	},
 	background: {
 		default: '#FFF',
-		mobile: '#F0F0F0'
+		mobile: '#F0F0F0',
+		history: '#494949'
 	},
 	icon: {
 		default: '#E8F0F6'
@@ -64,7 +66,8 @@ export const darkTheme: Theme = {
 	},
 	background: {
 		default: '#161B20',
-		mobile: '#1C2125'
+		mobile: '#1C2125',
+		history: '#494949'
 	},
 	icon: {
 		default: '#172631'
