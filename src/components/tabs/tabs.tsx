@@ -6,25 +6,26 @@ import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 const Wrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	max-width: ${pxToRem(426)}px;
+	max-width: ${pxToRem(426)};
 `;
 
 const TabsContainer = styled.div`
 	display: flex;
 `;
 
-const Tab = styled.div(({ active }: any) => {
+const Tab = styled.div(({ active }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return css`
+		flex-basis: ${pxToRem(120)};
+		flex-shrink: 2;
 		z-index: 10;
 		cursor: pointer;
 		color: ${theme.font.pure};
-		padding: ${spacing[6]} ${spacing[26]};
+		padding: ${spacing[6]} 0;
 		text-align: center;
-		max-width: ${pxToRem(115)};
 		margin-right: ${spacing[4]};
 		background: ${theme.background.mobile};
 		border-radius: ${DEFAULT_BORDER_RADIUS} ${DEFAULT_BORDER_RADIUS} 0 0;
@@ -32,7 +33,11 @@ const Tab = styled.div(({ active }: any) => {
 		border-bottom: none;
 
 		&:nth-child(${++active}) {
-			border-bottom: 2px solid ${theme.button.default};
+			border-bottom: 1px solid ${theme.button.default};
+		}
+
+		&:last-child {
+			margin-right: 0;
 		}
 	`;
 });
@@ -44,7 +49,7 @@ const TabContent = styled.div(() => {
 
 	return css`
 		color: ${theme.font.pure};
-		padding: 20px;
+		padding: ${spacing[20]};
 		display: block;
 		background: ${theme.background.mobile};
 		border: 1px solid ${theme.button.wallet};
@@ -54,6 +59,7 @@ const TabContent = styled.div(() => {
 type Props = {
 	data?: any;
 	color?: number;
+	active?: any;
 };
 
 const ContentList = styled.ul`
@@ -68,10 +74,10 @@ const ContentItem = styled.li(({ color }: Props) => {
 
 	return css`
 		list-style: none;
-		padding: 0 0 26px 20px;
+		padding: 0 0 ${spacing[26]} ${spacing[20]};
 		border-left: 1px solid ${theme.font.default};
 		position: relative;
-		margin-left: 10px;
+		margin-left: ${spacing[10]};
 
 		&:last-child {
 			border: 0;
@@ -85,17 +91,17 @@ const ContentItem = styled.li(({ color }: Props) => {
 
 		&:before {
 			content: '';
-			width: 13px;
-			height: 13px;
+			width: ${pxToRem(13)};
+			height: ${pxToRem(13)};
 			background: ${theme.font.default};
 			border-radius: 50%;
 			position: absolute;
-			left: -7px;
+			left: ${pxToRem(-7)};
 			top: 0;
 		}
 
 		&:last-child:before {
-			left: -6px;
+			left: ${pxToRem(-6)};
 			background-color: ${color ? theme.button.default : theme.font.default};
 		}
 	`;
@@ -137,9 +143,8 @@ export const Tabs = ({ data }: Props) => {
 								const index = data.indexOf(item);
 
 								return (
-									// @ts-ignore
 									<Tab key={Math.random()} onClick={() => handleToggle(index)} active={toggle}>
-										GLMR {destinationToken !== 'Select Token' && destinationToken}
+										GLMR {destinationToken}
 									</Tab>
 								);
 							})}

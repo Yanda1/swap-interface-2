@@ -73,6 +73,42 @@ const App = () => {
 						depositBlock: 30,
 						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
 						action: 1
+					},
+					{
+						costRequestCounter: 2,
+						depositBlock: 30,
+						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+						action: 1
+					},
+					{
+						costRequestCounter: 2,
+						depositBlock: 30,
+						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+						action: 1
+					},
+					{
+						costRequestCounter: 2,
+						depositBlock: 30,
+						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+						action: 1
+					},
+					{
+						costRequestCounter: 2,
+						depositBlock: 30,
+						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+						action: 1
+					},
+					{
+						costRequestCounter: 2,
+						depositBlock: 30,
+						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+						action: 1
+					},
+					{
+						costRequestCounter: 2,
+						depositBlock: 30,
+						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+						action: 1
 					}
 				]}
 			/>
