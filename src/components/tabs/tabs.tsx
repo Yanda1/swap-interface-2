@@ -1,5 +1,6 @@
+import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import { useStore } from '../../helpers';
+import { BLOCKS_AMOUNT, useStore } from '../../helpers';
 import { useState } from 'react';
 import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 
@@ -150,42 +151,56 @@ export const Tabs = ({ data }: Props) => {
 							})}
 					</TabsContainer>
 					<TabContent>
-						{newData?.length &&
-							newData.map((item: any) => {
-								return (
-									<ContentList>
-										<ContentItem key={Math.random()}>
-											<ContentItemTitle>
-												Swap Request Validation ({data[toggle].costRequestCounter}/2)
-											</ContentItemTitle>
-											<ContentItemText>Your Swap request successfully validated.</ContentItemText>
-										</ContentItem>
-										<ContentItem key={Math.random()}>
-											<ContentItemTitle>
-												Deposit confirmation ({data[toggle].depositBlock}/30)
-											</ContentItemTitle>
-											<ContentItemText>Your Swap request successfully validated.</ContentItemText>
-										</ContentItem>
+						<ContentList>
+							<ContentItem key={Math.random()}>
+								<ContentItemTitle>
+									Swap Request Validation ({data[toggle].costRequestCounter}/2)
+								</ContentItemTitle>
+								<ContentItemText>
+									{data[toggle].costRequestCounter === 1
+										? 'Your Swap request is under validation. Please wait until full confirmation.'
+										: 'Your Swap request successfully validated.'}
+								</ContentItemText>
+							</ContentItem>
+							<ContentItem key={Math.random()}>
+								<ContentItemTitle>
+									{!data[toggle].orders
+										? `Deposit confirmation (${data[toggle].depositBlock}/${BLOCKS_AMOUNT})`
+										: 'Deposit confirmed'}
+								</ContentItemTitle>
+								<ContentItemText>
+									{data[toggle].depositBlock < BLOCKS_AMOUNT
+										? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
+										: !data[toggle].orders
+										? 'Your deposit is received and should be confirmed soon.'
+										: null}
+								</ContentItemText>
+							</ContentItem>
+							{newData?.length &&
+								newData.map((item: any) => {
+									return (
 										<ContentItem key={Math.random()}>
 											<ContentItemTitle>Conversion GLMR {destinationToken}</ContentItemTitle>
-											<ContentItemText>Type: {item.t === 1 ? 'Sell' : 'Buy'}</ContentItemText>
+											<ContentItemText>Type: {item.t === 1 ? 'SELL' : 'BUY'}</ContentItemText>
 											<ContentItemText>Pair: GLMR{destinationToken}</ContentItemText>
 											<ContentItemText>Quantity: {item.q}</ContentItemText>
 											<ContentItemText>Price: {item.p}</ContentItemText>
-											<ContentItemText>Time: 10.05.2022 10:54:33 UTC</ContentItemText>
-										</ContentItem>
-										<ContentItem key={Math.random()}>
-											<ContentItemLink>Withdrawal confirmed!</ContentItemLink>
-											<ContentItemText>You can check transaction by link</ContentItemText>
-										</ContentItem>
-										<ContentItem key={Math.random()} color={data[toggle].action}>
-											<ContentItemText color={data[toggle].action}>
-												{data[toggle].action === 1 ? 'Successful' : 'Unsuccessful'} swap!
+											<ContentItemText>
+												Time: {format(new Date(item.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
 											</ContentItemText>
 										</ContentItem>
-									</ContentList>
-								);
-							})}
+									);
+								})}
+							<ContentItem key={Math.random()}>
+								<ContentItemLink>Withdrawal confirmed!</ContentItemLink>
+								<ContentItemText>You can check transaction by link</ContentItemText>
+							</ContentItem>
+							<ContentItem key={Math.random()} color={data[toggle].action}>
+								<ContentItemText color={data[toggle].complete}>
+									{data[toggle].complete ? 'Successful swap!' : 'Not valid operations spotted!'}
+								</ContentItemText>
+							</ContentItem>
+						</ContentList>
 					</TabContent>
 				</>
 			)}
