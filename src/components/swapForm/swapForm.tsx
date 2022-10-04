@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
-import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../../styles';
+import { mediaQuery, spacing } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import type { DestinationNetworks, Fee } from '../../helpers';
@@ -19,11 +19,6 @@ import {
 } from '../../helpers';
 import { useFees } from '../../hooks';
 import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../../components';
-
-const Wrapper = styled.main`
-	margin: 0 auto;
-	max-width: ${MAIN_MAX_WIDTH};
-`;
 
 const Trader = styled.div`
 	display: flex;
@@ -182,7 +177,7 @@ export const SwapForm = () => {
 	};
 
 	return (
-		<Wrapper>
+		<>
 			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
@@ -268,6 +263,6 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
-		</Wrapper>
+		</>
 	);
 };

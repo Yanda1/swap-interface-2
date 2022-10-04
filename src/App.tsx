@@ -1,11 +1,12 @@
 import './styles/fonts/font.css';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import type { Theme } from './styles';
 import {
 	fontFamily,
 	fontSize,
 	fontStyle,
 	fontWeight,
+	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
 	viewport
@@ -50,6 +51,11 @@ export const GlobalStyles = createGlobalStyle`
 	}
 `;
 
+const Wrapper = styled.main`
+	margin: 0 auto;
+	max-width: ${MAIN_MAX_WIDTH};
+`;
+
 const App = () => {
 	const {
 		state: { theme }
@@ -59,75 +65,61 @@ const App = () => {
 		<>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<SwapForm />
-			<TabModal
-				data={[
-					{
-						costRequestCounter: 1,
-						depositBlock: 15,
-						// orders: [{ t: 1, a: 0, s: 'GLMRBTC', q: '13.0000', p: '11.29', ts: 1664802964878 }],
-						withdraw: true,
-						action: 0,
-						complete: null
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						// orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						withdraw: true,
-						action: 1,
-						complete: true
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						withdraw: true,
-						action: 1,
-						complete: true
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						withdraw: true,
-						action: 1,
-						complete: true
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						withdraw: true,
-						action: 1,
-						complete: true
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						withdraw: true,
-						action: 1,
-						complete: true
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						withdraw: true,
-						action: 1,
-						complete: true
-					},
-					{
-						costRequestCounter: 2,
-						depositBlock: 30,
-						orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-						withdraw: true,
-						action: 1,
-						complete: true
-					}
-				]}
-			/>
+			<Wrapper>
+				<SwapForm />
+				<TabModal
+					data={[
+						{
+							costRequestCounter: 1,
+							depositBlock: 15,
+							// orders: [{ t: 1, a: 0, s: 'GLMRBTC', q: '13.0000', p: '11.29', ts: 1664802964878 }],
+							withdraw: true,
+							action: 0,
+							complete: null
+						},
+						{
+							costRequestCounter: 2,
+							depositBlock: 30,
+							// orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+							withdraw: true,
+							action: 1,
+							complete: true
+						},
+						{
+							costRequestCounter: 2,
+							depositBlock: 30,
+							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+							withdraw: true,
+							action: 1,
+							complete: true
+						},
+						{
+							costRequestCounter: 2,
+							depositBlock: 30,
+							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+							withdraw: true,
+							action: 1,
+							complete: true
+						},
+						{
+							costRequestCounter: 2,
+							depositBlock: 30,
+							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+							withdraw: true,
+							action: 1,
+							complete: true
+						},
+						{
+							costRequestCounter: 2,
+							depositBlock: 30,
+							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
+							withdraw: true,
+							action: 1,
+							complete: true
+						}
+					]}
+				/>
+			</Wrapper>
 		</>
 	);
 };

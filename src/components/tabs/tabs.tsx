@@ -7,7 +7,7 @@ import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 const Wrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	max-width: ${pxToRem(426)};
+	max-width: 100%;
 `;
 
 const TabsContainer = styled.div`

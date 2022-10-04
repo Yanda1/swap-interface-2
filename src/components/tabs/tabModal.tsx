@@ -1,9 +1,9 @@
 import { Tabs } from './tabs';
 import styled from 'styled-components';
-import { MAIN_MAX_WIDTH, pxToRem } from '../../styles';
+import { pxToRem } from '../../styles';
 
 const Wrapper = styled.div`
-	max-width: ${MAIN_MAX_WIDTH};
+	max-width: 100%;
 	margin: ${pxToRem(76)} auto;
 `;
 
