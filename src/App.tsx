@@ -67,58 +67,7 @@ const App = () => {
 			<Header />
 			<Wrapper>
 				<SwapForm />
-				<TabModal
-					data={[
-						{
-							costRequestCounter: 1,
-							depositBlock: 15,
-							// orders: [{ t: 1, a: 0, s: 'GLMRBTC', q: '13.0000', p: '11.29', ts: 1664802964878 }],
-							withdraw: true,
-							action: 0,
-							complete: null
-						},
-						{
-							costRequestCounter: 2,
-							depositBlock: 30,
-							// orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-							withdraw: true,
-							action: 1,
-							complete: true
-						},
-						{
-							costRequestCounter: 2,
-							depositBlock: 30,
-							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-							withdraw: true,
-							action: 1,
-							complete: true
-						},
-						{
-							costRequestCounter: 2,
-							depositBlock: 30,
-							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-							withdraw: true,
-							action: 1,
-							complete: true
-						},
-						{
-							costRequestCounter: 2,
-							depositBlock: 30,
-							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-							withdraw: true,
-							action: 1,
-							complete: true
-						},
-						{
-							costRequestCounter: 2,
-							depositBlock: 30,
-							orders: [{ t: 0, a: 0, s: 'USDTBTC', q: '44.0000', p: '41.132', ts: 165580999.011 }],
-							withdraw: true,
-							action: 1,
-							complete: true
-						}
-					]}
-				/>
+				<TabModal />
 			</Wrapper>
 		</>
 	);

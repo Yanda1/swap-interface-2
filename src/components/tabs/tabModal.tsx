@@ -11,15 +11,11 @@ const Paragraph = styled.p`
 	color: #b4b4b4;
 `;
 
-type Props = {
-	data: object[];
-};
-
-export const TabModal = ({ data }: Props) => {
+export const TabModal = () => {
 	return (
 		<Wrapper>
-			<Paragraph>Pending Swaps ({data.length})</Paragraph>
-			<Tabs data={data} />
+			<Paragraph>Pending Swaps ()</Paragraph>
+			<Tabs data={''} />
 		</Wrapper>
 	);
 };
