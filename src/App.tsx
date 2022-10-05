@@ -1,5 +1,6 @@
 import './styles/fonts/font.css';
 import { createGlobalStyle } from 'styled-components';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import type { Theme } from './styles';
 import {
 	fontFamily,
@@ -8,9 +9,11 @@ import {
 	fontWeight,
 	mediaQuery,
 	pxToRem,
-	viewport
+	viewport,
+	DEFAULT_TRANSIITON
 } from './styles';
-import { Header, SwapForm, TransactionHistory } from './components';
+import { Header } from './components';
+import { SwapForm, TransactionHistory } from './pages';
 import { useStore } from './helpers';
 
 type Props = {
@@ -35,7 +38,7 @@ export const GlobalStyles = createGlobalStyle`
 		padding: 0 ${pxToRem(20)} ${pxToRem(40)};
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-		transition: all 0.2s ease-in-out;
+		transition: ${DEFAULT_TRANSIITON};
 		background: ${(props: Props) => props.theme.background.default};
 
 		${mediaQuery('s')} {
@@ -54,64 +57,15 @@ const App = () => {
 		state: { theme }
 	} = useStore();
 
-	const data = [
-		{
-			title: 'One',
-			content: `Lorem ipsum dolor sit amet, 
-                  consectetur adipiscing elit, 
-                  sed do eiusmod tempor incididunt 
-                  ut labore et dolore magna aliqua. 
-                  Ut enim ad minim veniam, quis 
-                  nostrud exercitation ullamco laboris 
-                  nisi ut aliquip ex ea commodo consequat. 
-                  Duis aute irure dolor in reprehenderit 
-                  in voluptate velit esse cillum dolore 
-                  eu fugiat nulla pariatur. Excepteur 
-                  sint occaecat cupidatat non proident, 
-                  sunt in culpa qui officia deserunt 
-                  mollit anim id est laborum.`
-		},
-		{
-			title: 'Two',
-			content: `Lorem ipsum dolor sit amet, 
-                  consectetur adipiscing elit, 
-                  sed do eiusmod tempor incididunt 
-                  ut labore et dolore magna aliqua. 
-                  Ut enim ad minim veniam, quis 
-                  nostrud exercitation ullamco laboris 
-                  nisi ut aliquip ex ea commodo consequat. 
-                  Duis aute irure dolor in reprehenderit 
-                  in voluptate velit esse cillum dolore 
-                  eu fugiat nulla pariatur. Excepteur 
-                  sint occaecat cupidatat non proident, 
-                  sunt in culpa qui officia deserunt 
-                  mollit anim id est laborum.`
-		},
-		{
-			title: 'Three',
-			content: `Lorem ipsum dolor sit amet, 
-                  consectetur adipiscing elit, 
-                  sed do eiusmod tempor incididunt 
-                  ut labore et dolore magna aliqua. 
-                  Ut enim ad minim veniam, quis 
-                  nostrud exercitation ullamco laboris 
-                  nisi ut aliquip ex ea commodo consequat. 
-                  Duis aute irure dolor in reprehenderit 
-                  in voluptate velit esse cillum dolore 
-                  eu fugiat nulla pariatur. Excepteur 
-                  sint occaecat cupidatat non proident, 
-                  sunt in culpa qui officia deserunt 
-                  mollit anim id est laborum.`
-		}
-	];
-
 	return (
-		<>
+		<Router>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<SwapForm />
-			<TransactionHistory data={data} />
-		</>
+			<Routes>
+				<Route path="/" element={<SwapForm />} />
+				<Route path="/transaction-history" element={<TransactionHistory />} />
+			</Routes>
+		</Router>
 	);
 };
 

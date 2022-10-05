@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../../styles';
-import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
-import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
+import destinationNetworks from '../data/destinationNetworks.json';
+import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
+import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
+import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -16,10 +16,10 @@ import {
 	removeZeros,
 	START_TOKEN,
 	useStore
-} from '../../helpers';
-import type { DestinationNetworks } from '../../helpers';
-import { useFees } from '../../hooks';
-import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../../components';
+} from '../helpers';
+import type { DestinationNetworks } from '../helpers';
+import { useFees } from '../hooks';
+import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
