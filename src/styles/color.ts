@@ -5,6 +5,7 @@ export type Theme = {
 	font: {
 		default: string;
 		pure: string;
+		select: string;
 	};
 	background: {
 		default: string;
@@ -33,7 +34,8 @@ export const lightTheme: Theme = {
 	name: 'light',
 	font: {
 		default: '#5A5A5A',
-		pure: '#5A5A5A'
+		pure: '#5A5A5A',
+		select: '#B4B4B4'
 	},
 	background: {
 		default: '#FFF',
@@ -62,7 +64,8 @@ export const darkTheme: Theme = {
 	name: 'dark',
 	font: {
 		default: '#8C8D8F',
-		pure: '#FFF'
+		pure: '#FFF',
+		select: '#B4B4B4'
 	},
 	background: {
 		default: '#161B20',

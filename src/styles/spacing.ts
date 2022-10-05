@@ -15,6 +15,7 @@ export const spacing = {
 	30: '1.875rem',
 	32: '2rem',
 	40: '2.5rem',
+	42: '2.625rem',
 	46: '2.875rem',
 	48: '3rem',
 	56: '3.5rem',
