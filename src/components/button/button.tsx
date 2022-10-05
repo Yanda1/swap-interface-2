@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ColorType } from '../../styles';
+import { ColorType, DEFAULT_TRANSIITON } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
@@ -128,7 +128,7 @@ const StyledButton = styled.button(
 					? theme.button.transparent
 					: '#FFF'};
 			border-radius: ${DEFAULT_BORDER_RADIUS};
-			transition: all 0.2s ease-in-out;
+			transition: ${DEFAULT_TRANSIITON};
 			margin: ${isSecondaryDefault && '1px'};
 			cursor: ${disabled && 'not-allowed'};
 
