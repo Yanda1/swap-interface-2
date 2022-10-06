@@ -87,7 +87,7 @@ const List = styled.ul`
 			: 'max-height 0.15s ease-out, border 0.2s ease-out, margin 0.2s eas-out 0.3s'};
 
 	${mediaQuery('s')} {
-		width: 100%;
+		width: calc(100% - 2px);
 	}
 `;
 
