@@ -116,7 +116,7 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props)
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
-		<QuestionMark style={{ width: 42, height: 42 }} />
+		<QuestionMark style={{ width: 40, height: 40 }} />
 	) : (
 		<Img src={icons[icon as DestinationNetworks]} alt={icon} iconOnly />
 	);
