@@ -136,7 +136,7 @@ export const Select = ({ data }: Props) => {
 	};
 
 	return (
-		<SelectWrapper theme={theme}>
+		<SelectWrapper theme={theme} data-testid="select">
 			<SelectBox theme={theme} onClick={() => setIsOpen(!isOpen)}>
 				{items.map((item: Data, i: number) => (
 					// @ts-ignore

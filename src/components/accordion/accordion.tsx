@@ -144,7 +144,7 @@ export const Accordion = ({ data }: Props) => {
 	};
 
 	return accordionItems?.length > 0 ? (
-		<Wrapper theme={theme}>
+		<Wrapper theme={theme} data-testid="accordion">
 			{accordionItems.map((item: DataProps, index: number) => (
 				<Card theme={theme} key={index}>
 					<TitleWrapper theme={theme} onClick={() => handleClick(index)}>
