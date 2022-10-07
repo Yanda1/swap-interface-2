@@ -1,9 +1,9 @@
-import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
 import { BLOCKS_AMOUNT, useStore } from '../../helpers';
 import { useState } from 'react';
 import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
+import { format } from 'date-fns';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -97,7 +97,7 @@ const ContentItem = styled.li(({ color }: Props) => {
 
 		&:last-child:before {
 			left: ${pxToRem(-6)};
-			background-color: ${color ? theme.button.default : theme.font.default};
+			background-color: ${color};
 		}
 	`;
 });
@@ -114,11 +114,12 @@ const ContentItemText = styled.p((props) => {
 
 const ContentItemLink = styled.a`
 	text-decoration: underline;
+	cursor: pointer;
 `;
 
 type Props = {
 	data?: any;
-	color?: boolean;
+	color?: string;
 	active?: any;
 };
 
@@ -129,10 +130,11 @@ export const Tabs = ({ data }: Props) => {
 	} = useStore();
 	const [toggle, setToggle] = useState(0);
 	const handleToggle = (index: number) => setToggle(index);
-	const orders = data && data[toggle].action;
+	const orders = data && data[toggle].action[1];
+	const withdrawal = data && data[toggle].action[0];
 
 	return (
-		<Wrapper>
+		<Wrapper data-testid="tabs-container">
 			{data?.length > 0 && (
 				<>
 					<TabsContainer>
@@ -179,40 +181,36 @@ export const Tabs = ({ data }: Props) => {
 									</ContentItemText>
 								</ContentItem>
 							) : null}
-							{orders?.length
-								? orders.map((item: any) => {
-										return (
-											<ContentItem key={Math.random()}>
-												<ContentItemTitle>Conversion GLMR {item.s.slice(4)}</ContentItemTitle>
-												<ContentItemText>Type: {item.t === 1 ? 'SELL' : 'BUY'}</ContentItemText>
-												<ContentItemText>Pair: {item.s}</ContentItemText>
-												<ContentItemText>Quantity: {item.q.replace(/0*$/, '')}</ContentItemText>
-												<ContentItemText>Price: {item.p}</ContentItemText>
-												<ContentItemText>
-													Time: {format(new Date(item.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
-												</ContentItemText>
-											</ContentItem>
-										);
-								  })
-								: null}
-							{data[toggle].withdraw && (
-								<ContentItem key={Math.random()}>
-									<ContentItemLink>Withdrawal confirmed!</ContentItemLink>
-									<ContentItemText>You can check transaction by link</ContentItemText>
-								</ContentItem>
-							)}
+							{orders ? (
+								<>
+									<ContentItem key={Math.random()}>
+										<ContentItemTitle>Conversion GLMR {orders.s.slice(4)}</ContentItemTitle>
+										<ContentItemText>Type: {orders.a === 1 ? 'SELL' : 'BUY'}</ContentItemText>
+										<ContentItemText>Pair: {orders.s}</ContentItemText>
+										<ContentItemText>Quantity: {orders.q}</ContentItemText>
+										<ContentItemText>Price: {orders.p}</ContentItemText>
+										<ContentItemText>
+											Time: {format(new Date(orders.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
+										</ContentItemText>
+									</ContentItem>
+									<ContentItem key={Math.random()}>
+										{withdrawal.t === 0 ? (
+											<ContentItemLink>Withdrawal confirmed</ContentItemLink>
+										) : (
+											<ContentItemText>Withdrawal confirmed</ContentItemText>
+										)}
+										<ContentItemText>You can check transaction by link</ContentItemText>
+									</ContentItem>
+								</>
+							) : null}
 							{data[toggle].complete === true ? (
-								<ContentItem key={Math.random()} color={data[toggle].complete}>
-									<ContentItemText
-										color={data[toggle].complete ? theme.button.default : theme.font.pure}>
-										Successful swap!
-									</ContentItemText>
+								<ContentItem key={Math.random()} color={theme.button.default}>
+									<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 								</ContentItem>
 							) : null}
 							{data[toggle].complete === null ? (
-								<ContentItem key={Math.random()} color={data[toggle].complete}>
-									<ContentItemText
-										color={data[toggle].complete ? theme.button.default : theme.font.pure}>
+								<ContentItem key={Math.random()} color={theme.font.pure}>
+									<ContentItemText color={theme.font.pure}>
 										Not valid operations spotted!
 									</ContentItemText>
 								</ContentItem>
