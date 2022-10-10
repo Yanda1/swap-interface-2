@@ -9,8 +9,24 @@ export const isNetworkSelected = (network: string) =>
 
 export const isTokenSelected = (token: string) => token !== 'Select Token' && token !== '';
 
-export const removeZeros = (n: string, digits?: number): string =>
-	digits ? Number(Number(n).toFixed(digits).toString()).toString() : Number(n).toString();
+type BeautifyNumbers = {
+	n: string | number;
+	digits?: number;
+};
+
+const trimZeros = (res: string): string =>
+	res.slice(-1) === '0' && res.slice(-2, -1) !== '.' ? trimZeros(res.slice(0, -1)) : res;
+
+export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
+	let res = '';
+	if (typeof n === 'number') {
+		res = n.toFixed(digits);
+	} else {
+		res = Number(n).toFixed(digits);
+	}
+
+	return trimZeros(res);
+};
 
 export const useWindowSize = () => {
 	const [size, setSize] = useState([0, 0]);

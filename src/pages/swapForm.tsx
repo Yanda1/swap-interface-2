@@ -13,7 +13,7 @@ import {
 	isNetworkSelected,
 	isTokenSelected,
 	realParseFloat,
-	removeZeros,
+	beautifyNumbers,
 	START_TOKEN,
 	useStore
 } from '../helpers';
@@ -114,6 +114,7 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
+	console.log('destinationAmount', Number(destinationAmount) < 0);
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
 	const [showModal, setShowModal] = useState(false);
@@ -128,12 +129,7 @@ export const SwapForm = () => {
 		if (isTokenSelected(destinationToken)) {
 			setLimit({
 				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
-				value:
-					minAmount && maxAmount
-						? +minAmount < +amount
-							? removeZeros(maxAmount, 8)
-							: removeZeros(minAmount, 8)
-						: '0',
+				value: minAmount && maxAmount ? (+minAmount < +amount ? maxAmount : minAmount) : '0',
 				error: +amount < +minAmount || +amount > Number(maxAmount)
 			});
 		} else {
@@ -150,9 +146,7 @@ export const SwapForm = () => {
 						(+amount / (1 + BINANCE_FEE)) * getPrice(START_TOKEN, destinationToken) -
 						withdrawFee.amount -
 						cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
-					)
-						.toFixed(8)
-						.toString()
+					).toString()
 				)
 			});
 		}
@@ -207,7 +201,7 @@ export const SwapForm = () => {
 						<SwapNames pos="end" single={false}>
 							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
 							<Name color={limit.error ? theme.button.error : theme.font.default}>
-								{limit.value}
+								{beautifyNumbers({ n: limit.value })}
 							</Name>
 						</SwapNames>
 					</NamesWrapper>
@@ -220,7 +214,12 @@ export const SwapForm = () => {
 				<Swap>
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
-						<TextField disabled value={removeZeros(destinationAmount)} />
+						<TextField
+							disabled
+							type="number"
+							value={beautifyNumbers({ n: destinationAmount })}
+							error={Number(destinationAmount) < 0}
+						/>
 					</SwapInput>
 					<NamesWrapper>
 						<SwapNames pos="end">
@@ -233,9 +232,9 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
-					: `1 GLMR = ${removeZeros(
-							getPrice(START_TOKEN, destinationToken).toString()
-					  )} ${destinationToken}`}
+					: `1 GLMR = ${beautifyNumbers({
+							n: getPrice(START_TOKEN, destinationToken)
+					  })} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}

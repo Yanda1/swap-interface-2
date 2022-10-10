@@ -2,7 +2,7 @@ import { lightTheme, darkTheme } from '../styles';
 import {
 	isLightTheme,
 	realParseFloat,
-	removeZeros,
+	beautifyNumbers,
 	isNetworkSelected,
 	isTokenSelected
 } from '../helpers';
@@ -20,9 +20,11 @@ describe('Helpers should return the correct values', () => {
 		expect(realParseFloat('9.876,54')).toBe('9876.54');
 	});
 
-	it('removeZeros() function should return the correct value', () => {
-		expect(removeZeros('12.00000000001')).toBe('12.00000000001');
-		expect(removeZeros('12.0010000000')).toBe('12.001');
+	it('beautifyNumbers() function should return the correct value', () => {
+		expect(beautifyNumbers({ n: '12.00000000001' })).toBe('12.00000000001');
+		expect(beautifyNumbers({ n: '12.0010000000' })).toBe('12.001');
+		expect(beautifyNumbers({ n: 12.00000000001 })).toBe('12.00000000001');
+		expect(beautifyNumbers({ n: 12.001 })).toBe('12.001');
 	});
 
 	it('isNetworkSelected() function should return the correct value', () => {
