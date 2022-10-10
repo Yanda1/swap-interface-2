@@ -137,7 +137,7 @@ export const Tabs = ({ data }: Props) => {
 		<Wrapper data-testid="tabs-container">
 			{data?.length > 0 && (
 				<>
-					<TabsContainer data-testid="tabs">
+					<TabsContainer>
 						{data?.length &&
 							data.map((item: any) => {
 								const index = data.indexOf(item);
