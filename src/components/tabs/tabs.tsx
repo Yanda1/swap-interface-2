@@ -86,17 +86,17 @@ const ContentItem = styled.li(({ color }: Props) => {
 
 		&:before {
 			content: '';
-			width: ${pxToRem(13)};
-			height: ${pxToRem(13)};
+			width: ${pxToRem(16)};
+			height: ${pxToRem(16)};
 			background: ${theme.font.default};
 			border-radius: 50%;
 			position: absolute;
-			left: ${pxToRem(-7)};
+			left: ${pxToRem(-8)};
 			top: 0;
 		}
 
 		&:last-child:before {
-			left: ${pxToRem(-6)};
+			left: ${pxToRem(-8)};
 			background-color: ${color};
 		}
 	`;
@@ -137,7 +137,7 @@ export const Tabs = ({ data }: Props) => {
 		<Wrapper data-testid="tabs-container">
 			{data?.length > 0 && (
 				<>
-					<TabsContainer>
+					<TabsContainer data-testid="tabs">
 						{data?.length &&
 							data.map((item: any) => {
 								const index = data.indexOf(item);

@@ -6,7 +6,7 @@ import { darkTheme, DEFAULT_BORDER_RADIUS, spacing } from '../../styles';
 import { format } from 'date-fns';
 
 describe('SelectList', () => {
-	it('Render tab component with one tab, content with correct data and styles', function () {
+	it('Render tab component with one tab', function () {
 		const eventsData = [
 			{
 				id: 0,
@@ -105,5 +105,62 @@ describe('SelectList', () => {
 		const itemTextStatus = getByText('Successful swap!');
 		expect(itemTextStatus).toBeInTheDocument();
 		expect(itemTextStatus).toHaveStyle(`color: ${darkTheme.button.default}`);
+	});
+
+	it.only('Render tab component with correct length, data and styles', function () {
+		const eventsData = [
+			{
+				id: 0,
+				costRequestCounter: 2,
+				depositBlock: 10,
+				action: [
+					{
+						t: 0,
+						a: 1,
+						s: 'GLMRBUSD',
+						q: 24.0,
+						p: 0.8503,
+						ts: 1654846854
+					}
+				],
+				withdraw: true,
+				complete: false
+			},
+			{
+				id: 0,
+				costRequestCounter: 1,
+				depositBlock: 30,
+				action: [
+					{
+						t: 0,
+						a: 1,
+						s: 'GLMRBTC',
+						q: 24.0,
+						p: 0.8503,
+						ts: 1654846854
+					}
+				],
+				withdraw: true,
+				complete: false
+			}
+		];
+
+		const { getByTestId } = render(
+			<AuthProvider>
+				<Tabs data={eventsData} />
+			</AuthProvider>
+		);
+
+		const wrapper = getByTestId('tabs-container');
+		expect(wrapper).toBeInTheDocument();
+		expect(wrapper).toMatchSnapshot();
+		expect(wrapper).toHaveStyle(`
+			display: flex;
+			flex-direction: column;
+			max-width: 100%;
+			`);
+
+		const TabsContainer = getByTestId('tabs');
+		expect(TabsContainer).toBeInTheDocument();
 	});
 });
