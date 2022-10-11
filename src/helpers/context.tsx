@@ -135,7 +135,7 @@ const initialState: State = {
 	isNetworkConnected: false,
 	accessToken: '',
 	refreshToken: '',
-	kycStatus: KycStatusEnum.PROCESS,
+	kycStatus: KycStatusEnum.PROCESS, // TODO: maybe change to INITIAL?
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: 'Select Wallet',

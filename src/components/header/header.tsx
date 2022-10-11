@@ -38,7 +38,7 @@ import {
 	routes,
 	BasicStatusEnum
 } from '../../helpers';
-import { ApiAuthType, MESSAGE } from '../../helpers';
+import { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
 import { useAxios } from '../../hooks';
 
@@ -101,7 +101,14 @@ const Menu = styled.ul`
 export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
 	const { state, dispatch } = useStore();
-	const { theme, buttonStatus, isUserVerified, accessToken, refreshToken, kycStatus } = state;
+	const {
+		theme,
+		buttonStatus,
+		isUserVerified,
+		accessToken,
+		kycStatus,
+		account: userAccount
+	} = state;
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	// @ts-ignore
 	const { addToast } = useToasts();
@@ -109,10 +116,13 @@ export const Header = () => {
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showModal, setShowModal] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
 	const menuRef = useRef<HTMLUListElement | null>(null);
+
+	const noKycStatusMessage = 'kyc verify not exist';
 
 	const isLight = isLightTheme(theme);
 	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
@@ -164,6 +174,7 @@ export const Header = () => {
 
 	const setTokensInStorageAndContext = async () => {
 		if (account) {
+			setIsLoading(true);
 			try {
 				const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
 				dispatch({ type: VerificationEnum.ACCESS, payload: res.access });
@@ -177,65 +188,53 @@ export const Header = () => {
 				// TODO: do we need toast here?
 				addToast('You have rejected signing the nonce. To proceed login again!', 'info');
 			}
+			setIsLoading(false);
 		}
 	};
 
 	const getBinanceToken = async () => {
 		try {
+			setIsLoading(true);
 			const res = await api.get(routes.kycToken);
 
-			if (res) {
-				setBinanceToken(res?.data?.token);
-			}
+			setBinanceToken(res?.data?.token);
+			setIsLoading(false);
 		} catch (error: any) {
 			await setTokensInStorageAndContext();
-			try {
-				const res = await api.get(routes.kycToken);
-				if (res) {
-					setBinanceToken(res.data.token);
-				}
-			} catch (e: any) {
-				addToast('Oops, something went wrong. Please reload and try again!', 'error');
-			}
 		}
 	};
 
 	const checkStatus = async () => {
-		if (!accessToken && !refreshToken) {
-			await setTokensInStorageAndContext();
-		}
-
-		if (!isUserVerified) {
+		if (!isUserVerified && account === userAccount) {
+			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
-				if (res) {
-					const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
-					dispatch({
-						type: KycEnum.STATUS,
-						payload: kyc
-					});
-					setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
-
-					if (kycStatus === KycStatusEnum.REJECT) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-						addToast('Your KYC process has been rejected - please start again!', 'warning');
-					}
-					if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
-						dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-					}
-					if (
-						kycStatus !== KycStatusEnum.REJECT &&
-						kycStatus !== KycStatusEnum.PASS &&
-						basic !== BasicStatusEnum.INITIAL
-					)
-						dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
+				if (res.data.errorData === noKycStatusMessage) {
+					await getBinanceToken();
+				}
+				const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
+				dispatch({
+					type: KycEnum.STATUS,
+					payload: kyc
+				});
+				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
+				// TODO: move this part to context?
+				if (kycStatus === KycStatusEnum.REJECT) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+					addToast('Your KYC process has been rejected - please start again!', 'warning');
+				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				} else if (kycStatus === KycStatusEnum.REVIEW) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
+				} else {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				}
 			} catch (error: any) {
-				if (error?.message !== MESSAGE.ignore) {
-					addToast('Oops, something went wrong - please try again', 'warning');
+				if (error?.response?.status === 401) {
 					await setTokensInStorageAndContext();
 				}
 			}
+			setIsLoading(false);
 		}
 	};
 
@@ -253,8 +252,10 @@ export const Header = () => {
 		}
 
 		if (chainId && account) {
-			if (buttonStatus === button.PASS_KYC) {
+			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
+			} else if (buttonStatus === button.LOGIN) {
+				await setTokensInStorageAndContext();
 			} else {
 				void checkStatus();
 			}
@@ -329,7 +330,7 @@ export const Header = () => {
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, refreshToken, accessToken]);
+	}, [kycStatus, accessToken, account, userAccount]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -350,6 +351,7 @@ export const Header = () => {
 				<Wallet token="GLMR" account={account} />
 			) : (
 				<Button
+					isLoading={isLoading}
 					variant="secondary"
 					onClick={handleButtonClick}
 					color={buttonStatus.color as ColorType}>

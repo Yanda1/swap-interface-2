@@ -9,10 +9,11 @@ export const INITIAL_STORAGE = {
 };
 
 export const MESSAGE = {
-	ignore: 'ignore'
+	ignore: 'ignore',
+	failed: 'Request failed'
 };
 
-export const BIZ_ENTRY_KEY = 'YANDA';
+export const BIZ_ENTRY_KEY = 'BMYBIT';
 export const BINANCE_PROD_URL = 'https://api.commonservice.io';
 export const BINANCE_DEV_URL = 'https://dip-qacb.sdtaop.com';
 export const BINANCE_SCRIPT =
@@ -33,7 +34,7 @@ export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
 export const SERVICE_ADDRESS = '0xeB56c1d19855cc0346f437028e6ad09C80128e02';
 
 export const CONTRACT_ADDRESSES = {
-	1284: '0x4cB60D5337AbE781aDfBD2a2c1FB4c8ffF5F7264',
+	1284: '0x6136F6c8FdC1c711892d217d0D5E95928dce6b20',
 	1287: '0x2d249342F1F6D549CE8253782c8A2b9218c68fB2',
 	31337: '0x0165878A594ca255338adfa4d48449f69242Eb8F'
 };

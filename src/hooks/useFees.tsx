@@ -313,7 +313,7 @@ export const useFees = () => {
 				const notionalMinAmount = +notional.minNotional * getPrice(destinationToken, START_TOKEN);
 				const { minQty, maxQty } = lot;
 				const lotSizeMinAmount = +minQty * getPrice(START_TOKEN, START_TOKEN);
-				const lotSizeMaxAmount = +maxQty * getPrice(START_TOKEN, START_TOKEN);
+				const lotSizeMaxAmount = +maxQty * getPrice(START_TOKEN, START_TOKEN); // TODO: check if numbers only modified when displayed to user (not)
 				const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
 
 				minAmount = (
