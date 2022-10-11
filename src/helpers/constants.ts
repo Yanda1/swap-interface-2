@@ -39,6 +39,8 @@ export const CONTRACT_ADDRESSES = {
 	31337: '0x0165878A594ca255338adfa4d48449f69242Eb8F'
 };
 
+export const BLOCKS_AMOUNT = 30;
+
 export const makeId = (length: number) => {
 	let result = '';
 	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -8,7 +8,6 @@ import {
 	AmountEnum,
 	BINANCE_FEE,
 	DestinationNetworkEnum,
-	Fee,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
@@ -17,7 +16,7 @@ import {
 	START_TOKEN,
 	useStore
 } from '../helpers';
-import type { DestinationNetworks } from '../helpers';
+import type { DestinationNetworks, Fee } from '../helpers';
 import { useFees } from '../hooks';
 import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 
@@ -114,7 +113,6 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
-	console.log('destinationAmount', Number(destinationAmount) < 0);
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
 	const [showModal, setShowModal] = useState(false);

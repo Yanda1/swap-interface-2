@@ -23,5 +23,6 @@ export const spacing = {
 	64: '4rem',
 	70: '4.375rem',
 	72: '4.5rem',
+	76: '4.75rem',
 	80: '5rem'
 };

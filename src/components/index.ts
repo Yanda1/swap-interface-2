@@ -13,3 +13,4 @@ export * from './toast/toast';
 export * from './wallet/wallet';
 export * from './network/network';
 export * from './accordion/accordion';
+export * from './tabs/tabs';

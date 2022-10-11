@@ -1,5 +1,5 @@
 import './styles/fonts/font.css';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import type { Theme } from './styles';
 import {
@@ -7,6 +7,7 @@ import {
 	fontSize,
 	fontStyle,
 	fontWeight,
+	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
 	viewport,
@@ -15,6 +16,7 @@ import {
 import { Header } from './components';
 import { SwapForm, TransactionHistory } from './pages';
 import { useStore } from './helpers';
+import { TabModal } from './components/tabs/tabModal';
 
 type Props = {
 	theme: Theme;
@@ -52,6 +54,11 @@ export const GlobalStyles = createGlobalStyle`
 	}
 `;
 
+const Wrapper = styled.main`
+	margin: 0 auto;
+	max-width: ${MAIN_MAX_WIDTH};
+`;
+
 const App = () => {
 	const {
 		state: { theme }
@@ -62,7 +69,7 @@ const App = () => {
 			<GlobalStyles theme={theme} />
 			<Header />
 			<Routes>
-				<Route path="/" element={<SwapForm />} />
+				<Route path="/" element={<Wrapper><SwapForm /><TabModal /></Wrapper>} />
 				<Route path="/transaction-history" element={<TransactionHistory />} />
 			</Routes>
 		</Router>

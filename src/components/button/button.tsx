@@ -109,7 +109,7 @@ const StyledButton = styled.button(
 			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)};
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
-			color: ${isPure || isPrimaryDisabled
+			color: ${isPure
 				? theme.font.pure
 				: isSecondaryDefault || isPrimaryTransparent
 				? theme.button.default
