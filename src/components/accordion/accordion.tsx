@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
+import { TabContent } from '../../components';
 import { useStore } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -10,6 +11,29 @@ import {
 } from '../../styles';
 import type { Theme } from '../../styles';
 import { spacing } from '../../styles';
+import type { TransactionData } from '../../hooks';
+
+const tabContentData = {
+	id: 0,
+	costRequestCounter: 1,
+	depositBlock: 10,
+	action: [
+		{
+			t: 0,
+			id: '39ff037641ab4658b4f1d2831e9132ce'
+		},
+		{
+			t: 0,
+			a: 1,
+			s: 'GLMRBUSD',
+			q: 24.0,
+			p: 0.8503,
+			ts: 1654846854
+		}
+	],
+	withdraw: true,
+	complete: true
+};
 
 type StyleProps = {
 	theme: Theme;
@@ -85,7 +109,7 @@ const Arrow = styled.div`
 
 const Content = styled.div`
 	height: ${(props: StyleProps) =>
-		props.open ? pxToRem(300) : pxToRem(30)}; // TODO: adjust to content height: ;
+		props.open ? '540px' : pxToRem(30)}; // TODO: adjust to content height
 	color: ${(props: StyleProps) => props.theme.font.pure};
 	text-align: center;
 	position: relative;
@@ -108,11 +132,7 @@ const ContentText = styled.div(
 	`
 );
 
-type DataProps = {
-	title: any;
-	content: string;
-	open: boolean;
-};
+type DataProps = TransactionData & { open: boolean };
 
 type Props = { data: Omit<DataProps, 'open'>[] };
 
@@ -168,7 +188,9 @@ export const Accordion = ({ data }: Props) => {
 					</TitleWrapper>
 					{/* @ts-ignore */}
 					<Content theme={theme} open={item.open}>
-						<ContentText open={item.open}>{item.content}</ContentText>
+						<ContentText open={item.open}>
+							<TabContent data={[tabContentData]} type="history" />
+						</ContentText>
 					</Content>
 				</Card>
 			))}
