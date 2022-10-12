@@ -199,7 +199,7 @@ export const SwapForm = () => {
 						<SwapNames pos="end" single={false}>
 							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
 							<Name color={limit.error ? theme.button.error : theme.font.default}>
-								{beautifyNumbers({ n: limit.value })}
+								{isTokenSelected(destinationToken) && beautifyNumbers({ n: limit.value })}
 							</Name>
 						</SwapNames>
 					</NamesWrapper>

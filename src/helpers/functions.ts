@@ -19,6 +19,7 @@ const trimZeros = (res: string): string =>
 
 export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
 	let res = '';
+	if (n === '') return '';
 	if (typeof n === 'number') {
 		res = n.toFixed(digits);
 	} else {
@@ -54,6 +55,7 @@ export const useBreakpoint = (size: BreakpointOrNumber) => {
 };
 
 export const realParseFloat = (s: string): string => {
+	if (s.split('').includes('e')) return s;
 	s = s.replace(/[^\d,.-]/g, ''); // strip everything except numbers, dots, commas and negative sign
 	if (
 		navigator.language.substring(0, 2) !== 'de' &&
