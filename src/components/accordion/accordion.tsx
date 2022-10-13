@@ -94,7 +94,7 @@ const Arrow = styled.div`
 
 const Content = styled.div`
 	height: ${(props: StyleProps) =>
-		props.open ? '400px' : pxToRem(30)}; // TODO: adjust to content height
+		props.open ? '375px' : pxToRem(30)}; // TODO: adjust to content height
 	color: ${(props: StyleProps) => props.theme.font.pure};
 	text-align: center;
 	position: relative;
@@ -108,12 +108,17 @@ const Content = styled.div`
 
 const ContentText = styled.div(
 	({ open }: { open: boolean }) => css`
+		display: flex;
 		visibility: ${open ? 'visible' : 'hidden'};
 		opacity: ${open ? '1' : '0'};
 		overflow: auto;
-		padding: ${spacing[12]} ${spacing[20]};
+		padding: ${spacing[12]} ${spacing[48]} ${spacing[12]} ${spacing[20]};
 		overflow-y: scroll;
 		transition: ${open ? 'all 0.4s ease-in' : 'all 0.2s ease-in'};
+
+		${mediaQuery('s')} {
+			display: inline-block;
+		}
 	`
 );
 
@@ -188,51 +193,60 @@ export const Accordion = ({ data }: Props) => {
 					{/* @ts-ignore */}
 					<Content theme={theme} open={item.open}>
 						<ContentText open={item.open}>
-							<ContentList>
-								{!item.content ? (
-									<>
-										<ContentItemText>This swap has not been completed.</ContentItemText>{' '}
-										<ContentItem theme={theme}>
-											<ContentItemText color={theme.button.error}>
-												Unsuccessful swap!
-											</ContentItemText>
-										</ContentItem>
-									</>
-								) : (
-									<>
-										<ContentItem theme={theme}>
-											<ContentItemTitle>Successfull Deposit</ContentItemTitle>
-											<ContentItemText>Gas fee: {item.gasFee}</ContentItemText>
-										</ContentItem>
-										<ContentItem theme={theme}>
-											<ContentItemTitle>Buy Order {item.header?.symbol}</ContentItemTitle>
-											<ContentItemText>
-												Quantity: {beautifyNumbers({ n: item.content?.qty })} {item.header?.scoin}
-											</ContentItemText>
-											<ContentItemText>Exchange Rate: {item.content?.price}</ContentItemText>
-											<ContentItemText>Date: {formatDate(item.content?.timestamp)}</ContentItemText>
-											<ContentItemText>
-												CEX Fee: {beautifyNumbers({ n: item.content?.cexFee })} {item.header?.fcoin}
-											</ContentItemText>
-										</ContentItem>
-										<ContentItem theme={theme}>
-											<ContentItemLink theme={theme} href={item.withdrawl?.url} target="_blank">
-												Withdraw Transaction Link
-											</ContentItemLink>
-											<ContentItemText>
-												Withdrawal Fee: {beautifyNumbers({ n: item.withdrawl?.withdrawFee ?? '' })}{' '}
-												{item.header?.fcoin}
-											</ContentItemText>
-										</ContentItem>
-										<ContentItem theme={theme}>
-											<ContentItemText
-												color={item.content?.success ? theme.button.default : theme.button.error}>
-												{item.content?.success ? 'Successful swap!' : 'Unsuccessful swap!'}
-											</ContentItemText>
-										</ContentItem>
-									</>
-								)}
-							</ContentList>
+							<div style={{ flex: 1 }} />
+							<div style={{ flex: 6 }}>
+								<ContentList>
+									{!item.content ? (
+										<>
+											<ContentItemText>This swap has not been completed.</ContentItemText>{' '}
+											<ContentItem theme={theme}>
+												<ContentItemText color={theme.button.error}>
+													Unsuccessful swap!
+												</ContentItemText>
+											</ContentItem>
+										</>
+									) : (
+										<>
+											<ContentItem theme={theme}>
+												<ContentItemTitle>Successfull Deposit</ContentItemTitle>
+												<ContentItemText>Gas fee: {item.gasFee}</ContentItemText>
+											</ContentItem>
+											<ContentItem theme={theme}>
+												<ContentItemTitle>Buy Order {item.header?.symbol}</ContentItemTitle>
+												<ContentItemText>
+													Quantity: {beautifyNumbers({ n: item.content?.qty })} {item.header?.scoin}
+												</ContentItemText>
+												<ContentItemText>Exchange Rate: {item.content?.price}</ContentItemText>
+												<ContentItemText>
+													Date: {formatDate(item.content?.timestamp)}
+												</ContentItemText>
+												<ContentItemText>
+													CEX Fee: {beautifyNumbers({ n: item.content?.cexFee })}{' '}
+													{item.header?.fcoin}
+												</ContentItemText>
+											</ContentItem>
+											<ContentItem theme={theme}>
+												<ContentItemLink
+													theme={theme}
+													onClick={() => window.open(item.withdrawl?.url)}>
+													Withdraw Transaction Link
+												</ContentItemLink>
+												<ContentItemText>
+													Withdrawal Fee:{' '}
+													{beautifyNumbers({ n: item.withdrawl?.withdrawFee ?? '' })}{' '}
+													{item.header?.fcoin}
+												</ContentItemText>
+											</ContentItem>
+											<ContentItem theme={theme}>
+												<ContentItemText
+													color={item.content?.success ? theme.button.default : theme.button.error}>
+													{item.content?.success ? 'Successful swap!' : 'Unsuccessful swap!'}
+												</ContentItemText>
+											</ContentItem>
+										</>
+									)}
+								</ContentList>
+							</div>
 						</ContentText>
 					</Content>
 				</Card>

@@ -1,7 +1,7 @@
 import { BLOCKS_AMOUNT, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled from 'styled-components';
-import { pxToRem, spacing, fontSize, fontWeight } from '../../styles';
+import { pxToRem, spacing, fontSize, fontWeight, theme, mediaQuery } from '../../styles';
 import type { Theme } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 
@@ -17,31 +17,32 @@ type StyleProps = Props & { theme: Theme };
 const Content = styled.div`
 	color: ${(props: StyleProps) => props.theme.font.pure};
 	padding: ${spacing[20]};
-	font-size: ${fontSize[16]};
-	line-height: ${fontSize[16]};
+
 	display: block;
 	background: ${(props: StyleProps) => props.theme.background.mobile};
 	border: 1px solid
 		${(props: StyleProps) => (props.type === 'history' ? 'transparent' : props.theme.button.wallet)};
 `;
 
-const ContentList = styled.ul`
+export const ContentList = styled.ul`
 	list-style: none;
 	padding: 0;
 `;
 
-const ContentItem = styled.li`
+export const ContentItem = styled.li`
 	list-style: none;
 	padding: 0;
 	padding: 0 0 ${spacing[26]} ${spacing[20]};
 	border-left: 1px solid ${(props: StyleProps) => props.theme.font.default};
 	position: relative;
 	margin-left: ${spacing[10]};
+	font-size: ${fontSize[16]};
 
 	&:last-child {
 		border: 0;
 		padding-bottom: 0;
 	}
+
 	&:before {
 		content: '';
 		width: ${pxToRem(16)};
@@ -51,25 +52,37 @@ const ContentItem = styled.li`
 		position: absolute;
 		left: ${pxToRem(-8)};
 		top: 0;
+
+		${mediaQuery('s')} {
+			width: ${pxToRem(14)};
+			height: ${pxToRem(14)};
+			left: ${pxToRem(-7)};
+		}
 	}
 
 	&:last-child:before {
-		left: ${pxToRem(-8)};
 		background-color: ${(props: StyleProps) => props.color};
+	}
+
+	&:last-of-type > div {
+		line-height: ${fontSize[16]};
 	}
 `;
 
-const ContentItemTitle = styled.div`
+export const ContentItemTitle = styled.div`
+	line-height: ${fontSize[16]};
 	font-weight: ${fontWeight.bold};
 	margin-bottom: ${spacing[4]};
 `;
 
-const ContentItemText = styled.div`
+export const ContentItemText = styled.div`
 	color: ${(props: StyleProps) => props.color};
 	line-height: ${fontSize[22]};
 `;
 
-const ContentItemLink = styled.a`
+export const ContentItemLink = styled.div`
+	color: ${(props: StyleProps) => props.theme.font.default};
+	line-height: ${fontSize[16]};
 	text-decoration: underline;
 	cursor: pointer;
 `;
@@ -130,7 +143,7 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 						</ContentItem>
 						<ContentItem theme={theme}>
 							{withdrawal.t === 0 ? (
-								<ContentItemLink>Withdrawal confirmed</ContentItemLink>
+								<ContentItemLink theme={theme}>Withdrawal confirmed</ContentItemLink>
 							) : (
 								<ContentItemText>Withdrawal confirmed</ContentItemText>
 							)}
@@ -145,7 +158,7 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 				) : null}
 				{data?.[toggle].complete === null ? (
 					<ContentItem theme={theme} color={theme.font.pure}>
-						<ContentItemText color={theme.font.pure}>Not valid operations spotted!</ContentItemText>
+						<ContentItemText color={theme.font.pure}>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
 			</ContentList>
