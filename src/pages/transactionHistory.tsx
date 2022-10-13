@@ -42,21 +42,28 @@ const selectDates = [
 
 export const TransactionHistory = () => {
 	const [searchTerm, setSearchTerm] = useState('');
-	const { data } = useTransactions();
+	const { data, loading } = useTransactions();
+	console.log('data', data);
 
 	return (
 		<Wrapper>
-			<Inputs>
-				<TextField
-					value={searchTerm}
-					type="search"
-					placeholder="Search"
-					onChange={(e) => setSearchTerm(e.target.value)}
-				/>
-				<Select data={selectData} />
-				<Select data={selectDates} />
-			</Inputs>
-			<Accordion data={data} />
+			{loading ? (
+				'Loading .... '
+			) : (
+				<>
+					<Inputs>
+						<TextField
+							value={searchTerm}
+							type="search"
+							placeholder="Search"
+							onChange={(e) => setSearchTerm(e.target.value)}
+						/>
+						<Select data={selectData} />
+						<Select data={selectDates} />
+					</Inputs>
+					<Accordion data={data} />
+				</>
+			)}
 		</Wrapper>
 	);
 };

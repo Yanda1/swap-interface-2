@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
+import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import { TabContent } from '../../components';
-import { useStore } from '../../helpers';
+import {
+	ContentItem,
+	ContentItemTitle,
+	ContentList,
+	ContentItemText,
+	ContentItemLink
+} from '../../components';
+import { beautifyNumbers, useStore, WEI_TO_GLMR } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
 	DEFAULT_TRANSIITON,
@@ -12,28 +19,6 @@ import {
 import type { Theme } from '../../styles';
 import { spacing } from '../../styles';
 import type { TransactionData } from '../../hooks';
-
-const tabContentData = {
-	id: 0,
-	costRequestCounter: 1,
-	depositBlock: 10,
-	action: [
-		{
-			t: 0,
-			id: '39ff037641ab4658b4f1d2831e9132ce'
-		},
-		{
-			t: 0,
-			a: 1,
-			s: 'GLMRBUSD',
-			q: 24.0,
-			p: 0.8503,
-			ts: 1654846854
-		}
-	],
-	withdraw: true,
-	complete: true
-};
 
 type StyleProps = {
 	theme: Theme;
@@ -109,7 +94,7 @@ const Arrow = styled.div`
 
 const Content = styled.div`
 	height: ${(props: StyleProps) =>
-		props.open ? '540px' : pxToRem(30)}; // TODO: adjust to content height
+		props.open ? '400px' : pxToRem(30)}; // TODO: adjust to content height
 	color: ${(props: StyleProps) => props.theme.font.pure};
 	text-align: center;
 	position: relative;
@@ -148,7 +133,7 @@ export const Accordion = ({ data }: Props) => {
 			accordion.push({ ...dataset, open: false });
 		});
 		setAccordionItems(accordion);
-	}, []);
+	}, [data]);
 
 	const handleClick = (index: number) => {
 		if (accordionItems.length > 0) {
@@ -163,22 +148,36 @@ export const Accordion = ({ data }: Props) => {
 		}
 	};
 
+	const formatDate = (ts: number): string => format(new Date(ts * 1000), 'dd/MM/yyyy hh:mm');
+
 	return accordionItems?.length > 0 ? (
 		<Wrapper theme={theme} data-testid="accordion">
 			{accordionItems.map((item: DataProps, index: number) => (
 				<Card theme={theme} key={index}>
 					<TitleWrapper theme={theme} onClick={() => handleClick(index)}>
 						<TitleTab flex={1} mobile={true}>
-							<TitleText color={theme.font.pure}>{item.title?.symbol}</TitleText>
+							<TitleText color={theme.font.pure}>{item.header.symbol}</TitleText>
 						</TitleTab>
 						<TitleTab>
-							Deposit Time: <TitleText color={theme.font.pure}>{item.title?.date}</TitleText>
+							Deposit Time:{' '}
+							<TitleText color={theme.font.pure}>
+								{/* TODO: timezone? */}
+								{formatDate(item.header?.timestamp)}
+							</TitleText>
 						</TitleTab>
 						<TitleTab>
-							Sent: <TitleText color={theme.font.pure}>{item.title?.withdrawn}</TitleText>
+							Sent:{' '}
+							<TitleText color={theme.font.pure}>
+								{beautifyNumbers({ n: +item.header?.samt * WEI_TO_GLMR })} {item.header?.scoin}{' '}
+								(Moonbeam)
+							</TitleText>
 						</TitleTab>
 						<TitleTab>
-							Reiceved: <TitleText color={theme.font.pure}>{item.title?.received}</TitleText>
+							Reiceved:{' '}
+							<TitleText color={theme.font.pure}>
+								{beautifyNumbers({ n: item.withdrawl?.amount ?? '' })} {item.header?.fcoin} (
+								{item.header?.net})
+							</TitleText>
 						</TitleTab>
 						{/* @ts-ignore */}
 						<ArrowWrapper open={item.open} theme={theme}>
@@ -189,7 +188,51 @@ export const Accordion = ({ data }: Props) => {
 					{/* @ts-ignore */}
 					<Content theme={theme} open={item.open}>
 						<ContentText open={item.open}>
-							<TabContent data={[tabContentData]} type="history" />
+							<ContentList>
+								{!item.content ? (
+									<>
+										<ContentItemText>This swap has not been completed.</ContentItemText>{' '}
+										<ContentItem theme={theme}>
+											<ContentItemText color={theme.button.error}>
+												Unsuccessful swap!
+											</ContentItemText>
+										</ContentItem>
+									</>
+								) : (
+									<>
+										<ContentItem theme={theme}>
+											<ContentItemTitle>Successfull Deposit</ContentItemTitle>
+											<ContentItemText>Gas fee: {item.gasFee}</ContentItemText>
+										</ContentItem>
+										<ContentItem theme={theme}>
+											<ContentItemTitle>Buy Order {item.header?.symbol}</ContentItemTitle>
+											<ContentItemText>
+												Quantity: {beautifyNumbers({ n: item.content?.qty })} {item.header?.scoin}
+											</ContentItemText>
+											<ContentItemText>Exchange Rate: {item.content?.price}</ContentItemText>
+											<ContentItemText>Date: {formatDate(item.content?.timestamp)}</ContentItemText>
+											<ContentItemText>
+												CEX Fee: {beautifyNumbers({ n: item.content?.cexFee })} {item.header?.fcoin}
+											</ContentItemText>
+										</ContentItem>
+										<ContentItem theme={theme}>
+											<ContentItemLink theme={theme} href={item.withdrawl?.url} target="_blank">
+												Withdraw Transaction Link
+											</ContentItemLink>
+											<ContentItemText>
+												Withdrawal Fee: {beautifyNumbers({ n: item.withdrawl?.withdrawFee ?? '' })}{' '}
+												{item.header?.fcoin}
+											</ContentItemText>
+										</ContentItem>
+										<ContentItem theme={theme}>
+											<ContentItemText
+												color={item.content?.success ? theme.button.default : theme.button.error}>
+												{item.content?.success ? 'Successful swap!' : 'Unsuccessful swap!'}
+											</ContentItemText>
+										</ContentItem>
+									</>
+								)}
+							</ContentList>
 						</ContentText>
 					</Content>
 				</Card>

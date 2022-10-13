@@ -1,19 +1,42 @@
 import { useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
-import { utils } from 'ethers';
+import { utils, BigNumber } from 'ethers';
 import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
 import { Contract } from '@ethersproject/contracts';
-import { BLOCK_CONTRACT_NUMBER, CONTRACT_ADDRESSES, SERVICE_ADDRESS, useStore } from '../helpers';
+import {
+	BINANCE_FEE,
+	BLOCK_CONTRACT_NUMBER,
+	CONTRACT_ADDRESSES,
+	routes,
+	SERVICE_ADDRESS,
+	useStore
+} from '../helpers';
+import { useAxios } from './useAxios';
 
 export type TransactionData = {
 	blockNumber: number;
 	header: {
-		timestamp: number | undefined;
+		timestamp: number;
 		symbol: string;
 		scoin: string;
 		fcoin: string;
 		samt: string;
+		net: string;
 	};
+	content: {
+		qty: string;
+		price: string;
+		timestamp: number;
+		cexFee: string;
+		withdrawFee: string;
+		success: boolean;
+	} | null;
+	gasFee: string;
+	withdrawl: {
+		amount: string;
+		withdrawFee: string;
+		url: string;
+	} | null;
 };
 
 export const useTransactions = () => {
@@ -27,6 +50,7 @@ export const useTransactions = () => {
 	const {
 		state: { account }
 	} = useStore();
+	const api = useAxios();
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
 	// web3Provider
@@ -52,29 +76,60 @@ export const useTransactions = () => {
 	const getTransactionData = () => {
 		setLoading(true);
 		events.map(async (transaction) => {
-			// console.log('transaction', transaction);
 			let dataset = {} as TransactionData;
 			dataset.blockNumber = transaction?.blockNumber;
-			const { scoin, fcoin, samt } = JSON.parse(transaction?.args?.data);
-
-			const depositFilter = contract.filters.Deposit(account, SERVICE_ADDRESS, transaction.args[2]);
-			const depositRes = await contract.queryFilter(depositFilter, transaction?.blockNumber);
-			console.log('deposit res', depositRes);
+			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
 
 			const actionFilter = contract.filters.Action(account, SERVICE_ADDRESS, transaction.args[2]);
 			const actionRes = await contract.queryFilter(actionFilter, transaction?.blockNumber);
-			console.log('action res', actionRes);
+			if (actionRes.length === 0) {
+				dataset = {
+					...dataset,
+					content: null,
+					withdrawl: null
+				};
+			}
+			if (actionRes.length === 2) {
+				const { q: qty, p: price, ts: timestamp } = JSON.parse(actionRes[0]?.args?.data);
+				const { id } = JSON.parse(actionRes[1]?.args?.data);
 
-			const completeFilter = contract.filters.Complete(
-				account,
-				SERVICE_ADDRESS,
-				transaction.args[2]
-			);
-			const completeRes = await contract.queryFilter(completeFilter, transaction?.blockNumber);
-			console.log('complete res', completeRes);
+				try {
+					const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
+					const {
+						data: { amount, url, withdrawFee }
+					} = withdrawLink;
+
+					dataset = { ...dataset, withdrawl: { amount, url, withdrawFee } };
+				} catch (e) {
+					console.log('error in withdrawLink', e);
+				}
+
+				const completeFilter = contract.filters.Complete(
+					account,
+					SERVICE_ADDRESS,
+					transaction.args[2]
+				);
+				const completeRes = await contract.queryFilter(completeFilter, transaction?.blockNumber);
+				const success = JSON.parse(completeRes[0]?.args?.success);
+
+				dataset = {
+					...dataset,
+					content: {
+						qty,
+						price,
+						timestamp,
+						cexFee: (qty * price * BINANCE_FEE).toString(),
+						withdrawFee: '',
+						success
+					}
+				};
+			}
 
 			try {
 				const block = await transaction.getBlock();
+				const gasFee = utils.formatEther(
+					BigNumber.from(block.baseFeePerGas['_hex']).mul(BigNumber.from(block.gasUsed['_hex']))
+				);
 				dataset = {
 					...dataset,
 					header: {
@@ -82,8 +137,10 @@ export const useTransactions = () => {
 						symbol: `${scoin}${fcoin}`,
 						scoin,
 						fcoin,
-						samt
-					}
+						samt,
+						net
+					},
+					gasFee
 				};
 			} catch (e) {
 				console.log('error', e);
