@@ -3,6 +3,7 @@ import { useContractFunction, useEthers, useSendTransaction } from '@usedapp/cor
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
+import type { ContractAdress } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
 	isNetworkSelected,
@@ -14,7 +15,6 @@ import {
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import styled from 'styled-components';
 import { spacing } from '../../styles';
-import type { ContractAdress } from '../../helpers';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -71,7 +71,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				daddr: destinationAddress,
 				tag: destinationMemo
 			};
-
+			localStorage.setItem('product', JSON.stringify(productId));
 			const shortNamedValues = JSON.stringify(namedValues);
 
 			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
