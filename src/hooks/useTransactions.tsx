@@ -9,35 +9,10 @@ import {
 	CONTRACT_ADDRESSES,
 	routes,
 	SERVICE_ADDRESS,
+	TransactionData,
 	useStore
 } from '../helpers';
 import { useAxios } from './useAxios';
-
-export type TransactionData = {
-	blockNumber: number;
-	header: {
-		timestamp: number;
-		symbol: string;
-		scoin: string;
-		fcoin: string;
-		samt: string;
-		net: string;
-	};
-	content: {
-		qty: string;
-		price: string;
-		timestamp: number;
-		cexFee: string;
-		withdrawFee: string;
-		success: boolean;
-	} | null;
-	gasFee: string;
-	withdrawl: {
-		amount: string;
-		withdrawFee: string;
-		url: string;
-	} | null;
-};
 
 export const useTransactions = () => {
 	const [loading, setLoading] = useState(false);
@@ -53,10 +28,6 @@ export const useTransactions = () => {
 	const api = useAxios();
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
-	// web3Provider
-	// 	?.getBlockNumber()
-	// 	.then((block: any) => console.log('block', block))
-	// 	.catch((error: any) => console.log('error', error));
 	const getAllTransactions = async () => {
 		if (account) {
 			setLoading(true);
@@ -75,7 +46,7 @@ export const useTransactions = () => {
 
 	const getTransactionData = () => {
 		setLoading(true);
-		events.map(async (transaction) => {
+		const transactions = events.map(async (transaction) => {
 			let dataset = {} as TransactionData;
 			dataset.blockNumber = transaction?.blockNumber;
 			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
@@ -142,11 +113,18 @@ export const useTransactions = () => {
 					},
 					gasFee
 				};
+
+				return dataset;
 			} catch (e) {
 				console.log('error', e);
 			}
-			setData([...data, dataset]);
 		});
+
+		Promise.all(transactions)
+			// @ts-ignore
+			.then((data: TransactionData[]) => setData(data))
+			.catch((e) => console.log('error in PromiseAll', e));
+
 		setLoading(false);
 	};
 

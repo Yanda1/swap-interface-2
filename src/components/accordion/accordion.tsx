@@ -9,6 +9,7 @@ import {
 	ContentItemLink
 } from '../../components';
 import { beautifyNumbers, useStore, WEI_TO_GLMR } from '../../helpers';
+import type { TransactionData } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
 	DEFAULT_TRANSIITON,
@@ -18,7 +19,6 @@ import {
 } from '../../styles';
 import type { Theme } from '../../styles';
 import { spacing } from '../../styles';
-import type { TransactionData } from '../../hooks';
 
 type StyleProps = {
 	theme: Theme;
@@ -56,6 +56,7 @@ const TitleWrapper = styled.div`
 	position: relative;
 	z-index: 10;
 	display: flex;
+	gap: ${spacing[8]};
 	justify-content: space-between;
 `;
 
@@ -134,7 +135,7 @@ export const Accordion = ({ data }: Props) => {
 
 	useEffect(() => {
 		const accordion: any[] = [];
-		data.forEach((dataset) => {
+		data?.forEach((dataset) => {
 			accordion.push({ ...dataset, open: false });
 		});
 		setAccordionItems(accordion);
@@ -199,11 +200,9 @@ export const Accordion = ({ data }: Props) => {
 									{!item.content ? (
 										<>
 											<ContentItemText>This swap has not been completed.</ContentItemText>{' '}
-											<ContentItem theme={theme}>
-												<ContentItemText color={theme.button.error}>
-													Unsuccessful swap!
-												</ContentItemText>
-											</ContentItem>
+											<ContentItemText color={theme.button.error}>
+												Unsuccessful swap!
+											</ContentItemText>
 										</>
 									) : (
 										<>
