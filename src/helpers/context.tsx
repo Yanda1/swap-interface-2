@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
-import { darkTheme } from '../styles';
 import type { ColorType, Theme } from '../styles';
+import { darkTheme } from '../styles';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -55,6 +55,10 @@ export enum ButtonEnum {
 	BUTTON = 'SET_BUTTON_STATUS'
 }
 
+export enum ProductIdEnum {
+	PRODUCTID = 'PRODUCTID'
+}
+
 type VerificationAction = {
 	type: VerificationEnum;
 	payload: boolean | string;
@@ -85,13 +89,19 @@ type AmountAction = {
 	payload: string;
 };
 
+type ProductIdAction = {
+	type: ProductIdEnum;
+	payload: string;
+};
+
 type Action =
 	| VerificationAction
 	| ButtonAction
 	| KycAction
 	| ThemeAction
 	| DestinationNetworkAction
-	| AmountAction;
+	| AmountAction
+	| ProductIdAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -109,6 +119,7 @@ type State = {
 	destinationAmount: string;
 	destinationMemo: string;
 	amount: string;
+	productId: string;
 };
 
 enum ButtonName {
@@ -144,7 +155,8 @@ const initialState: State = {
 	destinationAddress: '',
 	destinationAmount: '',
 	destinationMemo: '',
-	amount: ''
+	amount: '',
+	productId: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -183,6 +195,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, destinationAmount: action.payload };
 		case DestinationNetworkEnum.MEMO:
 			return { ...state, destinationMemo: action.payload };
+		case ProductIdEnum.PRODUCTID:
+			return { ...state, productId: action.payload };
 		default:
 			return state;
 	}

@@ -5,7 +5,7 @@ import { utils } from 'ethers';
 import { Tabs } from './tabs';
 import { pxToRem } from '../../styles';
 import { Contract } from '@ethersproject/contracts';
-import { CONTRACT_ADDRESSES, ContractAdress, SERVICE_ADDRESS } from '../../helpers';
+import { CONTRACT_ADDRESSES, ContractAdress, SERVICE_ADDRESS, useStore } from '../../helpers';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 
 const Wrapper = styled.div`
@@ -18,31 +18,34 @@ const Paragraph = styled.p`
 `;
 
 export const TabModal = () => {
+	const {
+		state: { productId }
+	} = useStore();
 	const { account } = useEthers();
 	const { chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
-	const product: any = localStorage.getItem('product');
-	const productId = JSON.parse(product);
 	// const namedValues = localStorage.getItem('namedValues');
 
 	const [eventsData, setEventsData] = useState<
 		{
-			productId: number;
+			id: number;
+			productId: string;
 			costRequestCounter: number;
 			depositBlock: number;
 			action: object[];
-			withdraw: boolean;
+			withdraw: object[];
 			complete: boolean;
 		}[]
 	>([
 		{
-			productId: 1,
+			id: 1,
+			productId,
 			costRequestCounter: 0,
 			depositBlock: 0,
 			action: [],
-			withdraw: false,
+			withdraw: [],
 			complete: false
 		}
 	]);
@@ -51,27 +54,30 @@ export const TabModal = () => {
 		const eventsDataCopy = [...eventsData];
 		const eventDataIndex = eventsDataCopy.findIndex(
 			(event: {
-				productId: number;
+				id: number;
+				productId: string;
 				costRequestCounter: number;
 				depositBlock: number;
 				action: object[];
-				withdraw: boolean;
+				withdraw: object[];
 				complete: boolean;
-			}) => event.productId === 1
+			}) => event.id === 1
 		);
+
 		const swap = eventsDataCopy[eventDataIndex];
-		if (swap) {
-			if (swap.costRequestCounter < 2) {
-				contract.on(
-					contract.filters.CostRequest(account, SERVICE_ADDRESS, productId),
-					(account, service, localProductId, amount, event) => {
-						console.log('---COST REQUEST EVENT---', event);
-						swap.costRequestCounter += 1;
-					}
-				);
-				eventsDataCopy[eventDataIndex] = swap;
-				setEventsData(eventsDataCopy);
-			}
+		swap.productId = productId;
+		if (swap && productId) {
+			console.log('Im HERE ', { swap, productId });
+			contract.on(
+				contract.filters.CostRequest(account, SERVICE_ADDRESS, productId),
+				(account, service, localProductId, amount, event) => {
+					console.log('COST REQUEST COUNTER:', swap.costRequestCounter);
+					console.log('---COST REQUEST EVENT---', event);
+					swap.costRequestCounter += 1;
+				}
+			);
+			eventsDataCopy[eventDataIndex] = swap;
+			setEventsData(eventsDataCopy);
 
 			if (swap.depositBlock === 0) {
 				contract.on(
@@ -85,17 +91,16 @@ export const TabModal = () => {
 				setEventsData(eventsDataCopy);
 			}
 
-			if (!swap.withdraw) {
+			if (!swap.withdraw.length) {
 				contract.on(
 					contract.filters.Action(account, SERVICE_ADDRESS, productId),
 					(customer, service, localProductId, data, event) => {
 						console.log('---ORDER EVENT---', event);
 						const parsedData = JSON.parse(event.args?.data);
 						if (parsedData.t === 0) {
-							// @ts-ignore
 							swap.action = [parsedData];
 						} else {
-							swap.withdraw = true;
+							swap.withdraw = [parsedData];
 						}
 					}
 				);

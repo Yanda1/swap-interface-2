@@ -9,6 +9,7 @@ import {
 	isNetworkSelected,
 	isTokenSelected,
 	makeId,
+	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
+	const { dispatch } = useStore();
 	const {
 		state: {
 			destinationNetwork,
@@ -71,7 +73,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				daddr: destinationAddress,
 				tag: destinationMemo
 			};
-			localStorage.setItem('product', JSON.stringify(productId));
+			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
 
 			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);

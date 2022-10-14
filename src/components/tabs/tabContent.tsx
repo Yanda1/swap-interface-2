@@ -88,8 +88,16 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data && data[toggle].action[1];
-	const withdrawal = data && data[toggle].action[0];
+	const orders = data && data[toggle].action[0];
+	const withdrawal = data && data[toggle].withdraw[0];
+	const withdrawalLink: any = null;
+
+	const headers = {
+		Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIweGZDZGIzM2JCNTlFZDhBMDFCOTBDYzEwOTgzMGFFZWVhY2Q1QWY3M2MiLCJ0eXBlIjoicmVmcmVzaCIsImV4cCI6MTY2NTgzNjM1NH0.3u4SubmpjncJ3kTEIE-QVDGSrlUlCPo55wTcnksqbT8
+`,
+		'Content-Type': 'application/json',
+		'Access-Control-Allow-Origin': '*'
+	};
 
 	return (
 		<Content>
@@ -100,7 +108,7 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 							Swap Request Validation ({data[toggle].costRequestCounter}/2)
 						</ContentItemTitle>
 						<ContentItemText>
-							{data[toggle].costRequestCounter === 1
+							{data[toggle].costRequestCounter < 2
 								? 'Your Swap request is under validation. Please wait until full confirmation.'
 								: 'Your Swap request successfully validated.'}
 						</ContentItemText>
@@ -116,35 +124,38 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{data[toggle].depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber - data[toggle].depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: !data[toggle].action
+								: currentBlockNumber - data[toggle].depositBlock >= BLOCKS_AMOUNT &&
+								  !data[toggle].action.length
 								? 'Your deposit is received and should be confirmed soon.'
 								: null}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
 				{orders ? (
-					<>
-						<ContentItem key={Math.random()}>
-							<ContentItemTitle>Conversion GLMR {orders.s.slice(4)}</ContentItemTitle>
-							<ContentItemText>Type: {orders.a === 1 ? 'SELL' : 'BUY'}</ContentItemText>
-							<ContentItemText>Pair: {orders.s}</ContentItemText>
-							<ContentItemText>Quantity: {orders.q}</ContentItemText>
-							<ContentItemText>Price: {orders.p}</ContentItemText>
-							<ContentItemText>
-								Time: {format(new Date(orders.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
-							</ContentItemText>
-						</ContentItem>
-						<ContentItem key={Math.random()}>
-							{withdrawal.t === 0 ? (
-								<ContentItemLink>Withdrawal confirmed</ContentItemLink>
-							) : (
-								<ContentItemText>Withdrawal confirmed</ContentItemText>
-							)}
-							<ContentItemText>You can check transaction by link</ContentItemText>
-						</ContentItem>
-					</>
+					<ContentItem key={Math.random()}>
+						<ContentItemTitle>Conversion GLMR {orders.s.slice(4)}</ContentItemTitle>
+						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
+						<ContentItemText>Pair: {orders.s}</ContentItemText>
+						<ContentItemText>Quantity: {orders.q}</ContentItemText>
+						<ContentItemText>Price: {orders.p}</ContentItemText>
+						<ContentItemText>
+							Time: {format(new Date(orders.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
+						</ContentItemText>
+					</ContentItem>
+				) : null}
+				{withdrawal && !withdrawalLink ? (
+					<ContentItem key={Math.random()}>
+						<ContentItemLink>Withdrawal in progress</ContentItemLink>
+						<ContentItemText>
+							Your funds is almost there, we are waiting for their landing into your wallet.
+						</ContentItemText>
+					</ContentItem>
+				) : withdrawalLink ? (
+					<ContentItem key={Math.random()}>
+						<ContentItemLink href={withdrawalLink.url}>Withdrawal confirmed</ContentItemLink>
+					</ContentItem>
 				) : null}
 				{data[toggle].complete === true ? (
 					<ContentItem key={Math.random()} color={theme.button.default}>
