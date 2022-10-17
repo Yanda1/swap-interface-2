@@ -142,8 +142,6 @@ export const useTransactions = () => {
 		void getAllTransactions();
 	}, [account, latestBlockNumber]);
 
-	console.log('transactions', data);
-
 	useEffect(() => {
 		if (transactions.length > 0) {
 			setLoading(true);

@@ -1,7 +1,15 @@
 import { BLOCKS_AMOUNT, useStore } from '../../helpers';
 import { format } from 'date-fns';
-import styled from 'styled-components';
-import { pxToRem, spacing, fontSize, fontWeight, theme, mediaQuery } from '../../styles';
+import styled, { css } from 'styled-components';
+import {
+	pxToRem,
+	spacing,
+	fontSize,
+	fontWeight,
+	theme,
+	mediaQuery,
+	DEFAULT_TRANSIITON
+} from '../../styles';
 import type { Theme } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 
@@ -71,20 +79,30 @@ export const ContentItem = styled.li`
 
 export const ContentItemTitle = styled.div`
 	line-height: ${fontSize[16]};
-	font-weight: ${fontWeight.bold};
 	margin-bottom: ${spacing[4]};
 `;
 
-export const ContentItemText = styled.div`
-	color: ${(props: StyleProps) => props.color};
-	line-height: ${fontSize[22]};
-`;
+export const ContentItemText = styled.div(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		color: ${(props: StyleProps) => (props.color ? props.color : theme.font.select)};
+		line-height: ${fontSize[22]};
+	`;
+});
 
 export const ContentItemLink = styled.div`
-	color: ${(props: StyleProps) => props.theme.font.default};
+	color: ${(props: StyleProps) => props.theme.font.pure};
 	line-height: ${fontSize[16]};
 	text-decoration: underline;
 	cursor: pointer;
+	transition: ${DEFAULT_TRANSIITON};
+
+	&:hover {
+		color: ${(props: StyleProps) => props.theme.button.default};
+	}
 `;
 
 export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
