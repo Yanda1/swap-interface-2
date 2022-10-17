@@ -5,6 +5,7 @@ import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
 import { Contract } from '@ethersproject/contracts';
 import {
 	BINANCE_FEE,
+	BLOCK_CHUNK_SIZE,
 	BLOCK_CONTRACT_NUMBER,
 	CONTRACT_ADDRESSES,
 	routes,
@@ -17,7 +18,9 @@ import { useAxios } from './useAxios';
 export const useTransactions = () => {
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState<TransactionData[]>([]);
+	const [transactions, setTransactions] = useState([]);
 	const [events, setEvents] = useState<any[]>([]);
+	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(null);
 
 	const { chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
@@ -27,26 +30,36 @@ export const useTransactions = () => {
 	} = useStore();
 	const api = useAxios();
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
+	web3Provider
+		?.getBlockNumber()
+		.then((res: number) => setLatestBlockNumber(res))
+		.catch((e) => console.log('e in latestBlockNumber', e));
 
 	const getAllTransactions = async () => {
-		if (account) {
+		if (account && latestBlockNumber) {
 			setLoading(true);
 			const costRequestFilter = contract.filters.CostRequest(account, SERVICE_ADDRESS);
+			let allEvents: any[] = [];
 
-			try {
-				const events = await contract.queryFilter(costRequestFilter, BLOCK_CONTRACT_NUMBER); // TODO: optimise by splitting the entire request into smaller fetching parts
-				const dataEvents = events.filter((event) => event?.args?.data);
-				setEvents(dataEvents);
-			} catch (e) {
-				console.log('error in costRequestFilter', e);
+			for (let i = BLOCK_CONTRACT_NUMBER; i < latestBlockNumber; i += BLOCK_CHUNK_SIZE) {
+				const endBlock = Math.min(latestBlockNumber, i + BLOCK_CHUNK_SIZE - 1);
+
+				try {
+					const splitEvents = await contract.queryFilter(costRequestFilter, i, endBlock);
+					const dataEvents = splitEvents.filter((event) => event?.args?.data);
+					allEvents = [...allEvents, ...dataEvents];
+				} catch (e) {
+					console.log('error in costRequestFilter', e);
+				}
 			}
+			setEvents(allEvents);
 			setLoading(false);
 		}
 	};
 
 	const getTransactionData = () => {
 		setLoading(true);
-		const transactions = events.map(async (transaction) => {
+		const allTransactionPromises = events.map(async (transaction) => {
 			let dataset = {} as TransactionData;
 			dataset.blockNumber = transaction?.blockNumber;
 			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
@@ -104,6 +117,7 @@ export const useTransactions = () => {
 				dataset = {
 					...dataset,
 					header: {
+						...dataset.header,
 						timestamp: block.timestamp,
 						symbol: `${scoin}${fcoin}`,
 						scoin,
@@ -120,17 +134,26 @@ export const useTransactions = () => {
 			}
 		});
 
-		Promise.all(transactions)
-			// @ts-ignore
-			.then((data: TransactionData[]) => setData(data))
-			.catch((e) => console.log('error in PromiseAll', e));
-
+		setTransactions(allTransactionPromises as any);
 		setLoading(false);
 	};
 
 	useEffect(() => {
 		void getAllTransactions();
-	}, [account]);
+	}, [account, latestBlockNumber]);
+
+	console.log('transactions', data);
+
+	useEffect(() => {
+		if (transactions.length > 0) {
+			setLoading(true);
+			Promise.all<TransactionData>(transactions)
+				// @ts-ignore
+				.then((data: TransactionData[]) => setData(data))
+				.catch((e) => console.log('error in PromiseAll', e));
+			setLoading(false);
+		}
+	}, [transactions]);
 
 	useEffect(() => {
 		getTransactionData();
