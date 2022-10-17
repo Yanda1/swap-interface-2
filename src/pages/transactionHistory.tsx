@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import styled from 'styled-components';
-import { TextField, Select, Accordion } from '../components';
+import { TextField, Select, Accordion, Spinner } from '../components';
+import { useStore } from '../helpers';
 import { useTransactions } from '../hooks';
 import { mediaQuery, spacing, viewport } from '../styles';
 
 const Wrapper = styled.main`
 	max-width: ${viewport[1062]};
 	margin: 0 auto;
+`;
+
+const SpinnerWrapper = styled.div`
+	margin-top: ${spacing[24]};
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: ${spacing[8]};
 `;
 
 const Inputs = styled.div`
@@ -43,6 +53,9 @@ const selectDates = [
 export const TransactionHistory = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const { data, loading } = useTransactions();
+	const {
+		state: { theme }
+	} = useStore();
 
 	return (
 		<Wrapper>
@@ -56,7 +69,15 @@ export const TransactionHistory = () => {
 				<Select data={selectData} />
 				<Select data={selectDates} />
 			</Inputs>{' '}
-			{loading ? 'Loading .... ' : <Accordion data={data} />}
+			{loading ? (
+				<SpinnerWrapper>
+					{' '}
+					<Spinner size="medium" color={theme.background.history} />
+					Fetching your transaction history
+				</SpinnerWrapper>
+			) : (
+				<Accordion data={data} />
+			)}
 		</Wrapper>
 	);
 };

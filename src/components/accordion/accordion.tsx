@@ -28,7 +28,8 @@ type StyleProps = {
 };
 
 const Message = styled.div`
-	margin-top: ${spacing[20]};
+	margin-top: ${spacing[24]};
+	text-align: center;
 `;
 
 export const Wrapper = styled.div`
