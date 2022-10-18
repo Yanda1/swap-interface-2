@@ -1,0 +1,202 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Select should match snapshot 1`] = `
+.c0 {
+  position: relative;
+  font-size: 1rem;
+  color: #B4B4B4;
+  line-height: 1.25rem;
+}
+
+.c1 {
+  border: 1px solid #494949;
+  max-height: 50px;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  min-width: 9.6875rem;
+  cursor: pointer;
+  gap: 0.75rem;
+  border-radius: 0.375rem;
+  padding: 0.875rem 1.25rem;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c1:hover,
+.c1:active {
+  border-color: #FFF;
+  outline: none;
+}
+
+.c2 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.c2 input[type='checkbox'] {
+  display: none;
+}
+
+.c5 {
+  display: none;
+}
+
+.c5 input[type='checkbox'] {
+  display: none;
+}
+
+.c3 {
+  margin: 0;
+}
+
+.c4 {
+  margin: 0;
+}
+
+.c6 {
+  position: absolute;
+  top: 2.625rem;
+  border: 0px solid #494949;
+  min-width: 9.6875rem;
+  border-radius: 0.375rem;
+  padding: 0;
+  z-index: 100;
+  background: #161B20;
+  list-style: none;
+  overflow: hidden;
+  max-height: 0;
+  -webkit-transition: max-height 0.15s ease-out,border 0.2s ease-out,margin 0.2s eas-out 0.3s;
+  transition: max-height 0.15s ease-out,border 0.2s ease-out,margin 0.2s eas-out 0.3s;
+}
+
+.c7 {
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c7:hover {
+  background: #494949;
+}
+
+@media (max-width:760px) {
+  .c1 {
+    width: calc(100% - 42px);
+  }
+}
+
+@media (max-width:760px) {
+  .c6 {
+    width: calc(100% - 2px);
+  }
+}
+
+<div
+  class="c0"
+  data-testid="select"
+>
+  <div
+    class="c1"
+  >
+    <div
+      class="c2"
+    >
+      <input
+        checked=""
+        class="c3"
+        type="checkbox"
+        value="Sort by"
+      />
+      <p
+        class="c4"
+      >
+        Sort by
+      </p>
+    </div>
+    <div
+      class="c5"
+    >
+      <input
+        class="c3"
+        type="checkbox"
+        value="ETHGLMR"
+      />
+      <p
+        class="c4"
+      >
+        ETHGLMR
+      </p>
+    </div>
+    <div
+      class="c5"
+    >
+      <input
+        class="c3"
+        type="checkbox"
+        value="BTCETH"
+      />
+      <p
+        class="c4"
+      >
+        BTCETH
+      </p>
+    </div>
+    <div
+      class="c5"
+    >
+      <input
+        class="c3"
+        type="checkbox"
+        value="ETHKDJKF"
+      />
+      <p
+        class="c4"
+      >
+        ETHKDJKF
+      </p>
+    </div>
+    <svg
+      style="transform: rotate(0deg); transition: all .2s ease-in-out;"
+    >
+      arrow-full-light.svg
+    </svg>
+  </div>
+  <ul
+    class="c6"
+  >
+    <li
+      class="c7"
+    >
+      Sort by
+    </li>
+    <li
+      class="c7"
+    >
+      ETHGLMR
+    </li>
+    <li
+      class="c7"
+    >
+      BTCETH
+    </li>
+    <li
+      class="c7"
+    >
+      ETHKDJKF
+    </li>
+  </ul>
+</div>
+`;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Moonbeam, useEthers } from '@usedapp/core';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -100,15 +101,10 @@ const Menu = styled.ul`
 
 export const Header = () => {
 	const { isBreakpointWidth } = useBreakpoint('s');
-	const { state, dispatch } = useStore();
 	const {
-		theme,
-		buttonStatus,
-		isUserVerified,
-		accessToken,
-		kycStatus,
-		account: userAccount
-	} = state;
+		state: { buttonStatus, isUserVerified, accessToken, kycStatus, account: userAccount, theme },
+		dispatch
+	} = useStore();
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	// @ts-ignore
 	const { addToast } = useToasts();
@@ -121,6 +117,8 @@ export const Header = () => {
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
 	const menuRef = useRef<HTMLUListElement | null>(null);
+	const navigate = useNavigate();
+	const { pathname } = useLocation();
 
 	const noKycStatusMessage = 'kyc verify not exist';
 
@@ -140,7 +138,7 @@ export const Header = () => {
 				capture: true
 			});
 		}
-		setShowMenu((showMenu) => !showMenu);
+		setShowMenu(false);
 	};
 
 	const handleOutsideClick = (e: any): void => {
@@ -219,12 +217,12 @@ export const Header = () => {
 				});
 				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
 				// TODO: move this part to context?
-				if (kycStatus === KycStatusEnum.REJECT) {
+				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					addToast('Your KYC process has been rejected - please start again!', 'warning');
 				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-				} else if (kycStatus === KycStatusEnum.REVIEW) {
+				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				} else {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
@@ -342,8 +340,12 @@ export const Header = () => {
 				<LogoDark style={{ marginRight: 'auto' }} />
 			)}
 			{!isBreakpointWidth && (
-				<Button variant="pure" onClick={() => console.log('header')}>
-					Transaction History
+				<Button
+					variant="pure"
+					onClick={() =>
+						navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/')
+					}>
+					{pathname !== '/transaction-history' ? 'Transaction History' : 'Swap Form'}
 				</Button>
 			)}
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}

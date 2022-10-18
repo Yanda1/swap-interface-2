@@ -3,12 +3,31 @@ import { breakpoint } from './../styles';
 import { useLayoutEffect, useState } from 'react';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
+
 export const isNetworkSelected = (network: string) =>
 	network !== 'Select Network' && network !== '';
+
 export const isTokenSelected = (token: string) => token !== 'Select Token' && token !== '';
 
-export const removeZeros = (n: string, digits?: number): string =>
-	digits ? Number(Number(n).toFixed(digits).toString()).toString() : Number(n).toString();
+type BeautifyNumbers = {
+	n: string | number;
+	digits?: number;
+};
+
+const trimZeros = (res: string): string =>
+	res.slice(-1) === '0' && res.slice(-2, -1) !== '.' ? trimZeros(res.slice(0, -1)) : res;
+
+export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
+	let res = '';
+	if (n === '') return '';
+	if (typeof n === 'number') {
+		res = n.toFixed(digits);
+	} else {
+		res = Number(n).toFixed(digits);
+	}
+
+	return trimZeros(res);
+};
 
 export const useWindowSize = () => {
 	const [size, setSize] = useState([0, 0]);
@@ -36,6 +55,7 @@ export const useBreakpoint = (size: BreakpointOrNumber) => {
 };
 
 export const realParseFloat = (s: string): string => {
+	if (s.split('').includes('e')) return s;
 	s = s.replace(/[^\d,.-]/g, ''); // strip everything except numbers, dots, commas and negative sign
 	if (
 		navigator.language.substring(0, 2) !== 'de' &&

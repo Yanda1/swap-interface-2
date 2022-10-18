@@ -35,14 +35,16 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationToken,
 			destinationAddress,
 			destinationMemo,
-			isUserVerified
+			isUserVerified,
+			destinationAmount
 		}
 	} = useStore();
 	const isDisabled =
 		!validInputs ||
 		!isNetworkSelected(destinationNetwork) ||
 		!isTokenSelected(destinationToken) ||
-		!isUserVerified;
+		!isUserVerified ||
+		Number(destinationAmount) < 0;
 
 	const { account, chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';

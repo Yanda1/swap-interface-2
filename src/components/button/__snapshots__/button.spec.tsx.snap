@@ -21,8 +21,8 @@ exports[`Button should render a default button 1`] = `
   background-color: #00A8E8;
   border: 1px solid transparent;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 .c0:hover {
@@ -67,8 +67,8 @@ exports[`Button should render a primary disabled button 1`] = `
   background-color: #6D6D6D;
   border: 1px solid #6D6D6D;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
   cursor: not-allowed;
 }
 
@@ -115,8 +115,8 @@ exports[`Button should render a primary disabled button 2`] = `
   background-color: #6D6D6D;
   border: 1px solid #6D6D6D;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
   cursor: not-allowed;
 }
 
@@ -163,8 +163,8 @@ exports[`Button should render a pure button 1`] = `
   background-color: transparent;
   border: 1px solid transparent;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 .c0:hover {
@@ -209,8 +209,8 @@ exports[`Button should render a secondary default button 1`] = `
   background-color: transparent;
   border: 1px solid #00A8E8;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
   margin: 1px;
 }
 
@@ -256,8 +256,8 @@ exports[`Button should render a secondary error button 1`] = `
   background-color: #DE3434;
   border: 1px solid #FFF;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 .c0:hover {
@@ -305,8 +305,8 @@ exports[`Button should render a secondary icon button 1`] = `
   background-color: #172631;
   border: 1px solid #FFF;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 .c0:hover {
@@ -355,8 +355,8 @@ exports[`Button should render a secondary warning button 1`] = `
   background-color: #FD862F;
   border: 1px solid #FFF;
   border-radius: 0.375rem;
-  -webkit-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
 
 .c0:hover {

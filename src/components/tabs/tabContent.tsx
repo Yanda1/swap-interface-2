@@ -1,133 +1,155 @@
 import { BLOCKS_AMOUNT, makeId, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import { pxToRem, spacing } from '../../styles';
+import {
+	pxToRem,
+	spacing,
+	fontSize,
+	fontWeight,
+	theme,
+	mediaQuery,
+	DEFAULT_TRANSIITON
+} from '../../styles';
+import type { Theme } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 
-const Content = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
-
-	return css`
-		color: ${theme.font.pure};
-		padding: ${spacing[20]};
-		display: block;
-		background: ${theme.background.mobile};
-		border: 1px solid ${theme.button.wallet};
-	`;
-});
-
-const ContentList = styled.ul`
-	list-style: none;
-	padding: 0;
-`;
-
-const ContentItem = styled.li(({ color }: Props) => {
-	const {
-		state: { theme }
-	} = useStore();
-
-	return css`
-		list-style: none;
-		padding: 0 0 ${spacing[26]} ${spacing[20]};
-		border-left: 1px solid ${theme.font.default};
-		position: relative;
-		margin-left: ${spacing[10]};
-
-		&:last-child {
-			border: 0;
-			padding-bottom: 0;
-			vertical-align: baseline;
-		}
-
-		&:last-child > p {
-			margin: 0;
-		}
-
-		&:before {
-			content: '';
-			width: ${pxToRem(16)};
-			height: ${pxToRem(16)};
-			background: ${theme.font.default};
-			border-radius: 50%;
-			position: absolute;
-			left: ${pxToRem(-8)};
-			top: 0;
-		}
-
-		&:last-child:before {
-			left: ${pxToRem(-8)};
-			background-color: ${color};
-		}
-	`;
-});
-
-const ContentItemTitle = styled.h3`
-	margin: 0;
-`;
-
-const ContentItemText = styled.p((props) => {
-	return css`
-		color: ${props.color};
-	`;
-});
-
-const ContentItemLink = styled.a`
-	text-decoration: underline;
-	cursor: pointer;
-`;
 type Props = {
 	data?: any;
 	color?: string;
 	toggle?: number;
+	type?: 'history' | 'swap';
 };
 
-export const TabContent = ({ data, toggle = 0 }: Props) => {
+type StyleProps = Props & { theme: Theme };
+
+const Content = styled.div`
+	color: ${(props: StyleProps) => props.theme.font.pure};
+	padding: ${spacing[20]};
+
+	display: block;
+	background: ${(props: StyleProps) => props.theme.background.mobile};
+	border: 1px solid
+		${(props: StyleProps) => (props.type === 'history' ? 'transparent' : props.theme.button.wallet)};
+`;
+
+export const ContentList = styled.ul`
+	list-style: none;
+	padding: 0;
+`;
+
+export const ContentItem = styled.li`
+	list-style: none;
+	padding: 0;
+	padding: 0 0 ${spacing[26]} ${spacing[20]};
+	border-left: 1px solid ${(props: StyleProps) => props.theme.font.default};
+	position: relative;
+	margin-left: ${spacing[10]};
+	font-size: ${fontSize[16]};
+
+	&:last-child {
+		border: 0;
+		padding-bottom: 0;
+	}
+
+	&:before {
+		content: '';
+		width: ${pxToRem(16)};
+		height: ${pxToRem(16)};
+		background: ${(props: StyleProps) => props.theme.font.default};
+		border-radius: 50%;
+		position: absolute;
+		left: ${pxToRem(-8)};
+		top: 0;
+
+		${mediaQuery('s')} {
+			width: ${pxToRem(14)};
+			height: ${pxToRem(14)};
+			left: ${pxToRem(-7)};
+		}
+	}
+
+	&:last-child:before {
+		background-color: ${(props: StyleProps) => props.color};
+	}
+
+	&:last-of-type > div {
+		line-height: ${fontSize[16]};
+	}
+`;
+
+export const ContentItemTitle = styled.div`
+	line-height: ${fontSize[16]};
+	margin-bottom: ${spacing[4]};
+`;
+
+export const ContentItemText = styled.div(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		color: ${(props: StyleProps) => (props.color ? props.color : theme.font.select)};
+		line-height: ${fontSize[22]};
+	`;
+});
+
+export const ContentItemLink = styled.div`
+	color: ${(props: StyleProps) => props.theme.font.pure};
+	line-height: ${fontSize[16]};
+	text-decoration: underline;
+	cursor: pointer;
+	transition: ${DEFAULT_TRANSIITON};
+
+	&:hover {
+		color: ${(props: StyleProps) => props.theme.button.default};
+	}
+`;
+
+export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 	const currentBlockNumber = useBlockNumber();
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data[toggle].action[0];
-	const withdrawal = data[toggle].withdraw[0];
-	const withdrawalLink: any = null;
+	const orders = data?[toggle]?.action[0];
+	const withdrawal = data?[toggle]?.withdraw[0];
 
 	return (
-		<Content>
+		// @ts-ignore
+		<Content theme={theme} type={type}>
 			<ContentList>
-				{data[toggle].costRequestCounter ? (
-					<ContentItem key={makeId(32)}>
+				{data?.[toggle].costRequestCounter ? (
+					<ContentItem theme={theme} color={data.color} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Request Validation ({data[toggle].costRequestCounter}/2)
+							Swap Request Validation ({data?.[toggle].costRequestCounter}/2)
 						</ContentItemTitle>
 						<ContentItemText>
-							{data[toggle].costRequestCounter < 2
+							{data?[toggle].costRequestCounter < 2
 								? 'Your Swap request is under validation. Please wait until full confirmation.'
 								: 'Your Swap request successfully validated.'}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{currentBlockNumber && data[toggle].depositBlock ? (
-					<ContentItem key={makeId(32)}>
+				{currentBlockNumber && data?.[toggle]?.depositBlock ? (
+					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							{!data[toggle].action.length
+							{!data?.[toggle]?.action.length
 								? `Deposit confirmation (${
-										currentBlockNumber - data[toggle].depositBlock
+										currentBlockNumber - data?.[toggle]?.depositBlock
 								  }/${BLOCKS_AMOUNT})`
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{currentBlockNumber - data[toggle].depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber - data?[toggle].depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: currentBlockNumber - data[toggle].depositBlock >= BLOCKS_AMOUNT &&
-								  !data[toggle].action.length
+								: currentBlockNumber - data?[toggle].depositBlock >= BLOCKS_AMOUNT &&
+								  !data?[toggle].action.length
 								? 'Your deposit is received and should be confirmed soon.'
 								: null}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
 				{orders ? (
-					<ContentItem key={makeId(32)}>
+					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>Conversion GLMR {orders.s.slice(4)}</ContentItemTitle>
 						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
@@ -138,26 +160,27 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{withdrawal && !withdrawalLink ? (
-					<ContentItem key={makeId(32)}>
-						<ContentItemLink>Withdrawal in progress</ContentItemLink>
+				{withdrawal.t === 0 && !withdrawalLink ? (
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemLink>Withdrawal confirmed</ContentItemLink>
 						<ContentItemText>
 							Your funds is almost there, we are waiting for their landing into your wallet.
 						</ContentItemText>
 					</ContentItem>
 				) : withdrawalLink ? (
-					<ContentItem key={makeId(32)}>
-						<ContentItemLink href={withdrawalLink.url}>Withdrawal confirmed</ContentItemLink>
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemLink>Withdrawal confirmed</ContentItemLink>
+						<ContentItemText>You can check transaction by link</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data[toggle].complete === true ? (
-					<ContentItem key={makeId(32)} color={theme.button.default}>
+				{data?.[toggle].complete === true ? (
+					<ContentItem theme={theme} color={theme.button.default}>
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data[toggle].complete === null ? (
-					<ContentItem key={makeId(32)} color={theme.font.pure}>
-						<ContentItemText color={theme.font.pure}>Not valid operations spotted!</ContentItemText>
+				{data?.[toggle].complete === null ? (
+					<ContentItem theme={theme} color={theme.font.pure}>
+						<ContentItemText color={theme.font.pure}>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
 			</ContentList>

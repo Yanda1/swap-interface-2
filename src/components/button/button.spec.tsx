@@ -5,50 +5,6 @@ import { AuthProvider } from '../../helpers';
 import { darkTheme, lightTheme, MAIN_MAX_WIDTH, pxToRem } from '../../styles';
 import { Button } from './button';
 
-const onCheckStyles = (button: string) => {
-	if (button === 'primary default') {
-		return expect(screen.getByText(/Primary default Button/)).toHaveStyle(
-			`background-color: ${
-				lightTheme.button.default
-			}; color: #FFF; border: 1px solid transparent; max-width: ${pxToRem(428)}; cursor: pointer;`
-		);
-	} else if (button === 'secondary default') {
-		return expect(screen.getByText(/Secondary default Button/)).toHaveStyle(
-			`background-color: transparent; color: ${lightTheme.button.default}; border: 1px solid ${
-				lightTheme.button.default
-			}; max-width: ${pxToRem(160)}`
-		);
-	} else if (button === 'secondary icon') {
-		return expect(screen.getByText(/Secondary icon Button/)).toHaveStyle(
-			`background-color: ${
-				lightTheme.button.icon
-			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
-		);
-	} else if (button === 'secondary warning') {
-		return expect(screen.getByText(/Secondary warning Button/)).toHaveStyle(
-			`background-color: ${
-				lightTheme.button.warning
-			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
-		);
-	} else if (button === 'secondary error') {
-		return expect(screen.getByText(/Secondary error Button/)).toHaveStyle(
-			`background-color: ${
-				lightTheme.button.error
-			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
-		);
-	} else if (button === 'primary disabled') {
-		return expect(screen.getByText(/Primary disabled Button/)).toHaveStyle(
-			`background-color: ${lightTheme.button.disabled}; color: ${darkTheme.font.pure}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${MAIN_MAX_WIDTH}`
-		);
-	} else if (button === 'secondary pure') {
-		return expect(screen.getByText(/Secondary pure Button/)).toHaveStyle(
-			`background-color: transparent; color: #FFF; border: 1px solid transparent; max-width: ${pxToRem(
-				160
-			)}`
-		);
-	}
-};
-
 describe('Button', () => {
 	it('should render a default button', async () => {
 		const { getByText } = render(
@@ -56,7 +12,9 @@ describe('Button', () => {
 				<Button onClick={() => console.log('test')}>Primary default Button</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('primary');
+		expect(screen.getByText(/Primary default Button/)).toHaveStyle(
+			`background-color: ${lightTheme.button.default}; color: #FFF; border: 1px solid transparent; max-width: ${MAIN_MAX_WIDTH}; cursor: pointer;`
+		);
 		expect(getByText(/Primary default Button/)).toMatchSnapshot();
 
 		const btn = getByText(/Primary default Button/);
@@ -74,8 +32,11 @@ describe('Button', () => {
 				</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('secondary default');
-
+		expect(screen.getByText(/Secondary default Button/)).toHaveStyle(
+			`background-color: transparent; color: ${lightTheme.button.default}; border: 1px solid ${
+				lightTheme.button.default
+			}; max-width: ${pxToRem(160)}`
+		);
 		expect(getByText(/Secondary default Button/)).toMatchSnapshot();
 
 		const btn = getByText(/Secondary default Button/);
@@ -92,8 +53,11 @@ describe('Button', () => {
 				</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('secondary icon');
-
+		expect(screen.getByText(/Secondary icon Button/)).toHaveStyle(
+			`background-color: ${
+				lightTheme.button.icon
+			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
+		);
 		expect(getByRole('img')).toBeInTheDocument();
 		expect(getByText(/Secondary icon Button/)).toMatchSnapshot();
 
@@ -113,8 +77,11 @@ describe('Button', () => {
 				</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('secondary warning');
-
+		expect(screen.getByText(/Secondary warning Button/)).toHaveStyle(
+			`background-color: ${
+				lightTheme.button.warning
+			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
+		);
 		expect(getByText(/Secondary warning Button/)).toMatchSnapshot();
 
 		const btn = getByText(/Secondary warning Button/);
@@ -133,7 +100,11 @@ describe('Button', () => {
 				</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('secondary error');
+		expect(screen.getByText(/Secondary error Button/)).toHaveStyle(
+			`background-color: ${
+				lightTheme.button.error
+			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
+		);
 
 		expect(getByText(/Secondary error Button/)).toMatchSnapshot();
 
@@ -153,7 +124,9 @@ describe('Button', () => {
 				</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('primary disabled');
+		expect(screen.getByText(/Primary disabled Button/)).toHaveStyle(
+			`background-color: ${lightTheme.button.disabled}; color: ${darkTheme.font.pure}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${MAIN_MAX_WIDTH}`
+		);
 
 		expect(getByText(/Primary disabled Button/)).toMatchSnapshot();
 
@@ -173,7 +146,11 @@ describe('Button', () => {
 				</Button>
 			</AuthProvider>
 		);
-		onCheckStyles('secondary pure');
+		expect(screen.getByText(/Secondary pure Button/)).toHaveStyle(
+			`background-color: transparent; color: #FFF; border: 1px solid transparent; max-width: ${pxToRem(
+				160
+			)}`
+		);
 
 		expect(getByText(/Secondary pure Button/)).toMatchSnapshot();
 

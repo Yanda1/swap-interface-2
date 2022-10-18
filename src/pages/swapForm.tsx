@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import destinationNetworks from '../../data/destinationNetworks.json';
-import { mediaQuery, spacing } from '../../styles';
-import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
-import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
-import type { DestinationNetworks, Fee } from '../../helpers';
+import destinationNetworks from '../data/destinationNetworks.json';
+import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
+import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
+import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -13,12 +12,18 @@ import {
 	isNetworkSelected,
 	isTokenSelected,
 	realParseFloat,
-	removeZeros,
+	beautifyNumbers,
 	START_TOKEN,
 	useStore
-} from '../../helpers';
-import { useFees } from '../../hooks';
-import { Fees, IconButton, NetworkTokenModal, SwapButton, TextField } from '../../components';
+} from '../helpers';
+import type { DestinationNetworks, Fee } from '../helpers';
+import { useFees } from '../hooks';
+import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
+
+const Wrapper = styled.main`
+	margin: 0 auto;
+	max-width: ${MAIN_MAX_WIDTH};
+`;
 
 const Trader = styled.div`
 	display: flex;
@@ -122,12 +127,7 @@ export const SwapForm = () => {
 		if (isTokenSelected(destinationToken)) {
 			setLimit({
 				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
-				value:
-					minAmount && maxAmount
-						? +minAmount < +amount
-							? removeZeros(maxAmount, 8)
-							: removeZeros(minAmount, 8)
-						: '0',
+				value: minAmount && maxAmount ? (+minAmount < +amount ? maxAmount : minAmount) : '0',
 				error: +amount < +minAmount || +amount > Number(maxAmount)
 			});
 		} else {
@@ -144,9 +144,7 @@ export const SwapForm = () => {
 						(+amount / (1 + BINANCE_FEE)) * getPrice(START_TOKEN, destinationToken) -
 						withdrawFee.amount -
 						cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
-					)
-						.toFixed(8)
-						.toString()
+					).toString()
 				)
 			});
 		}
@@ -177,7 +175,7 @@ export const SwapForm = () => {
 	};
 
 	return (
-		<>
+		<Wrapper>
 			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
@@ -201,7 +199,7 @@ export const SwapForm = () => {
 						<SwapNames pos="end" single={false}>
 							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
 							<Name color={limit.error ? theme.button.error : theme.font.default}>
-								{limit.value}
+								{isTokenSelected(destinationToken) && beautifyNumbers({ n: limit.value })}
 							</Name>
 						</SwapNames>
 					</NamesWrapper>
@@ -214,7 +212,12 @@ export const SwapForm = () => {
 				<Swap>
 					<SwapInput>
 						<IconButton onClick={openModal} icon={destinationToken as any} />
-						<TextField disabled value={removeZeros(destinationAmount)} />
+						<TextField
+							disabled
+							type="number"
+							value={beautifyNumbers({ n: destinationAmount })}
+							error={Number(destinationAmount) < 0}
+						/>
 					</SwapInput>
 					<NamesWrapper>
 						<SwapNames pos="end">
@@ -227,9 +230,9 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
-					: `1 GLMR = ${removeZeros(
-							getPrice(START_TOKEN, destinationToken).toString()
-					  )} ${destinationToken}`}
+					: `1 GLMR = ${beautifyNumbers({
+							n: getPrice(START_TOKEN, destinationToken)
+					  })} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
@@ -263,6 +266,6 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
-		</>
+		</Wrapper>
 	);
 };

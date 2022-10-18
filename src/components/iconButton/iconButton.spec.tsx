@@ -18,7 +18,7 @@ describe('IconButton', () => {
 		expect(img).toBeInTheDocument();
 		expect(img).toHaveAttribute('alt', 'GLMR');
 		expect(img).toHaveStyle(
-			`width: ${pxToRem(42)}; height: ${pxToRem(42)}; cursor: pointer; margin-right: ${pxToRem(0)};`
+			`width: ${pxToRem(40)}; height: ${pxToRem(40)}; cursor: pointer; margin-right: ${pxToRem(0)};`
 		);
 
 		expect(btn).toMatchSnapshot();

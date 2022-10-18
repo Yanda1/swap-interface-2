@@ -1,5 +1,6 @@
 import './styles/fonts/font.css';
 import styled, { createGlobalStyle } from 'styled-components';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import type { Theme } from './styles';
 import {
 	fontFamily,
@@ -9,9 +10,11 @@ import {
 	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
-	viewport
+	viewport,
+	DEFAULT_TRANSIITON
 } from './styles';
-import { Header, SwapForm } from './components';
+import { Header } from './components';
+import { SwapForm, TransactionHistory } from './pages';
 import { useStore } from './helpers';
 import { TabModal } from './components/tabs/tabModal';
 
@@ -37,7 +40,7 @@ export const GlobalStyles = createGlobalStyle`
 		padding: 0 ${pxToRem(20)} ${pxToRem(40)};
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-		transition: all 0.2s ease-in-out;
+		transition: ${DEFAULT_TRANSIITON};
 		background: ${(props: Props) => props.theme.background.default};
 
 		${mediaQuery('s')} {
@@ -62,14 +65,14 @@ const App = () => {
 	} = useStore();
 
 	return (
-		<>
+		<Router>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<Wrapper>
-				<SwapForm />
-				<TabModal />
-			</Wrapper>
-		</>
+			<Routes>
+				<Route path="/" element={<Wrapper><SwapForm /><TabModal /></Wrapper>} />
+				<Route path="/transaction-history" element={<TransactionHistory />} />
+			</Routes>
+		</Router>
 	);
 };
 

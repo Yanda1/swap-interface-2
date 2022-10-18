@@ -5,10 +5,12 @@ export type Theme = {
 	font: {
 		default: string;
 		pure: string;
+		select: string;
 	};
 	background: {
 		default: string;
 		mobile: string;
+		history: string;
 	};
 	icon: {
 		default: string;
@@ -32,11 +34,13 @@ export const lightTheme: Theme = {
 	name: 'light',
 	font: {
 		default: '#5A5A5A',
-		pure: '#5A5A5A'
+		pure: '#5A5A5A',
+		select: '#B4B4B4'
 	},
 	background: {
 		default: '#FFF',
-		mobile: '#F0F0F0'
+		mobile: '#F0F0F0',
+		history: '#494949'
 	},
 	icon: {
 		default: '#E8F0F6'
@@ -60,11 +64,13 @@ export const darkTheme: Theme = {
 	name: 'dark',
 	font: {
 		default: '#8C8D8F',
-		pure: '#FFF'
+		pure: '#FFF',
+		select: '#B4B4B4'
 	},
 	background: {
 		default: '#161B20',
-		mobile: '#1C2125'
+		mobile: '#1C2125',
+		history: '#494949'
 	},
 	icon: {
 		default: '#172631'
