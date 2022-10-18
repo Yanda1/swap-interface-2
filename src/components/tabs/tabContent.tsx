@@ -1,17 +1,11 @@
-import { BLOCKS_AMOUNT, makeId, useStore } from '../../helpers';
+import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import {
-	pxToRem,
-	spacing,
-	fontSize,
-	fontWeight,
-	theme,
-	mediaQuery,
-	DEFAULT_TRANSIITON
-} from '../../styles';
 import type { Theme } from '../../styles';
+import { DEFAULT_TRANSIITON, fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
+import { useAxios } from '../../hooks';
+import { useEffect, useState } from 'react';
 
 type Props = {
 	data?: any;
@@ -106,12 +100,35 @@ export const ContentItemLink = styled.div`
 `;
 
 export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
+	const [withdrawLink, setWithdrawLink] = useState<{
+		amount: string;
+		status: number;
+		type: number;
+		url: string | any;
+		withdrawFee: string;
+	} | null>(null);
 	const currentBlockNumber = useBlockNumber();
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data?[toggle]?.action[0];
-	const withdrawal = data?[toggle]?.withdraw[0];
+	const orders = data?.[toggle]?.action[0];
+	const withdrawal = data?.[toggle]?.withdraw[0];
+	const api = useAxios();
+
+	const getWithDrawLink = async () => {
+		if (withdrawal) {
+			try {
+				await api
+					.get(`${routes.transactionDetails}${withdrawal.id}`)
+					.then((res) => setWithdrawLink(res.data));
+			} catch (e) {
+				console.log(e);
+			}
+		}
+	};
+	useEffect(() => {
+		void getWithDrawLink();
+	}, [withdrawal]);
 
 	return (
 		// @ts-ignore
@@ -123,7 +140,7 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 							Swap Request Validation ({data?.[toggle].costRequestCounter}/2)
 						</ContentItemTitle>
 						<ContentItemText>
-							{data?[toggle].costRequestCounter < 2
+							{data?.[toggle].costRequestCounter < 2
 								? 'Your Swap request is under validation. Please wait until full confirmation.'
 								: 'Your Swap request successfully validated.'}
 						</ContentItemText>
@@ -139,10 +156,10 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{currentBlockNumber - data?[toggle].depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber - data?.[toggle].depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: currentBlockNumber - data?[toggle].depositBlock >= BLOCKS_AMOUNT &&
-								  !data?[toggle].action.length
+								: currentBlockNumber - data?.[toggle].depositBlock >= BLOCKS_AMOUNT &&
+								  !data?.[toggle].action.length
 								? 'Your deposit is received and should be confirmed soon.'
 								: null}
 						</ContentItemText>
@@ -160,17 +177,22 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{withdrawal.t === 0 && !withdrawalLink ? (
+				{withdrawal && !withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemLink>Withdrawal confirmed</ContentItemLink>
+						<ContentItemLink theme={theme}>Withdrawal in process</ContentItemLink>
 						<ContentItemText>
 							Your funds is almost there, we are waiting for their landing into your wallet.
 						</ContentItemText>
 					</ContentItem>
-				) : withdrawalLink ? (
+				) : withdrawal?.t === 1 && withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemLink>Withdrawal confirmed</ContentItemLink>
-						<ContentItemText>You can check transaction by link</ContentItemText>
+						<ContentItemTitle>Withdrawal confirmed</ContentItemTitle>
+					</ContentItem>
+				) : withdrawal?.t === 0 && withdrawLink ? (
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemLink theme={theme} onClick={() => window.open(withdrawLink.url)}>
+							Withdrawal confirmed
+						</ContentItemLink>
 					</ContentItem>
 				) : null}
 				{data?.[toggle].complete === true ? (
@@ -180,7 +202,7 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 				) : null}
 				{data?.[toggle].complete === null ? (
 					<ContentItem theme={theme} color={theme.font.pure}>
-						<ContentItemText color={theme.font.pure}>No valid operations spotted!</ContentItemText>
+						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
 			</ContentList>
