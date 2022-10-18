@@ -66,6 +66,7 @@ export const useTransactions = () => {
 
 			const actionFilter = contract.filters.Action(account, SERVICE_ADDRESS, transaction.args[2]);
 			const actionRes = await contract.queryFilter(actionFilter, transaction?.blockNumber);
+
 			if (actionRes.length === 0) {
 				dataset = {
 					...dataset,

@@ -73,7 +73,7 @@ export const TransactionHistory = () => {
 				<SpinnerWrapper>
 					{' '}
 					<Spinner size="medium" color={theme.background.history} />
-					Fetching your transaction history
+					Fetching your Transaction History
 				</SpinnerWrapper>
 			) : (
 				<Accordion data={data} />

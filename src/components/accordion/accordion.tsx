@@ -126,6 +126,7 @@ const Content = styled.div`
 const ContentText = styled.div(
 	({ open }: { open: boolean }) => css`
 		display: flex;
+		gap: ${spacing[8]};
 		visibility: ${open ? 'visible' : 'hidden'};
 		opacity: ${open ? '1' : '0'};
 		overflow: auto;
@@ -191,8 +192,8 @@ export const Accordion = ({ data }: Props) => {
 						<TitleTab>
 							Sent:{' '}
 							<TitleText color={theme.font.pure}>
-								{beautifyNumbers({ n: +item.header?.samt * WEI_TO_GLMR })} {item.header?.scoin}{' '}
-								(Moonbeam)
+								{beautifyNumbers({ n: +item.header?.samt * WEI_TO_GLMR ?? '0' })}{' '}
+								{item.header?.scoin} (Moonbeam)
 							</TitleText>
 						</TitleTab>
 						<TitleTab>
@@ -232,7 +233,7 @@ export const Accordion = ({ data }: Props) => {
 										<MobileHeaderSection>
 											Reiceved:{' '}
 											<TitleText color={theme.font.pure}>
-												{beautifyNumbers({ n: item.withdrawl?.amount ?? '' })} {item.header?.fcoin}{' '}
+												{beautifyNumbers({ n: item.withdrawl?.amount ?? '0' })} {item.header?.fcoin}{' '}
 												({item.header?.net})
 											</TitleText>
 										</MobileHeaderSection>
