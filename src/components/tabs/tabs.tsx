@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useStore } from '../../helpers';
+import { makeId, useStore } from '../../helpers';
 import { TabContent } from './tabContent';
 import styled, { css } from 'styled-components';
 import { DEFAULT_BORDER_RADIUS, spacing } from '../../styles';
@@ -56,23 +56,21 @@ export const Tabs = ({ data }: Props) => {
 
 	return (
 		<Wrapper data-testid="tabs-container">
-			{data?.length > 0 && (
-				<>
-					<TabsContainer>
-						{data?.length &&
-							data.map((item: any) => {
-								const index = data.indexOf(item);
+			<>
+				<TabsContainer>
+					{data?.length &&
+						data.map((item: any) => {
+							const index = data.indexOf(item);
 
-								return (
-									<Tab key={Math.random()} onClick={() => handleToggle(index)} active={toggle}>
-										GLMR {destinationToken}
-									</Tab>
-								);
-							})}
-					</TabsContainer>
-					<TabContent data={data} toggle={toggle} />
-				</>
-			)}
+							return (
+								<Tab key={makeId(32)} onClick={() => handleToggle(index)} active={toggle}>
+									GLMR {destinationToken}
+								</Tab>
+							);
+						})}
+				</TabsContainer>
+				<TabContent data={data} toggle={toggle} />
+			</>
 		</Wrapper>
 	);
 };

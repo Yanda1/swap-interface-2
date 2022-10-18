@@ -1,4 +1,4 @@
-import { BLOCKS_AMOUNT, useStore } from '../../helpers';
+import { BLOCKS_AMOUNT, makeId, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
 import { pxToRem, spacing } from '../../styles';
@@ -88,22 +88,15 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data && data[toggle].action[0];
-	const withdrawal = data && data[toggle].withdraw[0];
+	const orders = data[toggle].action[0];
+	const withdrawal = data[toggle].withdraw[0];
 	const withdrawalLink: any = null;
-
-	const headers = {
-		Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiIweGZDZGIzM2JCNTlFZDhBMDFCOTBDYzEwOTgzMGFFZWVhY2Q1QWY3M2MiLCJ0eXBlIjoicmVmcmVzaCIsImV4cCI6MTY2NTgzNjM1NH0.3u4SubmpjncJ3kTEIE-QVDGSrlUlCPo55wTcnksqbT8
-`,
-		'Content-Type': 'application/json',
-		'Access-Control-Allow-Origin': '*'
-	};
 
 	return (
 		<Content>
 			<ContentList>
 				{data[toggle].costRequestCounter ? (
-					<ContentItem key={Math.random()}>
+					<ContentItem key={makeId(32)}>
 						<ContentItemTitle>
 							Swap Request Validation ({data[toggle].costRequestCounter}/2)
 						</ContentItemTitle>
@@ -115,7 +108,7 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 					</ContentItem>
 				) : null}
 				{currentBlockNumber && data[toggle].depositBlock ? (
-					<ContentItem key={Math.random()}>
+					<ContentItem key={makeId(32)}>
 						<ContentItemTitle>
 							{!data[toggle].action.length
 								? `Deposit confirmation (${
@@ -134,7 +127,7 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 					</ContentItem>
 				) : null}
 				{orders ? (
-					<ContentItem key={Math.random()}>
+					<ContentItem key={makeId(32)}>
 						<ContentItemTitle>Conversion GLMR {orders.s.slice(4)}</ContentItemTitle>
 						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
@@ -146,24 +139,24 @@ export const TabContent = ({ data, toggle = 0 }: Props) => {
 					</ContentItem>
 				) : null}
 				{withdrawal && !withdrawalLink ? (
-					<ContentItem key={Math.random()}>
+					<ContentItem key={makeId(32)}>
 						<ContentItemLink>Withdrawal in progress</ContentItemLink>
 						<ContentItemText>
 							Your funds is almost there, we are waiting for their landing into your wallet.
 						</ContentItemText>
 					</ContentItem>
 				) : withdrawalLink ? (
-					<ContentItem key={Math.random()}>
+					<ContentItem key={makeId(32)}>
 						<ContentItemLink href={withdrawalLink.url}>Withdrawal confirmed</ContentItemLink>
 					</ContentItem>
 				) : null}
 				{data[toggle].complete === true ? (
-					<ContentItem key={Math.random()} color={theme.button.default}>
+					<ContentItem key={makeId(32)} color={theme.button.default}>
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
 				) : null}
 				{data[toggle].complete === null ? (
-					<ContentItem key={Math.random()} color={theme.font.pure}>
+					<ContentItem key={makeId(32)} color={theme.font.pure}>
 						<ContentItemText color={theme.font.pure}>Not valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
