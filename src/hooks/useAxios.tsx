@@ -1,4 +1,3 @@
-import { useLocalStorage } from '../helpers';
 // eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
 import dayjs from 'dayjs';
@@ -12,6 +11,7 @@ import {
 	VerificationEnum,
 	MESSAGE
 } from '../helpers';
+import { useLocalStorage } from '../hooks';
 
 type JwtType = {
 	iss: string;
