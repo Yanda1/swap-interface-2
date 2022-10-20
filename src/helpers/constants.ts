@@ -1,5 +1,6 @@
 export const LOCAL_STORAGE_THEME = 'darkMode';
 export const LOCAL_STORAGE_AUTH = 'auth';
+export const LOCAL_STORAGE_HISTORY = 'history';
 
 export const INITIAL_STORAGE = {
 	access: '',

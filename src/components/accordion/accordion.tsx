@@ -291,6 +291,6 @@ export const Accordion = ({ data }: Props) => {
 			))}
 		</Wrapper>
 	) : (
-		<Notifications multiple={false}>You do not have any transactions yet</Notifications>
+		<Notifications>You do not have any transactions yet</Notifications>
 	);
 };
