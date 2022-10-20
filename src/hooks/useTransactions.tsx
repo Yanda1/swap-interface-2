@@ -18,7 +18,6 @@ import { useAxios } from './useAxios';
 export const useTransactions = () => {
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState<TransactionData[]>([]);
-	const [transactions, setTransactions] = useState([]);
 	const [events, setEvents] = useState<any[]>([]);
 	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(null);
 
@@ -53,12 +52,10 @@ export const useTransactions = () => {
 				}
 			}
 			setEvents(allEvents);
-			setLoading(false);
 		}
 	};
 
-	const getTransactionData = () => {
-		setLoading(true);
+	const getTransactionsData = () => {
 		const allTransactionPromises = events.map(async (transaction) => {
 			let dataset = {} as TransactionData;
 			dataset.blockNumber = transaction?.blockNumber;
@@ -135,8 +132,18 @@ export const useTransactions = () => {
 			}
 		});
 
-		setTransactions(allTransactionPromises as any);
-		setLoading(false);
+		return allTransactionPromises;
+	};
+
+	const resolvePromiseTransactions = async () => {
+		try {
+			const res: any = await Promise.all([...getTransactionsData()]);
+			setData(res);
+			setLoading(false);
+		} catch (e) {
+			setLoading(false);
+			console.log('error in PromiseAll', e);
+		}
 	};
 
 	useEffect(() => {
@@ -144,18 +151,7 @@ export const useTransactions = () => {
 	}, [account, latestBlockNumber]);
 
 	useEffect(() => {
-		if (transactions.length > 0) {
-			setLoading(true);
-			Promise.all<TransactionData>(transactions)
-				// @ts-ignore
-				.then((data: TransactionData[]) => setData(data))
-				.catch((e) => console.log('error in PromiseAll', e));
-			setLoading(false);
-		}
-	}, [transactions]);
-
-	useEffect(() => {
-		getTransactionData();
+		void resolvePromiseTransactions();
 	}, [events]);
 
 	return { loading, data };

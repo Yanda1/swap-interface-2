@@ -19,6 +19,7 @@ import {
 } from '../../styles';
 import type { Theme } from '../../styles';
 import { spacing } from '../../styles';
+import { Notifications } from '../../pages';
 
 type StyleProps = {
 	theme: Theme;
@@ -26,11 +27,6 @@ type StyleProps = {
 	color?: string;
 	height?: 'large' | 'small';
 };
-
-const Message = styled.div`
-	margin-top: ${spacing[24]};
-	text-align: center;
-`;
 
 export const Wrapper = styled.div`
 	background-color: ${(props: StyleProps) => props.theme.background.mobile};
@@ -295,6 +291,6 @@ export const Accordion = ({ data }: Props) => {
 			))}
 		</Wrapper>
 	) : (
-		<Message>You do not have any transactions yet</Message>
+		<Notifications multiple={false}>You do not have any transactions yet</Notifications>
 	);
 };

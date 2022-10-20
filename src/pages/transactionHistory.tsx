@@ -10,7 +10,7 @@ const Wrapper = styled.main`
 	margin: 0 auto;
 `;
 
-const Notifications = styled.div(
+export const Notifications = styled.div(
 	({ multiple = true }: { multiple?: boolean }) => css`
 		margin-top: ${spacing[24]};
 		padding-top: ${multiple ? '0' : spacing[32]};
