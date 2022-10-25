@@ -16,7 +16,8 @@ import {
 import { useAxios } from './useAxios';
 
 export const useTransactions = () => {
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [contentLoading, setContentLoading] = useState(true);
 	const [data, setData] = useState<TransactionData[]>([]);
 	const [events, setEvents] = useState<any[]>([]);
 	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(null);
@@ -36,7 +37,6 @@ export const useTransactions = () => {
 
 	const getAllTransactions = async () => {
 		if (account && latestBlockNumber) {
-			setLoading(true);
 			const costRequestFilter = contract.filters.CostRequest(account, SERVICE_ADDRESS);
 			let allEvents: any[] = [];
 
@@ -52,10 +52,32 @@ export const useTransactions = () => {
 				}
 			}
 			setEvents(allEvents);
+			setLoading(false);
 		}
 	};
 
+	const getTransactionsHeaderData = () => {
+		const headerData: TransactionData[] = [];
+		events.map((transaction) => {
+			const dataset = {} as TransactionData;
+			dataset.blockNumber = transaction?.blockNumber;
+			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
+			dataset.header = {
+				timestamp: undefined,
+				symbol: `${scoin}${fcoin}`,
+				scoin,
+				fcoin,
+				samt,
+				net
+			};
+			dataset.content = null;
+			headerData.push(dataset);
+		});
+		setData(headerData);
+	};
+
 	const getTransactionsData = () => {
+		setContentLoading(true);
 		const allTransactionPromises = events.map(async (transaction) => {
 			let dataset = {} as TransactionData;
 			dataset.blockNumber = transaction?.blockNumber;
@@ -67,7 +89,7 @@ export const useTransactions = () => {
 			if (actionRes.length === 0) {
 				dataset = {
 					...dataset,
-					content: null,
+					content: 'none',
 					withdrawl: null
 				};
 			}
@@ -135,15 +157,11 @@ export const useTransactions = () => {
 		return allTransactionPromises;
 	};
 
-	const resolvePromiseTransactions = async () => {
-		try {
-			const res: any = await Promise.all([...getTransactionsData()]);
-			setData(res);
-			setLoading(false);
-		} catch (e) {
-			setLoading(false);
-			console.log('error in PromiseAll', e);
-		}
+	const resolvePromiseTransactions = () => {
+		Promise.all([...getTransactionsData()])
+			.then((res) => setData(res as TransactionData[]))
+			.catch((e) => console.log('error in PromiseAll', e))
+			.finally(() => setContentLoading(false));
 	};
 
 	useEffect(() => {
@@ -151,8 +169,9 @@ export const useTransactions = () => {
 	}, [account, latestBlockNumber]);
 
 	useEffect(() => {
-		void resolvePromiseTransactions();
+		resolvePromiseTransactions();
+		getTransactionsHeaderData();
 	}, [events]);
 
-	return { loading, data };
+	return { loading, contentLoading, data };
 };

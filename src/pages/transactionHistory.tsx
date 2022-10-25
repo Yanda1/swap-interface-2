@@ -55,7 +55,7 @@ const selectDates = [
 
 export const TransactionHistory = () => {
 	const [searchTerm, setSearchTerm] = useState('');
-	const { data, loading } = useTransactions();
+	const { data, loading, contentLoading } = useTransactions();
 	const {
 		state: { theme, isUserVerified }
 	} = useStore();
@@ -82,7 +82,7 @@ export const TransactionHistory = () => {
 					Fetching your Transaction History
 				</Notifications>
 			) : (
-				<Accordion data={data} />
+				<Accordion data={data} contentLoading={contentLoading} />
 			)}
 		</Wrapper>
 	);

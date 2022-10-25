@@ -14,21 +14,24 @@ export type GraphType = false | { distance: number; path: string[] };
 export type TransactionData = {
 	blockNumber: number;
 	header: {
-		timestamp: number;
+		timestamp: number | undefined;
 		symbol: string;
 		scoin: string;
 		fcoin: string;
 		samt: string;
 		net: string;
 	};
-	content: {
-		qty: string;
-		price: string;
-		timestamp: number;
-		cexFee: string;
-		withdrawFee: string;
-		success: boolean;
-	} | null;
+	content:
+		| {
+				qty: string;
+				price: string;
+				timestamp: number;
+				cexFee: string;
+				withdrawFee: string;
+				success: boolean;
+		  }
+		| null
+		| 'none';
 	gasFee: string;
 	withdrawl: {
 		amount: string;
