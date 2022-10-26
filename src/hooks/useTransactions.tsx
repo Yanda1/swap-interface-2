@@ -8,35 +8,46 @@ import {
 	BLOCK_CHUNK_SIZE,
 	BLOCK_CONTRACT_NUMBER,
 	CONTRACT_ADDRESSES,
+	LOCAL_STORAGE_HISTORY,
 	routes,
 	SERVICE_ADDRESS,
 	TransactionData,
 	useStore
 } from '../helpers';
 import { useAxios } from './useAxios';
+import { useLocalStorage } from './useLocalStorage';
 
 export const useTransactions = () => {
 	const [loading, setLoading] = useState(true);
 	const [contentLoading, setContentLoading] = useState(true);
 	const [data, setData] = useState<TransactionData[]>([]);
 	const [events, setEvents] = useState<any[]>([]);
-	const [latestBlockNumber, setLatestBlockNumber] = useState<number | null>(null);
+	const [latestBlockNumber, setLatestBlockNumber] = useState(null);
 
-	const { chainId, library: web3Provider } = useEthers();
+	const { chainId, library } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const {
 		state: { account }
 	} = useStore();
 	const api = useAxios();
-	const contract = new Contract(contractAddress, contractInterface, web3Provider);
-	web3Provider
-		?.getBlockNumber()
-		.then((res: number) => setLatestBlockNumber(res))
-		.catch((e) => console.log('e in latestBlockNumber', e));
+	// eslint-disable-next-line
+	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_HISTORY, {
+		lastBlock: 0,
+		data: [] as TransactionData[]
+	});
+	const contract = new Contract(contractAddress, contractInterface, library);
+
+	// checkstorage
+	// no content => call al
+	// if loop content => one without => don't change i
+	// if data complete => set lastBlock to START_BLOCK
+	// setData
+	// setLoading
 
 	const getAllTransactions = async () => {
 		if (account && latestBlockNumber) {
+			//
 			const costRequestFilter = contract.filters.CostRequest(account, SERVICE_ADDRESS);
 			let allEvents: any[] = [];
 
@@ -74,6 +85,8 @@ export const useTransactions = () => {
 			headerData.push(dataset);
 		});
 		setData(headerData);
+		// @ts-ignore
+		setStorage({ lastBlock: latestBlockNumber, data: headerData });
 	};
 
 	const getTransactionsData = () => {
@@ -158,11 +171,27 @@ export const useTransactions = () => {
 	};
 
 	const resolvePromiseTransactions = () => {
-		Promise.all([...getTransactionsData()])
-			.then((res) => setData(res as TransactionData[]))
-			.catch((e) => console.log('error in PromiseAll', e))
-			.finally(() => setContentLoading(false));
+		console.log('%c in here', 'color: red');
+		if (events.length > 0) {
+			console.log('%c and here', 'color: yellow');
+			Promise.all([...getTransactionsData()])
+				.then((res) => {
+					setData(res as TransactionData[]);
+					// @ts-ignore
+					setStorage({ lastBlock: latestBlockNumber, data: res as TransactionData[] });
+				})
+				.catch((e) => console.log('error in PromiseAll', e))
+				.finally(() => setContentLoading(false));
+		}
 	};
+
+	useEffect(() => {
+		library
+			?.getBlockNumber()
+			// @ts-ignore
+			.then((res: number) => setLatestBlockNumber(res))
+			.catch((e) => console.log('e in latestBlockNumber', e));
+	}, [library]);
 
 	useEffect(() => {
 		void getAllTransactions();
