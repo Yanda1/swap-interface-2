@@ -20,9 +20,10 @@ import { useLocalStorage } from './useLocalStorage';
 export const useTransactions = () => {
 	const [loading, setLoading] = useState(true);
 	const [contentLoading, setContentLoading] = useState(true);
+	const [startFetchDetails, setStartFetchDetails] = useState(false);
 	const [data, setData] = useState<TransactionData[]>([]);
 	const [events, setEvents] = useState<any[]>([]);
-	const [latestBlockNumber, setLatestBlockNumber] = useState(null);
+	const [lastBlock, setLastBlock] = useState(null);
 
 	const { chainId, library } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
@@ -38,21 +39,14 @@ export const useTransactions = () => {
 	});
 	const contract = new Contract(contractAddress, contractInterface, library);
 
-	// checkstorage
-	// no content => call al
-	// if loop content => one without => don't change i
-	// if data complete => set lastBlock to START_BLOCK
-	// setData
-	// setLoading
-
 	const getAllTransactions = async () => {
-		if (account && latestBlockNumber) {
+		if (account && lastBlock) {
 			//
 			const costRequestFilter = contract.filters.CostRequest(account, SERVICE_ADDRESS);
 			let allEvents: any[] = [];
 
-			for (let i = BLOCK_CONTRACT_NUMBER; i < latestBlockNumber; i += BLOCK_CHUNK_SIZE) {
-				const endBlock = Math.min(latestBlockNumber, i + BLOCK_CHUNK_SIZE - 1);
+			for (let i = BLOCK_CONTRACT_NUMBER; i < lastBlock; i += BLOCK_CHUNK_SIZE) {
+				const endBlock = Math.min(lastBlock, i + BLOCK_CHUNK_SIZE - 1);
 
 				try {
 					const splitEvents = await contract.queryFilter(costRequestFilter, i, endBlock);
@@ -86,121 +80,139 @@ export const useTransactions = () => {
 		});
 		setData(headerData);
 		// @ts-ignore
-		setStorage({ lastBlock: latestBlockNumber, data: headerData });
+		setStorage({ lastBlock, data: headerData });
+		setStartFetchDetails(true);
 	};
 
-	const getTransactionsData = () => {
-		setContentLoading(true);
-		const allTransactionPromises = events.map(async (transaction) => {
-			let dataset = {} as TransactionData;
-			dataset.blockNumber = transaction?.blockNumber;
-			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
+	const getTransactionsData = async (transaction: any) => {
+		let dataset = {} as TransactionData;
+		dataset.blockNumber = transaction?.blockNumber;
+		const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
 
-			const actionFilter = contract.filters.Action(account, SERVICE_ADDRESS, transaction.args[2]);
-			const actionRes = await contract.queryFilter(actionFilter, transaction?.blockNumber);
+		const actionFilter = contract.filters.Action(account, SERVICE_ADDRESS, transaction.args[2]);
+		const actionRes = await contract.queryFilter(actionFilter, transaction?.blockNumber);
 
-			if (actionRes.length === 0) {
-				dataset = {
-					...dataset,
-					content: 'none',
-					withdrawl: null
-				};
-			}
-			if (actionRes.length === 2) {
-				const { q: qty, p: price, ts: timestamp } = JSON.parse(actionRes[0]?.args?.data);
-				const { id } = JSON.parse(actionRes[1]?.args?.data);
-
-				try {
-					const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
-					const {
-						data: { amount, url, withdrawFee }
-					} = withdrawLink;
-
-					dataset = { ...dataset, withdrawl: { amount, url, withdrawFee } };
-				} catch (e) {
-					console.log('error in withdrawLink', e);
-				}
-
-				const completeFilter = contract.filters.Complete(
-					account,
-					SERVICE_ADDRESS,
-					transaction.args[2]
-				);
-				const completeRes = await contract.queryFilter(completeFilter, transaction?.blockNumber);
-				const success = JSON.parse(completeRes[0]?.args?.success);
-
-				dataset = {
-					...dataset,
-					content: {
-						qty,
-						price,
-						timestamp,
-						cexFee: (qty * price * BINANCE_FEE).toString(),
-						withdrawFee: '',
-						success
-					}
-				};
-			}
+		if (actionRes.length === 0) {
+			dataset = {
+				...dataset,
+				content: 'none',
+				withdrawl: null
+			};
+		}
+		if (actionRes.length === 2) {
+			const { q: qty, p: price, ts: timestamp } = JSON.parse(actionRes[0]?.args?.data);
+			const { id } = JSON.parse(actionRes[1]?.args?.data);
 
 			try {
-				const block = await transaction.getBlock();
-				const gasFee = utils.formatEther(
-					BigNumber.from(block.baseFeePerGas['_hex']).mul(BigNumber.from(block.gasUsed['_hex']))
-				);
-				dataset = {
-					...dataset,
-					header: {
-						...dataset.header,
-						timestamp: block.timestamp,
-						symbol: `${scoin}${fcoin}`,
-						scoin,
-						fcoin,
-						samt,
-						net
-					},
-					gasFee
-				};
+				const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
+				const {
+					data: { amount, url, withdrawFee }
+				} = withdrawLink;
 
-				return dataset;
+				dataset = { ...dataset, withdrawl: { amount, url, withdrawFee } };
 			} catch (e) {
-				console.log('error', e);
+				console.log('error in withdrawLink', e);
 			}
-		});
 
-		return allTransactionPromises;
-	};
+			const completeFilter = contract.filters.Complete(
+				account,
+				SERVICE_ADDRESS,
+				transaction.args[2]
+			);
+			const completeRes = await contract.queryFilter(completeFilter, transaction?.blockNumber);
+			const success = JSON.parse(completeRes[0]?.args?.success);
 
-	const resolvePromiseTransactions = () => {
-		console.log('%c in here', 'color: red');
-		if (events.length > 0) {
-			console.log('%c and here', 'color: yellow');
-			Promise.all([...getTransactionsData()])
-				.then((res) => {
-					setData(res as TransactionData[]);
-					// @ts-ignore
-					setStorage({ lastBlock: latestBlockNumber, data: res as TransactionData[] });
-				})
-				.catch((e) => console.log('error in PromiseAll', e))
-				.finally(() => setContentLoading(false));
+			dataset = {
+				...dataset,
+				content: {
+					qty,
+					price,
+					timestamp,
+					cexFee: (qty * price * BINANCE_FEE).toString(),
+					withdrawFee: '',
+					success
+				}
+			};
+		}
+
+		try {
+			const block = await transaction.getBlock();
+			const gasFee = utils.formatEther(
+				BigNumber.from(block.baseFeePerGas['_hex']).mul(BigNumber.from(block.gasUsed['_hex']))
+			);
+			dataset = {
+				...dataset,
+				header: {
+					...dataset.header,
+					timestamp: block.timestamp,
+					symbol: `${scoin}${fcoin}`,
+					scoin,
+					fcoin,
+					samt,
+					net
+				},
+				gasFee
+			};
+
+			return dataset;
+		} catch (e) {
+			console.log('error', e);
 		}
 	};
+
+	const resolvePromises = (fn: any, args: any) =>
+		new Promise((resolve) => {
+			fn(...args)
+				.then((res: TransactionData) => resolve(res))
+				.catch(() => resolve(resolvePromises(fn, args)));
+		});
 
 	useEffect(() => {
 		library
 			?.getBlockNumber()
 			// @ts-ignore
-			.then((res: number) => setLatestBlockNumber(res))
-			.catch((e) => console.log('e in latestBlockNumber', e));
+			.then((res: number) => setLastBlock(res))
+			.catch((e) => console.log('e in lastBlock', e));
 	}, [library]);
 
 	useEffect(() => {
 		void getAllTransactions();
-	}, [account, latestBlockNumber]);
+	}, [account, lastBlock]);
 
 	useEffect(() => {
-		resolvePromiseTransactions();
-		getTransactionsHeaderData();
+		if (events.length > 0) {
+			getTransactionsHeaderData();
+		}
 	}, [events]);
+
+	useEffect(() => {
+		if (events.length > 0) {
+			const all = events.map((event) => resolvePromises(getTransactionsData, [event]));
+			Promise.all(all)
+				// @ts-ignore
+				.then((transactions: TransactionData[]) => {
+					const dataCopy = [...data];
+					// const storageDataCopy = [...storage.data];
+					transactions.map((transaction: TransactionData) => {
+						const findTransactionInData = data.find(
+							(item) => item.blockNumber === transaction.blockNumber
+						);
+
+						if (findTransactionInData) {
+							const transactionIndexInData = dataCopy.indexOf(findTransactionInData);
+							dataCopy[transactionIndexInData] = transaction;
+						} else {
+							dataCopy.push(transaction);
+						}
+					});
+					setData(dataCopy);
+					// @ts-ignore
+					setStorage({ lastBlock, data: dataCopy });
+				})
+				.catch((e) => console.log('e in Promise.all', e))
+				.finally(() => setContentLoading(false));
+		}
+	}, [startFetchDetails]);
 
 	return { loading, contentLoading, data };
 };
