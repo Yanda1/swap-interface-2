@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react';
 import destinationNetworks from '../data/destinationNetworks.json';
 import { CONTRACT_ADDRESSES } from '../helpers';
 
@@ -36,3 +37,5 @@ export type TransactionData = {
 		url: string;
 	} | null;
 };
+
+export type SetValue<T> = Dispatch<SetStateAction<T>>;

@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
-
+import { useCallback, useEffect, useState } from 'react';
+import type { SetValue } from '../helpers';
 import useEventListener from './useEventListener';
 
 declare global {
@@ -7,8 +7,6 @@ declare global {
 		'local-storage': CustomEvent;
 	}
 }
-
-type SetValue<T> = Dispatch<SetStateAction<T>>;
 
 export const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>] => {
 	// Get from local storage then

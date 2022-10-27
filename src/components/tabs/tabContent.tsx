@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 type Props = {
 	data?: any;
 	color?: string;
-	toggle?: number;
+	toggleIndex?: number;
 	type?: 'history' | 'swap';
 };
 
@@ -33,7 +33,6 @@ export const ContentList = styled.ul`
 
 export const ContentItem = styled.li`
 	list-style: none;
-	padding: 0;
 	padding: 0 0 ${spacing[26]} ${spacing[20]};
 	border-left: 1px solid ${(props: StyleProps) => props.theme.font.default};
 	position: relative;
@@ -99,7 +98,7 @@ export const ContentItemLink = styled.div`
 	}
 `;
 
-export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
+export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 	const [withdrawLink, setWithdrawLink] = useState<{
 		amount: string;
 		status: number;
@@ -111,8 +110,8 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data?.[toggle]?.action[0];
-	const withdrawal = data?.[toggle]?.withdraw[0];
+	const orders = data?.[toggleIndex]?.action[0];
+	const withdrawal = data?.[toggleIndex]?.withdraw[0];
 	const api = useAxios();
 
 	const getWithDrawLink = async () => {
@@ -134,32 +133,32 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
-				{data?.[toggle].costRequestCounter ? (
+				{data?.[toggleIndex].costRequestCounter ? (
 					<ContentItem theme={theme} color={data.color} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Request Validation ({data?.[toggle].costRequestCounter}/2)
+							Swap Request Validation ({data?.[toggleIndex].costRequestCounter}/2)
 						</ContentItemTitle>
 						<ContentItemText>
-							{data?.[toggle].costRequestCounter < 2
+							{data?.[toggleIndex].costRequestCounter < 2
 								? 'Your Swap request is under validation. Please wait until full confirmation.'
 								: 'Your Swap request successfully validated.'}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{currentBlockNumber && data?.[toggle]?.depositBlock ? (
+				{currentBlockNumber && data?.[toggleIndex]?.depositBlock ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							{!data?.[toggle]?.action.length
+							{!data?.[toggleIndex]?.action.length
 								? `Deposit confirmation (${
-										currentBlockNumber - data?.[toggle]?.depositBlock
+										currentBlockNumber - data?.[toggleIndex]?.depositBlock
 								  }/${BLOCKS_AMOUNT})`
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{currentBlockNumber - data?.[toggle].depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber - data?.[toggleIndex].depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: currentBlockNumber - data?.[toggle].depositBlock >= BLOCKS_AMOUNT &&
-								  !data?.[toggle].action.length
+								: currentBlockNumber - data?.[toggleIndex].depositBlock >= BLOCKS_AMOUNT &&
+								  !data?.[toggleIndex].action.length
 								? 'Your deposit is received and should be confirmed soon.'
 								: null}
 						</ContentItemText>
@@ -195,12 +194,12 @@ export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
 						</ContentItemLink>
 					</ContentItem>
 				) : null}
-				{data?.[toggle].complete === true ? (
+				{data?.[toggleIndex].complete === true ? (
 					<ContentItem theme={theme} color={theme.button.default}>
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data?.[toggle].complete === null ? (
+				{data?.[toggleIndex].complete === null ? (
 					<ContentItem theme={theme} color={theme.font.pure}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
