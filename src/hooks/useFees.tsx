@@ -18,8 +18,9 @@ import {
 } from '../helpers';
 import type { GraphType, DestinationNetworks } from '../helpers';
 import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
+import sourceNetworks from '../data/sourceNetworks.json';
 import destinationNetworks from '../data/destinationNetworks.json';
-import { useEthers, useGasPrice, useEtherBalance } from '@usedapp/core';
+import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { BigNumber, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import { formatEther } from '@ethersproject/units';
@@ -65,6 +66,9 @@ export const useFees = () => {
 	}
 	const walletBalance = useEtherBalance(account);
 
+	const tokenContractAddr = '0x4Fabb145d64652a948d72533023f6E7A623C7C53';
+	const tokenBalance = useTokenBalance(tokenContractAddr, account);
+
 	const getExchangeInfo = async () => {
 		try {
 			const res = await axios.request({ url: BINANCE_EXCHANGE_INFO });
@@ -100,7 +104,7 @@ export const useFees = () => {
 
 					return [...new Set(allTokens.flat(1))];
 				},
-				['GLMR']
+				['ETH']
 			),
 		[]
 	);
@@ -190,7 +194,7 @@ export const useFees = () => {
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
 			const namedValues = {
-				scoin: 'GLMR',
+				scoin: 'ETH',
 				samt: utils.parseEther('10').toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
@@ -299,7 +303,7 @@ export const useFees = () => {
 			account &&
 			allFilteredPairs
 		) {
-			const tokenMinAmount =
+			const destTokenMinWithdrawal =
 				// @ts-ignore
 				destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'];
 			const [pair] = allFilteredPairs.filter(
@@ -310,18 +314,39 @@ export const useFees = () => {
 			if (pair) {
 				const { filters } = pair; // TODO: app broke
 				const [lot, notional] = filters;
-				const notionalMinAmount = +notional.minNotional * getPrice(destinationToken, START_TOKEN);
+				let notionalMinAmount = +notional.minNotional;
+				const price = getPrice(destinationToken, START_TOKEN);
+				if(destinationToken === pair.quoteAsset) {
+					notionalMinAmount *= price;
+				}
+				const tokenMinAmount4Withdrawal = destTokenMinWithdrawal * price;
+
 				const { minQty, maxQty } = lot;
 				const lotSizeMinAmount = +minQty * getPrice(START_TOKEN, START_TOKEN);
 				const lotSizeMaxAmount = +maxQty * getPrice(START_TOKEN, START_TOKEN); // TODO: check if numbers only modified when displayed to user (not)
 				const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
-
+				const tokenMaxAmount = tokenBalance && parseFloat(formatEther(tokenBalance)).toFixed(3);
+				
+				console.log(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount);
 				minAmount = (
-					Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
+					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
 				).toString();
-				maxAmount = (
-					Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
-				).toString();
+
+				if (chainId) {
+					const startTokenData = 
+						// @ts-ignore
+						sourceNetworks[chainId.toString()]?.tokens[START_TOKEN];
+
+					if (startTokenData.isNative) {
+						maxAmount = (
+							Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
+						).toString();
+					} else {
+						maxAmount = (
+							Math.min(lotSizeMaxAmount, Number(tokenMaxAmount))
+						).toString();
+					}
+				}
 			}
 		}
 
