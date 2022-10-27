@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Moonbeam, useEthers } from '@usedapp/core';
+import { Mainnet, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -152,12 +152,12 @@ export const Header = () => {
 	const checkNetwork = async (): Promise<void> => {
 		const NETWORK_PARAMS = [
 			{
-				chainId: ethers.utils.hexValue(Moonbeam.chainId),
-				chainName: Moonbeam.chainName,
+				chainId: ethers.utils.hexValue(Mainnet.chainId),
+				chainName: Mainnet.chainName,
 				rpcUrls: [MOONBEAM_URL],
 				nativeCurrency: {
-					name: 'Glimer',
-					symbol: 'GLMR',
+					name: 'Ethereum',
+					symbol: 'ETH',
 					decimals: 18
 				},
 				blockExplorerUrls: ['https://moonscan.io/']
@@ -165,8 +165,8 @@ export const Header = () => {
 		];
 
 		if (!chainId) {
-			await switchNetwork(Moonbeam.chainId);
-			if (chainId !== Moonbeam.chainId && library) {
+			await switchNetwork(Mainnet.chainId);
+			if (chainId !== Mainnet.chainId && library) {
 				await library.send('wallet_addEthereumChain', NETWORK_PARAMS);
 			}
 		}
@@ -348,7 +348,7 @@ export const Header = () => {
 			)}
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account ? (
-				<Wallet token="GLMR" account={account} />
+				<Wallet token="ETH" account={account} />
 			) : (
 				<Button
 					isLoading={isLoading}

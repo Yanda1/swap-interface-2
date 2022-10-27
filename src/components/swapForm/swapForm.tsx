@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
+import sourceNetworks from '../../data/sourceNetworks.json';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../../styles';
 import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
@@ -20,6 +21,7 @@ import {
 import type { DestinationNetworks } from '../../helpers';
 import { useFees } from '../../hooks';
 import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../../components';
+import { useEthers } from '@usedapp/core';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -182,13 +184,18 @@ export const SwapForm = () => {
 		swapButtonRef.current.onSubmit();
 	};
 
+	const { chainId } = useEthers();
+	const sourceNetwork = 
+		// @ts-ignore
+		sourceNetworks[chainId]?.name;
+
 	return (
 		<Wrapper>
 			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton disabled icon="GLMR" />
+						<IconButton disabled icon="ETH" />
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -201,8 +208,8 @@ export const SwapForm = () => {
 					</SwapInput>
 					<NamesWrapper single={false}>
 						<SwapNames>
-							<Name color={theme.font.pure}>GLMR</Name>
-							<Name color={theme.font.default}>(Moonbeam)</Name>
+							<Name color={theme.font.pure}>ETH</Name>
+							<Name color={theme.font.default}>({sourceNetwork})</Name>
 						</SwapNames>
 						<SwapNames pos="end" single={false}>
 							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
@@ -233,7 +240,7 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
-					: `1 GLMR = ${removeZeros(
+					: `1 ETH = ${removeZeros(
 							getPrice(START_TOKEN, destinationToken).toString()
 					  )} ${destinationToken}`}
 			</ExchangeRate>

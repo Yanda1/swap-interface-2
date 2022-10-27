@@ -64,7 +64,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			const productId = utils.id(makeId(32));
 
 			const namedValues = {
-				scoin: 'GLMR',
+				scoin: 'ETH',
 				samt: utils.parseEther(amount).toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
