@@ -1,6 +1,7 @@
 {
 	"1": {
 		"name": "Ethereum",
+		"shortName": "ETH",
 		"tokens": {
 			"ETH": {
 				"isNative": true,
