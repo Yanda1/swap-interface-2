@@ -9,7 +9,7 @@ import {
 	useLocalStorage,
 	useStore
 } from '../../helpers';
-import { useEthers } from '@usedapp/core';
+import { useEthers, useSendTransaction } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
@@ -35,12 +35,15 @@ type Props = {
 export const TabModal = () => {
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
-		state: { productId, destinationToken }
+		state: { productId, destinationToken, account: owner }
 	} = useStore();
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<object[]>('swaps', []);
 
 	const { account } = useEthers();
 	const { chainId, library: web3Provider } = useEthers();
+	const { sendTransaction } = useSendTransaction({
+		transactionName: 'Deposit'
+	});
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
@@ -129,10 +132,10 @@ export const TabModal = () => {
 					}
 				);
 			}
-			// Delete completed swap
+			// Deleting completed swaps (successful and unsuccessful)
 			if (swap.complete || swap.complete === null) {
 				const newSwapsCopy = [...swapsCopy];
-				newSwapsCopy.splice(index, 1);
+				swapsStorage.splice(index, 1);
 				setSwapsStorage(newSwapsCopy);
 			}
 		});
@@ -142,7 +145,23 @@ export const TabModal = () => {
 		subscribeSwap();
 	}, [swaps]);
 
-	return (
+	useEffect(() => {
+		if (swaps.length > 0) {
+			swaps.map((swap) => {
+				if (!swap.depositBlock && swap.costRequestCounter >= 2) {
+					const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, swap.productId);
+					console.log('filter', filter);
+					contract.on(filter, (customer, service, productId, cost, event) => {
+						console.log('---COST RESPONSE EVENT---', event);
+						console.log('Oracle deposit estimation:', utils.formatEther(cost));
+						void sendTransaction({ to: contractAddress, value: cost });
+					});
+				}
+			});
+		}
+	}, [swaps, swapsStorage]);
+
+	return owner ? (
 		<Wrapper>
 			{swaps.length > 0 && (
 				<>
@@ -151,5 +170,5 @@ export const TabModal = () => {
 				</>
 			)}
 		</Wrapper>
-	);
+	) : null;
 };
