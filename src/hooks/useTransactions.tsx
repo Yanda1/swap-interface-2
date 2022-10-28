@@ -29,23 +29,28 @@ export const useTransactions = () => {
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const {
-		state: { account }
+		state: { account, isUserVerified }
 	} = useStore();
 	const api = useAxios();
 	// eslint-disable-next-line
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_HISTORY, {
-		lastBlock: 0,
-		data: [] as TransactionData[]
+		[account]: {
+			lastBlock: null,
+			data: [] as TransactionData[]
+		}
 	});
 	const contract = new Contract(contractAddress, contractInterface, library);
 
 	const getAllTransactions = async () => {
-		if (account && lastBlock) {
-			//
+		if (account && lastBlock && isUserVerified) {
 			const costRequestFilter = contract.filters.CostRequest(account, SERVICE_ADDRESS);
 			let allEvents: any[] = [];
 
-			for (let i = BLOCK_CONTRACT_NUMBER; i < lastBlock; i += BLOCK_CHUNK_SIZE) {
+			for (
+				let i = storage[account]?.lastBlock ?? BLOCK_CONTRACT_NUMBER;
+				i < lastBlock;
+				i += BLOCK_CHUNK_SIZE
+			) {
 				const endBlock = Math.min(lastBlock, i + BLOCK_CHUNK_SIZE - 1);
 
 				try {
@@ -64,23 +69,26 @@ export const useTransactions = () => {
 	const getTransactionsHeaderData = () => {
 		const headerData: TransactionData[] = [];
 		events.map((transaction) => {
-			const dataset = {} as TransactionData;
-			dataset.blockNumber = transaction?.blockNumber;
 			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
-			dataset.header = {
-				timestamp: undefined,
-				symbol: `${scoin}${fcoin}`,
-				scoin,
-				fcoin,
-				samt,
-				net
+			const dataset: TransactionData = {
+				blockNumber: transaction?.blockNumber,
+				header: {
+					timestamp: undefined,
+					symbol: `${scoin}${fcoin}`,
+					scoin,
+					fcoin,
+					samt,
+					net
+				},
+				content: null,
+				withdrawl: null,
+				gasFee: ''
 			};
-			dataset.content = null;
 			headerData.push(dataset);
 		});
-		setData(headerData);
-		// @ts-ignore
-		setStorage({ lastBlock, data: headerData });
+		setData([...data, ...headerData]);
+		storage[account] = { ...storage[account], data: [...data, ...headerData] };
+		setStorage({ ...storage });
 		setStartFetchDetails(true);
 	};
 
@@ -168,6 +176,18 @@ export const useTransactions = () => {
 		});
 
 	useEffect(() => {
+		if (storage[account]?.data.length > 0) {
+			setData(storage[account].data);
+			setLoading(false);
+			setContentLoading(false);
+		} else {
+			setData([]);
+			setLoading(true);
+			setContentLoading(true);
+		}
+	}, [account]);
+
+	useEffect(() => {
 		library
 			?.getBlockNumber()
 			// @ts-ignore
@@ -177,7 +197,7 @@ export const useTransactions = () => {
 
 	useEffect(() => {
 		void getAllTransactions();
-	}, [account, lastBlock]);
+	}, [account, isUserVerified, lastBlock]);
 
 	useEffect(() => {
 		if (events.length > 0) {
@@ -192,7 +212,6 @@ export const useTransactions = () => {
 				// @ts-ignore
 				.then((transactions: TransactionData[]) => {
 					const dataCopy = [...data];
-					// const storageDataCopy = [...storage.data];
 					transactions.map((transaction: TransactionData) => {
 						const findTransactionInData = data.find(
 							(item) => item.blockNumber === transaction.blockNumber
@@ -206,8 +225,8 @@ export const useTransactions = () => {
 						}
 					});
 					setData(dataCopy);
-					// @ts-ignore
-					setStorage({ lastBlock, data: dataCopy });
+					storage[account] = { lastBlock, data: dataCopy };
+					setStorage({ ...storage });
 				})
 				.catch((e) => console.log('e in Promise.all', e))
 				.finally(() => setContentLoading(false));

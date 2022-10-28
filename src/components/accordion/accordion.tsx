@@ -195,7 +195,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 				<Card theme={theme} key={index}>
 					<TitleWrapper theme={theme} onClick={() => handleClick(index)}>
 						<TitleTab flex={1} mobile={true}>
-							<TitleText color={theme.font.pure}>{item.header.symbol}</TitleText>
+							<TitleText color={theme.font.pure}>{item.header?.symbol}</TitleText>
 						</TitleTab>
 						<TitleTab>
 							Deposit Time:{' '}
@@ -227,8 +227,11 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 						</ArrowWrapper>
 						{/* @ts-ignore */}
 					</TitleWrapper>
-					{/* @ts-ignore */}
-					<Content theme={theme} open={item.open} height={item.content ? 'large' : 'small'}>
+					<Content
+						theme={theme}
+						// @ts-ignore
+						open={item.open}
+						height={item.content === 'none' || !item?.content ? 'small' : 'large'}>
 						<ContentText open={item.open}>
 							<EmptyColumn />
 							<ContentColumn>
