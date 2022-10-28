@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import { useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
+import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
@@ -9,9 +9,11 @@ import {
 	isTokenSelected,
 	makeId,
 	SERVICE_ADDRESS,
-	useStore
+	useStore,
+	START_TOKEN
 } from '../../helpers';
-import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
+import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
+import sourceNetworks from '../../data/sourceNetworks.json';
 import styled from 'styled-components';
 import { spacing } from '../../styles';
 import type { ContractAdress } from '../../helpers';
@@ -43,17 +45,44 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isUserVerified;
 
 	const { account, chainId, library: web3Provider } = useEthers();
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
-	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
-	const contract = new Contract(contractAddress, contractInterface, web3Provider);
+	const startTokenData = 
+		// @ts-ignore
+		sourceNetworks[chainId.toString()]?.tokens[START_TOKEN];
+	const tokenContract = startTokenData.contractAddr && new Contract(startTokenData.contractAddr, ERC20Interface, web3Provider);
+
+	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
+	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
+	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
 	if (web3Provider) {
-		contract.connect(web3Provider.getSigner());
+		protocol.connect(web3Provider.getSigner());
+		if (tokenContract) {
+			tokenContract.connect(web3Provider.getSigner());
+		}
 	}
+	
+	const { send: sendTokenApprove } = useContractFunction(
+		// @ts-ignore
+		tokenContract,
+		'approve',
+		{ transactionName: 'Approve token to be used for Swap' }
+	);
 	const { send: sendCreateProcess } = useContractFunction(
 		// @ts-ignore
-		contract,
-		'createProcess',
+		protocol,
+		'createProcess(address,bytes32,string)',
 		{ transactionName: 'Request Swap' }
+	);
+	const { send: sendTokenCreateProcess } = useContractFunction(
+		// @ts-ignore
+		protocol,
+		'createProcess(address,address,bytes32,string)',
+		{ transactionName: 'Request Swap' }
+	);
+	const { send: sendDeposit } = useContractFunction(
+		// @ts-ignore
+		protocol,
+		'deposit',
+		{ transactionName: 'deposit' }
 	);
 	const { sendTransaction } = useSendTransaction({
 		transactionName: 'Deposit'
@@ -73,13 +102,29 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			};
 
 			const shortNamedValues = JSON.stringify(namedValues);
-
-			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
-			const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, productId);
-			console.log('filter', filter);
-			contract.on(filter, (customer, service, productId, cost) => {
+			
+			if(startTokenData.isNative) {
+				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+			} else {
+				console.log('Calling sendCreateProcess with the contractAddr', startTokenData.contractAddr);
+				await sendTokenCreateProcess(startTokenData.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues);
+			}
+			const filter = protocol.filters.CostResponse(account, SERVICE_ADDRESS, productId);
+			protocol.on(filter, (customer, service, productId, cost) => {
 				console.log('Oracle deposit estimation:', utils.formatEther(cost));
-				void sendTransaction({ to: contractAddress, value: cost });
+				if(startTokenData.isNative) {
+					void sendTransaction({ to: protocolAddress, value: cost });
+				} else {
+					sendTokenApprove(protocolAddress, cost)
+						.then(result => {
+							console.log('Approved ', utils.formatEther(cost), ' tokens of "', protocolAddress, '" contract.', result);
+
+							void sendDeposit(cost);
+						})
+						.catch(error => {
+							console.log('Error in sending approve', error);
+						});
+				}
 			});
 		}
 	}));
