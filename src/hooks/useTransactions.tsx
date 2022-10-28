@@ -14,6 +14,7 @@ import {
 	TransactionData,
 	useStore
 } from '../helpers';
+import type { LocalStorageHistory } from '../helpers';
 import { useAxios } from './useAxios';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -33,7 +34,7 @@ export const useTransactions = () => {
 	} = useStore();
 	const api = useAxios();
 	// eslint-disable-next-line
-	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_HISTORY, {
+	const [storage, setStorage] = useLocalStorage<LocalStorageHistory>(LOCAL_STORAGE_HISTORY, {
 		[account]: {
 			lastBlock: null,
 			data: [] as TransactionData[]
@@ -61,7 +62,13 @@ export const useTransactions = () => {
 					console.log('error in costRequestFilter', e);
 				}
 			}
-			setEvents(allEvents);
+			setEvents(
+				allEvents.filter(
+					(event) =>
+						storage[account]?.data.filter((dataset) => dataset.blockNumber === event?.blockNumber)
+							.length === 0
+				)
+			);
 			setLoading(false);
 		}
 	};
@@ -213,6 +220,7 @@ export const useTransactions = () => {
 				.then((transactions: TransactionData[]) => {
 					const dataCopy = [...data];
 					transactions.map((transaction: TransactionData) => {
+						// TODO: solution if undefined - also for the lastBlock logic
 						const findTransactionInData = data.find(
 							(item) => item.blockNumber === transaction.blockNumber
 						);
@@ -225,7 +233,10 @@ export const useTransactions = () => {
 						}
 					});
 					setData(dataCopy);
-					storage[account] = { lastBlock, data: dataCopy };
+					storage[account] = {
+						lastBlock: lastBlock ? lastBlock - BLOCK_CHUNK_SIZE : BLOCK_CONTRACT_NUMBER,
+						data: dataCopy
+					};
 					setStorage({ ...storage });
 				})
 				.catch((e) => console.log('e in Promise.all', e))

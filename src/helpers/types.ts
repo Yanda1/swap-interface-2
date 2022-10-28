@@ -39,3 +39,7 @@ export type TransactionData = {
 		url: string;
 	} | null;
 };
+
+export type LocalStorageHistory = {
+	[key in string]: { lastBlock: number | null; data: TransactionData[] };
+};
