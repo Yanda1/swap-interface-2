@@ -159,7 +159,7 @@ export const TabModal = () => {
 				}
 			});
 		}
-	}, [swaps, swapsStorage]);
+	}, [swaps, swapsStorage, productId]);
 
 	return owner ? (
 		<Wrapper>

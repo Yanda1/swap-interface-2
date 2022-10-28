@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import { useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
+import { useContractFunction, useEthers } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
@@ -59,9 +59,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		'createProcess',
 		{ transactionName: 'Request Swap' }
 	);
-	const { sendTransaction } = useSendTransaction({
-		transactionName: 'Deposit'
-	});
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
@@ -79,12 +76,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			const shortNamedValues = JSON.stringify(namedValues);
 
 			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
-			const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, productId);
-			console.log('filter', filter);
-			contract.on(filter, (customer, service, productId, cost) => {
-				console.log('Oracle deposit estimation:', utils.formatEther(cost));
-				void sendTransaction({ to: contractAddress, value: cost });
-			});
 		}
 	}));
 
