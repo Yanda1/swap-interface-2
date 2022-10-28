@@ -17,7 +17,7 @@ import {
 	isNetworkSelected
 } from '../helpers';
 import type { GraphType, DestinationNetworks } from '../helpers';
-import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
+import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import sourceNetworks from '../data/sourceNetworks.json';
 import destinationNetworks from '../data/destinationNetworks.json';
 import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
@@ -56,6 +56,9 @@ export const useFees = () => {
 	} = useStore();
 
 	const { chainId, library: web3Provider } = useEthers();
+	const startTokenData = 
+		// @ts-ignore
+		sourceNetworks[chainId?.toString()]?.tokens[START_TOKEN];
 	const gasPrice = useGasPrice();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
@@ -203,8 +206,9 @@ export const useFees = () => {
 			const shortNamedValues = JSON.stringify(namedValues);
 			const productId = utils.id(makeId(32));
 
-			contract.estimateGas
-				.createProcess(SERVICE_ADDRESS, productId, shortNamedValues)
+			if(startTokenData.isNative) {
+				contract.estimateGas
+				['createProcess(address,bytes32,string)'](SERVICE_ADDRESS, productId, shortNamedValues)
 				.then((gas: any) => {
 					setGasAmount(gas);
 				})
@@ -212,6 +216,19 @@ export const useFees = () => {
 					throw new Error(err);
 					// TODO: @Daniel:  add Toast to inform user?
 				});
+			} else {
+				contract.estimateGas
+				['createProcess(address,address,bytes32,string)'](startTokenData.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues)
+				.then((gas: any) => {
+					setGasAmount(gas);
+				})
+				.catch((err) => {
+					throw new Error(err);
+					// TODO: @Daniel:  add Toast to inform user?
+				});
+			}
+
+			
 		}
 	}, [destinationToken, destinationAddress]);
 
