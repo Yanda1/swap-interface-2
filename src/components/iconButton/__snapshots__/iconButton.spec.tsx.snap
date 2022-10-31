@@ -32,7 +32,7 @@ exports[`IconButton should render a disabled IconButton with img and Text 1`] = 
   -webkit-justify-content: center;
   -ms-flex-pack: center;
   justify-content: center;
-  background: #172631;
+  background: linear-gradient(to left,#172631,#172631);
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
 }

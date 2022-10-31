@@ -54,7 +54,7 @@ const Icon = styled.button(({ disabled }: Props) => {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: ${theme.icon.default};
+		background: ${`linear-gradient(to left, ${theme.icon.default}, ${theme.icon.default})`};
 		transition: ${DEFAULT_TRANSIITON};
 
 		&:hover {

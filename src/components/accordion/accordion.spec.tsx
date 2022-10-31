@@ -46,7 +46,7 @@ describe('Accordion', () => {
 	it('Should return message if no data available', () => {
 		const { getByText } = render(
 			<AuthProvider>
-				<Accordion data={[]} />
+				<Accordion data={[]} contentLoading={false} />
 			</AuthProvider>
 		);
 		expect(getByText(/You do not have any transactions yet/)).toBeInTheDocument();

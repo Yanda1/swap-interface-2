@@ -41,7 +41,8 @@ export const GlobalStyles = createGlobalStyle`
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		transition: ${DEFAULT_TRANSIITON};
-		background: ${(props: Props) => props.theme.background.default};
+		background: ${(props: Props) =>
+			`linear-gradient(to bottom, ${props.theme.background.default}, ${props.theme.background.default})`};
 
 		${mediaQuery('s')} {
 			background: ${(props: Props) =>
@@ -69,7 +70,15 @@ const App = () => {
 			<GlobalStyles theme={theme} />
 			<Header />
 			<Routes>
-				<Route path="/" element={<Wrapper><SwapForm /><TabModal /></Wrapper>} />
+				<Route
+					path="/"
+					element={
+						<Wrapper>
+							<SwapForm />
+							<TabModal />
+						</Wrapper>
+					}
+				/>
 				<Route path="/transaction-history" element={<TransactionHistory />} />
 			</Routes>
 		</Router>

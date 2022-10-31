@@ -84,7 +84,7 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<
 };
 
 // A wrapper for "JSON.parse()"" to support "undefined" value
-function parseJSON<T>(value: string | null): T | undefined {
+const parseJSON = <T,>(value: string | null): T | undefined => {
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return value === 'undefined' ? undefined : JSON.parse(value ?? '');
@@ -93,4 +93,4 @@ function parseJSON<T>(value: string | null): T | undefined {
 
 		return undefined;
 	}
-}
+};

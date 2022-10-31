@@ -1,9 +1,10 @@
 import { forwardRef, useImperativeHandle } from 'react';
+import styled from 'styled-components';
+import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import { useContractFunction, useEthers } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import type { ContractAdress } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
 	isNetworkSelected,
@@ -13,8 +14,7 @@ import {
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
-import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
-import styled from 'styled-components';
+import type { ContractAdress } from '../../helpers';
 import { spacing } from '../../styles';
 
 const ButtonWrapper = styled.div`

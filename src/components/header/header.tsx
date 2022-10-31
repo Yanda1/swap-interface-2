@@ -30,7 +30,6 @@ import {
 	MOONBEAM_URL,
 	ThemeEnum,
 	useBreakpoint,
-	useLocalStorage,
 	useStore,
 	VerificationEnum,
 	button,
@@ -41,7 +40,7 @@ import {
 } from '../../helpers';
 import { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
-import { useAxios } from '../../hooks';
+import { useAxios, useLocalStorage } from '../../hooks';
 
 type Props = {
 	theme: Theme;

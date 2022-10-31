@@ -172,6 +172,13 @@ export const SwapForm = () => {
 	const handleSwap = (): void => {
 		// @ts-ignore
 		swapButtonRef.current.onSubmit();
+		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: '' });
+		dispatch({ type: DestinationNetworkEnum.WALLET, payload: 'Select Wallet' });
+		dispatch({ type: DestinationNetworkEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationNetworkEnum.AMOUNT, payload: '' });
+		dispatch({ type: DestinationNetworkEnum.MEMO, payload: '' });
+		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
 
 	return (

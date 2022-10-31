@@ -6,7 +6,8 @@ import {
 	ContentItemTitle,
 	ContentList,
 	ContentItemText,
-	ContentItemLink
+	ContentItemLink,
+	Spinner
 } from '../../components';
 import { beautifyNumbers, useBreakpoint, useStore, WEI_TO_GLMR } from '../../helpers';
 import type { TransactionData } from '../../helpers';
@@ -15,10 +16,11 @@ import {
 	DEFAULT_TRANSIITON,
 	fontSize,
 	mediaQuery,
-	pxToRem
+	pxToRem,
+	spacing
 } from '../../styles';
 import type { Theme } from '../../styles';
-import { spacing } from '../../styles';
+import { Notifications } from '../../pages';
 
 type StyleProps = {
 	theme: Theme;
@@ -26,11 +28,6 @@ type StyleProps = {
 	color?: string;
 	height?: 'large' | 'small';
 };
-
-const Message = styled.div`
-	margin-top: ${spacing[24]};
-	text-align: center;
-`;
 
 export const Wrapper = styled.div`
 	background-color: ${(props: StyleProps) => props.theme.background.mobile};
@@ -123,6 +120,23 @@ const Content = styled.div`
 	}
 `;
 
+const EmptyColumn = styled.div`
+	flex: 1;
+`;
+
+const ContentColumn = styled.div`
+	flex: 6;
+`;
+
+const SpinnerWrapper = styled.div`
+	display: flex;
+	justify-content: center;
+
+	${mediaQuery('s')} {
+		margin-top: ${spacing[16]};
+	}
+`;
+
 const ContentText = styled.div(
 	({ open }: { open: boolean }) => css`
 		display: flex;
@@ -142,9 +156,9 @@ const ContentText = styled.div(
 
 type DataProps = TransactionData & { open: boolean };
 
-type Props = { data: Omit<DataProps, 'open'>[] };
+type Props = { data: Omit<DataProps, 'open'>[]; contentLoading: boolean };
 
-export const Accordion = ({ data }: Props) => {
+export const Accordion = ({ data, contentLoading }: Props) => {
 	const [accordionItems, setAccordionItems] = useState<DataProps[]>([]);
 	const {
 		state: { theme }
@@ -172,7 +186,8 @@ export const Accordion = ({ data }: Props) => {
 		}
 	};
 
-	const formatDate = (ts: number): string => format(new Date(ts * 1000), 'dd/MM/yyyy hh:mm');
+	const formatDate = (ts: number | undefined): string =>
+		ts ? format(new Date(ts * 1000), 'dd/MM/yyyy hh:mm') : 'n/a'; // TODO: helper?
 
 	return accordionItems?.length > 0 ? (
 		<Wrapper theme={theme} data-testid="accordion">
@@ -180,7 +195,7 @@ export const Accordion = ({ data }: Props) => {
 				<Card theme={theme} key={index}>
 					<TitleWrapper theme={theme} onClick={() => handleClick(index)}>
 						<TitleTab flex={1} mobile={true}>
-							<TitleText color={theme.font.pure}>{item.header.symbol}</TitleText>
+							<TitleText color={theme.font.pure}>{item.header?.symbol}</TitleText>
 						</TitleTab>
 						<TitleTab>
 							Deposit Time:{' '}
@@ -197,10 +212,13 @@ export const Accordion = ({ data }: Props) => {
 							</TitleText>
 						</TitleTab>
 						<TitleTab>
-							Reiceved:{' '}
+							Received:{' '}
 							<TitleText color={theme.font.pure}>
-								{beautifyNumbers({ n: item.withdrawl?.amount ?? '0' })} {item.header?.fcoin} (
-								{item.header?.net})
+								{beautifyNumbers({ n: item.withdrawl?.amount ?? '' })}{' '}
+								{item.withdrawl?.amount
+									? `${item.header?.fcoin} (
+								${item.header?.net})`
+									: ''}
 							</TitleText>
 						</TitleTab>
 						{/* @ts-ignore */}
@@ -209,11 +227,14 @@ export const Accordion = ({ data }: Props) => {
 						</ArrowWrapper>
 						{/* @ts-ignore */}
 					</TitleWrapper>
-					{/* @ts-ignore */}
-					<Content theme={theme} open={item.open} height={item.content ? 'large' : 'small'}>
+					<Content
+						theme={theme}
+						// @ts-ignore
+						open={item.open}
+						height={item.content === 'none' || !item?.content ? 'small' : 'large'}>
 						<ContentText open={item.open}>
-							<div style={{ flex: 1 }} />
-							<div style={{ flex: 6 }}>
+							<EmptyColumn />
+							<ContentColumn>
 								{mobile && (
 									<MobileHeaderInfo color={theme.font.select}>
 										<MobileHeaderSection>
@@ -231,70 +252,85 @@ export const Accordion = ({ data }: Props) => {
 											</TitleText>
 										</MobileHeaderSection>
 										<MobileHeaderSection>
-											Reiceved:{' '}
+											Received:{' '}
 											<TitleText color={theme.font.pure}>
-												{beautifyNumbers({ n: item.withdrawl?.amount ?? '0' })} {item.header?.fcoin}{' '}
-												({item.header?.net})
+												{beautifyNumbers({ n: item.withdrawl?.amount ?? '' })}{' '}
+												{item.withdrawl?.amount
+													? `${item.header?.fcoin} (${item.header?.net})`
+													: ''}
 											</TitleText>
 										</MobileHeaderSection>
 									</MobileHeaderInfo>
 								)}
-								<ContentList>
-									{!item.content ? (
-										<>
-											<ContentItemText>This swap has not been completed.</ContentItemText>{' '}
-											<ContentItemText color={theme.button.error}>
-												Unsuccessful swap!
+								{contentLoading ? (
+									<SpinnerWrapper>
+										<Spinner size="medium" color={theme.background.history} />
+									</SpinnerWrapper>
+								) : (
+									<ContentList>
+										{item.content === 'none' ? (
+											<>
+												<ContentItemText>This swap has not been completed.</ContentItemText>{' '}
+												<ContentItemText color={theme.button.error}>
+													Unsuccessful swap!
+												</ContentItemText>
+											</>
+										) : !item.content ? (
+											<ContentItemText>
+												Data currently not available - please try again later
 											</ContentItemText>
-										</>
-									) : (
-										<>
-											<ContentItem theme={theme}>
-												<ContentItemTitle>Successfull Deposit</ContentItemTitle>
-												<ContentItemText>Gas fee: {item.gasFee}</ContentItemText>
-											</ContentItem>
-											<ContentItem theme={theme}>
-												<ContentItemTitle>Buy Order {item.header?.symbol}</ContentItemTitle>
-												<ContentItemText>
-													Quantity: {beautifyNumbers({ n: item.content?.qty })} {item.header?.scoin}
-												</ContentItemText>
-												<ContentItemText>Exchange Rate: {item.content?.price}</ContentItemText>
-												<ContentItemText>
-													Date: {formatDate(item.content?.timestamp)}
-												</ContentItemText>
-												<ContentItemText>
-													CEX Fee: {beautifyNumbers({ n: item.content?.cexFee })}{' '}
-													{item.header?.fcoin}
-												</ContentItemText>
-											</ContentItem>
-											<ContentItem theme={theme}>
-												<ContentItemLink
-													theme={theme}
-													onClick={() => window.open(item.withdrawl?.url)}>
-													Withdraw Transaction Link
-												</ContentItemLink>
-												<ContentItemText>
-													Withdrawal Fee:{' '}
-													{beautifyNumbers({ n: item.withdrawl?.withdrawFee ?? '' })}{' '}
-													{item.header?.fcoin}
-												</ContentItemText>
-											</ContentItem>
-											<ContentItem theme={theme}>
-												<ContentItemText
-													color={item.content?.success ? theme.button.default : theme.button.error}>
-													{item.content?.success ? 'Successful swap!' : 'Unsuccessful swap!'}
-												</ContentItemText>
-											</ContentItem>
-										</>
-									)}
-								</ContentList>
-							</div>
+										) : (
+											<>
+												<ContentItem theme={theme}>
+													<ContentItemTitle>Successfull Deposit</ContentItemTitle>
+													<ContentItemText>Gas fee: {item.gasFee}</ContentItemText>
+												</ContentItem>
+												<ContentItem theme={theme}>
+													<ContentItemTitle>Buy Order {item.header?.symbol}</ContentItemTitle>
+													<ContentItemText>
+														Quantity: {beautifyNumbers({ n: item.content?.qty })}{' '}
+														{item.header?.scoin}
+													</ContentItemText>
+													<ContentItemText>Exchange Rate: {item.content?.price}</ContentItemText>
+													<ContentItemText>
+														Date: {formatDate(item.content?.timestamp)}
+													</ContentItemText>
+													<ContentItemText>
+														CEX Fee: {beautifyNumbers({ n: item.content?.cexFee })}{' '}
+														{item.header?.fcoin}
+													</ContentItemText>
+												</ContentItem>
+												<ContentItem theme={theme}>
+													<ContentItemLink
+														theme={theme}
+														onClick={() => window.open(item.withdrawl?.url)}>
+														Withdraw Transaction Link
+													</ContentItemLink>
+													<ContentItemText>
+														Withdrawal Fee:{' '}
+														{beautifyNumbers({ n: item.withdrawl?.withdrawFee ?? '' })}{' '}
+														{item.header?.fcoin}
+													</ContentItemText>
+												</ContentItem>
+												<ContentItem theme={theme}>
+													<ContentItemText
+														color={
+															item.content?.success ? theme.button.default : theme.button.error
+														}>
+														{item.content?.success ? 'Successful swap!' : 'Unsuccessful swap!'}
+													</ContentItemText>
+												</ContentItem>
+											</>
+										)}
+									</ContentList>
+								)}
+							</ContentColumn>
 						</ContentText>
 					</Content>
 				</Card>
 			))}
 		</Wrapper>
 	) : (
-		<Message>You do not have any transactions yet</Message>
+		<Notifications>You do not have any transactions yet</Notifications>
 	);
 };

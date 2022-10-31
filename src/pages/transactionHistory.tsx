@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { TextField, Select, Accordion, Spinner } from '../components';
 import { useStore } from '../helpers';
 import { useTransactions } from '../hooks';
@@ -10,14 +10,17 @@ const Wrapper = styled.main`
 	margin: 0 auto;
 `;
 
-const SpinnerWrapper = styled.div`
-	margin-top: ${spacing[24]};
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	gap: ${spacing[8]};
-`;
+export const Notifications = styled.div(
+	({ multiple = true }: { multiple?: boolean }) => css`
+		margin-top: ${spacing[24]};
+		padding-top: ${multiple ? '0' : spacing[32]};
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		gap: ${spacing[8]};
+	`
+);
 
 const Inputs = styled.div`
 	display: flex;
@@ -52,9 +55,9 @@ const selectDates = [
 
 export const TransactionHistory = () => {
 	const [searchTerm, setSearchTerm] = useState('');
-	const { data, loading } = useTransactions();
+	const { data, loading, contentLoading } = useTransactions();
 	const {
-		state: { theme }
+		state: { theme, isUserVerified }
 	} = useStore();
 
 	return (
@@ -69,14 +72,17 @@ export const TransactionHistory = () => {
 				<Select data={selectData} />
 				<Select data={selectDates} />
 			</Inputs>{' '}
-			{loading ? (
-				<SpinnerWrapper>
-					{' '}
+			{!isUserVerified ? (
+				<Notifications multiple={false}>
+					Make sure that you are logged in to see your Transaction History
+				</Notifications>
+			) : loading ? (
+				<Notifications>
 					<Spinner size="medium" color={theme.background.history} />
 					Fetching your Transaction History
-				</SpinnerWrapper>
+				</Notifications>
 			) : (
-				<Accordion data={data} />
+				<Accordion data={data} contentLoading={contentLoading} />
 			)}
 		</Wrapper>
 	);

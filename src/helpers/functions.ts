@@ -19,7 +19,7 @@ const trimZeros = (res: string): string =>
 
 export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
 	let res = '';
-	if (n === '') return '';
+	if (n === '') return 'n/a';
 	if (typeof n === 'number') {
 		res = n.toFixed(digits);
 	} else {

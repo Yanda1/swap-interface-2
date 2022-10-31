@@ -1,4 +1,3 @@
-import { Dispatch, SetStateAction } from 'react';
 import destinationNetworks from '../data/destinationNetworks.json';
 import { CONTRACT_ADDRESSES } from '../helpers';
 
@@ -15,21 +14,24 @@ export type GraphType = false | { distance: number; path: string[] };
 export type TransactionData = {
 	blockNumber: number;
 	header: {
-		timestamp: number;
+		timestamp: number | undefined;
 		symbol: string;
 		scoin: string;
 		fcoin: string;
 		samt: string;
 		net: string;
 	};
-	content: {
-		qty: string;
-		price: string;
-		timestamp: number;
-		cexFee: string;
-		withdrawFee: string;
-		success: boolean;
-	} | null;
+	content:
+		| {
+				qty: string;
+				price: string;
+				timestamp: number;
+				cexFee: string;
+				withdrawFee: string;
+				success: boolean;
+		  }
+		| null
+		| 'none';
 	gasFee: string;
 	withdrawl: {
 		amount: string;
@@ -38,4 +40,6 @@ export type TransactionData = {
 	} | null;
 };
 
-export type SetValue<T> = Dispatch<SetStateAction<T>>;
+export type LocalStorageHistory = {
+	[key in string]: { lastBlock: number | null; data: TransactionData[] };
+};
