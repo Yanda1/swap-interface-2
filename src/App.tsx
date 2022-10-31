@@ -1,17 +1,22 @@
 import './styles/fonts/font.css';
-import { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import type { Theme } from './styles';
 import {
 	fontFamily,
 	fontSize,
 	fontStyle,
 	fontWeight,
+	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
-	viewport
+	viewport,
+	DEFAULT_TRANSIITON
 } from './styles';
-import { Header, SwapForm } from './components';
+import { Header } from './components';
+import { SwapForm, TransactionHistory } from './pages';
 import { useStore } from './helpers';
+import { TabModal } from './components/tabs/tabModal';
 
 type Props = {
 	theme: Theme;
@@ -35,8 +40,9 @@ export const GlobalStyles = createGlobalStyle`
 		padding: 0 ${pxToRem(20)} ${pxToRem(40)};
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-		transition: all 0.2s ease-in-out;
-		background: ${(props: Props) => props.theme.background.default};
+		transition: ${DEFAULT_TRANSIITON};
+		background: ${(props: Props) =>
+			`linear-gradient(to bottom, ${props.theme.background.default}, ${props.theme.background.default})`};
 
 		${mediaQuery('s')} {
 			background: ${(props: Props) =>
@@ -49,17 +55,33 @@ export const GlobalStyles = createGlobalStyle`
 	}
 `;
 
+const Wrapper = styled.main`
+	margin: 0 auto;
+	max-width: ${MAIN_MAX_WIDTH};
+`;
+
 const App = () => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return (
-		<>
+		<Router>
 			<GlobalStyles theme={theme} />
 			<Header />
-			<SwapForm />
-		</>
+			<Routes>
+				<Route
+					path="/"
+					element={
+						<Wrapper>
+							<SwapForm />
+							<TabModal />
+						</Wrapper>
+					}
+				/>
+				<Route path="/transaction-history" element={<TransactionHistory />} />
+			</Routes>
+		</Router>
 	);
 };
 

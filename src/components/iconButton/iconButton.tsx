@@ -18,7 +18,7 @@ import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
-import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import { pxToRem, spacing, DEFAULT_BORDER_RADIUS, DEFAULT_TRANSIITON } from '../../styles';
 import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
@@ -54,8 +54,8 @@ const Icon = styled.button(({ disabled }: Props) => {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: ${theme.icon.default};
-		transition: all 0.2s ease-in-out;
+		background: ${`linear-gradient(to left, ${theme.icon.default}, ${theme.icon.default})`};
+		transition: ${DEFAULT_TRANSIITON};
 
 		&:hover {
 			opacity: 0.8;
@@ -74,8 +74,8 @@ const Icon = styled.button(({ disabled }: Props) => {
 
 const Img = styled.img(({ iconOnly }: Props) => {
 	return css`
-		height: ${iconOnly ? pxToRem(25) : pxToRem(42)};
-		width: ${iconOnly ? pxToRem(25) : pxToRem(42)};
+		height: ${iconOnly ? pxToRem(25) : pxToRem(40)};
+		width: ${iconOnly ? pxToRem(25) : pxToRem(40)};
 		margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
 		cursor: pointer;
 	`;
@@ -110,13 +110,13 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props)
 	return !iconOnly ? (
 		<Icon disabled={disabled} onClick={onClick}>
 			{!icon || !isTokenSelected(icon) ? (
-				<QuestionMark style={{ width: 42, height: 42 }} />
+				<QuestionMark style={{ width: 40, height: 40 }} />
 			) : (
 				<Img src={icons[icon as DestinationNetworks]} alt={icon} onClick={onClick} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
-		<QuestionMark style={{ width: 42, height: 42 }} />
+		<QuestionMark style={{ width: 40, height: 40 }} />
 	) : (
 		<Img src={icons[icon as DestinationNetworks]} alt={icon} iconOnly />
 	);

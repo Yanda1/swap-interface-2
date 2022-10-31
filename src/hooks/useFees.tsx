@@ -4,7 +4,6 @@ import {
 	BINANCE_PRICE_TICKER,
 	CONTRACT_ADDRESSES,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
-	Fee,
 	isTokenSelected,
 	makeId,
 	PROTOCOL_FEE,
@@ -14,8 +13,10 @@ import {
 	BINANCE_FEE,
 	FEE_CURRENCY,
 	PROTOCOL_FEE_FACTOR,
-	isNetworkSelected
+	isNetworkSelected,
+	useStore
 } from '../helpers';
+import type { Price, Fee } from '../helpers';
 import type { GraphType, DestinationNetworks } from '../helpers';
 import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
 import destinationNetworks from '../data/destinationNetworks.json';
@@ -23,8 +24,6 @@ import { useEthers, useGasPrice, useEtherBalance } from '@usedapp/core';
 import { BigNumber, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import { formatEther } from '@ethersproject/units';
-import { useStore } from '../helpers';
-import type { Price } from '../helpers';
 import axios from 'axios';
 
 type Ticker = {
@@ -308,13 +307,13 @@ export const useFees = () => {
 					pair.symbol === destinationToken + START_TOKEN
 			);
 			if (pair) {
-				const { filters } = pair; // TODO: app broke
+				const { filters } = pair;
 				const [lot, notional] = filters;
 				const notionalMinAmount = +notional.minNotional * getPrice(destinationToken, START_TOKEN);
 				const { minQty, maxQty } = lot;
 				const lotSizeMinAmount = +minQty * getPrice(START_TOKEN, START_TOKEN);
 				const lotSizeMaxAmount = +maxQty * getPrice(START_TOKEN, START_TOKEN); // TODO: check if numbers only modified when displayed to user (not)
-				const walletMaxAmount = walletBalance && parseFloat(formatEther(walletBalance)).toFixed(3);
+				const walletMaxAmount = walletBalance && formatEther(walletBalance);
 
 				minAmount = (
 					Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR

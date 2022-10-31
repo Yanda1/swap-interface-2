@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
 import { useEtherBalance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
-import { isLightTheme, useBreakpoint, useStore } from '../../helpers';
+import { beautifyNumbers, isLightTheme, useBreakpoint, useStore } from '../../helpers';
 import type { Theme } from '../../styles';
 import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import { WalletModal } from '../modal/walletModal';
@@ -82,7 +82,7 @@ export const Wallet = ({ token, account }: Props) => {
 	} = useStore();
 
 	const etherBalance = useEtherBalance(account);
-	const balance = etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3);
+	const balance = (etherBalance && parseFloat(formatEther(etherBalance))) ?? 0;
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (
@@ -97,7 +97,7 @@ export const Wallet = ({ token, account }: Props) => {
 		<Wrapper theme={theme}>
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Amount theme={theme}>
-				{balance} {token}
+				{beautifyNumbers({ n: balance, digits: 3 })} {token}
 			</Amount>
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}

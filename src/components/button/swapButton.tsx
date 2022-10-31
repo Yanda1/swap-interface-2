@@ -1,4 +1,6 @@
 import { forwardRef, useImperativeHandle } from 'react';
+import styled from 'styled-components';
+import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import { useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Button } from '..';
@@ -11,10 +13,8 @@ import {
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
-import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
-import styled from 'styled-components';
-import { spacing } from '../../styles';
 import type { ContractAdress } from '../../helpers';
+import { spacing } from '../../styles';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -33,14 +33,16 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationToken,
 			destinationAddress,
 			destinationMemo,
-			isUserVerified
+			isUserVerified,
+			destinationAmount
 		}
 	} = useStore();
 	const isDisabled =
 		!validInputs ||
 		!isNetworkSelected(destinationNetwork) ||
 		!isTokenSelected(destinationToken) ||
-		!isUserVerified;
+		!isUserVerified ||
+		Number(destinationAmount) < 0;
 
 	const { account, chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';

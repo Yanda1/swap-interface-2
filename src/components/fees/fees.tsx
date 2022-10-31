@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { useFees } from '../../hooks';
 import { DEFAULT_BORDER_RADIUS, spacing } from '../../styles';
 import type { Theme } from '../../styles';
-import { Fee, useStore } from '../../helpers';
+import { Fee, beautifyNumbers, useStore } from '../../helpers';
 
 const Summary = styled.summary(
 	({ color, theme }: { color: string; theme: Theme }) => css`
@@ -45,19 +45,19 @@ export const Fees = () => {
 	return (
 		<details>
 			<Summary color={theme.font.default} theme={theme}>
-				Fee: {allFees.amount.toFixed(4)} {allFees.currency}
+				Fee: {beautifyNumbers({ n: allFees.amount })} {allFees.currency}
 			</Summary>
 			<Details color={theme.font.default}>
 				<div>
 					<p>Network fee:</p>
 					<p>
-						{networkFee.amount} {networkFee.currency}
+						{beautifyNumbers({ n: networkFee.amount })} {networkFee.currency}
 					</p>
 				</div>
 				<div>
 					<p>Protocol fee:</p>
 					<p>
-						{protocolFee.amount} {protocolFee.currency}
+						{beautifyNumbers({ n: protocolFee.amount })} {protocolFee.currency}
 					</p>
 				</div>
 				<div>
@@ -65,7 +65,7 @@ export const Fees = () => {
 					<div>
 						{cexFee.map((fee: Fee) => (
 							<p style={{ textAlign: 'right' }} key={fee.currency}>
-								{fee.amount} {fee.currency}
+								{beautifyNumbers({ n: fee.amount })} {fee.currency}
 							</p>
 						))}
 					</div>
@@ -73,7 +73,7 @@ export const Fees = () => {
 				<div>
 					<p>Withdrawal fee:</p>
 					<p>
-						{withdrawFee.amount} {withdrawFee.currency}
+						{beautifyNumbers({ n: withdrawFee.amount })} {withdrawFee.currency}
 					</p>
 				</div>
 			</Details>

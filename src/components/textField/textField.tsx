@@ -5,13 +5,15 @@ import {
 	HORIZONTAL_PADDING,
 	fontSize,
 	pxToRem,
-	spacing
+	spacing,
+	DEFAULT_TRANSIITON
 } from '../../styles';
+import search from '../../assets/search.png';
 import type { ThemeProps } from '../../styles';
 import { useStore } from '../../helpers';
 
 type AlignProps = 'left' | 'right' | 'center';
-type TypeProps = 'text' | 'number';
+type TypeProps = 'text' | 'number' | 'search';
 
 type StyledProps = {
 	align: AlignProps;
@@ -19,25 +21,37 @@ type StyledProps = {
 	type: TypeProps;
 };
 
+const TextFieldWrapper = styled.div`
+	position: relative;
+`;
+
 const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	const isTypeNumber = type === 'number';
+	const isTypeSearch = type === 'search';
 
 	return css`
 		background: none;
-		text-align: ${align};
+		text-align: ${isTypeSearch ? 'left' : align};
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
-		padding: ${spacing[18]} ${spacing[HORIZONTAL_PADDING]};
+		padding: ${isTypeSearch
+			? `${spacing[14]} ${spacing[14]} ${spacing[14]} ${spacing[42]}`
+			: `${spacing[18]} ${spacing[HORIZONTAL_PADDING]}`};
 		color: ${theme.font.pure};
-		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.font.default};
+		border: 1px solid
+			${error && isTypeNumber
+				? theme.button.error
+				: isTypeSearch
+				? theme.background.history
+				: theme.font.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		cursor: pointer;
-		transition: all 0.2s ease-in-out;
-		width: calc(100% - ${pxToRem(HORIZONTAL_PADDING * 2 + 2)});
+		transition: ${DEFAULT_TRANSIITON};
+		width: ${isTypeSearch ? '100%' : `calc(100% - ${pxToRem(HORIZONTAL_PADDING * 2 + 2)})`};
 
 		&:hover,
 		&:active {
@@ -56,11 +70,25 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 			margin: 0;
 		}
 
+		&[type='search']::-webkit-search-cancel-button {
+			// TODO: do we not want a cancel button within the search?
+			-webkit-appearance: none;
+			appearance: none;
+		}
+
 		&[type='number'] {
 			-moz-appearance: textfield;
 		}
 	`;
 });
+
+const Icon = styled.img`
+	position: absolute;
+	top: 50%;
+	left: ${pxToRem(20)};
+	transform: translate(-50%, -50%);
+	width: ${pxToRem(18)};
+`;
 
 const Message = styled.div`
 	display: flex;
@@ -101,8 +129,9 @@ export const TextField = ({
 		state: { theme }
 	} = useStore();
 	const [isActive, setIsActive] = useState(false);
+	const isTypeSearch = type === 'search';
 
-	return (
+	const textField = (
 		<>
 			<StyledTextField
 				placeholder={placeholder}
@@ -117,6 +146,7 @@ export const TextField = ({
 				onBlur={() => setIsActive(true)}
 				onFocus={() => setIsActive(false)}
 			/>
+			{isTypeSearch && <Icon src={search} alt="search-lens" />}
 			{(error || description) && type === 'text' && (
 				<Message>
 					{description && <Description>{description}</Description>}
@@ -125,4 +155,6 @@ export const TextField = ({
 			)}
 		</>
 	);
+
+	return isTypeSearch ? <TextFieldWrapper>{textField}</TextFieldWrapper> : textField;
 };

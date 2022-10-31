@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
-import styled from 'styled-components';
-import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import styled, { css } from 'styled-components';
+import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS, ColorType } from '../../styles';
 import { useStore } from '../../helpers';
 import { IconButton } from '../iconButton/iconButton';
 
@@ -21,6 +21,24 @@ const ToastContainer = styled.div`
 	}
 `;
 
+const Toaster = styled.div(({ color }: { color: ColorType }) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		display: flex;
+		align-items: center;
+		background: ${theme.button[color]};
+		color: #fff;
+		cursor: pointer;
+		font-size: ${fontSize[14]};
+		margin: ${spacing[10]};
+		padding: ${spacing[10]};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+	`;
+});
+
 type Props = {
 	message: string;
 	type?: 'info' | 'warning' | 'error' | 'success';
@@ -36,26 +54,14 @@ const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 	const color = type === 'info' ? 'default' : type;
 
 	return (
-		<div
-			style={{
-				display: 'flex',
-				alignItems: 'center',
-				background: `${theme.button[color]}`,
-				color: `${theme.font.pure}`,
-				cursor: 'pointer',
-				fontSize: `${fontSize[14]}`,
-				margin: `${spacing[10]}`,
-				padding: `${spacing[10]}`,
-				borderRadius: `${DEFAULT_BORDER_RADIUS}`
-			}}
-			onClick={onDismiss}>
+		<Toaster color={color} onClick={onDismiss}>
 			<IconButton
 				// @ts-ignore
 				icon={icon}
 				iconOnly
 			/>
 			{message}
-		</div>
+		</Toaster>
 	);
 };
 

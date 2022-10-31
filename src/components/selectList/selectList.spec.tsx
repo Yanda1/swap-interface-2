@@ -62,7 +62,7 @@ describe('SelectList', () => {
 			border: 1px solid ${darkTheme.font.default};
 			border-radius: ${DEFAULT_BORDER_RADIUS};
 			cursor: pointer;
-			transition: all 0.2s ease-in-out;
+			transition: all .2s ease-in-out;
 			width: calc(100% - ${pxToRem(22)});
 			`
 		);
