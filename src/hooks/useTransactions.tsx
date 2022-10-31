@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { utils, BigNumber } from 'ethers';
+import _ from 'lodash';
 import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
 import { Contract } from '@ethersproject/contracts';
 import {
@@ -62,13 +63,14 @@ export const useTransactions = () => {
 					console.log('error in costRequestFilter', e);
 				}
 			}
-			setEvents(
-				allEvents.filter(
-					(event) =>
-						storage[account]?.data.filter((dataset) => dataset.blockNumber === event?.blockNumber)
-							.length === 0
-				)
-			);
+			setEvents(allEvents);
+			if (allEvents.length === 0) {
+				storage[account] = {
+					...storage[account],
+					lastBlock: lastBlock ? lastBlock - BLOCK_CHUNK_SIZE : BLOCK_CONTRACT_NUMBER
+				};
+				setStorage({ ...storage });
+			}
 			setLoading(false);
 		}
 	};
@@ -93,8 +95,10 @@ export const useTransactions = () => {
 			};
 			headerData.push(dataset);
 		});
-		setData([...data, ...headerData]);
-		storage[account] = { ...storage[account], data: [...data, ...headerData] };
+
+		const uniqueData = _.uniqBy([...data, ...headerData], 'blockNumber');
+		setData(uniqueData);
+		storage[account] = { ...storage[account], data: uniqueData };
 		setStorage({ ...storage });
 		setStartFetchDetails(true);
 	};
@@ -183,7 +187,7 @@ export const useTransactions = () => {
 		});
 
 	useEffect(() => {
-		if (storage[account]?.data.length > 0) {
+		if (storage[account]?.data?.length > 0) {
 			setData(storage[account].data);
 			setLoading(false);
 			setContentLoading(false);
@@ -239,7 +243,7 @@ export const useTransactions = () => {
 					};
 					setStorage({ ...storage });
 				})
-				.catch((e) => console.log('e in Promise.all', e))
+				.catch((e) => console.log('e in PromiseAll', e))
 				.finally(() => setContentLoading(false));
 		}
 	}, [startFetchDetails]);
