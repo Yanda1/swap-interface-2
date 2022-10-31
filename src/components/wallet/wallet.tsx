@@ -88,8 +88,10 @@ export const Wallet = ({ token, account }: Props) => {
 	const tokenData =
 		// @ts-ignore
 		sourceNetworks[chainId]?.tokens[token];
-	const tokenBalance = useTokenBalance(tokenData.contractAddr, account);
-	const balance = tokenData.isNative ? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3) : tokenBalance && parseFloat(formatEther(tokenBalance)).toFixed(3); // TODO: can be done with beautifyNumbers?
+	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
+	const balance = tokenData?.isNative
+		? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)
+		: tokenBalance && parseFloat(formatEther(tokenBalance)).toFixed(3); // TODO: can be done with beautifyNumbers?
 
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
@@ -105,7 +107,7 @@ export const Wallet = ({ token, account }: Props) => {
 		<Wrapper theme={theme}>
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Amount theme={theme}>
-				{beautifyNumbers({ n: balance, digits: 3 })} {token}
+				{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {token}
 			</Amount>
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}

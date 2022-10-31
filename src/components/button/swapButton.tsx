@@ -1,8 +1,8 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
 import styled from 'styled-components';
-import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
-import { useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
+import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
+import sourceNetworks from '../../data/sourceNetworks.json';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
@@ -16,9 +16,6 @@ import {
 	START_TOKEN
 } from '../../helpers';
 import type { ContractAdress } from '../../helpers';
-import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
-import sourceNetworks from '../../data/sourceNetworks.json';
-import styled from 'styled-components';
 import { spacing } from '../../styles';
 
 const ButtonWrapper = styled.div`
@@ -53,7 +50,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const startTokenData =
 		// @ts-ignore
 		sourceNetworks[chainId.toString()]?.tokens[START_TOKEN];
-	const tokenContract = startTokenData.contractAddr && new Contract(startTokenData.contractAddr, ERC20Interface, web3Provider);
+	const tokenContract =
+		startTokenData?.contractAddr &&
+		new Contract(startTokenData?.contractAddr, ERC20Interface, web3Provider);
 
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
@@ -108,25 +107,37 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 			const shortNamedValues = JSON.stringify(namedValues);
 
-			if(startTokenData.isNative) {
+			if (startTokenData.isNative) {
 				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
 			} else {
 				console.log('Calling sendCreateProcess with the contractAddr', startTokenData.contractAddr);
-				await sendTokenCreateProcess(startTokenData.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues);
+				await sendTokenCreateProcess(
+					startTokenData.contractAddr,
+					SERVICE_ADDRESS,
+					productId,
+					shortNamedValues
+				);
 			}
 			const filter = protocol.filters.CostResponse(account, SERVICE_ADDRESS, productId);
 			protocol.on(filter, (customer, service, productId, cost) => {
 				console.log('Oracle deposit estimation:', utils.formatEther(cost));
-				if(startTokenData.isNative) {
+				if (startTokenData.isNative) {
 					void sendTransaction({ to: protocolAddress, value: cost });
 				} else {
 					sendTokenApprove(protocolAddress, cost)
-						.then(result => {
-							console.log('Approved ', utils.formatEther(cost), ' tokens of "', protocolAddress, '" contract.', result);
+						.then((result) => {
+							console.log(
+								'Approved ',
+								utils.formatEther(cost),
+								' tokens of "',
+								protocolAddress,
+								'" contract.',
+								result
+							);
 
 							void sendDeposit(cost);
 						})
-						.catch(error => {
+						.catch((error) => {
 							console.log('Error in sending approve', error);
 						});
 				}

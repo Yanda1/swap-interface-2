@@ -5,6 +5,7 @@ export * from './textField/textField';
 export * from './select/select';
 export * from './selectList/selectList';
 export * from './modal/modal';
+export * from './modal/walletModal';
 export * from './modal/networkTokenModal';
 export * from './iconButton/iconButton';
 export * from './fees/fees';

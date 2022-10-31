@@ -5,7 +5,7 @@ import destinationNetworks from '../data/destinationNetworks.json';
 import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
-import sourceNetworks from '../../data/sourceNetworks.json';
+import sourceNetworks from '../data/sourceNetworks.json';
 import {
 	AmountEnum,
 	BINANCE_FEE,
