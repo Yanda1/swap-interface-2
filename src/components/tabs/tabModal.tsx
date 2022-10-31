@@ -2,17 +2,13 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Tabs } from './tabs';
 import { pxToRem } from '../../styles';
-import {
-	CONTRACT_ADDRESSES,
-	ContractAdress,
-	SERVICE_ADDRESS,
-	useLocalStorage,
-	useStore
-} from '../../helpers';
+import { CONTRACT_ADDRESSES, ContractAdress, SERVICE_ADDRESS, useStore } from '../../helpers';
+import { useLocalStorage } from '../../hooks';
 import { useEthers, useSendTransaction } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
+import _ from 'lodash';
 
 const Wrapper = styled.div`
 	max-width: 100%;
@@ -33,11 +29,12 @@ type Props = {
 };
 
 export const TabModal = () => {
+	const [isDepositing, setIsDepositing] = useState(false);
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
 		state: { productId, destinationToken, account: owner }
 	} = useStore();
-	const [swapsStorage, setSwapsStorage] = useLocalStorage<object[]>('swaps', []);
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<Props[]>('swaps', []);
 
 	const { account } = useEthers();
 	const { chainId, library: web3Provider } = useEthers();
@@ -49,7 +46,7 @@ export const TabModal = () => {
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
 	useEffect(() => {
-		const filteredSwaps: object[] = swapsStorage.filter((swap: any) => !swap.complete);
+		const filteredSwaps: Props[] = swapsStorage.filter((swap: any) => !swap.complete);
 		// @ts-ignore
 		setSwaps(filteredSwaps);
 		setSwapsStorage(filteredSwaps);
@@ -66,9 +63,9 @@ export const TabModal = () => {
 				complete: false,
 				pair: `GLMR ${destinationToken}`
 			};
-			const updatedSwaps: any = [...swapsStorage, order];
-			setSwaps(updatedSwaps);
-			setSwapsStorage(updatedSwaps);
+			const uniqueSwaps: Props[] = _.uniqBy([...swapsStorage, order], 'productId');
+			setSwaps(uniqueSwaps);
+			setSwapsStorage(uniqueSwaps);
 		}
 	}, [productId]);
 
@@ -146,20 +143,21 @@ export const TabModal = () => {
 	}, [swaps]);
 
 	useEffect(() => {
-		if (swaps.length > 0) {
-			swaps.map((swap) => {
-				if (!swap.depositBlock && swap.costRequestCounter >= 2) {
-					const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, swap.productId);
-					console.log('filter', filter);
+		swapsStorage.map((swap) => {
+			if ((!swap.depositBlock && !swap.costRequestCounter) || swap.costRequestCounter > 1) {
+				const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, swap.productId);
+				console.log('filter', filter);
+				if (!isDepositing) {
+					setIsDepositing(true);
 					contract.on(filter, (customer, service, productId, cost, event) => {
 						console.log('---COST RESPONSE EVENT---', event);
 						console.log('Oracle deposit estimation:', utils.formatEther(cost));
 						void sendTransaction({ to: contractAddress, value: cost });
 					});
 				}
-			});
-		}
-	}, [swaps, swapsStorage, productId]);
+			}
+		});
+	}, [swapsStorage]);
 
 	return owner ? (
 		<Wrapper>
