@@ -32,7 +32,7 @@ export const TabModal = () => {
 	const [isDepositing, setIsDepositing] = useState(false);
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
-		state: { productId, destinationToken, account: owner }
+		state: { productId, pair, account: owner }
 	} = useStore();
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<Props[]>('swaps', []);
 
@@ -61,7 +61,7 @@ export const TabModal = () => {
 				action: [],
 				withdraw: [],
 				complete: false,
-				pair: `GLMR ${destinationToken}`
+				pair
 			};
 			const uniqueSwaps: Props[] = _.uniqBy([...swapsStorage, order], 'productId');
 			setSwaps(uniqueSwaps);

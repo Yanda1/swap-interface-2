@@ -5,16 +5,17 @@ import { useContractFunction, useEthers } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
+import type { ContractAdress } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
 	isNetworkSelected,
 	isTokenSelected,
 	makeId,
+	PairEnum,
 	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
-import type { ContractAdress } from '../../helpers';
 import { spacing } from '../../styles';
 
 const ButtonWrapper = styled.div`
@@ -74,7 +75,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			};
 			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
-
+			dispatch({ type: PairEnum.PAIR, payload: `GLMR ${destinationToken}` });
 			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
 		}
 	}));

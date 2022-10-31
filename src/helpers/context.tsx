@@ -59,6 +59,10 @@ export enum ProductIdEnum {
 	PRODUCTID = 'PRODUCTID'
 }
 
+export enum PairEnum {
+	PAIR = 'PAIR'
+}
+
 type VerificationAction = {
 	type: VerificationEnum;
 	payload: boolean | string;
@@ -94,6 +98,11 @@ type ProductIdAction = {
 	payload: string;
 };
 
+type PairAction = {
+	type: PairEnum;
+	payload: string;
+};
+
 type Action =
 	| VerificationAction
 	| ButtonAction
@@ -101,7 +110,8 @@ type Action =
 	| ThemeAction
 	| DestinationNetworkAction
 	| AmountAction
-	| ProductIdAction;
+	| ProductIdAction
+	| PairAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -120,6 +130,7 @@ type State = {
 	destinationMemo: string;
 	amount: string;
 	productId: string;
+	pair: string;
 };
 
 enum ButtonName {
@@ -156,7 +167,8 @@ const initialState: State = {
 	destinationAmount: '',
 	destinationMemo: '',
 	amount: '',
-	productId: ''
+	productId: '',
+	pair: ''
 };
 
 type Dispatch = (action: Action) => void;
@@ -197,6 +209,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, destinationMemo: action.payload };
 		case ProductIdEnum.PRODUCTID:
 			return { ...state, productId: action.payload };
+		case PairEnum.PAIR:
+			return { ...state, pair: action.payload };
 		default:
 			return state;
 	}
