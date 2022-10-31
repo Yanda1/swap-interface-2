@@ -64,6 +64,7 @@ export const useTransactions = () => {
 				}
 			}
 			setEvents(allEvents);
+
 			if (allEvents.length === 0) {
 				storage[account] = {
 					...storage[account],

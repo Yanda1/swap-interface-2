@@ -42,7 +42,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isNetworkSelected(destinationNetwork) ||
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
-		Number(destinationAmount) < 0;
+		+destinationAmount < 0;
 
 	const { account, chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
