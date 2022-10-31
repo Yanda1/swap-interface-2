@@ -46,7 +46,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isUserVerified ||
 		Number(destinationAmount) < 0;
 
-	const { account, chainId, library: web3Provider } = useEthers();
+	const { chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
