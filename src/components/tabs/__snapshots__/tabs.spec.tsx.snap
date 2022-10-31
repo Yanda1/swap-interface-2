@@ -1,6 +1,59 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SelectList Render tab component with correct length, data and styles 1`] = `
+.c3 {
+  color: #FFF;
+  padding: 1.25rem;
+  display: block;
+  background: #1C2125;
+  border: 1px solid #505050;
+}
+
+.c4 {
+  list-style: none;
+  padding: 0;
+}
+
+.c5 {
+  list-style: none;
+  padding: 0;
+  padding: 0 0 1.625rem 1.25rem;
+  border-left: 1px solid #8C8D8F;
+  position: relative;
+  margin-left: 0.625rem;
+  font-size: 1rem;
+}
+
+.c5:last-child {
+  border: 0;
+  padding-bottom: 0;
+}
+
+.c5:before {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  background: #8C8D8F;
+  border-radius: 50%;
+  position: absolute;
+  left: -0.5rem;
+  top: 0;
+}
+
+.c5:last-of-type > div {
+  line-height: 1rem;
+}
+
+.c6 {
+  line-height: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.c7 {
+  color: #B4B4B4;
+  line-height: 1.375rem;
+}
+
 .c0 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -41,54 +94,12 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
   margin-right: 0;
 }
 
-.c3 {
-  color: #FFF;
-  padding: 1.25rem;
-  display: block;
-  background: #1C2125;
-  border: 1px solid #505050;
-}
-
-.c4 {
-  list-style: none;
-  padding: 0;
-}
-
-.c5 {
-  list-style: none;
-  padding: 0 0 1.625rem 1.25rem;
-  border-left: 1px solid #8C8D8F;
-  position: relative;
-  margin-left: 0.625rem;
-}
-
-.c5:last-child {
-  border: 0;
-  padding-bottom: 0;
-  vertical-align: baseline;
-}
-
-.c5:last-child > p {
-  margin: 0;
-}
-
-.c5:before {
-  content: '';
-  width: 1rem;
-  height: 1rem;
-  background: #8C8D8F;
-  border-radius: 50%;
-  position: absolute;
-  left: -0.5rem;
-  top: 0;
-}
-
-.c5:last-child:before {
-  left: -0.5rem;
-}
-
-.c6 {
-  margin: 0;
+@media (max-width:760px) {
+  .c5:before {
+    width: 0.875rem;
+    height: 0.875rem;
+    left: -0.4375rem;
+  }
 }
 
 <div
@@ -97,7 +108,6 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
 >
   <div
     class="c1"
-    data-testid="tabs"
   >
     <div
       class="c2"
@@ -114,6 +124,7 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
   </div>
   <div
     class="c3"
+    type="swap"
   >
     <ul
       class="c4"
@@ -121,18 +132,18 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
       <li
         class="c5"
       >
-        <h3
+        <div
           class="c6"
         >
           Swap Request Validation (
           2
           /2)
-        </h3>
-        <p
-          class=""
+        </div>
+        <div
+          class="c7"
         >
           Your Swap request successfully validated.
-        </p>
+        </div>
       </li>
     </ul>
   </div>
