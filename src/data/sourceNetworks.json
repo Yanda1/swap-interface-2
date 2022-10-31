@@ -1,0 +1,16 @@
+{
+	"1": {
+		"name": "Ethereum",
+		"shortName": "ETH",
+		"tokens": {
+			"ETH": {
+				"isNative": true,
+				"contractAddr": null
+			},
+			"BUSD": {
+				"isNative": false,
+				"contractAddr": "0x4Fabb145d64652a948d72533023f6E7A623C7C53"
+			}
+		}
+	}
+}

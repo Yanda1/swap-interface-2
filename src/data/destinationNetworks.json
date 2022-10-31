@@ -70,6 +70,12 @@
 				"tagRegex": "",
 				"withdrawFee": "4",
 				"withdrawMin": "40"
+			},
+			"ETH": {
+				"addressRegex": "^(0x)[0-9A-Fa-f]{40}$",
+				"tagRegex": "",
+				"withdrawFee": "0.000768",
+				"withdrawMin": "0.0098"
 			}
 		}
 	},

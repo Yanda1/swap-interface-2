@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
-import { useEtherBalance } from '@usedapp/core';
+import { useEthers, useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { formatEther } from '@ethersproject/units';
 import { beautifyNumbers, isLightTheme, useBreakpoint, useStore } from '../../helpers';
-import type { Theme } from '../../styles';
 import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { WalletModal } from '../modal/walletModal';
+import type { Theme } from '../../styles';
+import { WalletModal } from '../../components';
+import sourceNetworks from '../../data/sourceNetworks.json';
 
 const StyledJazzIcon = styled.div`
 	height: ${pxToRem(16)};
@@ -81,8 +82,15 @@ export const Wallet = ({ token, account }: Props) => {
 		state: { theme }
 	} = useStore();
 
+	const { chainId } = useEthers();
 	const etherBalance = useEtherBalance(account);
-	const balance = (etherBalance && parseFloat(formatEther(etherBalance))) ?? 0;
+
+	const tokenData =
+		// @ts-ignore
+		sourceNetworks[chainId]?.tokens[token];
+	const tokenBalance = useTokenBalance(tokenData.contractAddr, account);
+	const balance = tokenData.isNative ? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3) : tokenBalance && parseFloat(formatEther(tokenBalance)).toFixed(3); // TODO: can be done with beautifyNumbers?
+
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
 	return isMobile ? (

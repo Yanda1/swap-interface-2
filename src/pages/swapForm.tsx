@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
+import { useEthers } from '@usedapp/core';
 import destinationNetworks from '../data/destinationNetworks.json';
 import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
+import sourceNetworks from '../../data/sourceNetworks.json';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -181,13 +183,18 @@ export const SwapForm = () => {
 		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
 
+	const { chainId } = useEthers();
+	const sourceNetwork =
+		// @ts-ignore
+		sourceNetworks[chainId]?.name;
+
 	return (
 		<Wrapper>
 			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton disabled icon="GLMR" />
+						<IconButton disabled icon="ETH" />
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -200,8 +207,8 @@ export const SwapForm = () => {
 					</SwapInput>
 					<NamesWrapper single={false}>
 						<SwapNames>
-							<Name color={theme.font.pure}>GLMR</Name>
-							<Name color={theme.font.default}>(Moonbeam)</Name>
+							<Name color={theme.font.pure}>ETH</Name>
+							<Name color={theme.font.default}>({sourceNetwork})</Name>
 						</SwapNames>
 						<SwapNames pos="end" single={false}>
 							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
@@ -237,7 +244,7 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
-					: `1 GLMR = ${beautifyNumbers({
+					: `1 ETH = ${beautifyNumbers({
 							n: getPrice(START_TOKEN, destinationToken)
 					  })} ${destinationToken}`}
 			</ExchangeRate>
