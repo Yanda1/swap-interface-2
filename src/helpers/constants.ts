@@ -55,6 +55,11 @@ export const CONTRACT_ADDRESSES = {
 	31337: '0x0165878A594ca255338adfa4d48449f69242Eb8F'
 };
 
+export const SOURCE_NETWORK_NUMBER = {
+	Moonbeam: 1284,
+	Ethereum: 1
+};
+
 export const BLOCKS_AMOUNT = 30;
 
 export const makeId = (length: number) => {

@@ -9,14 +9,15 @@ import sourceNetworks from '../data/sourceNetworks.json';
 import {
 	AmountEnum,
 	BINANCE_FEE,
-	DestinationNetworkEnum,
+	DestinationEnum,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
 	realParseFloat,
 	beautifyNumbers,
 	START_TOKEN,
-	useStore
+	useStore,
+	SourceEnum
 } from '../helpers';
 import type { DestinationNetworks, Fee } from '../helpers';
 import { useFees } from '../hooks';
@@ -117,13 +118,12 @@ export const SwapForm = () => {
 	} = useStore();
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
-	const [showModal, setShowModal] = useState(false);
+	const [showDestinationModal, setShowDestinationModal] = useState(false);
+	const [showSourceModal, setShowSourceModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ name: '', value: '', error: false });
-
-	const openModal = () => setShowModal(!showModal);
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -140,7 +140,7 @@ export const SwapForm = () => {
 	useEffect(() => {
 		if (isTokenSelected(destinationToken) && amount) {
 			dispatch({
-				type: DestinationNetworkEnum.AMOUNT,
+				type: DestinationEnum.AMOUNT,
 				payload: realParseFloat(
 					(
 						(+amount / (1 + BINANCE_FEE)) * getPrice(START_TOKEN, destinationToken) -
@@ -174,12 +174,14 @@ export const SwapForm = () => {
 	const handleSwap = (): void => {
 		// @ts-ignore
 		swapButtonRef.current.onSubmit();
-		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: '' });
-		dispatch({ type: DestinationNetworkEnum.WALLET, payload: 'Select Wallet' });
-		dispatch({ type: DestinationNetworkEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
-		dispatch({ type: DestinationNetworkEnum.AMOUNT, payload: '' });
-		dispatch({ type: DestinationNetworkEnum.MEMO, payload: '' });
+		dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.ADDRESS, payload: '' });
+		dispatch({ type: DestinationEnum.WALLET, payload: 'Select Wallet' });
+		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
+		dispatch({ type: DestinationEnum.MEMO, payload: '' });
 		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
 
@@ -190,11 +192,20 @@ export const SwapForm = () => {
 
 	return (
 		<Wrapper>
-			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
+			<NetworkTokenModal
+				showModal={showSourceModal}
+				setShowModal={setShowSourceModal}
+				type="SOURCE"
+			/>
+			<NetworkTokenModal
+				showModal={showDestinationModal}
+				setShowModal={setShowDestinationModal}
+				type="DESTINATION"
+			/>
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton disabled icon="ETH" />
+						<IconButton icon="ETH" onClick={() => setShowSourceModal(!showSourceModal)} />
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -225,12 +236,15 @@ export const SwapForm = () => {
 				)}
 				<Swap>
 					<SwapInput>
-						<IconButton onClick={openModal} icon={destinationToken as any} />
+						<IconButton
+							onClick={() => setShowDestinationModal(!showDestinationModal)}
+							icon={destinationToken as any}
+						/>
 						<TextField
 							disabled
 							type="number"
 							value={beautifyNumbers({ n: destinationAmount })}
-							error={Number(destinationAmount) < 0}
+							error={+destinationAmount < 0}
 						/>
 					</SwapInput>
 					<NamesWrapper>
@@ -254,7 +268,7 @@ export const SwapForm = () => {
 				description="Destination Address"
 				onChange={(e) =>
 					dispatch({
-						type: DestinationNetworkEnum.ADDRESS,
+						type: DestinationEnum.ADDRESS,
 						payload: e.target.value.trim()
 					})
 				}
@@ -266,7 +280,7 @@ export const SwapForm = () => {
 						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
-							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value.trim() })
+							dispatch({ type: DestinationEnum.MEMO, payload: e.target.value.trim() })
 						}
 					/>
 				</div>

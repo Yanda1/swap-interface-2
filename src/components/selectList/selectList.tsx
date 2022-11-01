@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { DestinationNetworkEnum, useStore } from '../../helpers';
+import { DestinationEnum, SourceEnum, useStore } from '../../helpers';
 import {
 	fontSize,
 	pxToRem,
@@ -29,11 +29,13 @@ const Wrapper = styled.div(() => {
 	`;
 });
 
+type Value = 'SOURCE_NETWORK' | 'SOURCE_TOKEN' | 'NETWORK' | 'TOKEN' | 'WALLET';
+
 type Props = {
 	data: any;
 	placeholder: string;
 	handleSelect?: (network: string, token: string) => void;
-	value: 'NETWORK' | 'TOKEN' | 'WALLET';
+	value: Value;
 };
 
 const Title = styled.div(() => {
@@ -87,23 +89,27 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: { destinationToken, destinationNetwork, destinationWallet }
+		state: { destinationToken, destinationNetwork, destinationWallet, sourceNetwork, sourceToken }
 	} = useStore();
 
 	const handleClick = useCallback(
 		(e: any) => {
 			if (value === 'WALLET') {
 				dispatch({
-					type: DestinationNetworkEnum.WALLET,
+					type: DestinationEnum.WALLET,
 					payload: e.target.textContent ? e.target.textContent : e.target.alt
 				});
 			}
 			dispatch({
-				type: DestinationNetworkEnum[value],
+				type: value.includes('SOURCE')
+					? // @ts-ignore
+					  SourceEnum[value.slice(7, value.length)]
+					: // @ts-ignore
+					  DestinationEnum[value],
 				payload: e.target.textContent ? e.target.textContent : e.target.alt
 			});
 			if (value === 'NETWORK') {
-				dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
+				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 			}
 		},
 		[destinationToken, destinationNetwork, destinationWallet]
@@ -126,6 +132,10 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 								? destinationNetwork === el
 								: value === 'TOKEN'
 								? destinationToken === el
+								: value === 'SOURCE_NETWORK'
+								? sourceNetwork === el
+								: value === 'SOURCE_TOKEN'
+								? sourceToken === el
 								: destinationWallet === el;
 
 						return (
