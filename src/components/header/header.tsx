@@ -254,7 +254,7 @@ export const Header = () => {
 			}
 		}
 
-		if (!chainId) {
+		if (chainId !== Mainnet.chainId) {
 			await checkNetwork();
 		}
 
@@ -320,7 +320,7 @@ export const Header = () => {
 			void checkNetwork();
 		}
 
-		if (account && chainId) {
+		if (account && chainId === Mainnet.chainId) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
 
