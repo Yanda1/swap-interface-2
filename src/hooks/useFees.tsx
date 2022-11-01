@@ -23,7 +23,7 @@ import destinationNetworks from '../data/destinationNetworks.json';
 import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { BigNumber, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
-import { formatEther } from '@ethersproject/units';
+import { formatEther, formatUnits } from '@ethersproject/units';
 import axios from 'axios';
 
 type Ticker = {
@@ -68,8 +68,7 @@ export const useFees = () => {
 	}
 	const walletBalance = useEtherBalance(account);
 
-	const tokenContractAddr = '0x4Fabb145d64652a948d72533023f6E7A623C7C53';
-	const tokenBalance = useTokenBalance(tokenContractAddr, account);
+	const tokenBalance = useTokenBalance(sourceTokenData?.contractAddr, account);
 
 	const getExchangeInfo = async () => {
 		try {
@@ -346,9 +345,8 @@ export const useFees = () => {
 				const lotSizeMinAmount = +minQty * getPrice(sourceToken, sourceToken);
 				const lotSizeMaxAmount = +maxQty * getPrice(sourceToken, sourceToken); // TODO: check if numbers only modified when displayed to user (not)
 				const walletMaxAmount = walletBalance && formatEther(walletBalance);
-				const tokenMaxAmount = tokenBalance && parseFloat(formatEther(tokenBalance)).toFixed(3);
+				const tokenMaxAmount = tokenBalance && parseFloat(formatUnits(tokenBalance, sourceTokenData?.decimals)).toFixed(3);
 
-				console.log(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount);
 				minAmount = (
 					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) *
 					PROTOCOL_FEE_FACTOR

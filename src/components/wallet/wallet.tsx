@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
 import { useEthers, useEtherBalance, useTokenBalance } from '@usedapp/core';
-import { formatEther } from '@ethersproject/units';
+import { formatEther, formatUnits } from '@ethersproject/units';
 import { beautifyNumbers, isLightTheme, useBreakpoint, useStore } from '../../helpers';
 import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { Theme } from '../../styles';
@@ -91,7 +91,7 @@ export const Wallet = ({ token, account }: Props) => {
 	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
 	const balance = tokenData?.isNative
 		? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)
-		: tokenBalance && parseFloat(formatEther(tokenBalance)).toFixed(3); // TODO: can be done with beautifyNumbers?
+		: tokenBalance && parseFloat(formatUnits(tokenBalance, tokenData?.decimals)).toFixed(3); // TODO: can be done with beautifyNumbers?
 
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
