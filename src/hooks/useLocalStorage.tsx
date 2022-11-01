@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
-
 import useEventListener from './useEventListener';
 
 declare global {

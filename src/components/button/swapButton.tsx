@@ -1,19 +1,21 @@
 import { forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
-import { useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
+import { useContractFunction, useEthers } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
+import type { ContractAdress } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
 	isNetworkSelected,
 	isTokenSelected,
 	makeId,
+	PairEnum,
+	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
-import type { ContractAdress } from '../../helpers';
 import { spacing } from '../../styles';
 
 const ButtonWrapper = styled.div`
@@ -27,6 +29,7 @@ type Props = {
 };
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
+	const { dispatch } = useStore();
 	const {
 		state: {
 			destinationNetwork,
@@ -44,7 +47,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isUserVerified ||
 		Number(destinationAmount) < 0;
 
-	const { account, chainId, library: web3Provider } = useEthers();
+	const { chainId, library: web3Provider } = useEthers();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
@@ -57,9 +60,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		'createProcess',
 		{ transactionName: 'Request Swap' }
 	);
-	const { sendTransaction } = useSendTransaction({
-		transactionName: 'Deposit'
-	});
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
@@ -73,16 +73,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				daddr: destinationAddress,
 				tag: destinationMemo
 			};
-
+			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
-
+			dispatch({ type: PairEnum.PAIR, payload: `GLMR ${destinationToken}` });
 			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
-			const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, productId);
-			console.log('filter', filter);
-			contract.on(filter, (customer, service, productId, cost) => {
-				console.log('Oracle deposit estimation:', utils.formatEther(cost));
-				void sendTransaction({ to: contractAddress, value: cost });
-			});
 		}
 	}));
 

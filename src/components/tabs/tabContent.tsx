@@ -1,22 +1,16 @@
-import { BLOCKS_AMOUNT, useStore } from '../../helpers';
+import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import {
-	pxToRem,
-	spacing,
-	fontSize,
-	fontWeight,
-	theme,
-	mediaQuery,
-	DEFAULT_TRANSIITON
-} from '../../styles';
 import type { Theme } from '../../styles';
+import { DEFAULT_TRANSIITON, fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
+import { useAxios } from '../../hooks';
+import { useEffect, useState } from 'react';
 
 type Props = {
 	data?: any;
 	color?: string;
-	toggle?: number;
+	toggleIndex?: number;
 	type?: 'history' | 'swap';
 };
 
@@ -39,7 +33,6 @@ export const ContentList = styled.ul`
 
 export const ContentItem = styled.li`
 	list-style: none;
-	padding: 0;
 	padding: 0 0 ${spacing[26]} ${spacing[20]};
 	border-left: 1px solid ${(props: StyleProps) => props.theme.font.default};
 	position: relative;
@@ -105,78 +98,110 @@ export const ContentItemLink = styled.div`
 	}
 `;
 
-export const TabContent = ({ data, toggle = 0, type = 'swap' }: Props) => {
+export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
+	const [withdrawLink, setWithdrawLink] = useState<{
+		amount: string;
+		status: number;
+		type: number;
+		url: string | any;
+		withdrawFee: string;
+	} | null>(null);
 	const currentBlockNumber = useBlockNumber();
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data && data?.[toggle].action[1];
-	const withdrawal = data && data?.[toggle]?.action[0];
+	const orders = data?.[toggleIndex]?.action[0];
+	const withdrawal = data?.[toggleIndex]?.withdraw[0];
+	const api = useAxios();
+
+	const getWithDrawLink = async () => {
+		if (withdrawal) {
+			try {
+				await api
+					.get(`${routes.transactionDetails}${withdrawal.id}`)
+					.then((res) => setWithdrawLink(res.data));
+			} catch (e) {
+				console.log('e in getWithDrawLink function', { e });
+			}
+		}
+	};
+	useEffect(() => {
+		void getWithDrawLink();
+	}, [withdrawal]);
 
 	return (
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
-				{data?.[toggle].costRequestCounter ? (
-					<ContentItem theme={theme} color={data.color}>
+				{data?.[toggleIndex].costRequestCounter ? (
+					<ContentItem theme={theme} color={data.color} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Request Validation ({data?.[toggle].costRequestCounter}/2)
+							Swap Request Validation ({data?.[toggleIndex].costRequestCounter}/2)
 						</ContentItemTitle>
 						<ContentItemText>
-							{data?.[toggle].costRequestCounter === 1
+							{data?.[toggleIndex].costRequestCounter < 2
 								? 'Your Swap request is under validation. Please wait until full confirmation.'
 								: 'Your Swap request successfully validated.'}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{currentBlockNumber && data?.[toggle]?.depositBlock ? (
-					<ContentItem theme={theme}>
+				{currentBlockNumber && data?.[toggleIndex]?.depositBlock ? (
+					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							{!data?.[toggle]?.action.length
+							{!data?.[toggleIndex]?.action.length
 								? `Deposit confirmation (${
-										currentBlockNumber - data?.[toggle]?.depositBlock
+										currentBlockNumber - data?.[toggleIndex]?.depositBlock
 								  }/${BLOCKS_AMOUNT})`
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{data?.[toggle]?.depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber - data?.[toggleIndex].depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: !data?.[toggle]?.action
+								: currentBlockNumber - data?.[toggleIndex].depositBlock >= BLOCKS_AMOUNT &&
+								  !data?.[toggleIndex].action.length
 								? 'Your deposit is received and should be confirmed soon.'
 								: null}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
 				{orders ? (
-					<>
-						<ContentItem theme={theme}>
-							<ContentItemTitle>Conversion GLMR {orders?.s?.slice(4)}</ContentItemTitle>
-							<ContentItemText>Type: {orders.a === 1 ? 'SELL' : 'BUY'}</ContentItemText>
-							<ContentItemText>Pair: {orders.s}</ContentItemText>
-							<ContentItemText>Quantity: {orders.q}</ContentItemText>
-							<ContentItemText>Price: {orders.p}</ContentItemText>
-							<ContentItemText>
-								Time: {format(new Date(orders.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
-							</ContentItemText>
-						</ContentItem>
-						<ContentItem theme={theme}>
-							{withdrawal.t === 0 ? (
-								<ContentItemLink theme={theme}>Withdrawal confirmed</ContentItemLink>
-							) : (
-								<ContentItemText>Withdrawal confirmed</ContentItemText>
-							)}
-							<ContentItemText>You can check transaction by link</ContentItemText>
-						</ContentItem>
-					</>
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemTitle>Conversion GLMR {orders.s.slice(4)}</ContentItemTitle>
+						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
+						<ContentItemText>Pair: {orders.s}</ContentItemText>
+						<ContentItemText>Quantity: {orders.q}</ContentItemText>
+						<ContentItemText>Price: {orders.p}</ContentItemText>
+						<ContentItemText>
+							Time: {format(new Date(orders.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
+						</ContentItemText>
+					</ContentItem>
 				) : null}
-				{data?.[toggle].complete === true ? (
+				{withdrawal && !withdrawLink ? (
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemLink theme={theme}>Withdrawal in process</ContentItemLink>
+						<ContentItemText>
+							Your funds is almost there, we are waiting for their landing into your wallet.
+						</ContentItemText>
+					</ContentItem>
+				) : withdrawal?.t === 1 && withdrawLink ? (
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemTitle>Withdrawal confirmed</ContentItemTitle>
+					</ContentItem>
+				) : withdrawal?.t === 0 && withdrawLink ? (
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemLink theme={theme} onClick={() => window.open(withdrawLink.url)}>
+							Withdrawal confirmed
+						</ContentItemLink>
+					</ContentItem>
+				) : null}
+				{data?.[toggleIndex].complete === true ? (
 					<ContentItem theme={theme} color={theme.button.default}>
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data?.[toggle].complete === null ? (
+				{data?.[toggleIndex].complete === null ? (
 					<ContentItem theme={theme} color={theme.font.pure}>
-						<ContentItemText color={theme.font.pure}>No valid operations spotted!</ContentItemText>
+						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
 			</ContentList>
