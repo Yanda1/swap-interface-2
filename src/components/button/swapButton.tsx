@@ -104,7 +104,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 			const namedValues = {
 				scoin: sourceToken,
-				samt: utils.parseEther(amount).toString(),
+				samt: utils.parseUnits(amount, sourceTokenData?.decimals).toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
 				daddr: destinationAddress,
@@ -131,7 +131,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			}
 			const filter = protocol.filters.CostResponse(account, SERVICE_ADDRESS, productId);
 			protocol.on(filter, (customer, service, productId, cost) => {
-				console.log('Oracle deposit estimation:', utils.formatEther(cost));
+				console.log('Oracle deposit estimation:', utils.formatUnits(cost, sourceTokenData?.decimals));
 				if (sourceTokenData?.isNative) {
 					void sendTransaction({ to: protocolAddress, value: cost });
 				} else {
@@ -139,7 +139,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 						.then((result) => {
 							console.log(
 								'Approved ',
-								utils.formatEther(cost),
+								utils.formatUnits(amount, sourceTokenData?.decimals),
 								' tokens of "',
 								protocolAddress,
 								'" contract.',
