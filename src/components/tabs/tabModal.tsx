@@ -20,6 +20,7 @@ const Paragraph = styled.p`
 `;
 type Props = {
 	productId: string;
+	account: string;
 	costRequestCounter: number;
 	depositBlock: number;
 	action: object[];
@@ -47,15 +48,15 @@ export const TabModal = () => {
 
 	useEffect(() => {
 		const filteredSwaps: Props[] = swapsStorage.filter((swap: any) => !swap.complete);
-		// @ts-ignore
 		setSwaps(filteredSwaps);
 		setSwapsStorage(filteredSwaps);
 	}, []);
 
 	useEffect(() => {
-		if (productId) {
+		if (productId && account) {
 			const order = {
 				productId,
+				account,
 				costRequestCounter: 0,
 				depositBlock: 0,
 				action: [],
