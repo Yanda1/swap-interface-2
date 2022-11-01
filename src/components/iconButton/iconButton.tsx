@@ -42,7 +42,7 @@ import { pxToRem, spacing, DEFAULT_BORDER_RADIUS, DEFAULT_TRANSIITON } from '../
 import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
-	INCH,
+	'1INCH': INCH,
 	AAVE,
 	ACH,
 	AGIX,
@@ -124,7 +124,7 @@ const Img = styled.img(({ iconOnly }: Props) => {
 type Props = {
 	disabled?: boolean;
 	icon?:
-		| 'INCH'
+		| '1INCH'
 		| 'AAVE'
 		| 'ACH'
 		| 'AGIX'

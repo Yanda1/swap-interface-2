@@ -143,25 +143,21 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 			/>
 			{data.length > 0 ? (
 				<List>
-					{dataList.map((el: string) => {
-						const hasActiveBorder = valueToWatch[value as Value] === el;
-
-						return (
-							<Item
-								value={value}
+					{dataList.map((el: string) => (
+						<Item
+							value={value}
+							// @ts-ignore
+							activeBorder={valueToWatch[value as Value] === el}
+							onClick={(e) => handleClick(e)}
+							key={el}>
+							<IconButton
 								// @ts-ignore
-								activeBorder={hasActiveBorder}
-								onClick={(e) => handleClick(e)}
-								key={el}>
-								<IconButton
-									// @ts-ignore
-									icon={el}
-									iconOnly
-								/>
-								{el}
-							</Item>
-						);
-					})}
+								icon={el}
+								iconOnly
+							/>
+							{el}
+						</Item>
+					))}
 				</List>
 			) : (
 				<Title>Select network first</Title>
