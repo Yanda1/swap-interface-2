@@ -205,26 +205,33 @@ export const useFees = () => {
 			const shortNamedValues = JSON.stringify(namedValues);
 			const productId = utils.id(makeId(32));
 
-			if(startTokenData.isNative) {
-				contract.estimateGas
-				['createProcess(address,bytes32,string)'](SERVICE_ADDRESS, productId, shortNamedValues)
-				.then((gas: any) => {
-					setGasAmount(gas);
-				})
-				.catch((err) => {
-					throw new Error(err);
-					// TODO: @Daniel:  add Toast to inform user?
-				});
+			if (startTokenData?.isNative) {
+				contract.estimateGas['createProcess(address,bytes32,string)'](
+					SERVICE_ADDRESS,
+					productId,
+					shortNamedValues
+				)
+					.then((gas: any) => {
+						setGasAmount(gas);
+					})
+					.catch((err) => {
+						throw new Error(err);
+						// TODO: @Daniel:  add Toast to inform user?
+					});
 			} else {
-				contract.estimateGas
-				['createProcess(address,address,bytes32,string)'](startTokenData.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues)
-				.then((gas: any) => {
-					setGasAmount(gas);
-				})
-				.catch((err) => {
-					throw new Error(err);
-					// TODO: @Daniel:  add Toast to inform user?
-				});
+				contract.estimateGas['createProcess(address,address,bytes32,string)'](
+					startTokenData?.contractAddr,
+					SERVICE_ADDRESS,
+					productId,
+					shortNamedValues
+				)
+					.then((gas: any) => {
+						setGasAmount(gas);
+					})
+					.catch((err) => {
+						throw new Error(err);
+						// TODO: @Daniel:  add Toast to inform user?
+					});
 			}
 		}
 	}, [destinationToken, destinationAddress]);
@@ -330,7 +337,7 @@ export const useFees = () => {
 				const [lot, notional] = filters;
 				let notionalMinAmount = +notional.minNotional;
 				const price = getPrice(destinationToken, START_TOKEN);
-				if(destinationToken === pair.quoteAsset) {
+				if (destinationToken === pair.quoteAsset) {
 					notionalMinAmount *= price;
 				}
 				const tokenMinAmount4Withdrawal = destTokenMinWithdrawal * price;
@@ -343,7 +350,8 @@ export const useFees = () => {
 
 				console.log(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount);
 				minAmount = (
-					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
+					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) *
+					PROTOCOL_FEE_FACTOR
 				).toString();
 
 				if (chainId) {
@@ -351,14 +359,12 @@ export const useFees = () => {
 						// @ts-ignore
 						sourceNetworks[chainId.toString()]?.tokens[START_TOKEN];
 
-					if (startTokenData.isNative) {
+					if (startTokenData?.isNative) {
 						maxAmount = (
 							Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
 						).toString();
 					} else {
-						maxAmount = (
-							Math.min(lotSizeMaxAmount, Number(tokenMaxAmount))
-						).toString();
+						maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();
 					}
 				}
 			}
