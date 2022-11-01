@@ -61,9 +61,19 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		isNetworkSelected(sourceNetwork) && Object.keys(sourceNetworks['1']['tokens']); // TODO: make dynamic
 
 	const destinationNetworksList = Object.keys(destinationNetworks);
-	const destinationTokensList =
-		isNetworkSelected(destinationNetwork) &&
-		Object.keys(destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['tokens']);
+	const destinationTokensList = useMemo(() => {
+		if (isNetworkSelected(destinationNetwork)) {
+			const tokens = Object.keys(
+				destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['tokens']
+			);
+
+			return sourceNetwork === destinationNetwork
+				? tokens.filter((token) => token !== sourceToken)
+				: tokens;
+		} else {
+			return [];
+		}
+	}, [sourceNetwork, sourceToken, destinationNetwork]);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);
