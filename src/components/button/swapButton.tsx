@@ -1,20 +1,22 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
+import { ERC20Interface, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import sourceNetworks from '../../data/sourceNetworks.json';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
+import type { ContractAdress } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
 	isNetworkSelected,
 	isTokenSelected,
 	makeId,
+	PairEnum,
+	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
-import type { ContractAdress } from '../../helpers';
 import { spacing } from '../../styles';
 
 const ButtonWrapper = styled.div`
@@ -37,7 +39,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationMemo,
 			isUserVerified,
 			destinationAmount
-		}
+		}, dispatch
 	} = useStore();
 	const isDisabled =
 		!validInputs ||
@@ -46,6 +48,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isUserVerified ||
 		+destinationAmount < 0;
 
+	const { chainId, library: web3Provider } = useEthers();
+	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
+	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
+	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 	const { account, chainId, library: web3Provider } = useEthers();
 	const sourceTokenData =
 		// @ts-ignore
@@ -104,8 +110,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				daddr: destinationAddress,
 				tag: destinationMemo
 			};
-
+			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
+			dispatch({ type: PairEnum.PAIR, payload: `GLMR ${destinationToken}` });
+			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
 
 			if (sourceTokenData?.isNative) {
 				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);

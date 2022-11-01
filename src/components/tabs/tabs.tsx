@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useStore } from '../../helpers';
-import { TabContent } from './tabContent';
+import { makeId, useStore } from '../../helpers';
 import styled, { css } from 'styled-components';
 import { DEFAULT_BORDER_RADIUS, spacing } from '../../styles';
+import { TabContent } from './tabContent';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -48,31 +48,26 @@ type Props = {
 };
 
 export const Tabs = ({ data }: Props) => {
-	const {
-		state: { destinationToken }
-	} = useStore();
-	const [toggle, setToggle] = useState(0);
-	const handleToggle = (index: number) => setToggle(index);
+	const [toggleIndex, setToggleIndex] = useState(0);
+	const handleToggle = (index: number) => setToggleIndex(index);
 
 	return (
 		<Wrapper data-testid="tabs-container">
-			{data?.length > 0 && (
-				<>
-					<TabsContainer>
-						{data?.length &&
-							data.map((item: any) => {
-								const index = data.indexOf(item);
+			<>
+				<TabsContainer>
+					{data?.length &&
+						data.map((item: any) => {
+							const index = data.indexOf(item);
 
-								return (
-									<Tab key={Math.random()} onClick={() => handleToggle(index)} active={toggle}>
-										GLMR {destinationToken}
-									</Tab>
-								);
-							})}
-					</TabsContainer>
-					<TabContent data={data} toggle={toggle} />
-				</>
-			)}
+							return (
+								<Tab key={makeId(32)} onClick={() => handleToggle(index)} active={toggleIndex}>
+									{item.pair}
+								</Tab>
+							);
+						})}
+				</TabsContainer>
+				<TabContent data={data} toggleIndex={toggleIndex} />
+			</>
 		</Wrapper>
 	);
 };
