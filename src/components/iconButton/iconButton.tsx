@@ -1,6 +1,26 @@
 import styled, { css } from 'styled-components';
 import { useStore, isTokenSelected } from '../../helpers';
 import USDT from '../../assets/usdt.png';
+import INCH from '../../assets/1inch.png';
+import AAVE from '../../assets/aave.png';
+import ACH from '../../assets/ach.png';
+import AGIX from '../../assets/agix.png';
+import ALICE from '../../assets/alice.png';
+import ANT from '../../assets/ant.png';
+import APE from '../../assets/ape.png';
+import AUDIO from '../../assets/audio.png';
+import BNT from '../../assets/bnt.png';
+import CHZ from '../../assets/chz.png';
+import DAI from '../../assets/dai.png';
+import FTT from '../../assets/ftt.png';
+import LINK from '../../assets/link.png';
+import MANA from '../../assets/mana.png';
+import QNT from '../../assets/qnt.png';
+import SAND from '../../assets/sand.png';
+import SHIB from '../../assets/shib.png';
+import SUSHI from '../../assets/sushi.png';
+import UNI from '../../assets/uni.png';
+import WBTC from '../../assets/wbtc.png';
 import GLMR from '../../assets/glmr.png';
 import BTC from '../../assets/btc.png';
 import BSC from '../../assets/bsc.png';
@@ -22,6 +42,26 @@ import { pxToRem, spacing, DEFAULT_BORDER_RADIUS, DEFAULT_TRANSIITON } from '../
 import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
+	INCH,
+	AAVE,
+	ACH,
+	AGIX,
+	ALICE,
+	ANT,
+	APE,
+	AUDIO,
+	BNT,
+	CHZ,
+	DAI,
+	FTT,
+	LINK,
+	MANA,
+	QNT,
+	SAND,
+	SHIB,
+	SUSHI,
+	UNI,
+	WBTC,
 	BSC,
 	USDT,
 	GLMR,
@@ -84,6 +124,26 @@ const Img = styled.img(({ iconOnly }: Props) => {
 type Props = {
 	disabled?: boolean;
 	icon?:
+		| 'INCH'
+		| 'AAVE'
+		| 'ACH'
+		| 'AGIX'
+		| 'ALICE'
+		| 'ANT'
+		| 'APE'
+		| 'AUDIO'
+		| 'BNT'
+		| 'CHZ'
+		| 'DAI'
+		| 'FTT'
+		| 'LINK'
+		| 'MANA'
+		| 'QNT'
+		| 'SAND'
+		| 'SHIB'
+		| 'SUSHI'
+		| 'UNI'
+		| 'WBTC'
 		| 'BSC'
 		| 'USDT'
 		| 'GLMR'

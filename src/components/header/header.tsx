@@ -99,9 +99,17 @@ const Menu = styled.ul`
 `;
 
 export const Header = () => {
-	const { isBreakpointWidth } = useBreakpoint('s');
+	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 	const {
-		state: { buttonStatus, isUserVerified, accessToken, kycStatus, account: userAccount, theme },
+		state: {
+			buttonStatus,
+			isUserVerified,
+			accessToken,
+			kycStatus,
+			account: userAccount,
+			theme,
+			sourceToken
+		},
 		dispatch
 	} = useStore();
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
@@ -331,14 +339,14 @@ export const Header = () => {
 
 	return (
 		<StyledHeader theme={theme}>
-			{isBreakpointWidth ? (
+			{isMobile ? (
 				<LogoMobile style={{ marginRight: 'auto' }} />
 			) : isLight ? (
 				<LogoLight style={{ marginRight: 'auto' }} />
 			) : (
 				<LogoDark style={{ marginRight: 'auto' }} />
 			)}
-			{!isBreakpointWidth && (
+			{!isMobile && (
 				<Button
 					variant="pure"
 					onClick={() =>
@@ -349,7 +357,7 @@ export const Header = () => {
 			)}
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account ? (
-				<Wallet token="ETH" account={account} />
+				<Wallet token={sourceToken} account={account} />
 			) : (
 				<Button
 					isLoading={isLoading}
@@ -363,7 +371,7 @@ export const Header = () => {
 			<ThemeButton theme={theme} onClick={changeTheme}>
 				{isLight ? <Moon /> : <Sun />}
 			</ThemeButton>
-			{isBreakpointWidth &&
+			{isMobile &&
 				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
 			{showMenu && (
 				<Menu theme={theme} ref={menuRef}>

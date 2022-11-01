@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import destinationNetworks from '../../data/destinationNetworks.json';
 import sourceNetworks from '../../data/sourceNetworks.json';
@@ -9,11 +9,10 @@ import {
 	isNetworkSelected,
 	isTokenSelected,
 	SourceEnum,
-	SOURCE_NETWORK_NUMBER,
 	useBreakpoint,
 	useStore
 } from '../../helpers';
-import type { DestinationNetworks, SourceNetworks } from '../../helpers';
+import type { DestinationNetworks } from '../../helpers';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -41,48 +40,30 @@ type Props = {
 };
 
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
-	const [isDisabled, setIsDisabled] = useState(true);
-	const [isMobile, setIsMobile] = useState(false);
 	const [isShowList, setIsShowList] = useState(true);
-	const { isBreakpointWidth } = useBreakpoint(516);
+	const { isBreakpointWidth: isMobile } = useBreakpoint(516);
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }
 	} = useStore();
 	const isSource = type === 'SOURCE';
 
-	useEffect(() => {
-		if (isBreakpointWidth) {
-			setIsMobile(true);
-			setIsShowList(true);
-		} else {
-			setIsMobile(false);
-		}
-	}, [isBreakpointWidth]);
-
-	useEffect(() => {
-		setIsDisabled((isSource) =>
+	const isDisabled = useMemo(
+		() =>
 			isSource
 				? !isNetworkSelected(sourceNetwork) || !isTokenSelected(sourceToken)
-				: !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken)
-		);
-	}, [destinationNetwork, destinationToken, sourceNetwork, sourceToken]);
+				: !isNetworkSelected(destinationNetwork) || !isTokenSelected(destinationToken),
+		[destinationNetwork, destinationToken, sourceNetwork, sourceToken]
+	);
+
+	const sourceNetworksList = ['ETH']; // TODO: make dynamic
+	const sourceTokensList =
+		isNetworkSelected(sourceNetwork) && Object.keys(sourceNetworks['1']['tokens']); // TODO: make dynamic
 
 	const destinationNetworksList = Object.keys(destinationNetworks);
 	const destinationTokensList =
 		isNetworkSelected(destinationNetwork) &&
 		Object.keys(destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['tokens']);
-
-	const sourceNetworksList = Object.keys(sourceNetworks).map(
-		// @ts-ignore
-		(item: SourceNetworks) => sourceNetworks[item]?.shortName
-	);
-	const sourceTokensList =
-		isNetworkSelected(sourceNetwork) &&
-		Object.keys(
-			// @ts-ignore
-			sourceNetworks?.[SOURCE_NETWORK_NUMBER[sourceNetwork] as SourceNetworks]?.['tokens']
-		);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);

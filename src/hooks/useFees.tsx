@@ -8,7 +8,6 @@ import {
 	makeId,
 	PROTOCOL_FEE,
 	SERVICE_ADDRESS,
-	START_TOKEN,
 	Graph,
 	BINANCE_FEE,
 	FEE_CURRENCY,
@@ -45,6 +44,7 @@ export const useFees = () => {
 	const [allFilteredPairs, setAllFilteredPairs] = useState<Ticker[]>([]);
 	const {
 		state: {
+			sourceToken,
 			destinationToken,
 			destinationNetwork,
 			amount,
@@ -55,9 +55,9 @@ export const useFees = () => {
 	} = useStore();
 
 	const { chainId, library: web3Provider } = useEthers();
-	const startTokenData =
+	const sourceTokenData =
 		// @ts-ignore
-		sourceNetworks[chainId?.toString()]?.tokens[START_TOKEN];
+		sourceNetworks[chainId?.toString()]?.tokens[sourceToken];
 	const gasPrice = useGasPrice();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
@@ -181,15 +181,15 @@ export const useFees = () => {
 
 			return { amount: Number(withdrawFee), currency: destinationToken };
 		} else {
-			return { amount: 0, currency: START_TOKEN };
+			return { amount: 0, currency: sourceToken };
 		}
 	}, [destinationToken]);
 
 	const protocolFee = useMemo((): Fee => {
 		if (amount) {
-			return { amount: Number(amount) * PROTOCOL_FEE, currency: START_TOKEN };
+			return { amount: Number(amount) * PROTOCOL_FEE, currency: sourceToken };
 		} else {
-			return { amount: 0, currency: START_TOKEN };
+			return { amount: 0, currency: sourceToken };
 		}
 	}, [amount]);
 
@@ -205,7 +205,7 @@ export const useFees = () => {
 			const shortNamedValues = JSON.stringify(namedValues);
 			const productId = utils.id(makeId(32));
 
-			if (startTokenData?.isNative) {
+			if (sourceTokenData?.isNative) {
 				contract.estimateGas['createProcess(address,bytes32,string)'](
 					SERVICE_ADDRESS,
 					productId,
@@ -220,7 +220,7 @@ export const useFees = () => {
 					});
 			} else {
 				contract.estimateGas['createProcess(address,address,bytes32,string)'](
-					startTokenData?.contractAddr,
+					sourceTokenData?.contractAddr,
 					SERVICE_ADDRESS,
 					productId,
 					shortNamedValues
@@ -250,10 +250,10 @@ export const useFees = () => {
 
 			return {
 				amount: Number(utils.formatEther(calculatedFee['_hex'])),
-				currency: START_TOKEN
+				currency: sourceToken
 			};
 		} else {
-			return { amount: 0, currency: START_TOKEN };
+			return { amount: 0, currency: sourceToken };
 		}
 	}, [gasAmount]);
 
@@ -270,7 +270,7 @@ export const useFees = () => {
 	const cexFee = useMemo((): Fee[] => {
 		if (cexGraph && isTokenSelected(destinationToken)) {
 			let result = Number(amount);
-			const graphPath: GraphType = cexGraph.bfs(START_TOKEN, destinationToken);
+			const graphPath: GraphType = cexGraph.bfs(sourceToken, destinationToken);
 
 			if (graphPath) {
 				const allCexFees: Fee[] = [];
@@ -296,10 +296,10 @@ export const useFees = () => {
 
 				return allCexFees;
 			} else {
-				return [{ amount: 0, currency: START_TOKEN }];
+				return [{ amount: 0, currency: sourceToken }];
 			}
 		} else {
-			return [{ amount: 0, currency: START_TOKEN }];
+			return [{ amount: 0, currency: sourceToken }];
 		}
 	}, [destinationToken, amount]);
 
@@ -329,22 +329,22 @@ export const useFees = () => {
 				destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'];
 			const [pair] = allFilteredPairs.filter(
 				(pair: Ticker) =>
-					pair.symbol === START_TOKEN + destinationToken ||
-					pair.symbol === destinationToken + START_TOKEN
+					pair.symbol === sourceToken + destinationToken ||
+					pair.symbol === destinationToken + sourceToken
 			);
 			if (pair) {
 				const { filters } = pair;
 				const [lot, notional] = filters;
 				let notionalMinAmount = +notional.minNotional;
-				const price = getPrice(destinationToken, START_TOKEN);
+				const price = getPrice(destinationToken, sourceToken);
 				if (destinationToken === pair.quoteAsset) {
 					notionalMinAmount *= price;
 				}
 				const tokenMinAmount4Withdrawal = destTokenMinWithdrawal * price;
 
 				const { minQty, maxQty } = lot;
-				const lotSizeMinAmount = +minQty * getPrice(START_TOKEN, START_TOKEN);
-				const lotSizeMaxAmount = +maxQty * getPrice(START_TOKEN, START_TOKEN); // TODO: check if numbers only modified when displayed to user (not)
+				const lotSizeMinAmount = +minQty * getPrice(sourceToken, sourceToken);
+				const lotSizeMaxAmount = +maxQty * getPrice(sourceToken, sourceToken); // TODO: check if numbers only modified when displayed to user (not)
 				const walletMaxAmount = walletBalance && formatEther(walletBalance);
 				const tokenMaxAmount = tokenBalance && parseFloat(formatEther(tokenBalance)).toFixed(3);
 
@@ -355,11 +355,11 @@ export const useFees = () => {
 				).toString();
 
 				if (chainId) {
-					const startTokenData =
+					const sourceTokenData =
 						// @ts-ignore
-						sourceNetworks[chainId.toString()]?.tokens[START_TOKEN];
+						sourceNetworks[chainId.toString()]?.tokens[sourceToken];
 
-					if (startTokenData?.isNative) {
+					if (sourceTokenData?.isNative) {
 						maxAmount = (
 							Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
 						).toString();

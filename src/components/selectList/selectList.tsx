@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { DestinationEnum, SourceEnum, useStore } from '../../helpers';
 import {
@@ -7,7 +7,8 @@ import {
 	spacing,
 	DEFAULT_BORDER_RADIUS,
 	HORIZONTAL_PADDING,
-	SELECT_LIST_HEIGHT
+	SELECT_LIST_HEIGHT,
+	MAIN_MAX_WIDTH
 } from '../../styles';
 import { IconButton } from '../iconButton/iconButton';
 import { TextField } from '../textField/textField';
@@ -20,7 +21,7 @@ const Wrapper = styled.div(() => {
 	return css`
 		display: flex;
 		flex-direction: column;
-		flex: 0 1 ${pxToRem(450 / 2 - 36)}; // TODO: refactor so that the 450 / first value comes from MAIN_MAX_WIDTH
+		flex: 0 1 ${MAIN_MAX_WIDTH} / 2 - ${pxToRem(36)};
 		border: 1px solid ${theme.font.default};
 		height: ${SELECT_LIST_HEIGHT};
 		padding: 0 ${spacing[HORIZONTAL_PADDING]};
@@ -28,15 +29,6 @@ const Wrapper = styled.div(() => {
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 	`;
 });
-
-type Value = 'SOURCE_NETWORK' | 'SOURCE_TOKEN' | 'NETWORK' | 'TOKEN' | 'WALLET';
-
-type Props = {
-	data: any;
-	placeholder: string;
-	handleSelect?: (network: string, token: string) => void;
-	value: Value;
-};
 
 const Title = styled.div(() => {
 	const {
@@ -82,6 +74,14 @@ const Item = styled.li((props: any) => {
 	`;
 });
 
+type Value = 'SOURCE_NETWORK' | 'SOURCE_TOKEN' | 'NETWORK' | 'TOKEN';
+
+type Props = {
+	data: any;
+	placeholder: string;
+	value: Value | 'WALLET';
+};
+
 export const SelectList = ({ data, placeholder, value }: Props) => {
 	const [search, setSearch] = useState('');
 	const dataList =
@@ -89,7 +89,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: { destinationToken, destinationNetwork, destinationWallet, sourceNetwork, sourceToken }
+		state: { destinationToken, destinationNetwork, sourceNetwork, sourceToken }
 	} = useStore();
 
 	const handleClick = useCallback(
@@ -99,6 +99,10 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					type: DestinationEnum.WALLET,
 					payload: e.target.textContent ? e.target.textContent : e.target.alt
 				});
+			} else if (value === 'NETWORK') {
+				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+			} else if (value === 'SOURCE_NETWORK') {
+				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
 			}
 			dispatch({
 				type: value.includes('SOURCE')
@@ -108,16 +112,29 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					  DestinationEnum[value],
 				payload: e.target.textContent ? e.target.textContent : e.target.alt
 			});
-			if (value === 'NETWORK') {
-				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
-			}
 		},
-		[destinationToken, destinationNetwork, destinationWallet]
+		[destinationToken, destinationNetwork, sourceNetwork, sourceToken] // TODO: add destinationWallet later
 	);
+
+	const listTitle: { [key in Value]: string } = {
+		NETWORK: 'Network',
+		TOKEN: 'Token',
+		SOURCE_NETWORK: 'Network',
+		SOURCE_TOKEN: 'Token'
+	};
+
+	const valueToWatch = useMemo(() => {
+		return {
+			NETWORK: destinationNetwork,
+			TOKEN: destinationToken,
+			SOURCE_NETWORK: sourceNetwork,
+			SOURCE_TOKEN: sourceToken
+		};
+	}, [destinationToken, destinationNetwork, sourceNetwork, sourceToken]); // TODO: add destinationWallet later
 
 	return (
 		<Wrapper data-testid="custom">
-			<Title>SELECT {value}</Title>
+			<Title>Select {listTitle[value as Value]}</Title>
 			<TextField
 				align="left"
 				value={search}
@@ -127,16 +144,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 			{data.length > 0 ? (
 				<List>
 					{dataList.map((el: string) => {
-						const hasActiveBorder =
-							value === 'NETWORK'
-								? destinationNetwork === el
-								: value === 'TOKEN'
-								? destinationToken === el
-								: value === 'SOURCE_NETWORK'
-								? sourceNetwork === el
-								: value === 'SOURCE_TOKEN'
-								? sourceToken === el
-								: destinationWallet === el;
+						const hasActiveBorder = valueToWatch[value as Value] === el;
 
 						return (
 							<Item
@@ -156,7 +164,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					})}
 				</List>
 			) : (
-				<Title>Please choose network.</Title>
+				<Title>Select network first</Title>
 			)}
 		</Wrapper>
 	);

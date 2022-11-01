@@ -5,7 +5,6 @@ import destinationNetworks from '../data/destinationNetworks.json';
 import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
-import sourceNetworks from '../data/sourceNetworks.json';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -15,7 +14,6 @@ import {
 	isTokenSelected,
 	realParseFloat,
 	beautifyNumbers,
-	START_TOKEN,
 	useStore,
 	SourceEnum
 } from '../helpers';
@@ -106,6 +104,8 @@ export const SwapForm = () => {
 	const {
 		state: {
 			theme,
+			sourceNetwork,
+			sourceToken,
 			destinationNetwork,
 			destinationToken,
 			destinationAddress,
@@ -143,7 +143,7 @@ export const SwapForm = () => {
 				type: DestinationEnum.AMOUNT,
 				payload: realParseFloat(
 					(
-						(+amount / (1 + BINANCE_FEE)) * getPrice(START_TOKEN, destinationToken) -
+						(+amount / (1 + BINANCE_FEE)) * getPrice(sourceToken, destinationToken) -
 						withdrawFee.amount -
 						cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
 					).toString()
@@ -186,9 +186,9 @@ export const SwapForm = () => {
 	};
 
 	const { chainId } = useEthers();
-	const sourceNetwork =
-		// @ts-ignore
-		sourceNetworks[chainId]?.name;
+	// const sourceNetwork =
+	// 	// @ts-ignore
+	// 	sourceNetworks[chainId]?.name;
 
 	return (
 		<Wrapper>
@@ -205,7 +205,10 @@ export const SwapForm = () => {
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton icon="ETH" onClick={() => setShowSourceModal(!showSourceModal)} />
+						<IconButton
+							icon={sourceToken as any}
+							onClick={() => setShowSourceModal(!showSourceModal)}
+						/>
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -218,7 +221,7 @@ export const SwapForm = () => {
 					</SwapInput>
 					<NamesWrapper single={false}>
 						<SwapNames>
-							<Name color={theme.font.pure}>ETH</Name>
+							<Name color={theme.font.pure}>{sourceToken}</Name>
 							<Name color={theme.font.default}>({sourceNetwork})</Name>
 						</SwapNames>
 						<SwapNames pos="end" single={false}>
@@ -258,8 +261,8 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
-					: `1 ETH = ${beautifyNumbers({
-							n: getPrice(START_TOKEN, destinationToken)
+					: `1 ${sourceToken} = ${beautifyNumbers({
+							n: getPrice(sourceToken, destinationToken)
 					  })} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField

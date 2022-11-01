@@ -38,7 +38,6 @@ export const routes = {
 export const PROTOCOL_FEE = 0.002;
 export const BINANCE_FEE = 0.002;
 export const PROTOCOL_FEE_FACTOR = 1 / (1 - PROTOCOL_FEE);
-export const START_TOKEN = 'ETH';
 export const FEE_CURRENCY = 'USDT';
 
 export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
