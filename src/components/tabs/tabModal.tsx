@@ -33,7 +33,7 @@ export const TabModal = () => {
 	const [isDepositing, setIsDepositing] = useState(false);
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
-		state: { productId, pair, account: owner }
+		state: { productId, pair, isUserVerified }
 	} = useStore();
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<Props[]>('swaps', []);
 
@@ -160,7 +160,7 @@ export const TabModal = () => {
 		});
 	}, [swapsStorage]);
 
-	return owner ? (
+	return isUserVerified ? (
 		<Wrapper>
 			{swaps.length > 0 && (
 				<>

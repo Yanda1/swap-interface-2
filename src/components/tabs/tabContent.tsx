@@ -121,7 +121,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 					.get(`${routes.transactionDetails}${withdrawal.id}`)
 					.then((res) => setWithdrawLink(res.data));
 			} catch (e) {
-				console.log(e);
+				console.log('e in getWithDrawLink function', { e });
 			}
 		}
 	};
