@@ -27,7 +27,7 @@ import {
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
 	makeBinanceKycCall,
-	MOONBEAM_URL,
+	ETHEREUM_URL,
 	ThemeEnum,
 	useBreakpoint,
 	useStore,
@@ -36,7 +36,8 @@ import {
 	KycStatusEnum,
 	KycEnum,
 	routes,
-	BasicStatusEnum
+	BasicStatusEnum,
+	SourceEnum
 } from '../../helpers';
 import { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
@@ -155,11 +156,12 @@ export const Header = () => {
 	};
 
 	const checkNetwork = async (): Promise<void> => {
+		// TODO: improve, seems to have a lot of redundancies
 		const NETWORK_PARAMS = [
 			{
 				chainId: ethers.utils.hexValue(Mainnet.chainId),
 				chainName: Mainnet.chainName,
-				rpcUrls: [MOONBEAM_URL],
+				rpcUrls: [ETHEREUM_URL],
 				nativeCurrency: {
 					name: 'Ethereum',
 					symbol: 'ETH',
@@ -169,7 +171,7 @@ export const Header = () => {
 			}
 		];
 
-		if (!chainId) {
+		if (chainId !== Mainnet.chainId) {
 			await switchNetwork(Mainnet.chainId);
 			if (chainId !== Mainnet.chainId && library) {
 				await library.send('wallet_addEthereumChain', NETWORK_PARAMS);
@@ -307,10 +309,14 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		if (chainId) {
+		if (chainId === Mainnet.chainId) {
 			dispatch({ type: VerificationEnum.NETWORK, payload: true });
+			dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
+			dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
 		} else {
 			dispatch({ type: VerificationEnum.NETWORK, payload: false });
+			dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
+			dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
 			void checkNetwork();
 		}
 
