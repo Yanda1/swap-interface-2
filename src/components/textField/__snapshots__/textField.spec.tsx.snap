@@ -2,7 +2,7 @@
 
 exports[`TextField should match snapshot 1`] = `
 <input
-  class="sc-bcXHqe Ckwry"
+  class="sc-gswNZR csvlN"
   disabled=""
   min="0"
   placeholder="placeholder"
