@@ -108,6 +108,7 @@ export const Header = () => {
 			accessToken,
 			kycStatus,
 			account: userAccount,
+			isNetworkConnected,
 			theme,
 			sourceToken
 		},
@@ -212,7 +213,7 @@ export const Header = () => {
 	};
 
 	const checkStatus = async () => {
-		if (!isUserVerified && account === userAccount) {
+		if (!isUserVerified && account === userAccount && isNetworkConnected) {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
