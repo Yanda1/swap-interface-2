@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Tabs } from './tabs';
+import { Tabs } from '../../components';
 import { pxToRem } from '../../styles';
 import { CONTRACT_ADDRESSES, ContractAdress, SERVICE_ADDRESS, useStore } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
 import { useEthers, useSendTransaction } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
-import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
+import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import _ from 'lodash';
 
 const Wrapper = styled.div`

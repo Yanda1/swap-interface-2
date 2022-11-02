@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import { ERC20Interface, useContractFunction, useEthers } from '@usedapp/core';
+import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import sourceNetworks from '../../data/sourceNetworks.json';
@@ -39,7 +39,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationMemo,
 			isUserVerified,
 			destinationAmount
-		}, dispatch
+		},
+		dispatch
 	} = useStore();
 	const isDisabled =
 		!validInputs ||
@@ -49,10 +50,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		+destinationAmount < 0;
 
 	const { chainId, library: web3Provider } = useEthers();
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
-	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
-	const contract = new Contract(contractAddress, contractInterface, web3Provider);
-	const { account, chainId, library: web3Provider } = useEthers();
 	const sourceTokenData =
 		// @ts-ignore
 		sourceNetworks[chainId.toString()]?.tokens[sourceToken];
@@ -129,9 +126,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 					shortNamedValues
 				);
 			}
-			const filter = protocol.filters.CostResponse(account, SERVICE_ADDRESS, productId);
+			const filter = protocol.filters.CostResponse(SERVICE_ADDRESS, productId);
 			protocol.on(filter, (customer, service, productId, cost) => {
-				console.log('Oracle deposit estimation:', utils.formatUnits(cost, sourceTokenData?.decimals));
+				console.log(
+					'Oracle deposit estimation:',
+					utils.formatUnits(cost, sourceTokenData?.decimals)
+				);
 				if (sourceTokenData?.isNative) {
 					void sendTransaction({ to: protocolAddress, value: cost });
 				} else {
