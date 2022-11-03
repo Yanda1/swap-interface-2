@@ -153,7 +153,9 @@ export const SwapForm = () => {
 	}, [amount, destinationToken]);
 
 	useEffect(() => {
-		const hasTag = destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['hasTag'];
+		const hasTag =
+			// @ts-ignore
+			destinationNetworks?.[sourceNetwork]?.[destinationNetwork as DestinationNetworks]?.['hasTag'];
 		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
 	}, [destinationNetwork]);
 

@@ -60,11 +60,13 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const sourceTokensList =
 		isNetworkSelected(sourceNetwork) && Object.keys(sourceNetworks['1']['tokens']); // TODO: make dynamic
 
-	const destinationNetworksList = Object.keys(destinationNetworks);
+	// @ts-ignore
+	const destinationNetworksList = Object.keys(destinationNetworks[sourceNetwork]);
 	const destinationTokensList = useMemo(() => {
 		if (isNetworkSelected(destinationNetwork)) {
 			const tokens = Object.keys(
-				destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['tokens']
+				// @ts-ignore
+				destinationNetworks[sourceNetwork]?.[destinationNetwork as DestinationNetworks]?.['tokens']
 			);
 
 			return sourceNetwork === destinationNetwork

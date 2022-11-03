@@ -30,6 +30,7 @@ import SOL from '../../assets/sol.png';
 import BUSD from '../../assets/busd.png';
 import TRX from '../../assets/trx.png';
 import MATIC from '../../assets/matic.png';
+import XRP from '../../assets/xrp.png';
 import XTZ from '../../assets/xtz.png';
 import AVAXC from '../../assets/avaxc.png';
 import SEGWIT from '../../assets/segwit.png';
@@ -74,6 +75,7 @@ const icons = {
 	MATIC,
 	AVAXC,
 	SEGWIT,
+	XRP,
 	XTZ,
 	INFO,
 	WARNING,
@@ -156,6 +158,7 @@ type Props = {
 		| 'MATIC'
 		| 'AVAXC'
 		| 'SEGWIT'
+		| 'XRP'
 		| 'XTZ'
 		| 'INFO'
 		| 'WARNING'

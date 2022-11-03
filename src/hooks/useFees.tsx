@@ -45,6 +45,7 @@ export const useFees = () => {
 	const {
 		state: {
 			sourceToken,
+			sourceNetwork,
 			destinationToken,
 			destinationNetwork,
 			amount,
@@ -67,7 +68,6 @@ export const useFees = () => {
 		contract.connect(web3Provider.getSigner());
 	}
 	const walletBalance = useEtherBalance(account);
-
 	const tokenBalance = useTokenBalance(sourceTokenData?.contractAddr, account);
 
 	const getExchangeInfo = async () => {
@@ -95,10 +95,12 @@ export const useFees = () => {
 
 	const uniqueTokens: string[] = useMemo(
 		() =>
-			Object.keys(destinationNetworks).reduce(
+			// @ts-ignore
+			Object.keys(destinationNetworks[sourceNetwork]).reduce(
 				(tokens: string[], network: string) => {
 					const networkTokens = Object.keys(
-						destinationNetworks?.[network as DestinationNetworks]?.['tokens']
+						// @ts-ignore
+						destinationNetworks?.[sourceNetwork]?.[network as DestinationNetworks]?.['tokens']
 					);
 
 					const allTokens = [...tokens, networkTokens];
@@ -107,7 +109,7 @@ export const useFees = () => {
 				},
 				['ETH']
 			),
-		[]
+		[sourceNetwork]
 	);
 
 	const isSymbol = useCallback(
@@ -345,7 +347,9 @@ export const useFees = () => {
 				const lotSizeMinAmount = +minQty * getPrice(sourceToken, sourceToken);
 				const lotSizeMaxAmount = +maxQty * getPrice(sourceToken, sourceToken); // TODO: check if numbers only modified when displayed to user (not)
 				const walletMaxAmount = walletBalance && formatEther(walletBalance);
-				const tokenMaxAmount = tokenBalance && parseFloat(formatUnits(tokenBalance, sourceTokenData?.decimals)).toFixed(3);
+				const tokenMaxAmount =
+					tokenBalance &&
+					parseFloat(formatUnits(tokenBalance, sourceTokenData?.decimals)).toFixed(3);
 
 				minAmount = (
 					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) *
