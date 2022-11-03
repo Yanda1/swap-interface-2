@@ -70,16 +70,11 @@ const Account = styled.button`
 	}
 `;
 
-type Props = {
-	token: string;
-	account: string;
-};
-
-export const Wallet = ({ token, account }: Props) => {
+export const Wallet = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: { theme }
+		state: { theme, account, sourceToken: token }
 	} = useStore();
 
 	const { chainId } = useEthers();

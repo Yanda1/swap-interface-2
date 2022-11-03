@@ -109,8 +109,7 @@ export const Header = () => {
 			kycStatus,
 			account: userAccount,
 			isNetworkConnected,
-			theme,
-			sourceToken
+			theme
 		},
 		dispatch
 	} = useStore();
@@ -364,7 +363,7 @@ export const Header = () => {
 			)}
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account ? (
-				<Wallet token={sourceToken} account={account} />
+				<Wallet />
 			) : (
 				<Button
 					isLoading={isLoading}
