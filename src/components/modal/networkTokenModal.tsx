@@ -14,7 +14,6 @@ import {
 	useStore
 } from '../../helpers';
 import type { DestinationNetworks } from '../../helpers';
-import { useEthers } from '@usedapp/core';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -48,7 +47,6 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		dispatch,
 		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }
 	} = useStore();
-	const { chainId } = useEthers();
 	const isSource = type === 'SOURCE';
 
 	const isDisabled = useMemo(
@@ -69,9 +67,9 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		() =>
 			isNetworkSelected(sourceNetwork)
 				? // @ts-ignore
-				  Object.keys(SOURCE_NETWORKS[chainId?.toString()]?.['tokens'])
+				  Object.keys(SOURCE_NETWORKS['1']['tokens'])
 				: [],
-		[chainId, sourceNetwork]
+		[sourceNetwork]
 	);
 
 	const destinationNetworksList = useMemo(
@@ -80,7 +78,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 				? // @ts-ignore
 				  Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken])
 				: [],
-		[sourceNetwork]
+		[sourceToken]
 	);
 
 	const destinationTokensList = useMemo(() => {
@@ -98,7 +96,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		} else {
 			return [];
 		}
-	}, [sourceToken, destinationNetwork]);
+	}, [destinationNetwork]);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);

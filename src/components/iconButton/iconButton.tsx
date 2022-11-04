@@ -3,6 +3,7 @@ import { useStore, isTokenSelected } from '../../helpers';
 import USDT from '../../assets/usdt.png';
 import INCH from '../../assets/1inch.png';
 import AAVE from '../../assets/aave.png';
+import ARBITRUM from '../../assets/arbitrum.png';
 import ACH from '../../assets/ach.png';
 import AGIX from '../../assets/agix.png';
 import ALICE from '../../assets/alice.png';
@@ -19,6 +20,7 @@ import FTT from '../../assets/ftt.png';
 import LINK from '../../assets/link.png';
 import MANA from '../../assets/mana.png';
 import QNT from '../../assets/qnt.png';
+import OPTIMISM from '../../assets/optimism.png';
 import SAND from '../../assets/sand.png';
 import SHIB from '../../assets/shib.png';
 import SUSHI from '../../assets/sushi.png';
@@ -47,6 +49,7 @@ import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
 	'1INCH': INCH,
+	ARBITRUM,
 	AAVE,
 	ACH,
 	AGIX,
@@ -63,6 +66,7 @@ const icons = {
 	FTT,
 	LINK,
 	MANA,
+	OPTIMISM,
 	QNT,
 	SAND,
 	SHIB,
@@ -133,6 +137,7 @@ type Props = {
 	disabled?: boolean;
 	icon?:
 		| '1INCH'
+		| 'ARBITRUM'
 		| 'AAVE'
 		| 'ACH'
 		| 'AGIX'
@@ -149,6 +154,7 @@ type Props = {
 		| 'FTT'
 		| 'LINK'
 		| 'MANA'
+		| 'OPTIMISM'
 		| 'QNT'
 		| 'SAND'
 		| 'SHIB'
