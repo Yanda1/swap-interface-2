@@ -353,7 +353,7 @@ export const useFees = () => {
 
 				const { minQty, maxQty } = lot;
 				const lotSizeMinAmount = +minQty * getPrice(sourceToken, destinationToken);
-				const lotSizeMaxAmount = +maxQty * getPrice(sourceToken, destinationToken); // TODO: check if numbers only modified when displayed to user (not)
+				const lotSizeMaxAmount = +maxQty * getPrice(sourceToken, destinationToken);
 				const walletMaxAmount = walletBalance && formatEther(walletBalance);
 				const tokenMaxAmount =
 					tokenBalance &&
@@ -375,12 +375,14 @@ export const useFees = () => {
 					} else {
 						maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();
 					}
+
+					minAmount = minAmount > maxAmount ? maxAmount : minAmount;
 				}
 			}
 		}
 
 		return { minAmount, maxAmount };
-	}, [destinationToken, account, networkFee]);
+	}, [destinationToken, account, networkFee, sourceToken]);
 
 	return {
 		...marginalCosts,
