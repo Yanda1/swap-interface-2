@@ -6,7 +6,7 @@ import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import type { ContractAdress, Sources } from '../../helpers';
+import type { ContractAdress } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
 	isNetworkSelected,
