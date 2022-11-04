@@ -10,8 +10,11 @@ import ANT from '../../assets/ant.png';
 import APE from '../../assets/ape.png';
 import AUDIO from '../../assets/audio.png';
 import BNT from '../../assets/bnt.png';
+import BCH from '../../assets/bch.png';
 import CHZ from '../../assets/chz.png';
 import DAI from '../../assets/dai.png';
+import DOGE from '../../assets/doge.png';
+import DOT from '../../assets/dot.png';
 import FTT from '../../assets/ftt.png';
 import LINK from '../../assets/link.png';
 import MANA from '../../assets/mana.png';
@@ -51,9 +54,12 @@ const icons = {
 	ANT,
 	APE,
 	AUDIO,
+	BCH,
 	BNT,
 	CHZ,
 	DAI,
+	DOGE,
+	DOT,
 	FTT,
 	LINK,
 	MANA,
@@ -134,9 +140,12 @@ type Props = {
 		| 'ANT'
 		| 'APE'
 		| 'AUDIO'
+		| 'BCH'
 		| 'BNT'
 		| 'CHZ'
 		| 'DAI'
+		| 'DOGE'
+		| 'DOT'
 		| 'FTT'
 		| 'LINK'
 		| 'MANA'
