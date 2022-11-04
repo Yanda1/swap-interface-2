@@ -9,6 +9,7 @@ import {
 	ID_TO_NETWORK,
 	isNetworkSelected,
 	isTokenSelected,
+	sortArr,
 	SourceEnum,
 	useBreakpoint,
 	useStore
@@ -57,17 +58,19 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		[destinationNetwork, destinationToken, sourceNetwork, sourceToken]
 	);
 
-	const sourceNetworksList = Object.keys(SOURCE_NETWORKS).map(
-		// @ts-ignore
-		// eslint-disable-next-line
-		(id) => ID_TO_NETWORK[id]
-	);
+	const sourceNetworksList = sortArr({
+		data: Object.keys(SOURCE_NETWORKS).map(
+			// @ts-ignore
+			// eslint-disable-next-line
+			(id) => ID_TO_NETWORK[id]
+		)
+	});
 
 	const sourceTokensList = useMemo(
 		() =>
 			isNetworkSelected(sourceNetwork)
 				? // @ts-ignore
-				  Object.keys(SOURCE_NETWORKS['1']['tokens'])
+				  sortArr({ data: Object.keys(SOURCE_NETWORKS['1']['tokens']) })
 				: [],
 		[sourceNetwork]
 	);
@@ -76,7 +79,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		() =>
 			isTokenSelected(sourceToken)
 				? // @ts-ignore
-				  Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken])
+				  sortArr({ data: Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken]) })
 				: [],
 		[sourceToken]
 	);
@@ -90,9 +93,12 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 				]
 			);
 
-			return sourceNetwork === destinationNetwork
-				? tokens.filter((token) => token !== sourceToken)
-				: tokens;
+			const filteredTokens =
+				sourceNetwork === destinationNetwork
+					? tokens.filter((token) => token !== sourceToken)
+					: tokens;
+
+			return sortArr({ data: filteredTokens });
 		} else {
 			return [];
 		}
