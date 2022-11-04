@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
-import { useEthers, useEtherBalance, useTokenBalance } from '@usedapp/core';
+import { useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import { beautifyNumbers, isLightTheme, useBreakpoint, useStore } from '../../helpers';
 import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { Theme } from '../../styles';
 import { WalletModal } from '../../components';
-import sourceNetworks from '../../data/sourceNetworks.json';
+import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 
 const StyledJazzIcon = styled.div`
 	height: ${pxToRem(16)};
@@ -74,21 +74,19 @@ export const Wallet = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: { theme, account, sourceToken: token }
+		state: { theme, account, sourceToken }
 	} = useStore();
+	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
-	const { chainId } = useEthers();
-	const etherBalance = useEtherBalance(account);
-
+	const etherBalance = account && useEtherBalance(account);
 	const tokenData =
 		// @ts-ignore
-		sourceNetworks[chainId]?.tokens[token];
+		// eslint-disable-next-line
+		sourceToken && SOURCE_NETWORKS['1']['tokens'][sourceToken];
 	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
 	const balance = tokenData?.isNative
 		? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)
-		: tokenBalance && parseFloat(formatUnits(tokenBalance, tokenData?.decimals)).toFixed(3); // TODO: can be done with beautifyNumbers?
-
-	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
+		: tokenBalance && parseFloat(formatUnits(tokenBalance, tokenData?.decimals)).toFixed(3);
 
 	return isMobile ? (
 		<>
@@ -102,7 +100,7 @@ export const Wallet = () => {
 		<Wrapper theme={theme}>
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Amount theme={theme}>
-				{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {token}
+				{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
 			</Amount>
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}

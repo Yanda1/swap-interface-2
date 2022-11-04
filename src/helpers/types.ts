@@ -1,7 +1,9 @@
-import destinationNetworks from '../data/destinationNetworks.json';
+import SOURCE_NETWORKS from '../data/sourceNetworks.json';
+import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { CONTRACT_ADDRESSES } from '../helpers';
 
-export type Networks = typeof destinationNetworks;
+export type Networks = typeof DESTINATION_NETWORKS;
+export type Sources = typeof SOURCE_NETWORKS;
 export type DestinationNetworks = keyof Networks;
 export type ContractAdress = keyof typeof CONTRACT_ADDRESSES;
 

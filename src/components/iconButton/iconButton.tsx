@@ -175,12 +175,14 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props)
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 40, height: 40 }} />
 			) : (
+				// @ts-ignore
 				<Img src={icons[icon as DestinationNetworks]} alt={icon} onClick={onClick} />
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
 		<QuestionMark style={{ width: 40, height: 40 }} />
 	) : (
+		// @ts-ignore
 		<Img src={icons[icon as DestinationNetworks]} alt={icon} iconOnly />
 	);
 };

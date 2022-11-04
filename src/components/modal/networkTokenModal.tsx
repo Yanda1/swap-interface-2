@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import destinationNetworks from '../../data/destinationNetworks.json';
-import sourceNetworks from '../../data/sourceNetworks.json';
+import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
+import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList, Modal, Button } from '../../components';
 import {
 	DestinationEnum,
+	ID_TO_NETWORK,
 	isNetworkSelected,
 	isTokenSelected,
 	SourceEnum,
@@ -13,6 +14,7 @@ import {
 	useStore
 } from '../../helpers';
 import type { DestinationNetworks } from '../../helpers';
+import { useEthers } from '@usedapp/core';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -46,6 +48,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		dispatch,
 		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }
 	} = useStore();
+	const { chainId } = useEthers();
 	const isSource = type === 'SOURCE';
 
 	const isDisabled = useMemo(
@@ -56,17 +59,37 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		[destinationNetwork, destinationToken, sourceNetwork, sourceToken]
 	);
 
-	const sourceNetworksList = ['ETH']; // TODO: make dynamic
-	const sourceTokensList =
-		isNetworkSelected(sourceNetwork) && Object.keys(sourceNetworks['1']['tokens']); // TODO: make dynamic
+	const sourceNetworksList = Object.keys(SOURCE_NETWORKS).map(
+		// @ts-ignore
+		// eslint-disable-next-line
+		(id) => ID_TO_NETWORK[id]
+	);
 
-	// @ts-ignore
-	const destinationNetworksList = Object.keys(destinationNetworks[sourceNetwork]);
+	const sourceTokensList = useMemo(
+		() =>
+			isNetworkSelected(sourceNetwork)
+				? // @ts-ignore
+				  Object.keys(SOURCE_NETWORKS[chainId?.toString()]?.['tokens'])
+				: [],
+		[chainId, sourceNetwork]
+	);
+
+	const destinationNetworksList = useMemo(
+		() =>
+			isTokenSelected(sourceToken)
+				? // @ts-ignore
+				  Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken])
+				: [],
+		[sourceNetwork]
+	);
+
 	const destinationTokensList = useMemo(() => {
 		if (isNetworkSelected(destinationNetwork)) {
 			const tokens = Object.keys(
 				// @ts-ignore
-				destinationNetworks[sourceNetwork]?.[destinationNetwork as DestinationNetworks]?.['tokens']
+				DESTINATION_NETWORKS['1']?.[sourceToken]?.[destinationNetwork as DestinationNetworks]?.[
+					'tokens'
+				]
 			);
 
 			return sourceNetwork === destinationNetwork
@@ -75,7 +98,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		} else {
 			return [];
 		}
-	}, [sourceNetwork, sourceToken, destinationNetwork]);
+	}, [sourceToken, destinationNetwork]);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);

@@ -101,19 +101,31 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				});
 			} else if (value === 'NETWORK') {
 				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+				dispatch({
+					type: DestinationEnum.NETWORK,
+					payload: e.target.textContent ? e.target.textContent : e.target.alt
+				});
+			} else if (value === 'TOKEN') {
+				dispatch({
+					type: DestinationEnum.TOKEN,
+					payload: e.target.textContent ? e.target.textContent : e.target.alt
+				});
 			} else if (value === 'SOURCE_NETWORK') {
+				dispatch({
+					type: SourceEnum.NETWORK,
+					payload: e.target.textContent ? e.target.textContent : e.target.alt
+				});
 				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+			} else if (value === 'SOURCE_TOKEN') {
+				dispatch({
+					type: SourceEnum.TOKEN,
+					payload: e.target.textContent ? e.target.textContent : e.target.alt
+				});
+				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 			}
-			dispatch({
-				type: value.includes('SOURCE')
-					? // @ts-ignore
-					  SourceEnum[value.slice(7, value.length)]
-					: // @ts-ignore
-					  DestinationEnum[value],
-				payload: e.target.textContent ? e.target.textContent : e.target.alt
-			});
 		},
-		[destinationToken, destinationNetwork, sourceNetwork, sourceToken] // TODO: add destinationWallet later
+		[destinationToken, destinationNetwork, sourceNetwork, sourceToken, value] // TODO: add destinationWallet later
 	);
 
 	const listTitle: { [key in Value]: string } = {

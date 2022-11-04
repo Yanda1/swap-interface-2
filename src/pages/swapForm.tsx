@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { useEthers } from '@usedapp/core';
-import destinationNetworks from '../data/destinationNetworks.json';
+import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
@@ -17,7 +16,7 @@ import {
 	useStore,
 	SourceEnum
 } from '../helpers';
-import type { DestinationNetworks, Fee } from '../helpers';
+import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
 import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 
@@ -130,7 +129,7 @@ export const SwapForm = () => {
 			setLimit({
 				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
 				value: minAmount && maxAmount ? (+minAmount < +amount ? maxAmount : minAmount) : '0',
-				error: +amount < +minAmount || +amount > Number(maxAmount)
+				error: +amount < +minAmount || +amount > +maxAmount
 			});
 		} else {
 			setLimit({ name: '', value: '', error: false });
@@ -155,18 +154,22 @@ export const SwapForm = () => {
 	useEffect(() => {
 		const hasTag =
 			// @ts-ignore
-			destinationNetworks?.[sourceNetwork]?.[destinationNetwork as DestinationNetworks]?.['hasTag'];
+			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['hasTag'];
 		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
-	}, [destinationNetwork]);
+	}, [sourceToken, destinationNetwork]);
 
 	useEffect(() => {
 		const addressRegEx = new RegExp(
 			// @ts-ignore,
-			destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['addressRegex']
+			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
+				destinationToken
+			]?.['addressRegex']
 		);
 		const memoRegEx = new RegExp(
 			// @ts-ignore
-			destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
+			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
+				destinationToken
+			]?.['tagRegex']
 		);
 
 		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
@@ -176,8 +179,8 @@ export const SwapForm = () => {
 	const handleSwap = (): void => {
 		// @ts-ignore
 		swapButtonRef.current.onSubmit();
-		dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
+		dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
 		dispatch({ type: DestinationEnum.ADDRESS, payload: '' });
 		dispatch({ type: DestinationEnum.WALLET, payload: 'Select Wallet' });
 		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
@@ -186,11 +189,6 @@ export const SwapForm = () => {
 		dispatch({ type: DestinationEnum.MEMO, payload: '' });
 		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
-
-	const { chainId } = useEthers();
-	// const sourceNetwork =
-	// 	// @ts-ignore
-	// 	sourceNetworks[chainId]?.name;
 
 	return (
 		<Wrapper>

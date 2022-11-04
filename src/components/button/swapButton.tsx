@@ -2,11 +2,11 @@ import { forwardRef, useImperativeHandle } from 'react';
 import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
-import sourceNetworks from '../../data/sourceNetworks.json';
+import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import type { ContractAdress } from '../../helpers';
+import type { ContractAdress, Sources } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
 	isNetworkSelected,
@@ -52,7 +52,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const { chainId, library: web3Provider } = useEthers();
 	const sourceTokenData =
 		// @ts-ignore
-		sourceNetworks[chainId.toString()]?.tokens[sourceToken];
+		// eslint-disable-next-line
+		SOURCE_NETWORKS['1']['tokens'][sourceToken];
+
 	const tokenContract =
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
