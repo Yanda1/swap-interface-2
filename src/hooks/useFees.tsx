@@ -352,12 +352,12 @@ export const useFees = () => {
 				const tokenMinAmount4Withdrawal = destTokenMinWithdrawal * price;
 
 				const { minQty, maxQty } = lot;
-				const lotSizeMinAmount = +minQty * getPrice(sourceToken, destinationToken);
-				const lotSizeMaxAmount = +maxQty * getPrice(sourceToken, destinationToken);
+				const lotSizeMinAmount = +minQty * getPrice(destinationToken, sourceToken);
+				const lotSizeMaxAmount = +maxQty * getPrice(destinationToken, sourceToken);
 				const walletMaxAmount = walletBalance && formatEther(walletBalance);
 				const tokenMaxAmount =
-					tokenBalance &&
-					parseFloat(formatUnits(tokenBalance, sourceTokenData?.decimals)).toFixed(3);
+					tokenBalance && +formatUnits(tokenBalance, sourceTokenData?.decimals);
+
 				minAmount = (
 					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) *
 					PROTOCOL_FEE_FACTOR
