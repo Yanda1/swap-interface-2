@@ -78,3 +78,26 @@ export const realParseFloat = (s: string): string => {
 		return s; // convert to number
 	}
 };
+
+export const sortArr = ({
+	data,
+	direction = 'asc'
+}: {
+	direction?: 'asc' | 'desc';
+	data: string[];
+}): string[] =>
+	data.sort((a: string, b: string) => {
+		if (direction === 'asc') {
+			if (a < b) {
+				return -1;
+			} else {
+				return 1;
+			}
+		} else {
+			if (a > b) {
+				return -1;
+			} else {
+				return 1;
+			}
+		}
+	});

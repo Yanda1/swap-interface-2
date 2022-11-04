@@ -16,7 +16,6 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
 
 .c5 {
   list-style: none;
-  padding: 0;
   padding: 0 0 1.625rem 1.25rem;
   border-left: 1px solid #8C8D8F;
   position: relative;
@@ -111,16 +110,10 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
   >
     <div
       class="c2"
-    >
-      GLMR 
-      Select Token
-    </div>
+    />
     <div
       class="c2"
-    >
-      GLMR 
-      Select Token
-    </div>
+    />
   </div>
   <div
     class="c3"
@@ -143,6 +136,46 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
           class="c7"
         >
           Your Swap request successfully validated.
+        </div>
+      </li>
+      <li
+        class="c5"
+      >
+        <div
+          class="c6"
+        >
+          Conversion GLMR 
+          BUSD
+        </div>
+        <div
+          class="c7"
+        >
+          Type: 
+          BUY
+        </div>
+        <div
+          class="c7"
+        >
+          Pair: 
+          GLMRBUSD
+        </div>
+        <div
+          class="c7"
+        >
+          Quantity: 
+          24
+        </div>
+        <div
+          class="c7"
+        >
+          Price: 
+          0.8503
+        </div>
+        <div
+          class="c7"
+        >
+          Time: 
+          10/06/2022 09:40:54
         </div>
       </li>
     </ul>
