@@ -29,8 +29,9 @@ const SelectBox = styled.div`
 	border: 1px solid ${(props: StyleProps) => props.theme.background.history};
 	// TODO: accessibility with outline
 	max-height: 50px;
+	box-sizing: border-box;
 	display: inline-flex;
-	min-width: ${pxToRem(155)};
+	min-width: ${pxToRem(175)};
 	cursor: pointer;
 	gap: ${spacing[12]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
@@ -40,7 +41,7 @@ const SelectBox = styled.div`
 	transition: ${DEFAULT_TRANSIITON};
 
 	${mediaQuery('s')} {
-		width: calc(100% - 42px);
+		width: 100%;
 	}
 
 	&:hover,
@@ -71,11 +72,14 @@ const Label = styled.p`
 const List = styled.ul`
 	position: absolute;
 	top: ${pxToRem(42)};
+	right: 0;
 	border: ${(props: StyleProps) => (props.open ? '1' : '0')}px solid
 		${(props: StyleProps) => props.theme.background.history};
-	min-width: ${pxToRem(155)};
+	min-width: calc(${pxToRem(175)} - 0.125rem);
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	padding: 0;
+	text-align: right;
+	width: calc(100% - 0.125rem);
 	z-index: 100;
 	background: ${(props: StyleProps) => props.theme.background.default};
 	list-style: none;
@@ -85,10 +89,6 @@ const List = styled.ul`
 		props.open
 			? 'max-height 0.25s ease-in, border 0.25s ease-in'
 			: 'max-height 0.15s ease-out, border 0.2s ease-out, margin 0.2s eas-out 0.3s'};
-
-	${mediaQuery('s')} {
-		width: calc(100% - 2px);
-	}
 `;
 
 const ListItem = styled.li`

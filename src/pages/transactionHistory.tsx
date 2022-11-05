@@ -41,16 +41,10 @@ const Inputs = styled.div`
 
 const selectData = [
 	{ name: 'Sort by', checked: true },
-	{ name: 'ETHGLMR', checked: false },
-	{ name: 'BTCETH', checked: false },
-	{ name: 'ETHKDJKF', checked: false }
-];
-const selectDates = [
-	{ name: 'July 13, 2021 - June 20, 2022', checked: true },
-	{ name: 'April 13, 2021 - May 20, 2022', checked: false },
-	{ name: 'July 13, 2019 - June 20, 2020', checked: false },
-	{ name: 'August 09, 2018 - December 30, 2020', checked: false },
-	{ name: 'Juli 09, 2018 - November 30, 2020', checked: false }
+	{ name: 'Symbol', checked: false },
+	{ name: 'Date', checked: false },
+	{ name: 'Base Asset', checked: false },
+	{ name: 'Quote Asset', checked: false }
 ];
 
 export const TransactionHistory = () => {
@@ -70,7 +64,6 @@ export const TransactionHistory = () => {
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
 				<Select data={selectData} />
-				<Select data={selectDates} />
 			</Inputs>{' '}
 			{!isUserVerified ? (
 				<Notifications multiple={false}>
