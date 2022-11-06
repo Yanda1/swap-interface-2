@@ -9,12 +9,12 @@ import {
 	ID_TO_NETWORK,
 	isNetworkSelected,
 	isTokenSelected,
-	sortArr,
 	SourceEnum,
 	useBreakpoint,
 	useStore
 } from '../../helpers';
 import type { DestinationNetworks } from '../../helpers';
+import _ from 'lodash';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -58,19 +58,18 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		[destinationNetwork, destinationToken, sourceNetwork, sourceToken]
 	);
 
-	const sourceNetworksList = sortArr({
-		data: Object.keys(SOURCE_NETWORKS).map(
+	const sourceNetworksList = _.orderBy(
+		Object.keys(SOURCE_NETWORKS).map(
 			// @ts-ignore
 			// eslint-disable-next-line
 			(id) => ID_TO_NETWORK[id]
 		)
-	});
+	);
 
 	const sourceTokensList = useMemo(
 		() =>
 			isNetworkSelected(sourceNetwork)
-				? // @ts-ignore
-				  sortArr({ data: Object.keys(SOURCE_NETWORKS['1']['tokens']) })
+				? _.orderBy(Object.keys(SOURCE_NETWORKS['1']['tokens']))
 				: [],
 		[sourceNetwork]
 	);
@@ -79,7 +78,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		() =>
 			isTokenSelected(sourceToken)
 				? // @ts-ignore
-				  sortArr({ data: Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken]) })
+				  _.orderBy(Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken]))
 				: [],
 		[sourceToken]
 	);
@@ -98,7 +97,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 					? tokens.filter((token) => token !== sourceToken)
 					: tokens;
 
-			return sortArr({ data: filteredTokens });
+			return _.orderBy(filteredTokens);
 		} else {
 			return [];
 		}
@@ -112,7 +111,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		setIsShowList(true);
 		dispatch({
 			type: isSource ? SourceEnum.TOKEN : DestinationEnum.TOKEN,
-			payload: 'Select Token'
+			payload: isSource ? 'ETH' : 'Select Token'
 		});
 	};
 
@@ -154,14 +153,14 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 						<>
 							{isShowList && (
 								<SelectList
-									value="NETWORK"
+									value={isSource ? 'SOURCE_NETWORK' : 'NETWORK'}
 									data={isSource ? sourceNetworksList : destinationNetworksList}
 									placeholder="Network Name"
 								/>
 							)}
 							{!isShowList && (
 								<SelectList
-									value="TOKEN"
+									value={isSource ? 'SOURCE_TOKEN' : 'TOKEN'}
 									data={isSource ? sourceTokensList : destinationTokensList}
 									placeholder="Token Name"
 								/>

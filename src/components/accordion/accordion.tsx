@@ -225,7 +225,6 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 						<ArrowWrapper open={item.open} theme={theme}>
 							<Arrow theme={theme}></Arrow>
 						</ArrowWrapper>
-						{/* @ts-ignore */}
 					</TitleWrapper>
 					<Content
 						theme={theme}

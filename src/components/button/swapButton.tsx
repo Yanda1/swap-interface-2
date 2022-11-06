@@ -69,12 +69,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		}
 	}
 
-	const { send: sendTokenApprove } = useContractFunction(
-		// @ts-ignore
-		tokenContract,
-		'approve',
-		{ transactionName: 'Approve token to be used for Swap' }
-	);
+	const { send: sendTokenApprove } = useContractFunction(tokenContract, 'approve', {
+		transactionName: 'Approve token to be used for Swap'
+	});
 	const { send: sendCreateProcess } = useContractFunction(
 		// @ts-ignore
 		protocol,

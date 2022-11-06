@@ -11,7 +11,8 @@ import {
 	spacing
 } from '../../styles';
 import type { Theme } from '../../styles';
-import { isLightTheme, useStore } from '../../helpers';
+import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
+import type { SelectProps } from '../../helpers';
 
 type StyleProps = {
 	theme: Theme;
@@ -101,17 +102,12 @@ const ListItem = styled.li`
 	}
 `;
 
-type Data = {
-	name: string;
-	value?: string;
-	checked?: boolean;
-};
-
 type Props = {
-	data: Data[];
+	data: SelectProps[];
+	checkedValue: any;
 };
 
-export const Select = ({ data }: Props) => {
+export const Select = ({ data, checkedValue }: Props) => {
 	const [items, setItems] = useState(data);
 	const [isOpen, setIsOpen] = useState(false);
 	const {
@@ -119,9 +115,9 @@ export const Select = ({ data }: Props) => {
 	} = useStore();
 	const lightTheme = isLightTheme(theme);
 
-	const handleClick = (index: number) => {
+	const handleClick = (value: TransactionHeaderSortValue, index: number) => {
 		if (items.length > 0) {
-			const updatedItems = items.map((item: Data, i: number) => {
+			const updatedItems = items.map((item: SelectProps, i: number) => {
 				if (i === index) {
 					item.checked = true;
 				} else {
@@ -133,13 +129,13 @@ export const Select = ({ data }: Props) => {
 			setItems(updatedItems);
 		}
 		setIsOpen(!isOpen);
+		checkedValue(value as string);
 	};
 
 	return (
 		<SelectWrapper theme={theme} data-testid="select">
 			<SelectBox theme={theme} onClick={() => setIsOpen(!isOpen)}>
-				{items.map((item: Data, i: number) => (
-					// @ts-ignore
+				{items.map((item: SelectProps, i: number) => (
 					<SelectedItem checked={item.checked} key={i}>
 						<RadioButton
 							type="checkbox"
@@ -162,8 +158,8 @@ export const Select = ({ data }: Props) => {
 			</SelectBox>
 			{/* @ts-ignore */}
 			<List theme={theme} open={isOpen}>
-				{items.map((item: Data, i: number) => (
-					<ListItem theme={theme} key={i} onClick={() => handleClick(i)}>
+				{items.map((item: SelectProps, i: number) => (
+					<ListItem theme={theme} key={i} onClick={() => handleClick(item.value, i)}>
 						{item.name}
 					</ListItem>
 				))}

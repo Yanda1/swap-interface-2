@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { TextField, Select, Accordion, Spinner } from '../components';
-import { useStore } from '../helpers';
-import type { TransactionData } from '../helpers';
+import { TransactionHeaderSortValue, useStore } from '../helpers';
+import _ from 'lodash';
+import type { TransactionData, SelectProps } from '../helpers';
 import { useTransactions } from '../hooks';
 import { mediaQuery, spacing, viewport } from '../styles';
 
@@ -40,16 +41,17 @@ const Inputs = styled.div`
 	}
 `;
 
-const selectData = [
-	{ name: 'Sort by', checked: true },
-	{ name: 'Symbol', checked: false },
-	{ name: 'Date', checked: false },
-	{ name: 'Base Asset', checked: false },
-	{ name: 'Quote Asset', checked: false }
+const selectData: SelectProps[] = [
+	{ name: 'Sort by', value: undefined, checked: true },
+	{ name: 'Symbol', value: 'symbol', checked: false },
+	{ name: 'Date', value: 'timestamp', checked: false },
+	{ name: 'Base Asset', value: 'scoin', checked: false },
+	{ name: 'Quote Asset', value: 'fcoin', checked: false }
 ];
 
 export const TransactionHistory = () => {
 	const [searchTerm, setSearchTerm] = useState('');
+	const [sortValue, setSortValue] = useState('');
 	const [dataCopy, setDataCopy] = useState<TransactionData[]>([]);
 	const { data, loading, contentLoading } = useTransactions();
 	const {
@@ -68,6 +70,17 @@ export const TransactionHistory = () => {
 		setDataCopy(data);
 	}, [data]);
 
+	useEffect(() => {
+		if (sortValue) {
+			const sortedData: TransactionData[] = _.orderBy(
+				data,
+				// @ts-ignore
+				(item: TransactionData) => item?.['header']?.[sortValue] as TransactionHeaderSortValue
+			);
+			setDataCopy(sortedData);
+		}
+	}, [sortValue]);
+
 	return (
 		<Wrapper>
 			<Inputs>
@@ -77,7 +90,7 @@ export const TransactionHistory = () => {
 					placeholder="Search"
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
-				<Select data={selectData} />
+				<Select data={selectData} checkedValue={setSortValue} />
 			</Inputs>{' '}
 			{!isUserVerified ? (
 				<Notifications multiple={false}>

@@ -45,3 +45,18 @@ export type TransactionData = {
 export type LocalStorageHistory = {
 	[key in string]: { lastBlock: number | null; data: TransactionData[] };
 };
+
+export type TransactionHeaderSortValue =
+	| undefined
+	| 'fcoin'
+	| 'scoin'
+	| 'symbol'
+	| 'timestamp'
+	| 'samt'
+	| 'net';
+
+export type SelectProps = {
+	name: string;
+	value: TransactionHeaderSortValue;
+	checked: boolean;
+};
