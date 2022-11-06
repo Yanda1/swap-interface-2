@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { TextField, Select, Accordion, Spinner } from '../components';
 import { useStore } from '../helpers';
+import type { TransactionData } from '../helpers';
 import { useTransactions } from '../hooks';
 import { mediaQuery, spacing, viewport } from '../styles';
 
@@ -49,10 +50,23 @@ const selectData = [
 
 export const TransactionHistory = () => {
 	const [searchTerm, setSearchTerm] = useState('');
+	const [dataCopy, setDataCopy] = useState<TransactionData[]>([]);
 	const { data, loading, contentLoading } = useTransactions();
 	const {
 		state: { theme, isUserVerified }
 	} = useStore();
+
+	useEffect(() => {
+		setDataCopy(
+			data.filter((transaction: TransactionData) =>
+				transaction.header.symbol.includes(searchTerm.toUpperCase())
+			)
+		);
+	}, [searchTerm]);
+
+	useEffect(() => {
+		setDataCopy(data);
+	}, [data]);
 
 	return (
 		<Wrapper>
@@ -75,7 +89,7 @@ export const TransactionHistory = () => {
 					Fetching your Transaction History
 				</Notifications>
 			) : (
-				<Accordion data={data} contentLoading={contentLoading} />
+				<Accordion data={dataCopy} contentLoading={contentLoading} />
 			)}
 		</Wrapper>
 	);
