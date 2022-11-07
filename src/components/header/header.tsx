@@ -374,7 +374,7 @@ export const Header = () => {
 				</Button>
 			)}
 
-			<ThemeButton theme={theme} onClick={changeTheme}>
+			<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
 				{isLight ? <Moon /> : <Sun />}
 			</ThemeButton>
 			{isMobile &&

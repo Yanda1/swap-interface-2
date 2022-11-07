@@ -178,7 +178,7 @@ export const Select = ({ data, checkedValue }: Props) => {
 						onClick={() => handleClick(item.value, i)}
 						onKeyDown={(e) => handleKeyDown(e, item.value, i)}
 						// @ts-ignore
-						tabIndex="0">
+						tabIndex="1">
 						{item.name}
 					</ListItem>
 				))}
