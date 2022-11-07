@@ -26,10 +26,10 @@ const SelectWrapper = styled.div`
 	line-height: ${fontSize[20]};
 `;
 
-const SelectBox = styled.div`
+const SelectBox = styled.button`
+	all: unset;
 	border: 1px solid ${(props: StyleProps) => props.theme.background.history};
-	// TODO: accessibility with outline
-	max-height: 50px;
+	max-height: ${pxToRem(50)};
 	box-sizing: border-box;
 	display: inline-flex;
 	min-width: ${pxToRem(175)};
@@ -48,7 +48,11 @@ const SelectBox = styled.div`
 	&:hover,
 	&:active {
 		border-color: ${(props: StyleProps) => props.theme.font.pure};
-		outline: none;
+	}
+
+	&:focus-visible {
+		outline-offset: 2px;
+		outline: 1px solid white;
 	}
 `;
 
@@ -97,8 +101,10 @@ const ListItem = styled.li`
 	cursor: pointer;
 	transition: ${DEFAULT_TRANSIITON};
 
-	&:hover {
+	&:hover,
+	&:focus {
 		background: ${(props: StyleProps) => props.theme.background.history};
+		outline: none;
 	}
 `;
 
@@ -132,6 +138,12 @@ export const Select = ({ data, checkedValue }: Props) => {
 		checkedValue(value as string);
 	};
 
+	const handleKeyDown = (e: any, item: TransactionHeaderSortValue, ind: number) => {
+		if (e.key === 'Enter') {
+			handleClick(item, ind);
+		}
+	};
+
 	return (
 		<SelectWrapper theme={theme} data-testid="select">
 			<SelectBox theme={theme} onClick={() => setIsOpen(!isOpen)}>
@@ -159,7 +171,14 @@ export const Select = ({ data, checkedValue }: Props) => {
 			{/* @ts-ignore */}
 			<List theme={theme} open={isOpen}>
 				{items.map((item: SelectProps, i: number) => (
-					<ListItem theme={theme} key={i} onClick={() => handleClick(item.value, i)}>
+					// @ts-ignore
+					<ListItem
+						theme={theme}
+						key={i}
+						onClick={() => handleClick(item.value, i)}
+						onKeyDown={(e) => handleKeyDown(e, item.value, i)}
+						// @ts-ignore
+						tabIndex="0">
 						{item.name}
 					</ListItem>
 				))}

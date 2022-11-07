@@ -288,7 +288,9 @@ export const SwapForm = () => {
 					/>
 				</div>
 			)}
-			{isUserVerified && <Fees />}
+			{isUserVerified &&
+				isNetworkSelected(destinationNetwork) &&
+				isTokenSelected(destinationToken) && <Fees />}
 			{isUserVerified && (
 				<SwapButton
 					ref={swapButtonRef}
