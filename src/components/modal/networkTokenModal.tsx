@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
-import { SelectList, Modal, Button } from '../../components';
+import { SelectList, Modal, Button, NETWORK_PARAMS } from '../../components';
 import {
 	DestinationEnum,
 	ID_TO_NETWORK,
@@ -44,7 +44,7 @@ type Props = {
 };
 
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
-	const { switchNetwork } = useEthers();
+	const { chainId } = useEthers();
 
 	const [isShowList, setIsShowList] = useState(true);
 	const { isBreakpointWidth: isMobile } = useBreakpoint(516);
@@ -82,12 +82,14 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 
 	const destinationNetworksList = useMemo(
 		() =>
-			isTokenSelected(sourceToken)
+			isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
 				? // @ts-ignore
 				  _.orderBy(Object.keys(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]))
 				: [],
 		[sourceToken, sourceNetwork]
 	);
+
+	console.log('sourceNetwork, sourceToken', sourceNetwork, sourceToken);
 
 	const destinationTokensList = useMemo(() => {
 		if (isNetworkSelected(destinationNetwork)) {
@@ -114,13 +116,28 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		setIsShowList(true);
 		dispatch({
 			type: isSource ? SourceEnum.TOKEN : DestinationEnum.TOKEN,
-			payload: isSource ? 'ETH' : 'Select Token'
+			payload: isSource ? 'Select Token' : 'Select Token'
 		});
 	};
 
 	useEffect(() => {
 		setIsShowList(true);
 	}, [showModal]);
+
+	useEffect(() => {
+		if (chainId && Object.keys(NETWORK_PARAMS).includes(chainId.toString())) {
+			dispatch({
+				type: SourceEnum.NETWORK,
+				// @ts-ignore
+				payload: ID_TO_NETWORK[chainId?.toString()]
+			});
+			dispatch({
+				type: SourceEnum.TOKEN,
+				// @ts-ignore
+				payload: chainId === 1 ? 'ETH' : 'GLMR'
+			});
+		}
+	}, [chainId]);
 
 	return !isMobile ? (
 		<div data-testid="network">

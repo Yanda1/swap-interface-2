@@ -43,7 +43,6 @@ import {
 import type { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
 import { useAxios, useLocalStorage } from '../../hooks';
-import { chain } from 'lodash';
 
 type Props = {
 	theme: Theme;
@@ -101,6 +100,35 @@ const Menu = styled.ul`
 	}
 `;
 
+export const NETWORK_PARAMS = {
+	1: [
+		{
+			chainId: ethers.utils.hexValue(Mainnet.chainId),
+			chainName: Mainnet.chainName,
+			rpcUrls: [ETHEREUM_URL],
+			nativeCurrency: {
+				name: 'Ethereum',
+				symbol: 'ETH',
+				decimals: 18
+			},
+			blockExplorerUrls: ['https://etherscan.io/']
+		}
+	],
+	1284: [
+		{
+			chainId: ethers.utils.hexValue(Moonbeam.chainId),
+			chainName: Moonbeam.chainName,
+			rpcUrls: [MOONBEAM_URL],
+			nativeCurrency: {
+				name: 'Glimmer',
+				symbol: 'GLMR',
+				decimals: 18 // TODO: @daniel correct decimal number?
+			},
+			blockExplorerUrls: ['https://moonscan.io/']
+		}
+	]
+};
+
 export const Header = () => {
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 	const {
@@ -157,40 +185,19 @@ export const Header = () => {
 		}
 	};
 
-	const NETWORK_PARAMS = {
-		1: [
-			{
-				chainId: ethers.utils.hexValue(Mainnet.chainId),
-				chainName: Mainnet.chainName,
-				rpcUrls: [ETHEREUM_URL],
-				nativeCurrency: {
-					name: 'Ethereum',
-					symbol: 'ETH',
-					decimals: 18
-				},
-				blockExplorerUrls: ['https://etherscan.io/']
-			}
-		],
-		1284: [
-			{
-				chainId: ethers.utils.hexValue(Moonbeam.chainId),
-				chainName: Moonbeam.chainName,
-				rpcUrls: [MOONBEAM_URL],
-				nativeCurrency: {
-					name: 'Glimmer',
-					symbol: 'GLMR',
-					decimals: 18 // TODO: @daniel correct decimal number?
-				},
-				blockExplorerUrls: ['https://moonscan.io/']
-			}
-		]
-	};
-
 	const checkNetwork = async (): Promise<void> => {
-		if (chainId !== Mainnet.chainId) {
+		// @ts-ignore
+		if (Object.keys(NETWORK_PARAMS).includes(chainId?.toString())) {
+			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId);
+
+			if (library) {
+				// @ts-ignore
+				await library.send('wallet_addEthereumChain', NETWORK_PARAMS[chainId]); // TODO: @daniel - what is library.send for?
+			}
+		} else {
 			await switchNetwork(Mainnet.chainId);
 
-			if (chainId !== Mainnet.chainId && library) {
+			if (library) {
 				// @ts-ignore
 				await library.send('wallet_addEthereumChain', NETWORK_PARAMS[chainId]);
 			}
@@ -272,7 +279,7 @@ export const Header = () => {
 			}
 		}
 
-		if (chainId !== Mainnet.chainId) {
+		if (buttonStatus === button.CHANGE_NETWORK) {
 			await checkNetwork();
 		}
 
@@ -327,20 +334,21 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		if (chainId === Mainnet.chainId) {
+		// @ts-ignore
+		if (Object.keys(NETWORK_PARAMS).includes(chainId?.toString())) {
 			dispatch({ type: VerificationEnum.NETWORK, payload: true });
 			dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
 			dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
+			void checkNetwork();
 		} else {
 			dispatch({ type: VerificationEnum.NETWORK, payload: false });
 			dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
 			dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
-			void checkNetwork();
 		}
 
-		if (account && chainId === Mainnet.chainId) {
-			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
-		}
+		// if (account && chainId === Mainnet.chainId) {
+		// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
+		// }
 
 		if (account && storage && storage?.account !== account) {
 			addToast(
