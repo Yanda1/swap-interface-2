@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
+import { useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
@@ -55,23 +55,13 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		// eslint-disable-next-line
 		SOURCE_NETWORKS['1']['tokens'][sourceToken];
 
-	const tokenContract =
-		sourceTokenData?.contractAddr &&
-		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
-
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
 	if (web3Provider) {
 		protocol.connect(web3Provider.getSigner());
-		if (tokenContract) {
-			tokenContract.connect(web3Provider.getSigner());
-		}
 	}
 
-	const { send: sendTokenApprove } = useContractFunction(tokenContract, 'approve', {
-		transactionName: 'Approve token to be used for Swap'
-	});
 	const { send: sendCreateProcess } = useContractFunction(
 		// @ts-ignore
 		protocol,
@@ -84,15 +74,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		'createProcess(address,address,bytes32,string)',
 		{ transactionName: 'Request Swap' }
 	);
-	const { send: sendDeposit } = useContractFunction(
-		// @ts-ignore
-		protocol,
-		'deposit',
-		{ transactionName: 'deposit' }
-	);
-	const { sendTransaction } = useSendTransaction({
-		transactionName: 'Deposit'
-	});
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
@@ -108,14 +89,13 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			};
 			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
-			dispatch({ type: PairEnum.PAIR, payload: `GLMR ${destinationToken}` });
-			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
 
 			if (sourceTokenData?.isNative) {
 				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
 			} else {
 				console.log(
-					'Calling sendCreateProcess with the contractAddr',
+					'Calling sendTokenCreateProcess with the contractAddr',
 					sourceTokenData?.contractAddr
 				);
 				await sendTokenCreateProcess(
@@ -125,33 +105,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 					shortNamedValues
 				);
 			}
-			const filter = protocol.filters.CostResponse(SERVICE_ADDRESS, productId);
-			protocol.on(filter, (customer, service, productId, cost) => {
-				console.log(
-					'Oracle deposit estimation:',
-					utils.formatUnits(cost, sourceTokenData?.decimals)
-				);
-				if (sourceTokenData?.isNative) {
-					void sendTransaction({ to: protocolAddress, value: cost });
-				} else {
-					sendTokenApprove(protocolAddress, cost)
-						.then((result) => {
-							console.log(
-								'Approved ',
-								utils.formatUnits(amount, sourceTokenData?.decimals),
-								' tokens of "',
-								protocolAddress,
-								'" contract.',
-								result
-							);
-
-							void sendDeposit(cost);
-						})
-						.catch((error) => {
-							console.log('Error in sending approve', error);
-						});
-				}
-			});
 		}
 	}));
 
