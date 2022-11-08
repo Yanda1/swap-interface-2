@@ -92,10 +92,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 				]
 			);
 
-			const filteredTokens =
-				sourceNetwork === destinationNetwork
-					? tokens.filter((token) => token !== sourceToken)
-					: tokens;
+			const filteredTokens = tokens.filter((token) => token !== sourceToken);
 
 			return _.orderBy(filteredTokens);
 		} else {

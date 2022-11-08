@@ -338,8 +338,8 @@ export const useFees = () => {
 				]?.['withdrawMin'];
 			const [pair] = allFilteredPairs.filter(
 				(pair: Ticker) =>
-					pair.symbol === sourceToken + destinationToken ||
-					pair.symbol === destinationToken + sourceToken
+					pair.symbol === `${sourceToken}${destinationToken}` ||
+					pair.symbol === `${sourceToken}${sourceToken}`
 			);
 			if (pair) {
 				const { filters } = pair;
