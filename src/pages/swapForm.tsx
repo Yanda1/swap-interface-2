@@ -14,7 +14,7 @@ import {
 	realParseFloat,
 	beautifyNumbers,
 	useStore,
-	SourceEnum
+	// SourceEnum
 } from '../helpers';
 import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
@@ -179,15 +179,15 @@ export const SwapForm = () => {
 	const handleSwap = (): void => {
 		// @ts-ignore
 		swapButtonRef.current.onSubmit();
-		dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
-		dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
-		dispatch({ type: DestinationEnum.ADDRESS, payload: '' });
-		dispatch({ type: DestinationEnum.WALLET, payload: 'Select Wallet' });
-		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
-		dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
-		dispatch({ type: DestinationEnum.MEMO, payload: '' });
-		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+		// dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
+		// dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
+		// dispatch({ type: DestinationEnum.ADDRESS, payload: '' });
+		// dispatch({ type: DestinationEnum.WALLET, payload: 'Select Wallet' });
+		// dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		// dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+		// dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
+		// dispatch({ type: DestinationEnum.MEMO, payload: '' });
+		// dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
 
 	return (
