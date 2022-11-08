@@ -138,6 +138,7 @@ export const Button = ({
 			variant={variant}
 			disabled={disabled}
 			onClick={onClick}
+			aria-label="button"
 			isLoading={isLoading}>
 			{icon && <img src={icons?.[icon]} alt={icon} />}
 			{isLoading ? <Spinner color={color} /> : children}
