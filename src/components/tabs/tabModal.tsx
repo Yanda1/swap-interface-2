@@ -64,16 +64,21 @@ export const TabModal = () => {
 	}
 
 	const { send: sendTokenApprove } = useContractFunction(tokenContract, 'approve', {
-		transactionName: 'Approve token to be used for Swap'
+		transactionName: 'Approve token to be used for Swap',
+		gasLimitBufferPercentage: 10
 	});
 	const { sendTransaction } = useSendTransaction({
-		transactionName: 'Deposit'
+		transactionName: 'Deposit',
+		gasLimitBufferPercentage: 10
 	});
 	const { send: sendDeposit } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'deposit',
-		{ transactionName: 'deposit' }
+		{
+			transactionName: 'Deposit',
+			gasLimitBufferPercentage: 25
+		}
 	);
 
 	useEffect(() => {
