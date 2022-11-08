@@ -61,6 +61,11 @@ export const ID_TO_NETWORK = {
 	'1': 'ETH'
 };
 
+export const NETWORK_TO_ID = {
+	GLMR: '1284',
+	ETH: '1'
+};
+
 export const BLOCKS_AMOUNT = 30;
 
 export const makeId = (length: number) => {

@@ -13,7 +13,8 @@ import {
 	FEE_CURRENCY,
 	PROTOCOL_FEE_FACTOR,
 	isNetworkSelected,
-	useStore
+	useStore,
+	NETWORK_TO_ID
 } from '../helpers';
 import type { Price, Fee } from '../helpers';
 import type { GraphType, DestinationNetworks } from '../helpers';
@@ -60,8 +61,8 @@ export const useFees = () => {
 		() =>
 			// @ts-ignore
 			// eslint-disable-next-line
-			SOURCE_NETWORKS['1']['tokens'][sourceToken],
-		[sourceToken, chainId]
+			SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken],
+		[sourceNetwork, sourceToken, chainId]
 	);
 	const gasPrice = useGasPrice();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
@@ -99,20 +100,24 @@ export const useFees = () => {
 
 	const uniqueTokens: string[] = useMemo(
 		() =>
-			// @ts-ignore
-			Object.keys(DESTINATION_NETWORKS['1'][sourceToken]).reduce(
-				(tokens: string[], network: string) => {
-					const networkTokens = Object.keys(
-						// @ts-ignore
-						DESTINATION_NETWORKS['1'][sourceToken]?.[network as DestinationNetworks]?.['tokens']
-					);
+			isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
+				? // @ts-ignore
+				  Object.keys(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]).reduce(
+						(tokens: string[], network: string) => {
+							const networkTokens = Object.keys(
+								// @ts-ignore
+								DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[
+									network as DestinationNetworks
+								]?.['tokens']
+							);
 
-					const allTokens = [...tokens, networkTokens];
+							const allTokens = [...tokens, networkTokens];
 
-					return [...new Set(allTokens.flat(1))];
-				},
-				[sourceToken]
-			),
+							return [...new Set(allTokens.flat(1))];
+						},
+						[sourceToken]
+				  )
+				: [],
 		[sourceToken]
 	);
 
@@ -182,9 +187,9 @@ export const useFees = () => {
 		if (isTokenSelected(destinationToken)) {
 			const withdrawFee =
 				// @ts-ignore
-				DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
-					destinationToken
-				]?.['withdrawFee'];
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+					'tokens'
+				]?.[destinationToken]?.['withdrawFee'];
 
 			return { amount: +withdrawFee, currency: destinationToken };
 		} else {
@@ -333,9 +338,9 @@ export const useFees = () => {
 		) {
 			const destTokenMinWithdrawal =
 				// @ts-ignore
-				DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
-					destinationToken
-				]?.['withdrawMin'];
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+					'tokens'
+				]?.[destinationToken]?.['withdrawMin'];
 			const [pair] = allFilteredPairs.filter(
 				(pair: Ticker) =>
 					pair.symbol === `${sourceToken}${destinationToken}` ||
@@ -366,7 +371,7 @@ export const useFees = () => {
 				if (chainId) {
 					const sourceTokenData =
 						// @ts-ignore
-						SOURCE_NETWORKS['1'].tokens[sourceToken];
+						SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.tokens[sourceToken];
 
 					if (sourceTokenData?.isNative) {
 						maxAmount = (

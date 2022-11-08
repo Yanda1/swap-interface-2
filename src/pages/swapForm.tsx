@@ -14,6 +14,7 @@ import {
 	realParseFloat,
 	beautifyNumbers,
 	useStore,
+	NETWORK_TO_ID
 	// SourceEnum
 } from '../helpers';
 import type { Fee } from '../helpers';
@@ -154,22 +155,24 @@ export const SwapForm = () => {
 	useEffect(() => {
 		const hasTag =
 			// @ts-ignore
-			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['hasTag'];
+			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'hasTag'
+			];
 		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
-	}, [sourceToken, destinationNetwork]);
+	}, [sourceToken, destinationNetwork, sourceNetwork]);
 
 	useEffect(() => {
 		const addressRegEx = new RegExp(
 			// @ts-ignore,
-			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
-				destinationToken
-			]?.['addressRegex']
+			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+			]?.[destinationToken]?.['addressRegex']
 		);
 		const memoRegEx = new RegExp(
 			// @ts-ignore
-			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
-				destinationToken
-			]?.['tagRegex']
+			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+			]?.[destinationToken]?.['tagRegex']
 		);
 
 		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));

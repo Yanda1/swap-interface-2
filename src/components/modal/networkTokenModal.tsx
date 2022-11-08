@@ -9,12 +9,14 @@ import {
 	ID_TO_NETWORK,
 	isNetworkSelected,
 	isTokenSelected,
+	NETWORK_TO_ID,
 	SourceEnum,
 	useBreakpoint,
 	useStore
 } from '../../helpers';
 import type { DestinationNetworks } from '../../helpers';
 import _ from 'lodash';
+import { useEthers } from '@usedapp/core';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -42,12 +44,15 @@ type Props = {
 };
 
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
+	const { switchNetwork } = useEthers();
+
 	const [isShowList, setIsShowList] = useState(true);
 	const { isBreakpointWidth: isMobile } = useBreakpoint(516);
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }
 	} = useStore();
+
 	const isSource = type === 'SOURCE';
 
 	const isDisabled = useMemo(
@@ -69,7 +74,8 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const sourceTokensList = useMemo(
 		() =>
 			isNetworkSelected(sourceNetwork)
-				? _.orderBy(Object.keys(SOURCE_NETWORKS['1']['tokens']))
+				? // @ts-ignore
+				  _.orderBy(Object.keys(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens']))
 				: [],
 		[sourceNetwork]
 	);
@@ -78,18 +84,18 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		() =>
 			isTokenSelected(sourceToken)
 				? // @ts-ignore
-				  _.orderBy(Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken]))
+				  _.orderBy(Object.keys(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]))
 				: [],
-		[sourceToken]
+		[sourceToken, sourceNetwork]
 	);
 
 	const destinationTokensList = useMemo(() => {
 		if (isNetworkSelected(destinationNetwork)) {
 			const tokens = Object.keys(
 				// @ts-ignore
-				DESTINATION_NETWORKS['1']?.[sourceToken]?.[destinationNetwork as DestinationNetworks]?.[
-					'tokens'
-				]
+				DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[
+					destinationNetwork as DestinationNetworks
+				]?.['tokens']
 			);
 
 			const filteredTokens = tokens.filter((token) => token !== sourceToken);

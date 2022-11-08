@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Mainnet, useEthers } from '@usedapp/core';
+import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -37,11 +37,13 @@ import {
 	KycEnum,
 	routes,
 	BasicStatusEnum,
-	SourceEnum
+	SourceEnum,
+	MOONBEAM_URL
 } from '../../helpers';
-import { ApiAuthType } from '../../helpers';
+import type { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
 import { useAxios, useLocalStorage } from '../../hooks';
+import { chain } from 'lodash';
 
 type Props = {
 	theme: Theme;
@@ -155,9 +157,8 @@ export const Header = () => {
 		}
 	};
 
-	const checkNetwork = async (): Promise<void> => {
-		// TODO: improve, seems to have a lot of redundancies
-		const NETWORK_PARAMS = [
+	const NETWORK_PARAMS = {
+		1: [
 			{
 				chainId: ethers.utils.hexValue(Mainnet.chainId),
 				chainName: Mainnet.chainName,
@@ -167,14 +168,31 @@ export const Header = () => {
 					symbol: 'ETH',
 					decimals: 18
 				},
+				blockExplorerUrls: ['https://etherscan.io/']
+			}
+		],
+		1284: [
+			{
+				chainId: ethers.utils.hexValue(Moonbeam.chainId),
+				chainName: Moonbeam.chainName,
+				rpcUrls: [MOONBEAM_URL],
+				nativeCurrency: {
+					name: 'Glimmer',
+					symbol: 'GLMR',
+					decimals: 18 // TODO: @daniel correct decimal number?
+				},
 				blockExplorerUrls: ['https://moonscan.io/']
 			}
-		];
+		]
+	};
 
+	const checkNetwork = async (): Promise<void> => {
 		if (chainId !== Mainnet.chainId) {
 			await switchNetwork(Mainnet.chainId);
+
 			if (chainId !== Mainnet.chainId && library) {
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS);
+				// @ts-ignore
+				await library.send('wallet_addEthereumChain', NETWORK_PARAMS[chainId]);
 			}
 		}
 	};

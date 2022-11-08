@@ -3,7 +3,13 @@ import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
 import { useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
-import { beautifyNumbers, isLightTheme, useBreakpoint, useStore } from '../../helpers';
+import {
+	beautifyNumbers,
+	isLightTheme,
+	useBreakpoint,
+	useStore,
+	NETWORK_TO_ID
+} from '../../helpers';
 import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { Theme } from '../../styles';
 import { WalletModal } from '../../components';
@@ -74,7 +80,7 @@ export const Wallet = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: { theme, account, sourceToken }
+		state: { theme, account, sourceNetwork, sourceToken }
 	} = useStore();
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
@@ -82,7 +88,7 @@ export const Wallet = () => {
 	const tokenData =
 		// @ts-ignore
 		// eslint-disable-next-line
-		sourceToken && SOURCE_NETWORKS['1']['tokens'][sourceToken];
+		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
 	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
 	const balance = tokenData?.isNative
 		? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)

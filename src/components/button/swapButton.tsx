@@ -15,7 +15,8 @@ import {
 	PairEnum,
 	ProductIdEnum,
 	SERVICE_ADDRESS,
-	useStore
+	useStore,
+	NETWORK_TO_ID
 } from '../../helpers';
 import { spacing } from '../../styles';
 
@@ -32,6 +33,7 @@ type Props = {
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
 	const {
 		state: {
+			sourceNetwork,
 			sourceToken,
 			destinationNetwork,
 			destinationToken,
@@ -53,7 +55,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const sourceTokenData =
 		// @ts-ignore
 		// eslint-disable-next-line
-		SOURCE_NETWORKS['1']['tokens'][sourceToken];
+		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
 
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);

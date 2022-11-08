@@ -115,7 +115,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					type: SourceEnum.NETWORK,
 					payload: e.target.textContent ? e.target.textContent : e.target.alt
 				});
-				dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
+				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
 			} else if (value === 'SOURCE_TOKEN') {
 				dispatch({
 					type: SourceEnum.TOKEN,
