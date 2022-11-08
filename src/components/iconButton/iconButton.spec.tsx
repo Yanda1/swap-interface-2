@@ -9,14 +9,14 @@ describe('IconButton', () => {
 	it('should render a disabled IconButton with img and Text', () => {
 		const { getByRole } = render(
 			<AuthProvider>
-				<IconButton disabled icon="GLMR" onClick={() => console.log('Start token')}></IconButton>
+				<IconButton disabled icon="ETH" onClick={() => console.log('Start token')}></IconButton>
 			</AuthProvider>
 		);
 		const btn = getByRole('button');
 		const img = getByRole('img');
 
 		expect(img).toBeInTheDocument();
-		expect(img).toHaveAttribute('alt', 'GLMR');
+		expect(img).toHaveAttribute('alt', 'ETH');
 		expect(img).toHaveStyle(
 			`width: ${pxToRem(40)}; height: ${pxToRem(40)}; cursor: pointer; margin-right: ${pxToRem(0)};`
 		);
@@ -50,14 +50,14 @@ describe('IconButton', () => {
 	it('should render a IconButton with icon only', () => {
 		const { getByRole } = render(
 			<AuthProvider>
-				<IconButton iconOnly icon="GLMR"></IconButton>
+				<IconButton iconOnly icon="ETH"></IconButton>
 			</AuthProvider>
 		);
 		const img = getByRole('img');
 		expect(img).toMatchSnapshot();
 
 		expect(img).toBeInTheDocument();
-		expect(img).toHaveAttribute('alt', 'GLMR');
+		expect(img).toHaveAttribute('alt', 'ETH');
 		expect(img).toHaveStyle(
 			`width: ${pxToRem(25)}; height: ${pxToRem(25)}; cursor: pointer; margin-right: ${pxToRem(10)}`
 		);

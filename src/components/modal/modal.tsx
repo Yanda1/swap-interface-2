@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import type { ThemeProps } from '../../styles';
 import { fontSize, mediaQuery, pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { useStore, DestinationNetworkEnum } from '../../helpers';
+import { useStore, DestinationEnum, SourceEnum } from '../../helpers';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
@@ -58,21 +58,31 @@ export const Modal = ({
 	background,
 	children
 }: Props) => {
-	const [selectedTokenNetwork, setSelectedTokenNetwork] = useState({ network: '', token: '' });
+	const [selectedSourceTokenNetwork, setSelectedSourceTokenNetwork] = useState({
+		network: '',
+		token: ''
+	});
+	const [selectedDestinationTokenNetwork, setSelectedDestinationTokenNetwork] = useState({
+		network: '',
+		token: ''
+	});
 	const {
-		state: { theme, destinationNetwork, destinationToken },
+		state: { theme, destinationNetwork, destinationToken, sourceNetwork, sourceToken },
 		dispatch
 	} = useStore();
 
 	useEffect(() => {
 		if (showModal) {
-			setSelectedTokenNetwork({ network: destinationNetwork, token: destinationToken });
+			setSelectedSourceTokenNetwork({ network: sourceNetwork, token: sourceToken });
+			setSelectedDestinationTokenNetwork({ network: destinationNetwork, token: destinationToken });
 		}
 	}, [showModal]);
 
 	const handleClose = () => {
-		dispatch({ type: DestinationNetworkEnum.NETWORK, payload: selectedTokenNetwork.network });
-		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: selectedTokenNetwork.token });
+		dispatch({ type: SourceEnum.NETWORK, payload: selectedSourceTokenNetwork.network });
+		dispatch({ type: SourceEnum.TOKEN, payload: selectedSourceTokenNetwork.token });
+		dispatch({ type: DestinationEnum.NETWORK, payload: selectedDestinationTokenNetwork.network });
+		dispatch({ type: DestinationEnum.TOKEN, payload: selectedDestinationTokenNetwork.token });
 		setShowModal(false);
 	};
 

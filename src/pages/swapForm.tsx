@@ -1,22 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import destinationNetworks from '../data/destinationNetworks.json';
+import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
 import {
 	AmountEnum,
 	BINANCE_FEE,
-	DestinationNetworkEnum,
+	DestinationEnum,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
 	realParseFloat,
 	beautifyNumbers,
-	START_TOKEN,
-	useStore
+	useStore,
+	// SourceEnum
 } from '../helpers';
-import type { DestinationNetworks, Fee } from '../helpers';
+import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
 import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 
@@ -103,6 +103,8 @@ export const SwapForm = () => {
 	const {
 		state: {
 			theme,
+			sourceNetwork,
+			sourceToken,
 			destinationNetwork,
 			destinationToken,
 			destinationAddress,
@@ -115,20 +117,19 @@ export const SwapForm = () => {
 	} = useStore();
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
-	const [showModal, setShowModal] = useState(false);
+	const [showDestinationModal, setShowDestinationModal] = useState(false);
+	const [showSourceModal, setShowSourceModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ name: '', value: '', error: false });
-
-	const openModal = () => setShowModal(!showModal);
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
 			setLimit({
 				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
 				value: minAmount && maxAmount ? (+minAmount < +amount ? maxAmount : minAmount) : '0',
-				error: +amount < +minAmount || +amount > Number(maxAmount)
+				error: +amount < +minAmount || +amount > +maxAmount
 			});
 		} else {
 			setLimit({ name: '', value: '', error: false });
@@ -138,10 +139,10 @@ export const SwapForm = () => {
 	useEffect(() => {
 		if (isTokenSelected(destinationToken) && amount) {
 			dispatch({
-				type: DestinationNetworkEnum.AMOUNT,
+				type: DestinationEnum.AMOUNT,
 				payload: realParseFloat(
 					(
-						(+amount / (1 + BINANCE_FEE)) * getPrice(START_TOKEN, destinationToken) -
+						(+amount / (1 + BINANCE_FEE)) * getPrice(sourceToken, destinationToken) -
 						withdrawFee.amount -
 						cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
 					).toString()
@@ -151,18 +152,24 @@ export const SwapForm = () => {
 	}, [amount, destinationToken]);
 
 	useEffect(() => {
-		const hasTag = destinationNetworks?.[destinationNetwork as DestinationNetworks]?.['hasTag'];
+		const hasTag =
+			// @ts-ignore
+			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['hasTag'];
 		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
-	}, [destinationNetwork]);
+	}, [sourceToken, destinationNetwork]);
 
 	useEffect(() => {
 		const addressRegEx = new RegExp(
 			// @ts-ignore,
-			destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['addressRegex']
+			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
+				destinationToken
+			]?.['addressRegex']
 		);
 		const memoRegEx = new RegExp(
 			// @ts-ignore
-			destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['tagRegex']
+			DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
+				destinationToken
+			]?.['tagRegex']
 		);
 
 		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
@@ -172,22 +179,36 @@ export const SwapForm = () => {
 	const handleSwap = (): void => {
 		// @ts-ignore
 		swapButtonRef.current.onSubmit();
-		dispatch({ type: DestinationNetworkEnum.ADDRESS, payload: '' });
-		dispatch({ type: DestinationNetworkEnum.WALLET, payload: 'Select Wallet' });
-		dispatch({ type: DestinationNetworkEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: DestinationNetworkEnum.TOKEN, payload: 'Select Token' });
-		dispatch({ type: DestinationNetworkEnum.AMOUNT, payload: '' });
-		dispatch({ type: DestinationNetworkEnum.MEMO, payload: '' });
-		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+		// dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
+		// dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
+		// dispatch({ type: DestinationEnum.ADDRESS, payload: '' });
+		// dispatch({ type: DestinationEnum.WALLET, payload: 'Select Wallet' });
+		// dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		// dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+		// dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
+		// dispatch({ type: DestinationEnum.MEMO, payload: '' });
+		// dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
 
 	return (
 		<Wrapper>
-			<NetworkTokenModal showModal={showModal} setShowModal={setShowModal} />
+			<NetworkTokenModal
+				showModal={showSourceModal}
+				setShowModal={setShowSourceModal}
+				type="SOURCE"
+			/>
+			<NetworkTokenModal
+				showModal={showDestinationModal}
+				setShowModal={setShowDestinationModal}
+				type="DESTINATION"
+			/>
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton disabled icon="GLMR" />
+						<IconButton
+							icon={sourceToken as any}
+							onClick={() => setShowSourceModal(!showSourceModal)}
+						/>
 						<TextField
 							type="number"
 							placeholder="Amount"
@@ -200,8 +221,8 @@ export const SwapForm = () => {
 					</SwapInput>
 					<NamesWrapper single={false}>
 						<SwapNames>
-							<Name color={theme.font.pure}>GLMR</Name>
-							<Name color={theme.font.default}>(Moonbeam)</Name>
+							<Name color={theme.font.pure}>{sourceToken}</Name>
+							<Name color={theme.font.default}>({sourceNetwork})</Name>
 						</SwapNames>
 						<SwapNames pos="end" single={false}>
 							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
@@ -218,12 +239,15 @@ export const SwapForm = () => {
 				)}
 				<Swap>
 					<SwapInput>
-						<IconButton onClick={openModal} icon={destinationToken as any} />
+						<IconButton
+							onClick={() => setShowDestinationModal(!showDestinationModal)}
+							icon={destinationToken as any}
+						/>
 						<TextField
 							disabled
 							type="number"
 							value={beautifyNumbers({ n: destinationAmount })}
-							error={Number(destinationAmount) < 0}
+							error={+destinationAmount < 0}
 						/>
 					</SwapInput>
 					<NamesWrapper>
@@ -237,8 +261,8 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.pure}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
-					: `1 GLMR = ${beautifyNumbers({
-							n: getPrice(START_TOKEN, destinationToken)
+					: `1 ${sourceToken} = ${beautifyNumbers({
+							n: getPrice(sourceToken, destinationToken)
 					  })} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
@@ -247,7 +271,7 @@ export const SwapForm = () => {
 				description="Destination Address"
 				onChange={(e) =>
 					dispatch({
-						type: DestinationNetworkEnum.ADDRESS,
+						type: DestinationEnum.ADDRESS,
 						payload: e.target.value.trim()
 					})
 				}
@@ -259,12 +283,14 @@ export const SwapForm = () => {
 						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
-							dispatch({ type: DestinationNetworkEnum.MEMO, payload: e.target.value.trim() })
+							dispatch({ type: DestinationEnum.MEMO, payload: e.target.value.trim() })
 						}
 					/>
 				</div>
 			)}
-			{isUserVerified && <Fees />}
+			{isUserVerified &&
+				isNetworkSelected(destinationNetwork) &&
+				isTokenSelected(destinationToken) && <Fees />}
 			{isUserVerified && (
 				<SwapButton
 					ref={swapButtonRef}

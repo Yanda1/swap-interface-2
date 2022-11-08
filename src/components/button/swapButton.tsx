@@ -1,7 +1,8 @@
 import { forwardRef, useImperativeHandle } from 'react';
-import styled from 'styled-components';
-import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import { useContractFunction, useEthers } from '@usedapp/core';
+import styled from 'styled-components';
+import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
+import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
@@ -29,35 +30,48 @@ type Props = {
 };
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
-	const { dispatch } = useStore();
 	const {
 		state: {
+			sourceToken,
 			destinationNetwork,
 			destinationToken,
 			destinationAddress,
 			destinationMemo,
 			isUserVerified,
 			destinationAmount
-		}
+		},
+		dispatch
 	} = useStore();
 	const isDisabled =
 		!validInputs ||
 		!isNetworkSelected(destinationNetwork) ||
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
-		Number(destinationAmount) < 0;
+		+destinationAmount < 0;
 
 	const { chainId, library: web3Provider } = useEthers();
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
-	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
-	const contract = new Contract(contractAddress, contractInterface, web3Provider);
+	const sourceTokenData =
+		// @ts-ignore
+		// eslint-disable-next-line
+		SOURCE_NETWORKS['1']['tokens'][sourceToken];
+
+	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
+	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
+	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
 	if (web3Provider) {
-		contract.connect(web3Provider.getSigner());
+		protocol.connect(web3Provider.getSigner());
 	}
+
 	const { send: sendCreateProcess } = useContractFunction(
 		// @ts-ignore
-		contract,
-		'createProcess',
+		protocol,
+		'createProcess(address,bytes32,string)',
+		{ transactionName: 'Request Swap' }
+	);
+	const { send: sendTokenCreateProcess } = useContractFunction(
+		// @ts-ignore
+		protocol,
+		'createProcess(address,address,bytes32,string)',
 		{ transactionName: 'Request Swap' }
 	);
 
@@ -66,8 +80,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			const productId = utils.id(makeId(32));
 
 			const namedValues = {
-				scoin: 'GLMR',
-				samt: utils.parseEther(amount).toString(),
+				scoin: sourceToken,
+				samt: utils.parseUnits(amount, sourceTokenData?.decimals).toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
 				daddr: destinationAddress,
@@ -75,8 +89,22 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			};
 			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
-			dispatch({ type: PairEnum.PAIR, payload: `GLMR ${destinationToken}` });
-			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
+
+			if (sourceTokenData?.isNative) {
+				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+			} else {
+				console.log(
+					'Calling sendTokenCreateProcess with the contractAddr',
+					sourceTokenData?.contractAddr
+				);
+				await sendTokenCreateProcess(
+					sourceTokenData?.contractAddr,
+					SERVICE_ADDRESS,
+					productId,
+					shortNamedValues
+				);
+			}
 		}
 	}));
 

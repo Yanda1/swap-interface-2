@@ -51,7 +51,8 @@ export const Fees = () => {
 				<div>
 					<p>Network fee:</p>
 					<p>
-						{beautifyNumbers({ n: networkFee.amount })} {networkFee.currency}
+						{beautifyNumbers({ n: networkFee.amount })} ETH	
+						{/* TODO replace hardcoded ETH with current chain native token name */}
 					</p>
 				</div>
 				<div>

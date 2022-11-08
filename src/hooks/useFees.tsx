@@ -8,7 +8,6 @@ import {
 	makeId,
 	PROTOCOL_FEE,
 	SERVICE_ADDRESS,
-	START_TOKEN,
 	Graph,
 	BINANCE_FEE,
 	FEE_CURRENCY,
@@ -18,12 +17,13 @@ import {
 } from '../helpers';
 import type { Price, Fee } from '../helpers';
 import type { GraphType, DestinationNetworks } from '../helpers';
-import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
-import destinationNetworks from '../data/destinationNetworks.json';
-import { useEthers, useGasPrice, useEtherBalance } from '@usedapp/core';
+import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
+import SOURCE_NETWORKS from '../data/sourceNetworks.json';
+import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
+import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { BigNumber, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
-import { formatEther } from '@ethersproject/units';
+import { formatEther, formatUnits } from '@ethersproject/units';
 import axios from 'axios';
 
 type Ticker = {
@@ -44,6 +44,8 @@ export const useFees = () => {
 	const [allFilteredPairs, setAllFilteredPairs] = useState<Ticker[]>([]);
 	const {
 		state: {
+			sourceToken,
+			sourceNetwork,
 			destinationToken,
 			destinationNetwork,
 			amount,
@@ -54,6 +56,13 @@ export const useFees = () => {
 	} = useStore();
 
 	const { chainId, library: web3Provider } = useEthers();
+	const sourceTokenData = useMemo(
+		() =>
+			// @ts-ignore
+			// eslint-disable-next-line
+			SOURCE_NETWORKS['1']['tokens'][sourceToken],
+		[sourceToken, chainId]
+	);
 	const gasPrice = useGasPrice();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
@@ -63,6 +72,7 @@ export const useFees = () => {
 		contract.connect(web3Provider.getSigner());
 	}
 	const walletBalance = useEtherBalance(account);
+	const tokenBalance = useTokenBalance(sourceTokenData?.contractAddr, account);
 
 	const getExchangeInfo = async () => {
 		try {
@@ -89,19 +99,21 @@ export const useFees = () => {
 
 	const uniqueTokens: string[] = useMemo(
 		() =>
-			Object.keys(destinationNetworks).reduce(
+			// @ts-ignore
+			Object.keys(DESTINATION_NETWORKS['1'][sourceToken]).reduce(
 				(tokens: string[], network: string) => {
 					const networkTokens = Object.keys(
-						destinationNetworks?.[network as DestinationNetworks]?.['tokens']
+						// @ts-ignore
+						DESTINATION_NETWORKS['1'][sourceToken]?.[network as DestinationNetworks]?.['tokens']
 					);
 
 					const allTokens = [...tokens, networkTokens];
 
 					return [...new Set(allTokens.flat(1))];
 				},
-				['GLMR']
+				[sourceToken]
 			),
-		[]
+		[sourceToken]
 	);
 
 	const isSymbol = useCallback(
@@ -170,26 +182,28 @@ export const useFees = () => {
 		if (isTokenSelected(destinationToken)) {
 			const withdrawFee =
 				// @ts-ignore
-				destinationNetworks[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawFee'];
+				DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
+					destinationToken
+				]?.['withdrawFee'];
 
-			return { amount: Number(withdrawFee), currency: destinationToken };
+			return { amount: +withdrawFee, currency: destinationToken };
 		} else {
-			return { amount: 0, currency: START_TOKEN };
+			return { amount: 0, currency: destinationToken };
 		}
-	}, [destinationToken]);
+	}, [destinationToken, sourceToken]);
 
 	const protocolFee = useMemo((): Fee => {
 		if (amount) {
-			return { amount: Number(amount) * PROTOCOL_FEE, currency: START_TOKEN };
+			return { amount: +amount * PROTOCOL_FEE, currency: sourceToken };
 		} else {
-			return { amount: 0, currency: START_TOKEN };
+			return { amount: 0, currency: sourceToken };
 		}
 	}, [amount]);
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
 			const namedValues = {
-				scoin: 'GLMR',
+				scoin: 'ETH',
 				samt: utils.parseEther('10').toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
@@ -198,17 +212,36 @@ export const useFees = () => {
 			const shortNamedValues = JSON.stringify(namedValues);
 			const productId = utils.id(makeId(32));
 
-			contract.estimateGas
-				.createProcess(SERVICE_ADDRESS, productId, shortNamedValues)
-				.then((gas: any) => {
-					setGasAmount(gas);
-				})
-				.catch((err) => {
-					throw new Error(err);
-					// TODO: @Daniel:  add Toast to inform user?
-				});
+			if (sourceTokenData?.isNative) {
+				contract.estimateGas['createProcess(address,bytes32,string)'](
+					SERVICE_ADDRESS,
+					productId,
+					shortNamedValues
+				)
+					.then((gas: any) => {
+						setGasAmount(gas);
+					})
+					.catch((err) => {
+						throw new Error(err);
+						// TODO: @Daniel:  add Toast to inform user?
+					});
+			} else {
+				contract.estimateGas['createProcess(address,address,bytes32,string)'](
+					sourceTokenData?.contractAddr,
+					SERVICE_ADDRESS,
+					productId,
+					shortNamedValues
+				)
+					.then((gas: any) => {
+						setGasAmount(gas);
+					})
+					.catch((err) => {
+						throw new Error(err);
+						// TODO: @Daniel:  add Toast to inform user?
+					});
+			}
 		}
-	}, [destinationToken, destinationAddress]);
+	}, [destinationToken, destinationAddress, sourceNetwork]);
 
 	const networkFee = useMemo((): Fee => {
 		if (gasAmount && gasPrice) {
@@ -223,11 +256,11 @@ export const useFees = () => {
 			);
 
 			return {
-				amount: Number(utils.formatEther(calculatedFee['_hex'])),
-				currency: START_TOKEN
+				amount: +utils.formatEther(calculatedFee['_hex']),
+				currency: sourceToken
 			};
 		} else {
-			return { amount: 0, currency: START_TOKEN };
+			return { amount: 0, currency: sourceToken };
 		}
 	}, [gasAmount]);
 
@@ -243,8 +276,8 @@ export const useFees = () => {
 
 	const cexFee = useMemo((): Fee[] => {
 		if (cexGraph && isTokenSelected(destinationToken)) {
-			let result = Number(amount);
-			const graphPath: GraphType = cexGraph.bfs(START_TOKEN, destinationToken);
+			let result = +amount;
+			const graphPath: GraphType = cexGraph.bfs(sourceToken, destinationToken);
 
 			if (graphPath) {
 				const allCexFees: Fee[] = [];
@@ -254,7 +287,7 @@ export const useFees = () => {
 						(x: Price) => x.symbol === graphPath.path[i] + graphPath.path[i + 1]
 					);
 					if (ticker) {
-						edgePrice = Number(ticker?.price);
+						edgePrice = +ticker?.price;
 					} else {
 						ticker = allFilteredPrices.find(
 							(x: any) => x.symbol === graphPath.path[i + 1] + graphPath.path[i]
@@ -270,10 +303,10 @@ export const useFees = () => {
 
 				return allCexFees;
 			} else {
-				return [{ amount: 0, currency: START_TOKEN }];
+				return [{ amount: 0, currency: sourceToken }];
 			}
 		} else {
-			return [{ amount: 0, currency: START_TOKEN }];
+			return [{ amount: 0, currency: sourceToken }];
 		}
 	}, [destinationToken, amount]);
 
@@ -298,34 +331,58 @@ export const useFees = () => {
 			account &&
 			allFilteredPairs
 		) {
-			const tokenMinAmount =
+			const destTokenMinWithdrawal =
 				// @ts-ignore
-				destinationNetworks?.[destinationNetwork]?.['tokens']?.[destinationToken]?.['withdrawMin'];
+				DESTINATION_NETWORKS['1'][sourceToken]?.[destinationNetwork]?.['tokens']?.[
+					destinationToken
+				]?.['withdrawMin'];
 			const [pair] = allFilteredPairs.filter(
 				(pair: Ticker) =>
-					pair.symbol === START_TOKEN + destinationToken ||
-					pair.symbol === destinationToken + START_TOKEN
+					pair.symbol === sourceToken + destinationToken ||
+					pair.symbol === destinationToken + sourceToken
 			);
 			if (pair) {
 				const { filters } = pair;
 				const [lot, notional] = filters;
-				const notionalMinAmount = +notional.minNotional * getPrice(destinationToken, START_TOKEN);
+				let notionalMinAmount = +notional.minNotional;
+				const price = getPrice(destinationToken, sourceToken);
+				if (destinationToken === pair.quoteAsset) {
+					notionalMinAmount *= price;
+				}
+				const tokenMinAmount4Withdrawal = destTokenMinWithdrawal * price;
+
 				const { minQty, maxQty } = lot;
-				const lotSizeMinAmount = +minQty * getPrice(START_TOKEN, START_TOKEN);
-				const lotSizeMaxAmount = +maxQty * getPrice(START_TOKEN, START_TOKEN); // TODO: check if numbers only modified when displayed to user (not)
+				const lotSizeMinAmount = +minQty * getPrice(destinationToken, sourceToken);
+				const lotSizeMaxAmount = +maxQty * getPrice(destinationToken, sourceToken);
 				const walletMaxAmount = walletBalance && formatEther(walletBalance);
+				const tokenMaxAmount =
+					tokenBalance && +formatUnits(tokenBalance, sourceTokenData?.decimals);
 
 				minAmount = (
-					Math.max(tokenMinAmount, notionalMinAmount, lotSizeMinAmount) * PROTOCOL_FEE_FACTOR
+					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) *
+					PROTOCOL_FEE_FACTOR
 				).toString();
-				maxAmount = (
-					Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
-				).toString();
+
+				if (chainId) {
+					const sourceTokenData =
+						// @ts-ignore
+						SOURCE_NETWORKS['1'].tokens[sourceToken];
+
+					if (sourceTokenData?.isNative) {
+						maxAmount = (
+							Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
+						).toString();
+					} else {
+						maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();
+					}
+
+					minAmount = minAmount > maxAmount ? maxAmount : minAmount;
+				}
 			}
 		}
 
 		return { minAmount, maxAmount };
-	}, [destinationToken, account, networkFee]);
+	}, [destinationToken, account, networkFee, sourceToken]);
 
 	return {
 		...marginalCosts,

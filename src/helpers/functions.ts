@@ -5,7 +5,7 @@ import { useLayoutEffect, useState } from 'react';
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 
 export const isNetworkSelected = (network: string) =>
-	network !== 'Select Network' && network !== '';
+	network !== 'Select Network' && network !== ''; // TODO: refine both functions - nullish check - and create enum for "Select Network / Token"
 
 export const isTokenSelected = (token: string) => token !== 'Select Token' && token !== '';
 
@@ -19,11 +19,11 @@ const trimZeros = (res: string): string =>
 
 export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
 	let res = '';
-	if (n === '') return 'n/a';
+	if (!n) return 'n/a';
 	if (typeof n === 'number') {
 		res = n.toFixed(digits);
 	} else {
-		res = Number(n).toFixed(digits);
+		res = (+n).toFixed(digits);
 	}
 
 	return trimZeros(res);
