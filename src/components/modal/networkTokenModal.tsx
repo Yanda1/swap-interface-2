@@ -89,8 +89,6 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		[sourceToken, sourceNetwork]
 	);
 
-	console.log('sourceNetwork, sourceToken', sourceNetwork, sourceToken);
-
 	const destinationTokensList = useMemo(() => {
 		if (isNetworkSelected(destinationNetwork)) {
 			const tokens = Object.keys(

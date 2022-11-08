@@ -8,7 +8,8 @@ import {
 	isLightTheme,
 	useBreakpoint,
 	useStore,
-	NETWORK_TO_ID
+	NETWORK_TO_ID,
+	isTokenSelected
 } from '../../helpers';
 import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { Theme } from '../../styles';
@@ -105,9 +106,11 @@ export const Wallet = () => {
 	) : (
 		<Wrapper theme={theme}>
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
-			<Amount theme={theme}>
-				{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
-			</Amount>
+			{isTokenSelected(sourceToken) && (
+				<Amount theme={theme}>
+					{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
+				</Amount>
+			)}
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
 				<JazzIcon account={account} />

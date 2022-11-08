@@ -346,9 +346,9 @@ export const Header = () => {
 			dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
 		}
 
-		// if (account && chainId === Mainnet.chainId) {
-		// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
-		// }
+		if (account && !isUserVerified) {
+			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
+		}
 
 		if (account && storage && storage?.account !== account) {
 			addToast(
