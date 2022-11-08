@@ -66,13 +66,19 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		// @ts-ignore
 		protocol,
 		'createProcess(address,bytes32,string)',
-		{ transactionName: 'Request Swap' }
+		{
+			transactionName: 'Request Swap',
+			gasLimitBufferPercentage: 25
+		}
 	);
 	const { send: sendTokenCreateProcess } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'createProcess(address,address,bytes32,string)',
-		{ transactionName: 'Request Swap' }
+		{
+			transactionName: 'Request Swap',
+			gasLimitBufferPercentage: 25
+		}
 	);
 
 	useImperativeHandle(ref, () => ({
