@@ -78,11 +78,17 @@ export const Modal = ({
 		}
 	}, [showModal]);
 
+	console.log({ Speicher: selectedSourceTokenNetwork.network, sourceNetwork });
+
 	const handleClose = () => {
-		dispatch({ type: SourceEnum.NETWORK, payload: selectedSourceTokenNetwork.network });
-		dispatch({ type: SourceEnum.TOKEN, payload: selectedSourceTokenNetwork.token });
+		// @ts-ignore
+		if (selectedSourceTokenNetwork.network === sourceNetwork) {
+			dispatch({ type: SourceEnum.NETWORK, payload: selectedSourceTokenNetwork.network });
+			dispatch({ type: SourceEnum.TOKEN, payload: selectedSourceTokenNetwork.token });
+		}
 		dispatch({ type: DestinationEnum.NETWORK, payload: selectedDestinationTokenNetwork.network });
 		dispatch({ type: DestinationEnum.TOKEN, payload: selectedDestinationTokenNetwork.token });
+
 		setShowModal(false);
 	};
 

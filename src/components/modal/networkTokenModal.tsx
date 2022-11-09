@@ -80,14 +80,26 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		[sourceNetwork]
 	);
 
-	const destinationNetworksList = useMemo(
-		() =>
-			isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
-				? // @ts-ignore
-				  _.orderBy(Object.keys(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]))
-				: [],
-		[sourceToken, sourceNetwork]
-	);
+	const destinationNetworksList = useMemo(() => {
+		if (isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)) {
+			const allDestinationNetworks = Object.keys(
+				// @ts-ignore
+				DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]
+			);
+			const filteredDestinationNetworks = allDestinationNetworks.filter((network) => {
+				const tokens = Object.keys(
+					// @ts-ignores
+					DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[network]?.['tokens']
+				);
+
+				return tokens.join('') !== sourceToken;
+			});
+
+			return _.orderBy(filteredDestinationNetworks);
+		} else {
+			return [];
+		}
+	}, [sourceToken, sourceNetwork]);
 
 	const destinationTokensList = useMemo(() => {
 		if (isNetworkSelected(destinationNetwork)) {
@@ -104,7 +116,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		} else {
 			return [];
 		}
-	}, [destinationNetwork]);
+	}, [sourceToken, destinationNetwork]);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);
@@ -141,6 +153,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
+					{/* @ts-ignore */}
 					{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
 						<>
 							<SelectList
@@ -167,6 +180,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
+					{/* @ts-ignore */}
 					{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
 						<>
 							{isShowList && (
