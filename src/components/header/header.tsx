@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Moonbeam, useEthers } from '@usedapp/core';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Mainnet, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -27,7 +27,7 @@ import {
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
 	makeBinanceKycCall,
-	MOONBEAM_URL,
+	ETHEREUM_URL,
 	ThemeEnum,
 	useBreakpoint,
 	useStore,
@@ -36,7 +36,8 @@ import {
 	KycStatusEnum,
 	KycEnum,
 	routes,
-	BasicStatusEnum
+	BasicStatusEnum,
+	SourceEnum
 } from '../../helpers';
 import { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
@@ -99,9 +100,17 @@ const Menu = styled.ul`
 `;
 
 export const Header = () => {
-	const { isBreakpointWidth } = useBreakpoint('s');
+	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 	const {
-		state: { buttonStatus, isUserVerified, accessToken, kycStatus, account: userAccount, theme },
+		state: {
+			buttonStatus,
+			isUserVerified,
+			accessToken,
+			kycStatus,
+			account: userAccount,
+			isNetworkConnected,
+			theme
+		},
 		dispatch
 	} = useStore();
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
@@ -147,23 +156,24 @@ export const Header = () => {
 	};
 
 	const checkNetwork = async (): Promise<void> => {
+		// TODO: improve, seems to have a lot of redundancies
 		const NETWORK_PARAMS = [
 			{
-				chainId: ethers.utils.hexValue(Moonbeam.chainId),
-				chainName: Moonbeam.chainName,
-				rpcUrls: [MOONBEAM_URL],
+				chainId: ethers.utils.hexValue(Mainnet.chainId),
+				chainName: Mainnet.chainName,
+				rpcUrls: [ETHEREUM_URL],
 				nativeCurrency: {
-					name: 'Glimer',
-					symbol: 'GLMR',
+					name: 'Ethereum',
+					symbol: 'ETH',
 					decimals: 18
 				},
 				blockExplorerUrls: ['https://moonscan.io/']
 			}
 		];
 
-		if (!chainId) {
-			await switchNetwork(Moonbeam.chainId);
-			if (chainId !== Moonbeam.chainId && library) {
+		if (chainId !== Mainnet.chainId) {
+			await switchNetwork(Mainnet.chainId);
+			if (chainId !== Mainnet.chainId && library) {
 				await library.send('wallet_addEthereumChain', NETWORK_PARAMS);
 			}
 		}
@@ -202,7 +212,7 @@ export const Header = () => {
 	};
 
 	const checkStatus = async () => {
-		if (!isUserVerified && account === userAccount) {
+		if (!isUserVerified && account === userAccount && isNetworkConnected) {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
@@ -244,7 +254,7 @@ export const Header = () => {
 			}
 		}
 
-		if (!chainId) {
+		if (chainId !== Mainnet.chainId) {
 			await checkNetwork();
 		}
 
@@ -299,14 +309,18 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		if (chainId) {
+		if (chainId === Mainnet.chainId) {
 			dispatch({ type: VerificationEnum.NETWORK, payload: true });
+			dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
+			dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
 		} else {
 			dispatch({ type: VerificationEnum.NETWORK, payload: false });
+			dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
+			dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
 			void checkNetwork();
 		}
 
-		if (account && chainId) {
+		if (account && chainId === Mainnet.chainId) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
 
@@ -331,14 +345,14 @@ export const Header = () => {
 
 	return (
 		<StyledHeader theme={theme}>
-			{isBreakpointWidth ? (
+			{isMobile ? (
 				<LogoMobile style={{ marginRight: 'auto' }} />
 			) : isLight ? (
 				<LogoLight style={{ marginRight: 'auto' }} />
 			) : (
 				<LogoDark style={{ marginRight: 'auto' }} />
 			)}
-			{!isBreakpointWidth && (
+			{!isMobile && (
 				<Button
 					variant="pure"
 					onClick={() =>
@@ -349,7 +363,7 @@ export const Header = () => {
 			)}
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account ? (
-				<Wallet token="GLMR" account={account} />
+				<Wallet />
 			) : (
 				<Button
 					isLoading={isLoading}
@@ -360,10 +374,10 @@ export const Header = () => {
 				</Button>
 			)}
 
-			<ThemeButton theme={theme} onClick={changeTheme}>
+			<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
 				{isLight ? <Moon /> : <Sun />}
 			</ThemeButton>
-			{isBreakpointWidth &&
+			{isMobile &&
 				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
 			{showMenu && (
 				<Menu theme={theme} ref={menuRef}>

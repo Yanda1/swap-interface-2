@@ -9,7 +9,7 @@ declare global {
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
-export const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>] => {
+const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>] => {
 	// Get from local storage then
 	// parse stored json or return initialValue
 	const readValue = useCallback((): T => {
@@ -95,3 +95,5 @@ const parseJSON = <T,>(value: string | null): T | undefined => {
 		return undefined;
 	}
 };
+
+export { useLocalStorage };

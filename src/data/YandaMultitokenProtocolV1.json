@@ -1,5 +1,5 @@
 {
-	"abi": [
+  "abi": [
     {
       "inputs": [
         {
@@ -402,6 +402,34 @@
       "inputs": [
         {
           "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "service",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "productId",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "data",
+          "type": "string"
+        }
+      ],
+      "name": "createProcess",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
           "name": "customer",
           "type": "address"
         },
@@ -417,6 +445,19 @@
         }
       ],
       "name": "declareAction",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "deposit",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -465,7 +506,7 @@
         {
           "components": [
             {
-              "internalType": "enum YandaExtendedProtocolV3.State",
+              "internalType": "enum YandaMultitokenProtocolV1.State",
               "name": "state",
               "type": "uint8"
             },
@@ -478,6 +519,11 @@
               "internalType": "uint256",
               "name": "costConf",
               "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
+              "type": "address"
             },
             {
               "internalType": "address payable",
@@ -535,7 +581,7 @@
               "type": "bool"
             }
           ],
-          "internalType": "struct YandaExtendedProtocolV3.Process",
+          "internalType": "struct YandaMultitokenProtocolV1.Process",
           "name": "",
           "type": "tuple"
         }
@@ -761,7 +807,7 @@
         },
         {
           "internalType": "address payable",
-          "name": "deposit",
+          "name": "depositAddr",
           "type": "address"
         }
       ],
@@ -896,7 +942,7 @@
               "type": "uint256"
             }
           ],
-          "internalType": "struct YandaExtendedProtocolV3.Stake",
+          "internalType": "struct YandaMultitokenProtocolV1.Stake",
           "name": "",
           "type": "tuple"
         }

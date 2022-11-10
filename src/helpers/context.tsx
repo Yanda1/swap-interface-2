@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
-import type { ColorType, Theme } from '../styles';
 import { darkTheme } from '../styles';
+import type { ColorType, Theme } from '../styles';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -19,7 +19,12 @@ export enum AmountEnum {
 	AMOUNT = 'SET_AMOUNT'
 }
 
-export enum DestinationNetworkEnum {
+export enum SourceEnum {
+	NETWORK = 'SET_SOURCE_NETWORK',
+	TOKEN = 'SET_SOURCE_TOKEN'
+}
+
+export enum DestinationEnum {
 	WALLET = 'SET_DESTINATION_WALLET',
 	NETWORK = 'SET_DESTINATION_NETWORK',
 	TOKEN = 'SET_DESTINATION_TOKEN',
@@ -83,8 +88,13 @@ type ThemeAction = {
 	payload: Theme;
 };
 
-type DestinationNetworkAction = {
-	type: DestinationNetworkEnum;
+type SourceAction = {
+	type: SourceEnum;
+	payload: string;
+};
+
+type DestinationAction = {
+	type: DestinationEnum;
 	payload: string;
 };
 
@@ -108,7 +118,8 @@ type Action =
 	| ButtonAction
 	| KycAction
 	| ThemeAction
-	| DestinationNetworkAction
+	| SourceAction
+	| DestinationAction
 	| AmountAction
 	| ProductIdAction
 	| PairAction;
@@ -122,6 +133,8 @@ type State = {
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
 	theme: Theme;
+	sourceNetwork: string;
+	sourceToken: string;
 	destinationWallet: string;
 	destinationNetwork: string;
 	destinationToken: string;
@@ -161,6 +174,8 @@ const initialState: State = {
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: 'Select Wallet',
+	sourceNetwork: 'ETH',
+	sourceToken: 'ETH',
 	destinationNetwork: 'Select Network',
 	destinationToken: 'Select Token',
 	destinationAddress: '',
@@ -195,17 +210,21 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, theme: action.payload };
 		case AmountEnum.AMOUNT:
 			return { ...state, amount: action.payload };
-		case DestinationNetworkEnum.WALLET:
+		case SourceEnum.NETWORK:
+			return { ...state, sourceNetwork: action.payload };
+		case SourceEnum.TOKEN:
+			return { ...state, sourceToken: action.payload };
+		case DestinationEnum.WALLET:
 			return { ...state, destinationWallet: action.payload };
-		case DestinationNetworkEnum.NETWORK:
+		case DestinationEnum.NETWORK:
 			return { ...state, destinationNetwork: action.payload };
-		case DestinationNetworkEnum.TOKEN:
+		case DestinationEnum.TOKEN:
 			return { ...state, destinationToken: action.payload };
-		case DestinationNetworkEnum.ADDRESS:
+		case DestinationEnum.ADDRESS:
 			return { ...state, destinationAddress: action.payload };
-		case DestinationNetworkEnum.AMOUNT:
+		case DestinationEnum.AMOUNT:
 			return { ...state, destinationAmount: action.payload };
-		case DestinationNetworkEnum.MEMO:
+		case DestinationEnum.MEMO:
 			return { ...state, destinationMemo: action.payload };
 		case ProductIdEnum.PRODUCTID:
 			return { ...state, productId: action.payload };

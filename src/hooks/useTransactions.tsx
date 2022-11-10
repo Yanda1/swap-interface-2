@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { utils, BigNumber } from 'ethers';
 import _ from 'lodash';
-import CONTRACT_DATA from '../data/YandaExtendedProtocol.json';
+import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import { Contract } from '@ethersproject/contracts';
 import {
 	BINANCE_FEE,
@@ -64,6 +64,7 @@ export const useTransactions = () => {
 				}
 			}
 			setEvents(allEvents);
+
 			if (allEvents.length === 0) {
 				storage[account] = {
 					...storage[account],

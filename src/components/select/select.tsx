@@ -11,7 +11,8 @@ import {
 	spacing
 } from '../../styles';
 import type { Theme } from '../../styles';
-import { isLightTheme, useStore } from '../../helpers';
+import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
+import type { SelectProps } from '../../helpers';
 
 type StyleProps = {
 	theme: Theme;
@@ -25,12 +26,13 @@ const SelectWrapper = styled.div`
 	line-height: ${fontSize[20]};
 `;
 
-const SelectBox = styled.div`
+const SelectBox = styled.button`
+	all: unset;
 	border: 1px solid ${(props: StyleProps) => props.theme.background.history};
-	// TODO: accessibility with outline
-	max-height: 50px;
+	max-height: ${pxToRem(50)};
+	box-sizing: border-box;
 	display: inline-flex;
-	min-width: ${pxToRem(155)};
+	min-width: ${pxToRem(175)};
 	cursor: pointer;
 	gap: ${spacing[12]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
@@ -40,13 +42,17 @@ const SelectBox = styled.div`
 	transition: ${DEFAULT_TRANSIITON};
 
 	${mediaQuery('s')} {
-		width: calc(100% - 42px);
+		width: 100%;
 	}
 
 	&:hover,
 	&:active {
 		border-color: ${(props: StyleProps) => props.theme.font.pure};
-		outline: none;
+	}
+
+	&:focus-visible {
+		outline-offset: 2px;
+		outline: 1px solid white;
 	}
 `;
 
@@ -71,11 +77,14 @@ const Label = styled.p`
 const List = styled.ul`
 	position: absolute;
 	top: ${pxToRem(42)};
+	right: 0;
 	border: ${(props: StyleProps) => (props.open ? '1' : '0')}px solid
 		${(props: StyleProps) => props.theme.background.history};
-	min-width: ${pxToRem(155)};
+	min-width: calc(${pxToRem(175)} - 0.125rem);
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	padding: 0;
+	text-align: right;
+	width: calc(100% - 0.125rem);
 	z-index: 100;
 	background: ${(props: StyleProps) => props.theme.background.default};
 	list-style: none;
@@ -85,10 +94,6 @@ const List = styled.ul`
 		props.open
 			? 'max-height 0.25s ease-in, border 0.25s ease-in'
 			: 'max-height 0.15s ease-out, border 0.2s ease-out, margin 0.2s eas-out 0.3s'};
-
-	${mediaQuery('s')} {
-		width: calc(100% - 2px);
-	}
 `;
 
 const ListItem = styled.li`
@@ -96,22 +101,19 @@ const ListItem = styled.li`
 	cursor: pointer;
 	transition: ${DEFAULT_TRANSIITON};
 
-	&:hover {
+	&:hover,
+	&:focus {
 		background: ${(props: StyleProps) => props.theme.background.history};
+		outline: none;
 	}
 `;
 
-type Data = {
-	name: string;
-	value?: string;
-	checked?: boolean;
-};
-
 type Props = {
-	data: Data[];
+	data: SelectProps[];
+	checkedValue: any;
 };
 
-export const Select = ({ data }: Props) => {
+export const Select = ({ data, checkedValue }: Props) => {
 	const [items, setItems] = useState(data);
 	const [isOpen, setIsOpen] = useState(false);
 	const {
@@ -119,9 +121,9 @@ export const Select = ({ data }: Props) => {
 	} = useStore();
 	const lightTheme = isLightTheme(theme);
 
-	const handleClick = (index: number) => {
+	const handleClick = (value: TransactionHeaderSortValue, index: number) => {
 		if (items.length > 0) {
-			const updatedItems = items.map((item: Data, i: number) => {
+			const updatedItems = items.map((item: SelectProps, i: number) => {
 				if (i === index) {
 					item.checked = true;
 				} else {
@@ -133,13 +135,19 @@ export const Select = ({ data }: Props) => {
 			setItems(updatedItems);
 		}
 		setIsOpen(!isOpen);
+		checkedValue(value as string);
+	};
+
+	const handleKeyDown = (e: any, item: TransactionHeaderSortValue, ind: number) => {
+		if (e.key === 'Enter') {
+			handleClick(item, ind);
+		}
 	};
 
 	return (
 		<SelectWrapper theme={theme} data-testid="select">
 			<SelectBox theme={theme} onClick={() => setIsOpen(!isOpen)}>
-				{items.map((item: Data, i: number) => (
-					// @ts-ignore
+				{items.map((item: SelectProps, i: number) => (
 					<SelectedItem checked={item.checked} key={i}>
 						<RadioButton
 							type="checkbox"
@@ -162,8 +170,15 @@ export const Select = ({ data }: Props) => {
 			</SelectBox>
 			{/* @ts-ignore */}
 			<List theme={theme} open={isOpen}>
-				{items.map((item: Data, i: number) => (
-					<ListItem theme={theme} key={i} onClick={() => handleClick(i)}>
+				{items.map((item: SelectProps, i: number) => (
+					// @ts-ignore
+					<ListItem
+						theme={theme}
+						key={i}
+						onClick={() => handleClick(item.value, i)}
+						onKeyDown={(e) => handleKeyDown(e, item.value, i)}
+						// @ts-ignore
+						tabIndex="1">
 						{item.name}
 					</ListItem>
 				))}

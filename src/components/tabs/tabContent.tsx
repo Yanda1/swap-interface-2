@@ -108,7 +108,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 	} | null>(null);
 	const currentBlockNumber = useBlockNumber();
 	const {
-		state: { theme }
+		state: { theme, sourceToken }
 	} = useStore();
 	const orders = data?.[toggleIndex]?.action[0];
 	const withdrawal = data?.[toggleIndex]?.withdraw[0];
@@ -166,7 +166,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				) : null}
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemTitle>Conversion GLMR {orders.s.slice(4)}</ContentItemTitle>
+						<ContentItemTitle>Conversion {sourceToken} {orders.s.replace(sourceToken, '')}</ContentItemTitle>
 						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
 						<ContentItemText>Quantity: {orders.q}</ContentItemText>

@@ -39,14 +39,6 @@ export const Wrapper = styled.div`
 	overflow: hidden;
 `;
 
-const Card = styled.div`
-	border-bottom: 1px solid ${(props: StyleProps) => props.theme.background.history};
-
-	&:last-child {
-		border-bottom: none;
-	}
-`;
-
 const TitleWrapper = styled.div`
 	cursor: pointer;
 	padding: ${spacing[12]} ${spacing[48]} ${spacing[12]} ${spacing[20]};
@@ -57,6 +49,19 @@ const TitleWrapper = styled.div`
 	display: flex;
 	gap: ${spacing[8]};
 	justify-content: space-between;
+
+	&:last-child {
+		border-bottom: none;
+	}
+
+	&:focus-visible {
+		outline: 1px solid ${(props: StyleProps) => props.theme.font.pure};
+		outline-offset: -1px;
+	}
+
+	&:hover {
+		opacity: 0.65;
+	}
 `;
 
 const TitleTab = styled.div(
@@ -113,6 +118,10 @@ const Content = styled.div`
 		props.open
 			? 'all .55s cubic-bezier(0.080, 1.09, 0.320, 1.275)'
 			: 'all .2s cubic-bezier(0.6, -0.28, 0.735, 0.045)'};
+
+	&:not(:last-child) {
+		border-bottom: 1px solid ${(props: StyleProps) => props.theme.background.history};
+	}
 
 	${mediaQuery('s')} {
 		height: ${(props: StyleProps) =>
@@ -186,14 +195,26 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 		}
 	};
 
+	const handleKeyDown = (e: any, i: number): void => {
+		if (e.key === 'Enter') {
+			handleClick(i);
+		}
+	};
+
 	const formatDate = (ts: number | undefined): string =>
 		ts ? format(new Date(ts * 1000), 'dd/MM/yyyy hh:mm') : 'n/a'; // TODO: helper?
 
 	return accordionItems?.length > 0 ? (
 		<Wrapper theme={theme} data-testid="accordion">
 			{accordionItems.map((item: DataProps, index: number) => (
-				<Card theme={theme} key={index}>
-					<TitleWrapper theme={theme} onClick={() => handleClick(index)}>
+				<>
+					<TitleWrapper
+						theme={theme}
+						onClick={() => handleClick(index)}
+						key={index}
+						// @ts-ignore
+						tabIndex="1"
+						onKeyDown={(e) => handleKeyDown(e, index)}>
 						<TitleTab flex={1} mobile={true}>
 							<TitleText color={theme.font.pure}>{item.header?.symbol}</TitleText>
 						</TitleTab>
@@ -225,7 +246,6 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 						<ArrowWrapper open={item.open} theme={theme}>
 							<Arrow theme={theme}></Arrow>
 						</ArrowWrapper>
-						{/* @ts-ignore */}
 					</TitleWrapper>
 					<Content
 						theme={theme}
@@ -327,7 +347,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 							</ContentColumn>
 						</ContentText>
 					</Content>
-				</Card>
+				</>
 			))}
 		</Wrapper>
 	) : (

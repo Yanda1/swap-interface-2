@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { TextField, Select, Accordion, Spinner } from '../components';
-import { useStore } from '../helpers';
+import { TransactionHeaderSortValue, useStore } from '../helpers';
+import _ from 'lodash';
+import type { TransactionData, SelectProps } from '../helpers';
 import { useTransactions } from '../hooks';
 import { mediaQuery, spacing, viewport } from '../styles';
 
@@ -39,26 +41,45 @@ const Inputs = styled.div`
 	}
 `;
 
-const selectData = [
-	{ name: 'Sort by', checked: true },
-	{ name: 'ETHGLMR', checked: false },
-	{ name: 'BTCETH', checked: false },
-	{ name: 'ETHKDJKF', checked: false }
-];
-const selectDates = [
-	{ name: 'July 13, 2021 - June 20, 2022', checked: true },
-	{ name: 'April 13, 2021 - May 20, 2022', checked: false },
-	{ name: 'July 13, 2019 - June 20, 2020', checked: false },
-	{ name: 'August 09, 2018 - December 30, 2020', checked: false },
-	{ name: 'Juli 09, 2018 - November 30, 2020', checked: false }
+const selectData: SelectProps[] = [
+	{ name: 'Sort by', value: undefined, checked: true },
+	{ name: 'Symbol', value: 'symbol', checked: false },
+	{ name: 'Date', value: 'timestamp', checked: false },
+	{ name: 'Base Asset', value: 'scoin', checked: false },
+	{ name: 'Quote Asset', value: 'fcoin', checked: false }
 ];
 
 export const TransactionHistory = () => {
 	const [searchTerm, setSearchTerm] = useState('');
+	const [sortValue, setSortValue] = useState('');
+	const [dataCopy, setDataCopy] = useState<TransactionData[]>([]);
 	const { data, loading, contentLoading } = useTransactions();
 	const {
 		state: { theme, isUserVerified }
 	} = useStore();
+
+	useEffect(() => {
+		setDataCopy(
+			data.filter((transaction: TransactionData) =>
+				transaction.header.symbol.includes(searchTerm.toUpperCase())
+			)
+		);
+	}, [searchTerm]);
+
+	useEffect(() => {
+		setDataCopy(data);
+	}, [data]);
+
+	useEffect(() => {
+		if (sortValue) {
+			const sortedData: TransactionData[] = _.orderBy(
+				data,
+				// @ts-ignore
+				(item: TransactionData) => item?.['header']?.[sortValue] as TransactionHeaderSortValue
+			);
+			setDataCopy(sortedData);
+		}
+	}, [sortValue]);
 
 	return (
 		<Wrapper>
@@ -69,8 +90,7 @@ export const TransactionHistory = () => {
 					placeholder="Search"
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
-				<Select data={selectData} />
-				<Select data={selectDates} />
+				<Select data={selectData} checkedValue={setSortValue} />
 			</Inputs>{' '}
 			{!isUserVerified ? (
 				<Notifications multiple={false}>
@@ -82,7 +102,7 @@ export const TransactionHistory = () => {
 					Fetching your Transaction History
 				</Notifications>
 			) : (
-				<Accordion data={data} contentLoading={contentLoading} />
+				<Accordion data={dataCopy} contentLoading={contentLoading} />
 			)}
 		</Wrapper>
 	);

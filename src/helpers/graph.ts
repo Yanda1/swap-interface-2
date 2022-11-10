@@ -68,7 +68,7 @@ export class Graph {
 				};
 			}
 
-			for (let i = 0; i < adj[v].length; i++) {
+			for (let i = 0; i < adj[v]?.length; i++) {
 				if (!discovered[adj[v][i]]) {
 					discovered[adj[v][i]] = true;
 					queue.push(adj[v][i]);
