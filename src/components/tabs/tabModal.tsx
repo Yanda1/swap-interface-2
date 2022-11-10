@@ -39,7 +39,7 @@ export const TabModal = () => {
 
 	const { account } = useEthers();
 	const { chainId, library: web3Provider } = useEthers();
-	const { sendTransaction } = useSendTransaction({
+	const { sendTransaction, state: transactionState } = useSendTransaction({
 		transactionName: 'Deposit'
 	});
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
@@ -47,10 +47,10 @@ export const TabModal = () => {
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
 	useEffect(() => {
-		const filteredSwaps: Props[] = swapsStorage.filter((swap: any) => !swap.complete);
+		const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => !swap.complete);
 		setSwaps(filteredSwaps);
 		setSwapsStorage(filteredSwaps);
-	}, []);
+	}, [swapsStorage.length]);
 
 	useEffect(() => {
 		if (productId && account) {
@@ -71,7 +71,7 @@ export const TabModal = () => {
 	}, [productId]);
 
 	const subscribeSwap = () => {
-		const swapsCopy: any = [...swaps];
+		const swapsCopy: Props[] = [...swaps];
 		swaps.map((swap: Props, index: number) => {
 			if (swap.costRequestCounter < 2) {
 				contract.on(
@@ -144,28 +144,60 @@ export const TabModal = () => {
 	}, [swaps]);
 
 	useEffect(() => {
-		swapsStorage.map((swap) => {
+		setIsDepositing(false);
+		swapsStorage.map((swap: Props) => {
 			if ((!swap.depositBlock && !swap.costRequestCounter) || swap.costRequestCounter > 1) {
 				const filter = contract.filters.CostResponse(account, SERVICE_ADDRESS, swap.productId);
-				console.log('filter', filter);
 				if (!isDepositing) {
+					console.log('if block');
 					setIsDepositing(true);
 					contract.on(filter, (customer, service, productId, cost, event) => {
 						console.log('---COST RESPONSE EVENT---', event);
 						console.log('Oracle deposit estimation:', utils.formatEther(cost));
-						void sendTransaction({ to: contractAddress, value: cost });
+						void sendTransaction({ to: contractAddress, value: cost }).then(() =>
+							setIsDepositing(false)
+						);
 					});
+				} else {
+					console.log('IN ELSE BLOCK');
+					setIsDepositing(false);
+					const swapsCopy: Props[] = [...swapsStorage];
+					swapsCopy.splice(swapsCopy.length - 2, 1);
+					setSwapsStorage(swapsCopy);
+					setSwaps(swapsCopy);
 				}
 			}
 		});
-	}, [swapsStorage]);
+	}, [swapsStorage.length]);
+
+	// DELETING SWAP IF USER REJECTED IT
+	useEffect(() => {
+		if (
+			transactionState.status === 'Exception' &&
+			transactionState.errorMessage === 'user rejected transaction'
+		) {
+			const swapsCopy: Props[] = [...swapsStorage];
+			swapsCopy.splice(swapsCopy.length - 1, 1);
+			setSwapsStorage(swapsCopy);
+			setSwaps(swapsCopy);
+		}
+	}, [transactionState]);
+
+	const [accountSwaps, setAccountSwaps] = useState<Props[]>([]);
+
+	useEffect(() => {
+		if (account) {
+			const accountSwaps: Props[] = swaps.filter((swap: Props) => swap.account === account);
+			setAccountSwaps(accountSwaps);
+		}
+	}, [swaps, account]);
 
 	return isUserVerified ? (
 		<Wrapper>
 			{swaps.length > 0 && (
 				<>
 					<Paragraph>Pending Swaps ({swaps.length})</Paragraph>
-					<Tabs data={swaps} />
+					<Tabs data={accountSwaps} />
 				</>
 			)}
 		</Wrapper>

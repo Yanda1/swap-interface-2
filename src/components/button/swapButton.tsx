@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaExtendedProtocol.json';
 import { useContractFunction, useEthers } from '@usedapp/core';
@@ -17,6 +17,7 @@ import {
 	useStore
 } from '../../helpers';
 import { spacing } from '../../styles';
+import { useLocalStorage } from '../../hooks';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -37,7 +38,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationAddress,
 			destinationMemo,
 			isUserVerified,
-			destinationAmount
+			destinationAmount,
+			productId
 		}
 	} = useStore();
 	const isDisabled =
@@ -54,12 +56,21 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	if (web3Provider) {
 		contract.connect(web3Provider.getSigner());
 	}
-	const { send: sendCreateProcess } = useContractFunction(
+	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
 		// @ts-ignore
 		contract,
 		'createProcess',
 		{ transactionName: 'Request Swap' }
 	);
+
+	const [swapsStorage, setSwapsStorage] = useLocalStorage('swaps', []);
+	const [transactionState, setTransactionState] = useState<{
+		status: string;
+		errorMessage: string;
+	}>({
+		status: '',
+		errorMessage: ''
+	});
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
@@ -79,6 +90,31 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
 		}
 	}));
+
+	useEffect(() => {
+		if (transactionSwapState.status !== 'None' && transactionSwapState.errorMessage) {
+			setTransactionState({
+				...transactionState,
+				status: transactionSwapState.status,
+				errorMessage: transactionSwapState.errorMessage
+			});
+		}
+	}, [transactionSwapState]);
+
+	useEffect(() => {
+		if (
+			transactionState.status === 'Exception' &&
+			transactionState.errorMessage === 'user rejected transaction'
+		) {
+			if (swapsStorage) {
+				const copySwapsStorage = [...swapsStorage];
+				copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
+				setSwapsStorage(copySwapsStorage);
+				dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
+				setTransactionState({ status: '', errorMessage: '' });
+			}
+		}
+	}, [transactionState]);
 
 	return (
 		<ButtonWrapper>

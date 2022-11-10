@@ -129,7 +129,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 		void getWithDrawLink();
 	}, [withdrawal]);
 
-	return (
+	return data.length > 0 ? (
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
@@ -206,5 +206,5 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				) : null}
 			</ContentList>
 		</Content>
-	);
+	) : null;
 };

@@ -55,16 +55,17 @@ export const Tabs = ({ data }: Props) => {
 		<Wrapper data-testid="tabs-container">
 			<>
 				<TabsContainer>
-					{data?.length &&
-						data.map((item: any) => {
-							const index = data.indexOf(item);
+					{data?.length > 0
+						? data.map((item: any) => {
+								const index = data.indexOf(item);
 
-							return (
-								<Tab key={makeId(32)} onClick={() => handleToggle(index)} active={toggleIndex}>
-									{item.pair}
-								</Tab>
-							);
-						})}
+								return (
+									<Tab key={makeId(32)} onClick={() => handleToggle(index)} active={toggleIndex}>
+										{item.pair}
+									</Tab>
+								);
+						  })
+						: null}
 				</TabsContainer>
 				<TabContent data={data} toggleIndex={toggleIndex} />
 			</>
