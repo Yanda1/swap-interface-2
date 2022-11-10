@@ -121,26 +121,23 @@ export const useFees = () => {
 		[sourceToken]
 	);
 
-	const isSymbol = useCallback(
-		(symbol: string): boolean => {
-			let k = 0;
+	const isSymbol = (symbol: string): boolean => {
+		let k = 0;
 
-			for (let i = 0; i < uniqueTokens.length - 1; i++) {
-				k++;
-				for (let j = k; j < uniqueTokens.length; j++) {
-					if (
-						uniqueTokens[i] + uniqueTokens[j] === symbol ||
-						uniqueTokens[j] + uniqueTokens[i] === symbol
-					) {
-						return true;
-					}
+		for (let i = 0; i < uniqueTokens.length - 1; i++) {
+			k++;
+			for (let j = k; j < uniqueTokens.length; j++) {
+				if (
+					uniqueTokens[i] + uniqueTokens[j] === symbol ||
+					uniqueTokens[j] + uniqueTokens[i] === symbol
+				) {
+					return true;
 				}
 			}
+		}
 
-			return false;
-		},
-		[uniqueTokens]
-	);
+		return false;
+	};
 
 	useEffect(() => {
 		if (allPairs) {
@@ -159,29 +156,32 @@ export const useFees = () => {
 				});
 			setAllFilteredPairs(filteredPairs);
 		}
-	}, [allPairs]);
+	}, [allPairs, uniqueTokens]);
 
 	useEffect(() => {
 		if (allPrices) {
 			const filteredPrices = allPrices.filter((price: any) => isSymbol(price.symbol));
 			setAllFilteredPrices(filteredPrices);
 		}
-	}, [allPrices]);
+	}, [allPrices, uniqueTokens]);
 
-	const getPrice = (base: string, quote: string): number => {
-		const ticker = allFilteredPrices.find((x: Price) => x.symbol === base + quote);
-		if (ticker) {
-			return +ticker.price;
-		} else {
-			const reverseTicker = allFilteredPrices.find((x: Price) => x.symbol === quote + base);
-
-			if (reverseTicker) {
-				return 1 / +reverseTicker.price;
+	const getPrice = useCallback(
+		(base: string, quote: string): number => {
+			const ticker = allFilteredPrices.find((x: Price) => x.symbol === base + quote);
+			if (ticker) {
+				return +ticker.price;
 			} else {
-				return 1;
+				const reverseTicker = allFilteredPrices.find((x: Price) => x.symbol === quote + base);
+
+				if (reverseTicker) {
+					return 1 / +reverseTicker.price;
+				} else {
+					return 1;
+				}
 			}
-		}
-	};
+		},
+		[allFilteredPrices]
+	);
 
 	const withdrawFee = useMemo((): Fee => {
 		if (isTokenSelected(destinationToken)) {
@@ -206,9 +206,9 @@ export const useFees = () => {
 	}, [amount]);
 
 	useEffect(() => {
-		if (isTokenSelected(destinationToken)) {
+		if (isTokenSelected(destinationToken) && isTokenSelected(sourceToken)) {
 			const namedValues = {
-				scoin: 'ETH',
+				scoin: sourceToken,
 				samt: utils.parseEther('10').toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
@@ -246,7 +246,7 @@ export const useFees = () => {
 					});
 			}
 		}
-	}, [destinationToken, destinationAddress, sourceNetwork]);
+	}, [destinationToken, destinationAddress, sourceNetwork, sourceToken]);
 
 	const networkFee = useMemo((): Fee => {
 		if (gasAmount && gasPrice) {
