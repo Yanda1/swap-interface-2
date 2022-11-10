@@ -144,7 +144,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			dispatch({
 				type: SourceEnum.TOKEN,
 				// @ts-ignore
-				payload: chainId === 1 ? 'ETH' : 'GLMR'
+				payload: CHAINS[chainId.toString()].name
 			});
 		}
 	}, [chainId]);

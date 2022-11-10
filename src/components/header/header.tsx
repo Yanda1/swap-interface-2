@@ -37,8 +37,6 @@ import {
 	KycEnum,
 	routes,
 	BasicStatusEnum,
-	MOONBEAM_URL,
-	SourceEnum,
 	CHAINS
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
@@ -175,7 +173,7 @@ export const Header = () => {
 		];
 		// @ts-ignore
 		if (Object.keys(CHAINS).includes(chainId?.toString())) {
-			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId);
+			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId); // TODO: has to be dynamic
 
 			if (library) {
 				// @ts-ignore
@@ -244,13 +242,8 @@ export const Header = () => {
 				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				} else if (kyc === KycStatusEnum.REVIEW) {
-					console.log('FOUND IT');
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				}
-
-				// else {
-				// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-				// }
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
 					await setTokensInStorageAndContext();
@@ -259,8 +252,6 @@ export const Header = () => {
 			setIsLoading(false);
 		}
 	};
-
-	console.log('chainId, isNetworkConnected, account', chainId, isNetworkConnected, account);
 
 	const handleButtonClick = async () => {
 		if (!account) {
@@ -325,19 +316,6 @@ export const Header = () => {
 		} else {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
-
-		// if (!isNetworkConnected && account) {
-		// 	dispatch({
-		// 		type: ButtonEnum.BUTTON,
-		// 		payload: button.CHANGE_NETWORK
-		// 	});
-		// 	dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
-		// 	dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
-		// }
-
-		// if (account && !isUserVerified) {
-		// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
-		// }
 
 		if (account && storage && storage?.account !== account) {
 			addToast(
