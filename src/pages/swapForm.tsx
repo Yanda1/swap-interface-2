@@ -15,7 +15,6 @@ import {
 	beautifyNumbers,
 	useStore,
 	NETWORK_TO_ID
-	// SourceEnum
 } from '../helpers';
 import type { Fee } from '../helpers';
 import { useFees } from '../hooks';

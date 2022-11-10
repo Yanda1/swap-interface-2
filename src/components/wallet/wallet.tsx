@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
-import { useEtherBalance, useTokenBalance } from '@usedapp/core';
+import { useEtherBalance, useTokenBalance, useEthers } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import {
 	beautifyNumbers,
@@ -21,15 +21,16 @@ const StyledJazzIcon = styled.div`
 	width: ${pxToRem(16)};
 `;
 
-export const JazzIcon = ({ account }: { account: string }) => {
+export const JazzIcon = () => {
 	const ref = useRef<HTMLDivElement>();
+	const { account } = useEthers();
 
 	useEffect(() => {
 		if (account && ref.current) {
 			ref.current.innerHTML = '';
 			ref.current.appendChild(Jazzicon(16, parseInt(account.slice(2, 10), 16)));
 		}
-	}, []); // TODO: refactor to normal component
+	}, [account]);
 
 	return <StyledJazzIcon ref={ref as any} />;
 };
@@ -100,7 +101,7 @@ export const Wallet = () => {
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-				<JazzIcon account={account} />
+				<JazzIcon />
 			</Account>
 		</>
 	) : (
@@ -113,7 +114,7 @@ export const Wallet = () => {
 			)}
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-				<JazzIcon account={account} />
+				<JazzIcon />
 			</Account>
 		</Wrapper>
 	);

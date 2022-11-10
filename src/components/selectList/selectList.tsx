@@ -95,31 +95,31 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	} = useStore();
 
 	const handleClick = useCallback(
-		async (e: any) => {
+		async (name: string) => {
 			if (value === 'WALLET') {
 				dispatch({
 					type: DestinationEnum.WALLET,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
 			} else if (value === 'NETWORK') {
 				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 				dispatch({
 					type: DestinationEnum.NETWORK,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
 			} else if (value === 'TOKEN') {
 				dispatch({
 					type: DestinationEnum.TOKEN,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
-			} else if (value === 'SOURCE_NETWORK') {
+			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
 				await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);
 				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
 				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
 				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 				dispatch({
 					type: SourceEnum.NETWORK,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
 				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
 				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
@@ -127,7 +127,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 			} else if (value === 'SOURCE_TOKEN') {
 				dispatch({
 					type: SourceEnum.TOKEN,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
 				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
 				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
@@ -168,7 +168,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 							value={value}
 							// @ts-ignore
 							activeBorder={valueToWatch[value as Value] === el}
-							onClick={(e) => handleClick(e)}
+							onClick={() => handleClick(el)}
 							key={el}>
 							<IconButton
 								// @ts-ignore
