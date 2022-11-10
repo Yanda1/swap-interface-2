@@ -29,7 +29,7 @@ export const JazzIcon = ({ account }: { account: string }) => {
 			ref.current.innerHTML = '';
 			ref.current.appendChild(Jazzicon(16, parseInt(account.slice(2, 10), 16)));
 		}
-	}, [account]);
+	}, []); // TODO: refactor to normal component
 
 	return <StyledJazzIcon ref={ref as any} />;
 };

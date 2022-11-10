@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
-import { SelectList, Modal, Button, NETWORK_PARAMS } from '../../components';
+import { SelectList, Modal, Button } from '../../components';
 import {
 	DestinationEnum,
-	ID_TO_NETWORK,
+	CHAINS,
 	isNetworkSelected,
 	isTokenSelected,
 	NETWORK_TO_ID,
@@ -67,7 +67,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		Object.keys(SOURCE_NETWORKS).map(
 			// @ts-ignore
 			// eslint-disable-next-line
-			(id) => ID_TO_NETWORK[id]
+			(id) => CHAINS[id]?.name
 		)
 	);
 
@@ -135,11 +135,11 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	}, [showModal]);
 
 	useEffect(() => {
-		if (chainId && Object.keys(NETWORK_PARAMS).includes(chainId.toString())) {
+		if (chainId && Object.keys(CHAINS).includes(chainId.toString())) {
 			dispatch({
 				type: SourceEnum.NETWORK,
 				// @ts-ignore
-				payload: ID_TO_NETWORK[chainId?.toString()]
+				payload: CHAINS[chainId.toString()]?.name
 			});
 			dispatch({
 				type: SourceEnum.TOKEN,

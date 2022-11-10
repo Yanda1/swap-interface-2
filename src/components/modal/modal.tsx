@@ -78,8 +78,6 @@ export const Modal = ({
 		}
 	}, [showModal]);
 
-	console.log({ Speicher: selectedSourceTokenNetwork.network, sourceNetwork });
-
 	const handleClose = () => {
 		// @ts-ignore
 		if (selectedSourceTokenNetwork.network === sourceNetwork) {

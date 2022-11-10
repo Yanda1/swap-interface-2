@@ -1,3 +1,4 @@
+import { Mainnet, Moonbeam } from '@usedapp/core';
 export const LOCAL_STORAGE_THEME = 'darkMode';
 export const LOCAL_STORAGE_AUTH = 'auth';
 export const LOCAL_STORAGE_HISTORY = 'history';
@@ -55,10 +56,10 @@ export const CONTRACT_ADDRESSES = {
 	// 31337: '0x0165878A594ca255338adfa4d48449f69242Eb8F'
 };
 
-export const ID_TO_NETWORK = {
+export const CHAINS = {
 	// TODO: add types
-	'1284': 'GLMR',
-	'1': 'ETH'
+	'1284': { name: 'GLMR', network: Moonbeam.chainId },
+	'1': { name: 'ETH', network: Mainnet.chainId }
 };
 
 export const NETWORK_TO_ID = {

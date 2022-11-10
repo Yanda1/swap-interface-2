@@ -37,12 +37,14 @@ import {
 	KycEnum,
 	routes,
 	BasicStatusEnum,
+	MOONBEAM_URL,
 	SourceEnum,
-	MOONBEAM_URL
+	CHAINS
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
 import { useAxios, useLocalStorage } from '../../hooks';
+import _ from 'lodash';
 
 type Props = {
 	theme: Theme;
@@ -99,35 +101,6 @@ const Menu = styled.ul`
 		margin-bottom: ${pxToRem(16)};
 	}
 `;
-
-export const NETWORK_PARAMS = {
-	1: [
-		{
-			chainId: ethers.utils.hexValue(Mainnet.chainId),
-			chainName: Mainnet.chainName,
-			rpcUrls: [ETHEREUM_URL],
-			nativeCurrency: {
-				name: 'Ethereum',
-				symbol: 'ETH',
-				decimals: 18
-			},
-			blockExplorerUrls: ['https://etherscan.io/']
-		}
-	],
-	1284: [
-		{
-			chainId: ethers.utils.hexValue(Moonbeam.chainId),
-			chainName: Moonbeam.chainName,
-			rpcUrls: [MOONBEAM_URL],
-			nativeCurrency: {
-				name: 'Glimmer',
-				symbol: 'GLMR',
-				decimals: 18 // TODO: @daniel correct decimal number?
-			},
-			blockExplorerUrls: ['https://moonscan.io/']
-		}
-	]
-};
 
 export const Header = () => {
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
@@ -186,20 +159,34 @@ export const Header = () => {
 	};
 
 	const checkNetwork = async (): Promise<void> => {
+		// TODO: improve, seems to have a lot of redundancies
+		const NETWORK_PARAMS = [
+			{
+				chainId: ethers.utils.hexValue(Mainnet.chainId),
+				chainName: Mainnet.chainName,
+				rpcUrls: [ETHEREUM_URL],
+				nativeCurrency: {
+					name: 'Ethereum',
+					symbol: 'ETH',
+					decimals: 18
+				},
+				blockExplorerUrls: ['https://moonscan.io/']
+			}
+		];
 		// @ts-ignore
-		if (Object.keys(NETWORK_PARAMS).includes(chainId?.toString())) {
+		if (Object.keys(CHAINS).includes(chainId?.toString())) {
 			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId);
 
 			if (library) {
 				// @ts-ignore
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS[chainId]); // TODO: @daniel - what is library.send for?
+				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']); // TODO: @daniel - are we just going for the Ethereum chain?
 			}
 		} else {
 			await switchNetwork(Mainnet.chainId);
 
 			if (library) {
 				// @ts-ignore
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS[chainId]);
+				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']);
 			}
 		}
 	};
@@ -257,10 +244,13 @@ export const Header = () => {
 				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				} else if (kyc === KycStatusEnum.REVIEW) {
+					console.log('FOUND IT');
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
-				} else {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				}
+
+				// else {
+				// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				// }
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
 					await setTokensInStorageAndContext();
@@ -269,6 +259,8 @@ export const Header = () => {
 			setIsLoading(false);
 		}
 	};
+
+	console.log('chainId, isNetworkConnected, account', chainId, isNetworkConnected, account);
 
 	const handleButtonClick = async () => {
 		if (!account) {
@@ -279,7 +271,7 @@ export const Header = () => {
 			}
 		}
 
-		if (buttonStatus === button.CHANGE_NETWORK) {
+		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
 			await checkNetwork();
 		}
 
@@ -334,21 +326,18 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		// @ts-ignore
-		if (Object.keys(NETWORK_PARAMS).includes(chainId?.toString())) {
-			dispatch({ type: VerificationEnum.NETWORK, payload: true });
-			dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
-			dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
-			void checkNetwork();
-		} else {
-			dispatch({ type: VerificationEnum.NETWORK, payload: false });
-			dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
-			dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
-		}
+		// if (!isNetworkConnected && account) {
+		// 	dispatch({
+		// 		type: ButtonEnum.BUTTON,
+		// 		payload: button.CHANGE_NETWORK
+		// 	});
+		// 	dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
+		// 	dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		// }
 
-		if (account && !isUserVerified) {
-			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
-		}
+		// if (account && !isUserVerified) {
+		// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
+		// }
 
 		if (account && storage && storage?.account !== account) {
 			addToast(
@@ -363,7 +352,16 @@ export const Header = () => {
 			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
-	}, [account, chainId]);
+	}, [account, isUserVerified, isNetworkConnected]);
+
+	useEffect(() => {
+		if (!chainId) {
+			dispatch({ type: VerificationEnum.NETWORK, payload: false });
+			void checkNetwork();
+		} else {
+			dispatch({ type: VerificationEnum.NETWORK, payload: true });
+		}
+	}, [chainId]);
 
 	useEffect(() => {
 		void checkStatus();
@@ -388,7 +386,7 @@ export const Header = () => {
 				</Button>
 			)}
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
-			{isUserVerified && account ? (
+			{isUserVerified && account && isNetworkConnected ? (
 				<Wallet />
 			) : (
 				<Button
