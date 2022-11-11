@@ -6,6 +6,7 @@ import { DEFAULT_TRANSIITON, fontSize, mediaQuery, pxToRem, spacing } from '../.
 import { useBlockNumber } from '@usedapp/core';
 import { useAxios } from '../../hooks';
 import { useEffect, useState } from 'react';
+import { Spinner } from '../spinner/spinner';
 
 type Props = {
 	data?: any;
@@ -97,6 +98,14 @@ export const ContentItemLink = styled.div`
 		color: ${(props: StyleProps) => props.theme.button.default};
 	}
 `;
+const SpinnerWrapper = styled.div`
+	display: flex;
+	justify-content: center;
+
+	${mediaQuery('s')} {
+		margin-top: ${spacing[16]};
+	}
+`;
 
 export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 	const [withdrawLink, setWithdrawLink] = useState<{
@@ -108,7 +117,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 	} | null>(null);
 	const currentBlockNumber = useBlockNumber();
 	const {
-		state: { theme, sourceToken }
+		state: { theme }
 	} = useStore();
 	const orders = data?.[toggleIndex]?.action[0];
 	const withdrawal = data?.[toggleIndex]?.withdraw[0];
@@ -166,7 +175,10 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				) : null}
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemTitle>Conversion {sourceToken} {orders.s.replace(sourceToken, '')}</ContentItemTitle>
+						<ContentItemTitle>
+							Conversion {data?.[toggleIndex].sourceToken}{' '}
+							{orders.s.replace(data?.[toggleIndex].sourceToken, '')}
+						</ContentItemTitle>
 						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
 						<ContentItemText>Quantity: {orders.q}</ContentItemText>
@@ -203,6 +215,11 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 					<ContentItem theme={theme} color={theme.font.pure}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
+				) : null}
+				{data?.[toggleIndex].complete !== null || data?.[toggleIndex].complete !== 'success' ? (
+					<SpinnerWrapper>
+						<Spinner size="medium" color="default" />
+					</SpinnerWrapper>
 				) : null}
 			</ContentList>
 		</Content>

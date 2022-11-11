@@ -72,7 +72,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			gasLimitBufferPercentage: 25
 		}
 	);
-	const { send: sendTokenCreateProcess } = useContractFunction(
+	const { send: sendTokenCreateProcess, state: transactionContractSwapState } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'createProcess(address,address,bytes32,string)',
@@ -131,8 +131,17 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				status: transactionSwapState.status,
 				errorMessage: transactionSwapState.errorMessage
 			});
+		} else if (
+			transactionContractSwapState.status !== 'None' &&
+			transactionContractSwapState.errorMessage
+		) {
+			setTransactionState({
+				...transactionState,
+				status: transactionContractSwapState.status,
+				errorMessage: transactionContractSwapState.errorMessage
+			});
 		}
-	}, [transactionSwapState]);
+	}, [transactionSwapState, transactionContractSwapState]);
 
 	useEffect(() => {
 		if (

@@ -4,7 +4,7 @@ import { Tabs } from '../../components';
 import { pxToRem } from '../../styles';
 import { CONTRACT_ADDRESSES, ContractAdress, SERVICE_ADDRESS, useStore } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
-import { useEthers, useSendTransaction, useContractFunction, ERC20Interface } from '@usedapp/core';
+import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
 import { utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
@@ -28,6 +28,7 @@ type Props = {
 	withdraw: object[];
 	complete: boolean;
 	pair: string;
+	sourceToken: string;
 };
 
 export const TabModal = () => {
@@ -58,15 +59,19 @@ export const TabModal = () => {
 		}
 	}
 
-	const { send: sendTokenApprove } = useContractFunction(tokenContract, 'approve', {
-		transactionName: 'Approve token to be used for Swap',
-		gasLimitBufferPercentage: 10
-	});
+	const { send: sendTokenApprove, state: transactionStateApproveContract } = useContractFunction(
+		tokenContract,
+		'approve',
+		{
+			transactionName: 'Approve token to be used for Swap',
+			gasLimitBufferPercentage: 10
+		}
+	);
 	const { sendTransaction, state: transactionState } = useSendTransaction({
 		transactionName: 'Deposit',
 		gasLimitBufferPercentage: 10
 	});
-	const { send: sendDeposit } = useContractFunction(
+	const { send: sendDeposit, state: transactionStateContract } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'deposit',
@@ -92,7 +97,8 @@ export const TabModal = () => {
 				action: [],
 				withdraw: [],
 				complete: false,
-				pair
+				pair,
+				sourceToken
 			};
 			const uniqueSwaps: Props[] = _.uniqBy([...swapsStorage, order], 'productId');
 			setSwaps(uniqueSwaps);
@@ -206,9 +212,7 @@ export const TabModal = () => {
 										result
 									);
 
-									void sendDeposit(cost).then(() =>
-										setIsDepositing(false)
-									);
+									void sendDeposit(cost).then(() => setIsDepositing(false));
 								})
 								.catch((error: any) => {
 									console.log('Error in sending approve', error);
@@ -227,21 +231,25 @@ export const TabModal = () => {
 		});
 	}, [swapsStorage.length]);
 
-	// DELETING SWAP IF USER REJECTED IT
+	// Remove the swap if the user cancels it (with native or non-native token)
 	useEffect(() => {
 		if (
-			transactionState.status === 'Exception' &&
-			transactionState.errorMessage === 'user rejected transaction'
+			(transactionState.status === 'Exception' &&
+				transactionState.errorMessage === 'user rejected transaction') ||
+			(transactionStateContract.status === 'Exception' &&
+				transactionStateContract.errorMessage === 'user rejected transaction') ||
+			(transactionStateApproveContract.status === 'Exception' &&
+				transactionStateApproveContract.errorMessage === 'user rejected transaction')
 		) {
 			const swapsCopy: Props[] = [...swapsStorage];
 			swapsCopy.splice(swapsCopy.length - 1, 1);
 			setSwapsStorage(swapsCopy);
 			setSwaps(swapsCopy);
 		}
-	}, [transactionState]);
+	}, [transactionState, transactionStateContract, transactionStateApproveContract]);
 
+	// SHOW SWAPS THAT RELATING TO OPEN ACCOUNT AT THIS MOMENT
 	const [accountSwaps, setAccountSwaps] = useState<Props[]>([]);
-
 	useEffect(() => {
 		if (account) {
 			const accountSwaps: Props[] = swaps.filter((swap: Props) => swap.account === account);
