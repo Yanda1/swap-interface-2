@@ -26,7 +26,7 @@ type Props = {
 	depositBlock: number;
 	action: object[];
 	withdraw: object[];
-	complete: boolean;
+	complete: null | boolean;
 	pair: string;
 	sourceToken: string;
 };
@@ -80,13 +80,14 @@ export const TabModal = () => {
 			gasLimitBufferPercentage: 25
 		}
 	);
-
+	// GET ALL UNFINISHED SWAPS
 	useEffect(() => {
 		const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => !swap.complete);
 		setSwaps(filteredSwaps);
 		setSwapsStorage(filteredSwaps);
 	}, [swapsStorage.length]);
 
+	// ADD NEW SWAP TO LOCAL STORAGE AND STATE
 	useEffect(() => {
 		if (productId && account) {
 			const order = {
@@ -96,7 +97,7 @@ export const TabModal = () => {
 				depositBlock: 0,
 				action: [],
 				withdraw: [],
-				complete: false,
+				complete: null,
 				pair,
 				sourceToken
 			};
@@ -231,7 +232,7 @@ export const TabModal = () => {
 		});
 	}, [swapsStorage.length]);
 
-	// Remove the swap if the user cancels it (with native or non-native token)
+	// Remove last swap if the user cancels it (with native or non-native token)
 	useEffect(() => {
 		if (
 			(transactionState.status === 'Exception' &&

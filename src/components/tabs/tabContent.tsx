@@ -206,17 +206,16 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 						</ContentItemLink>
 					</ContentItem>
 				) : null}
-				{data?.[toggleIndex].complete === true ? (
+				{data?.[toggleIndex].complete ? (
 					<ContentItem theme={theme} color={theme.button.default}>
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
-				) : null}
-				{data?.[toggleIndex].complete === null ? (
+				) : !data?.[toggleIndex].complete && data?.[toggleIndex].complete !== null ? (
 					<ContentItem theme={theme} color={theme.font.pure}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data?.[toggleIndex].complete !== null || data?.[toggleIndex].complete !== 'success' ? (
+				{data?.[toggleIndex].complete === null ? (
 					<SpinnerWrapper>
 						<Spinner size="medium" color="default" />
 					</SpinnerWrapper>
