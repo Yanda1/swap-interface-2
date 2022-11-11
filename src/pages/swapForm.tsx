@@ -138,14 +138,14 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken) && amount) {
+			const calculatedDestinationAmount =
+				(+amount / (1 + BINANCE_FEE)) * getPrice(sourceToken, destinationToken) -
+				withdrawFee.amount -
+				cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0);
 			dispatch({
 				type: DestinationEnum.AMOUNT,
 				payload: realParseFloat(
-					(
-						(+amount / (1 + BINANCE_FEE)) * getPrice(sourceToken, destinationToken) -
-						withdrawFee.amount -
-						cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0)
-					).toString()
+					calculatedDestinationAmount < 0 ? '' : calculatedDestinationAmount.toString()
 				)
 			});
 		}
