@@ -62,7 +62,7 @@ export const useFees = () => {
 			// @ts-ignore
 			// eslint-disable-next-line
 			SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken],
-		[sourceNetwork, sourceToken, chainId]
+		[sourceToken]
 	);
 	const gasPrice = useGasPrice();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
@@ -267,7 +267,7 @@ export const useFees = () => {
 		} else {
 			return { amount: 0, currency: sourceToken };
 		}
-	}, [gasAmount]);
+	}, [gasAmount, sourceToken]);
 
 	useEffect(() => {
 		const localGraph = new Graph();
@@ -344,7 +344,7 @@ export const useFees = () => {
 			const [pair] = allFilteredPairs.filter(
 				(pair: Ticker) =>
 					pair.symbol === `${sourceToken}${destinationToken}` ||
-					pair.symbol === `${sourceToken}${sourceToken}`
+					pair.symbol === `${destinationToken}${sourceToken}`
 			);
 			if (pair) {
 				const { filters } = pair;
@@ -354,7 +354,7 @@ export const useFees = () => {
 				if (destinationToken === pair.quoteAsset) {
 					notionalMinAmount *= price;
 				}
-				const tokenMinAmount4Withdrawal = destTokenMinWithdrawal * price;
+				const tokenMinAmount4Withdrawal = +destTokenMinWithdrawal * price;
 
 				const { minQty, maxQty } = lot;
 				const lotSizeMinAmount = +minQty * getPrice(destinationToken, sourceToken);
@@ -362,32 +362,24 @@ export const useFees = () => {
 				const walletMaxAmount = walletBalance && formatEther(walletBalance);
 				const tokenMaxAmount =
 					tokenBalance && +formatUnits(tokenBalance, sourceTokenData?.decimals);
-
 				minAmount = (
 					Math.max(tokenMinAmount4Withdrawal, notionalMinAmount, lotSizeMinAmount) *
 					PROTOCOL_FEE_FACTOR
 				).toString();
 
-				if (chainId) {
-					const sourceTokenData =
-						// @ts-ignore
-						SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.tokens[sourceToken];
-
-					if (sourceTokenData?.isNative) {
-						maxAmount = (
-							Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
-						).toString();
-					} else {
-						maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();
-					}
-
-					minAmount = minAmount > maxAmount ? maxAmount : minAmount;
+				if (sourceTokenData?.isNative) {
+					maxAmount = (
+						Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
+					).toString();
+				} else {
+					maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();
 				}
+				console.log('first', lotSizeMaxAmount, Number(walletMaxAmount), Number(tokenMaxAmount));
 			}
 		}
 
 		return { minAmount, maxAmount };
-	}, [destinationToken, account, networkFee, sourceToken]);
+	}, [destinationToken, account, networkFee, allFilteredPairs, tokenBalance, walletBalance]);
 
 	return {
 		...marginalCosts,

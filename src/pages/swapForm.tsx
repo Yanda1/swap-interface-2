@@ -11,7 +11,6 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
-	realParseFloat,
 	beautifyNumbers,
 	useStore,
 	NETWORK_TO_ID
@@ -97,7 +96,7 @@ const ExchangeRate = styled.div(
 `
 );
 
-type Limit = { name: string; value: string; error: boolean };
+type Limit = { message: string; value: string; error: boolean };
 
 export const SwapForm = () => {
 	const {
@@ -119,37 +118,46 @@ export const SwapForm = () => {
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
+	const [isDisabled, setIsDisabled] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
-	const [limit, setLimit] = useState<Limit>({ name: '', value: '', error: false });
+	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+
+	console.log('minAmount, maxAmount', minAmount, maxAmount);
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
+			setIsDisabled(+minAmount >= +maxAmount);
+			const message =
+				+minAmount >= +maxAmount
+					? 'Insufficent funds'
+					: +minAmount < +amount
+					? 'Max Amount'
+					: 'Min Amount';
+			const value = +minAmount >= +maxAmount ? '' : +minAmount < +amount ? maxAmount : minAmount;
 			setLimit({
-				name: +minAmount < +amount ? 'Max Amount' : 'Min Amount',
-				value: minAmount && maxAmount ? (+minAmount < +amount ? maxAmount : minAmount) : '0',
-				error: +amount < +minAmount || +amount > +maxAmount
+				message,
+				value,
+				error: +amount < +minAmount || +amount > +maxAmount || +minAmount >= +maxAmount
 			});
 		} else {
-			setLimit({ name: '', value: '', error: false });
+			setLimit({ message: '', value: '', error: false });
 		}
-	}, [destinationToken, amount]);
+	}, [destinationToken, amount, minAmount, maxAmount]);
 
 	useEffect(() => {
-		if (isTokenSelected(destinationToken) && amount) {
+		if (isTokenSelected(destinationToken)) {
 			const calculatedDestinationAmount =
 				(+amount / (1 + BINANCE_FEE)) * getPrice(sourceToken, destinationToken) -
 				withdrawFee.amount -
 				cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0);
 			dispatch({
 				type: DestinationEnum.AMOUNT,
-				payload: realParseFloat(
-					calculatedDestinationAmount < 0 ? '' : calculatedDestinationAmount.toString()
-				)
+				payload: calculatedDestinationAmount < 0 ? '' : calculatedDestinationAmount.toString()
 			});
 		}
-	}, [amount, destinationToken]);
+	}, [amount, destinationToken, cexFee, withdrawFee]);
 
 	useEffect(() => {
 		const hasTag =
@@ -215,10 +223,11 @@ export const SwapForm = () => {
 							type="number"
 							placeholder="Amount"
 							error={limit.error}
+							disabled={isDisabled}
 							value={amount}
-							onChange={(e) =>
-								dispatch({ type: AmountEnum.AMOUNT, payload: realParseFloat(e.target.value) })
-							}
+							onChange={(e) => {
+								dispatch({ type: AmountEnum.AMOUNT, payload: e.target.value });
+							}}
 						/>
 					</SwapInput>
 					<NamesWrapper single={false}>
@@ -227,7 +236,9 @@ export const SwapForm = () => {
 							<Name color={theme.font.default}>({sourceNetwork})</Name>
 						</SwapNames>
 						<SwapNames pos="end" single={false}>
-							<Name color={limit.error ? theme.button.error : theme.font.pure}>{limit.name}</Name>
+							<Name color={limit.error ? theme.button.error : theme.font.pure}>
+								{limit.message}
+							</Name>
 							<Name color={limit.error ? theme.button.error : theme.font.default}>
 								{isTokenSelected(destinationToken) && beautifyNumbers({ n: limit.value })}
 							</Name>
@@ -247,7 +258,7 @@ export const SwapForm = () => {
 						/>
 						<TextField
 							disabled
-							type="number"
+							type="text"
 							value={beautifyNumbers({ n: destinationAmount })}
 							error={+destinationAmount < 0}
 						/>
