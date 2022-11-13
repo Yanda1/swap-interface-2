@@ -9,7 +9,6 @@ import { Contract } from '@ethersproject/contracts';
 import type { ContractAdress } from '../../helpers';
 import {
 	CONTRACT_ADDRESSES,
-	isNetworkSelected,
 	isTokenSelected,
 	makeId,
 	PairEnum,
@@ -46,7 +45,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	} = useStore();
 	const isDisabled =
 		!validInputs ||
-		!isNetworkSelected(destinationNetwork) ||
+		!isTokenSelected(sourceToken) ||
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
 		+destinationAmount < 0;
