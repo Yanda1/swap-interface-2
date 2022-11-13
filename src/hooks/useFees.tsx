@@ -374,7 +374,6 @@ export const useFees = () => {
 				} else {
 					maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();
 				}
-				console.log('first', lotSizeMaxAmount, Number(walletMaxAmount), Number(tokenMaxAmount));
 			}
 		}
 

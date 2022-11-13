@@ -37,6 +37,7 @@ import {
 	KycEnum,
 	routes,
 	BasicStatusEnum,
+	DestinationEnum,
 	CHAINS
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
@@ -108,6 +109,7 @@ export const Header = () => {
 			isUserVerified,
 			accessToken,
 			kycStatus,
+			sourceNetwork,
 			account: userAccount,
 			isNetworkConnected,
 			theme
@@ -282,6 +284,11 @@ export const Header = () => {
 			makeBinanceKycCall(binanceToken);
 		}
 	}, [binanceToken, binanceScriptLoaded]);
+
+	useEffect(() => {
+		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+	}, [sourceNetwork]);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);

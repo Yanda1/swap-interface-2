@@ -124,8 +124,6 @@ export const SwapForm = () => {
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
 
-	console.log('minAmount, maxAmount', minAmount, maxAmount);
-
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
 			setIsDisabled(+minAmount >= +maxAmount);

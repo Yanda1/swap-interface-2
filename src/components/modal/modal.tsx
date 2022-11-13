@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import type { ThemeProps } from '../../styles';
 import { fontSize, mediaQuery, pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { useStore, DestinationEnum, SourceEnum } from '../../helpers';
+import { useStore, DestinationEnum } from '../../helpers';
 
 const ModalWrapper = styled.div(({ width, showModal, background }: Props) => {
 	const {
@@ -81,11 +81,9 @@ export const Modal = ({
 	const handleClose = () => {
 		// @ts-ignore
 		if (selectedSourceTokenNetwork.network === sourceNetwork) {
-			dispatch({ type: SourceEnum.NETWORK, payload: selectedSourceTokenNetwork.network });
-			dispatch({ type: SourceEnum.TOKEN, payload: selectedSourceTokenNetwork.token });
+			dispatch({ type: DestinationEnum.NETWORK, payload: selectedDestinationTokenNetwork.network });
+			dispatch({ type: DestinationEnum.TOKEN, payload: selectedDestinationTokenNetwork.token });
 		}
-		dispatch({ type: DestinationEnum.NETWORK, payload: selectedDestinationTokenNetwork.network });
-		dispatch({ type: DestinationEnum.TOKEN, payload: selectedDestinationTokenNetwork.token });
 
 		setShowModal(false);
 	};
