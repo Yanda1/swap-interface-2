@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
-import { SelectList, Modal, Button } from '../../components';
+import { SelectList, Portal, Button } from '../../components';
 import {
 	DestinationEnum,
 	CHAINS,
@@ -147,83 +147,79 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	}, [chainId]);
 
 	return !isMobile ? (
-		<div data-testid="network">
-			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
-				<ChildWrapper>
-					{/* @ts-ignore */}
-					{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
-						<>
+		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
+			<ChildWrapper>
+				{/* @ts-ignore */}
+				{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
+					<>
+						<SelectList
+							value={isSource ? 'SOURCE_NETWORK' : 'NETWORK'}
+							data={isSource ? sourceNetworksList : destinationNetworksList}
+							placeholder="Network Name"
+						/>
+						<SelectList
+							value={isSource ? 'SOURCE_TOKEN' : 'TOKEN'}
+							data={isSource ? sourceTokensList : destinationTokensList}
+							placeholder="Token Name"
+						/>
+					</>
+				) : (
+					<div>No available networks...</div>
+				)}
+				<Button disabled={isDisabled} onClick={handleSubmit} color="default">
+					{isDisabled ? 'Please select Network and Token' : 'Select'}
+				</Button>
+			</ChildWrapper>
+		</Portal>
+	) : (
+		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
+			<ChildWrapper>
+				{/* @ts-ignore */}
+				{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
+					<>
+						{isShowList && (
 							<SelectList
 								value={isSource ? 'SOURCE_NETWORK' : 'NETWORK'}
 								data={isSource ? sourceNetworksList : destinationNetworksList}
 								placeholder="Network Name"
 							/>
+						)}
+						{!isShowList && (
 							<SelectList
 								value={isSource ? 'SOURCE_TOKEN' : 'TOKEN'}
 								data={isSource ? sourceTokensList : destinationTokensList}
 								placeholder="Token Name"
 							/>
-						</>
-					) : (
-						<div>No available networks...</div>
-					)}
+						)}
+					</>
+				) : (
+					<div>No available networks...</div>
+				)}
+				{isShowList && (
+					<NextBtnContainer>
+						<Button
+							onClick={() => setIsShowList(false)}
+							color={
+								isNetworkSelected(isSource ? sourceNetwork : destinationNetwork)
+									? 'transparent'
+									: 'transparent'
+							}
+							disabled={!isNetworkSelected(isSource ? sourceNetwork : destinationNetwork)}>
+							NEXT
+						</Button>
+					</NextBtnContainer>
+				)}
+				{!isShowList && (
 					<Button disabled={isDisabled} onClick={handleSubmit} color="default">
 						{isDisabled ? 'Please select Network and Token' : 'Select'}
 					</Button>
-				</ChildWrapper>
-			</Modal>
-		</div>
-	) : (
-		<div data-testid="network">
-			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
-				<ChildWrapper>
-					{/* @ts-ignore */}
-					{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
-						<>
-							{isShowList && (
-								<SelectList
-									value={isSource ? 'SOURCE_NETWORK' : 'NETWORK'}
-									data={isSource ? sourceNetworksList : destinationNetworksList}
-									placeholder="Network Name"
-								/>
-							)}
-							{!isShowList && (
-								<SelectList
-									value={isSource ? 'SOURCE_TOKEN' : 'TOKEN'}
-									data={isSource ? sourceTokensList : destinationTokensList}
-									placeholder="Token Name"
-								/>
-							)}
-						</>
-					) : (
-						<div>No available networks...</div>
-					)}
-					{isShowList && (
-						<NextBtnContainer>
-							<Button
-								onClick={() => setIsShowList(false)}
-								color={
-									isNetworkSelected(isSource ? sourceNetwork : destinationNetwork)
-										? 'transparent'
-										: 'transparent'
-								}
-								disabled={!isNetworkSelected(isSource ? sourceNetwork : destinationNetwork)}>
-								NEXT
-							</Button>
-						</NextBtnContainer>
-					)}
-					{!isShowList && (
-						<Button disabled={isDisabled} onClick={handleSubmit} color="default">
-							{isDisabled ? 'Please select Network and Token' : 'Select'}
-						</Button>
-					)}
-					{!isShowList && (
-						<Button onClick={handleBack} color="default">
-							BACK
-						</Button>
-					)}
-				</ChildWrapper>
-			</Modal>
-		</div>
+				)}
+				{!isShowList && (
+					<Button onClick={handleBack} color="default">
+						BACK
+					</Button>
+				)}
+			</ChildWrapper>
+		</Portal>
 	);
 };

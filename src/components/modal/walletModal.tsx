@@ -1,9 +1,7 @@
-import styled, { css } from 'styled-components';
-import { Modal } from './modal';
-import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
-import { Button } from '../button/button';
-import { JazzIcon } from '../wallet/wallet';
 import { useState } from 'react';
+import styled, { css } from 'styled-components';
+import { Portal, JazzIcon, Button } from '../../components';
+import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
 import { ButtonEnum, button, useStore } from '../../helpers';
 import { useEthers } from '@usedapp/core';
 
@@ -135,7 +133,7 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	};
 
 	return (
-		<Modal showModal={showModal} setShowModal={setShowModal} background="default" width="small">
+		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
 			<ModalWrapper>
 				<ModalContainer>
 					<AccountTitle>Account</AccountTitle>
@@ -157,6 +155,6 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 					Disconnect
 				</Button>
 			</ModalWrapper>
-		</Modal>
+		</Portal>
 	);
 };

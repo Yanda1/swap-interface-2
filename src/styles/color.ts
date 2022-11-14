@@ -27,6 +27,9 @@ export type Theme = {
 	};
 	modal: {
 		default: string;
+		background: string;
+		shadow: string;
+		border: string;
 	};
 };
 
@@ -56,7 +59,10 @@ export const lightTheme: Theme = {
 		transparent: 'transparent'
 	},
 	modal: {
-		default: '#212426'
+		default: '#E5E5E5',
+		background: '#D6D6D6',
+		shadow: '#868686',
+		border: '#E5E5E5'
 	}
 };
 
@@ -86,7 +92,10 @@ export const darkTheme: Theme = {
 		transparent: 'transparent'
 	},
 	modal: {
-		default: '#212426'
+		default: '#1C2125',
+		background: '#212426',
+		shadow: '#0A0A0A',
+		border: '#505050'
 	}
 };
 

@@ -1,4 +1,4 @@
-import { Modal } from '../modal/modal';
+import { Portal } from '../../components';
 import { SelectList } from '../selectList/selectList';
 import { Button } from '../button/button';
 import styled from 'styled-components';
@@ -15,7 +15,7 @@ const ModalContainer = styled.div`
 	font-size: ${fontSize[16]};
 	line-height: ${spacing[22]};
 	font-weight: 400;
-	color: #FFF;
+	color: #fff;
 	padding: ${pxToRem(54)} ${pxToRem(88)} ${pxToRem(60)};
 `;
 
@@ -25,19 +25,22 @@ const SelectWrapper = styled.div`
 `;
 
 export const Network = ({ showModal, setShowModal }: Props) => {
-
 	const handleClick = () => {
 		setShowModal(!showModal);
 	};
 
 	return (
-		<Modal showModal={showModal} setShowModal={setShowModal} background='mobile'>
+		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
 			<ModalContainer>
 				<SelectWrapper>
-					<SelectList data={['Metamask', 'WalletConnect', 'Ledger']} placeholder='Wallet Name' value='WALLET' />
+					<SelectList
+						data={['Metamask', 'WalletConnect', 'Ledger']}
+						placeholder="Wallet Name"
+						value="WALLET"
+					/>
 				</SelectWrapper>
 				<Button onClick={handleClick}>Select</Button>
 			</ModalContainer>
-		</Modal>
+		</Portal>
 	);
 };
