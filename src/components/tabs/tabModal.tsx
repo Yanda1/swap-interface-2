@@ -5,9 +5,9 @@ import { pxToRem } from '../../styles';
 import {
 	CONTRACT_ADDRESSES,
 	ContractAdress,
+	NETWORK_TO_ID,
 	SERVICE_ADDRESS,
-	useStore,
-	NETWORK_TO_ID
+	useStore
 } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
 import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
@@ -117,7 +117,7 @@ export const TabModal = () => {
 		swaps.map((swap: Props, index: number) => {
 			if (swap.costRequestCounter < 2) {
 				protocol.on(
-					protocol.filters.CostRequest(account, SERVICE_ADDRESS, swap.productId),
+					protocol.filters.CostRequest(swap.account, SERVICE_ADDRESS, swap.productId),
 					(account, service, localProductId, amount, event) => {
 						console.log('---COST REQUEST EVENT---', event);
 						swap.costRequestCounter += 1;
@@ -129,7 +129,7 @@ export const TabModal = () => {
 			}
 			if (!swap.depositBlock) {
 				protocol.on(
-					protocol.filters.Deposit(account, SERVICE_ADDRESS, swap.productId),
+					protocol.filters.Deposit(swap.account, SERVICE_ADDRESS, swap.productId),
 					(customer, service, localProductId, amount, event) => {
 						console.log('SWAPS CONTRACT', event);
 						swap.depositBlock = event.blockNumber;
@@ -141,7 +141,7 @@ export const TabModal = () => {
 			}
 			if (!swap.action.length || !swap.withdraw.length) {
 				protocol.on(
-					protocol.filters.Action(account, SERVICE_ADDRESS, swap.productId),
+					protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.productId),
 					(customer, service, localProductId, data, event) => {
 						console.log('---ORDER EVENT---', event);
 						const parsedData = JSON.parse(event.args?.data);
@@ -162,7 +162,7 @@ export const TabModal = () => {
 			}
 			if (!swap.complete) {
 				protocol.on(
-					protocol.filters.Complete(account, SERVICE_ADDRESS, swap.productId),
+					protocol.filters.Complete(swap.account, SERVICE_ADDRESS, swap.productId),
 					(customer, service, localProductId, amount, event) => {
 						console.log('---COMPLETE EVENT---', event);
 						swap.complete = event.args.success;
@@ -173,7 +173,7 @@ export const TabModal = () => {
 				);
 			}
 			// Deleting completed swaps (successful and unsuccessful)
-			if (swap.complete || swap.complete === null) {
+			if (swap.complete || (!swap.complete && swap.complete !== null)) {
 				const newSwapsCopy = [...swapsCopy];
 				swapsStorage.splice(index, 1);
 				setSwapsStorage(newSwapsCopy);
@@ -189,7 +189,7 @@ export const TabModal = () => {
 		setIsDepositing(false);
 		swapsStorage.map((swap: Props) => {
 			if ((!swap.depositBlock && !swap.costRequestCounter) || swap.costRequestCounter > 1) {
-				const filter = protocol.filters.CostResponse(account, SERVICE_ADDRESS, swap.productId);
+				const filter = protocol.filters.CostResponse(swap.account, SERVICE_ADDRESS, swap.productId);
 				console.log('filter', filter);
 				if (!isDepositing) {
 					setIsDepositing(true);
