@@ -3,6 +3,7 @@ import { useStore, isTokenSelected } from '../../helpers';
 import USDT from '../../assets/usdt.png';
 import INCH from '../../assets/1inch.png';
 import AAVE from '../../assets/aave.png';
+import AION from '../../assets/aion.png';
 import ARBITRUM from '../../assets/arbitrum.png';
 import ACH from '../../assets/ach.png';
 import AGIX from '../../assets/agix.png';
@@ -49,6 +50,7 @@ import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
 	'1INCH': INCH,
+	AION,
 	ARBITRUM,
 	AAVE,
 	ACH,
@@ -137,6 +139,7 @@ type Props = {
 	disabled?: boolean;
 	icon?:
 		| '1INCH'
+		| 'AION'
 		| 'ARBITRUM'
 		| 'AAVE'
 		| 'ACH'

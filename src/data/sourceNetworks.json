@@ -129,5 +129,15 @@
 				"decimals": 18
 			}
 		}
+	},
+	"1284": {
+		"name": "Moonbeam",
+		"shortName": "GLMR",
+		"tokens": {
+			"GLMR": {
+				"isNative": true,
+				"contractAddr": null
+			}
+		}
 	}
 }

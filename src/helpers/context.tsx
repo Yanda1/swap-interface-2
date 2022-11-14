@@ -170,12 +170,12 @@ const initialState: State = {
 	isNetworkConnected: false,
 	accessToken: '',
 	refreshToken: '',
-	kycStatus: KycStatusEnum.PROCESS, // TODO: maybe change to INITIAL?
+	kycStatus: KycStatusEnum.PROCESS,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: 'Select Wallet',
-	sourceNetwork: 'ETH',
-	sourceToken: 'ETH',
+	sourceNetwork: 'Select Network',
+	sourceToken: 'Select Token',
 	destinationNetwork: 'Select Network',
 	destinationToken: 'Select Token',
 	destinationAddress: '',
@@ -238,7 +238,7 @@ const authReducer = (state: State, action: Action): State => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [state, dispatch] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
-	const { account, isNetworkConnected, kycStatus } = state;
+	const { account, isNetworkConnected, kycStatus, isUserVerified } = state;
 
 	useEffect(() => {
 		if (!account) {
@@ -255,14 +255,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			});
 		}
 
+		if (account && !isUserVerified && isNetworkConnected) {
+			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
+		}
+
 		if (kycStatus === KycStatusEnum.PASS && isNetworkConnected && account) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		}
 
-		if (kycStatus !== KycStatusEnum.PASS || !isNetworkConnected || !account) {
+		if (kycStatus !== KycStatusEnum.PASS) {
 			dispatch({ type: VerificationEnum.USER, payload: false });
 		}
-	}, [account, isNetworkConnected, kycStatus]);
+	}, [account, isNetworkConnected, kycStatus, isUserVerified]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

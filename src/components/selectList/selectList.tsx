@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { DestinationEnum, SourceEnum, useStore } from '../../helpers';
+import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import {
 	fontSize,
 	pxToRem,
@@ -10,8 +11,7 @@ import {
 	SELECT_LIST_HEIGHT,
 	MAIN_MAX_WIDTH
 } from '../../styles';
-import { IconButton } from '../iconButton/iconButton';
-import { TextField } from '../textField/textField';
+import { IconButton, TextField } from '../../components';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -83,6 +83,8 @@ type Props = {
 };
 
 export const SelectList = ({ data, placeholder, value }: Props) => {
+	const { chainId, switchNetwork } = useEthers();
+
 	const [search, setSearch] = useState('');
 	const dataList =
 		data &&
@@ -93,33 +95,39 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	} = useStore();
 
 	const handleClick = useCallback(
-		(e: any) => {
+		async (name: string) => {
 			if (value === 'WALLET') {
 				dispatch({
 					type: DestinationEnum.WALLET,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
 			} else if (value === 'NETWORK') {
 				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 				dispatch({
 					type: DestinationEnum.NETWORK,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
 			} else if (value === 'TOKEN') {
 				dispatch({
 					type: DestinationEnum.TOKEN,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
-			} else if (value === 'SOURCE_NETWORK') {
+			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
+				await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);
+				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 				dispatch({
 					type: SourceEnum.NETWORK,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
-				dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
+				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 			} else if (value === 'SOURCE_TOKEN') {
 				dispatch({
 					type: SourceEnum.TOKEN,
-					payload: e.target.textContent ? e.target.textContent : e.target.alt
+					payload: name
 				});
 				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
 				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
@@ -160,7 +168,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 							value={value}
 							// @ts-ignore
 							activeBorder={valueToWatch[value as Value] === el}
-							onClick={(e) => handleClick(e)}
+							onClick={() => handleClick(el)}
 							key={el}>
 							<IconButton
 								// @ts-ignore

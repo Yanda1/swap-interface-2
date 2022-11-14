@@ -7,14 +7,16 @@ import { Button, Modal, SelectList } from '../../components';
 import type { DestinationNetworks } from '../../helpers';
 import {
 	DestinationEnum,
-	ID_TO_NETWORK,
+	CHAINS,
 	isNetworkSelected,
 	isTokenSelected,
+	NETWORK_TO_ID,
 	SourceEnum,
 	useBreakpoint,
 	useStore
 } from '../../helpers';
 import _ from 'lodash';
+import { useEthers } from '@usedapp/core';
 
 const ChildWrapper = styled.div`
 	display: flex;
@@ -42,12 +44,15 @@ type Props = {
 };
 
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
+	const { chainId } = useEthers();
+
 	const [isShowList, setIsShowList] = useState(true);
 	const { isBreakpointWidth: isMobile } = useBreakpoint(516);
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }
 	} = useStore();
+
 	const isSource = type === 'SOURCE';
 
 	const isDisabled = useMemo(
@@ -62,46 +67,53 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		Object.keys(SOURCE_NETWORKS).map(
 			// @ts-ignore
 			// eslint-disable-next-line
-			(id) => ID_TO_NETWORK[id]
+			(id) => CHAINS[id]?.name
 		)
 	);
 
 	const sourceTokensList = useMemo(
 		() =>
 			isNetworkSelected(sourceNetwork)
-				? _.orderBy(Object.keys(SOURCE_NETWORKS['1']['tokens']))
+				? // @ts-ignore
+				  _.orderBy(Object.keys(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens']))
 				: [],
 		[sourceNetwork]
 	);
 
-	const destinationNetworksList = useMemo(
-		() =>
-			isTokenSelected(sourceToken)
-				? // @ts-ignore
-				  _.orderBy(Object.keys(DESTINATION_NETWORKS['1']?.[sourceToken]))
-				: [],
-		[sourceToken]
-	);
-
-	const destinationTokensList = useMemo(() => {
-		if (isNetworkSelected(destinationNetwork)) {
-			const tokens = Object.keys(
+	const destinationNetworksList = useMemo(() => {
+		if (isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)) {
+			const allDestinationNetworks = Object.keys(
 				// @ts-ignore
-				DESTINATION_NETWORKS['1']?.[sourceToken]?.[destinationNetwork as DestinationNetworks]?.[
-					'tokens'
-				]
+				DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]
 			);
+			const filteredDestinationNetworks = allDestinationNetworks.filter((network) => {
+				const tokens = Object.keys(
+					// @ts-ignores
+					DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[network]?.['tokens']
+				);
 
-			const filteredTokens =
-				sourceNetwork === destinationNetwork
-					? tokens.filter((token) => token !== sourceToken)
-					: tokens;
+				return tokens.join('') !== sourceToken;
+			});
 
-			return _.orderBy(filteredTokens);
+			return _.orderBy(filteredDestinationNetworks);
 		} else {
 			return [];
 		}
-	}, [destinationNetwork]);
+	}, [sourceToken, sourceNetwork]);
+
+	const destinationTokensList = useMemo(() => {
+		const tokensFromJson =
+			// @ts-ignore
+			DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[
+				destinationNetwork as DestinationNetworks
+			]?.['tokens'];
+
+		const filteredTokens = (tokensFromJson ? Object.keys(tokensFromJson) : []).filter(
+			(token) => token !== sourceToken
+		);
+
+		return _.orderBy(filteredTokens);
+	}, [sourceToken, destinationNetwork, sourceNetwork]);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);
@@ -111,7 +123,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		setIsShowList(true);
 		dispatch({
 			type: isSource ? SourceEnum.TOKEN : DestinationEnum.TOKEN,
-			payload: isSource ? 'ETH' : 'Select Token'
+			payload: isSource ? 'Select Token' : 'Select Token'
 		});
 	};
 
@@ -119,10 +131,26 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		setIsShowList(true);
 	}, [showModal]);
 
+	useEffect(() => {
+		if (chainId && Object.keys(CHAINS).includes(chainId.toString())) {
+			dispatch({
+				type: SourceEnum.NETWORK,
+				// @ts-ignore
+				payload: CHAINS[chainId.toString()]?.name
+			});
+			dispatch({
+				type: SourceEnum.TOKEN,
+				// @ts-ignore
+				payload: CHAINS[chainId.toString()].name
+			});
+		}
+	}, [chainId]);
+
 	return !isMobile ? (
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
+					{/* @ts-ignore */}
 					{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
 						<>
 							<SelectList
@@ -149,6 +177,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		<div data-testid="network">
 			<Modal showModal={showModal} setShowModal={setShowModal} background="mobile">
 				<ChildWrapper>
+					{/* @ts-ignore */}
 					{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
 						<>
 							{isShowList && (

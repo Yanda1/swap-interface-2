@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Mainnet, useEthers } from '@usedapp/core';
+import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -37,11 +37,13 @@ import {
 	KycEnum,
 	routes,
 	BasicStatusEnum,
-	SourceEnum
+	DestinationEnum,
+	CHAINS
 } from '../../helpers';
-import { ApiAuthType } from '../../helpers';
+import type { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
 import { useAxios, useLocalStorage } from '../../hooks';
+import _ from 'lodash';
 
 type Props = {
 	theme: Theme;
@@ -107,6 +109,7 @@ export const Header = () => {
 			isUserVerified,
 			accessToken,
 			kycStatus,
+			sourceNetwork,
 			account: userAccount,
 			isNetworkConnected,
 			theme
@@ -170,11 +173,20 @@ export const Header = () => {
 				blockExplorerUrls: ['https://moonscan.io/']
 			}
 		];
+		// @ts-ignore
+		if (Object.keys(CHAINS).includes(chainId?.toString())) {
+			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId); // TODO: has to be dynamic
 
-		if (chainId !== Mainnet.chainId) {
+			if (library) {
+				// @ts-ignore
+				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']); // TODO: @daniel - are we just going for the Ethereum chain?
+			}
+		} else {
 			await switchNetwork(Mainnet.chainId);
-			if (chainId !== Mainnet.chainId && library) {
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS);
+
+			if (library) {
+				// @ts-ignore
+				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']);
 			}
 		}
 	};
@@ -233,8 +245,6 @@ export const Header = () => {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
-				} else {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				}
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
@@ -254,7 +264,7 @@ export const Header = () => {
 			}
 		}
 
-		if (chainId !== Mainnet.chainId) {
+		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
 			await checkNetwork();
 		}
 
@@ -274,6 +284,11 @@ export const Header = () => {
 			makeBinanceKycCall(binanceToken);
 		}
 	}, [binanceToken, binanceScriptLoaded]);
+
+	useEffect(() => {
+		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+	}, [sourceNetwork]);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
@@ -309,21 +324,6 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		if (chainId === Mainnet.chainId) {
-			dispatch({ type: VerificationEnum.NETWORK, payload: true });
-			dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
-			dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
-		} else {
-			dispatch({ type: VerificationEnum.NETWORK, payload: false });
-			dispatch({ type: SourceEnum.NETWORK, payload: 'Select Network' });
-			dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
-			void checkNetwork();
-		}
-
-		if (account && chainId === Mainnet.chainId) {
-			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
-		}
-
 		if (account && storage && storage?.account !== account) {
 			addToast(
 				'Please login to the account that has already passed KYC or connect wallet again',
@@ -337,7 +337,16 @@ export const Header = () => {
 			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
-	}, [account, chainId]);
+	}, [account, isUserVerified, isNetworkConnected]);
+
+	useEffect(() => {
+		if (!chainId) {
+			dispatch({ type: VerificationEnum.NETWORK, payload: false });
+			void checkNetwork();
+		} else {
+			dispatch({ type: VerificationEnum.NETWORK, payload: true });
+		}
+	}, [chainId]);
 
 	useEffect(() => {
 		void checkStatus();
@@ -362,7 +371,7 @@ export const Header = () => {
 				</Button>
 			)}
 			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
-			{isUserVerified && account ? (
+			{isUserVerified && account && isNetworkConnected ? (
 				<Wallet />
 			) : (
 				<Button

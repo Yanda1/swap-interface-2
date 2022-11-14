@@ -144,7 +144,7 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 						<AccountNumber>
 							{account?.substring(0, 12)}...{account?.substring(37)}
 						</AccountNumber>
-						<JazzIcon account={account} />
+						<JazzIcon />
 					</Account>
 					<CopyContainer>
 						<IconContainer />
