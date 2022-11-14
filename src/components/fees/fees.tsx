@@ -45,20 +45,24 @@ export const Fees = () => {
 	return (
 		<details>
 			<Summary color={theme.font.default} theme={theme}>
-				Fee: {beautifyNumbers({ n: allFees.amount })} {allFees.currency}
+				Fee:{' '}
+				{allFees.amount > 0 ? `${beautifyNumbers({ n: allFees.amount })} ${allFees.currency}` : '-'}
 			</Summary>
 			<Details color={theme.font.default}>
 				<div>
 					<p>Network fee:</p>
 					<p>
-						{beautifyNumbers({ n: networkFee.amount })} ETH	
-						{/* TODO replace hardcoded ETH with current chain native token name */}
+						{networkFee.amount > 0
+							? `${beautifyNumbers({ n: networkFee.amount })} ${networkFee.currency}`
+							: '-'}
 					</p>
 				</div>
 				<div>
 					<p>Protocol fee:</p>
 					<p>
-						{beautifyNumbers({ n: protocolFee.amount })} {protocolFee.currency}
+						{protocolFee.amount > 0
+							? `${beautifyNumbers({ n: protocolFee.amount })} ${protocolFee.currency}`
+							: '-'}
 					</p>
 				</div>
 				<div>
@@ -66,7 +70,7 @@ export const Fees = () => {
 					<div>
 						{cexFee.map((fee: Fee) => (
 							<p style={{ textAlign: 'right' }} key={fee.currency}>
-								{beautifyNumbers({ n: fee.amount })} {fee.currency}
+								{fee.amount > 0 ? `${beautifyNumbers({ n: fee.amount })} ${fee.currency}` : '-'}
 							</p>
 						))}
 					</div>
@@ -74,7 +78,9 @@ export const Fees = () => {
 				<div>
 					<p>Withdrawal fee:</p>
 					<p>
-						{beautifyNumbers({ n: withdrawFee.amount })} {withdrawFee.currency}
+						{withdrawFee.amount > 0
+							? `${beautifyNumbers({ n: withdrawFee.amount })} ${withdrawFee.currency}`
+							: '-'}
 					</p>
 				</div>
 			</Details>

@@ -2,7 +2,13 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Tabs } from '../../components';
 import { pxToRem } from '../../styles';
-import { CONTRACT_ADDRESSES, ContractAdress, SERVICE_ADDRESS, useStore } from '../../helpers';
+import {
+	CONTRACT_ADDRESSES,
+	ContractAdress,
+	SERVICE_ADDRESS,
+	useStore,
+	NETWORK_TO_ID
+} from '../../helpers';
 import { useLocalStorage } from '../../hooks';
 import { useEthers, useSendTransaction, useContractFunction, ERC20Interface } from '@usedapp/core';
 import { utils } from 'ethers';
@@ -34,7 +40,7 @@ export const TabModal = () => {
 	const [isDepositing, setIsDepositing] = useState(false);
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
-		state: { productId, pair, isUserVerified, sourceToken }
+		state: { productId, pair, isUserVerified, sourceNetwork, sourceToken }
 	} = useStore();
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<Props[]>('swaps', []);
 
@@ -46,8 +52,7 @@ export const TabModal = () => {
 
 	const sourceTokenData =
 		// @ts-ignore
-		// eslint-disable-next-line
-		SOURCE_NETWORKS['1']['tokens'][sourceToken];
+		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
 	const tokenContract =
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);

@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
-import { useEtherBalance, useTokenBalance } from '@usedapp/core';
+import { useEtherBalance, useTokenBalance, useEthers } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
-import { beautifyNumbers, isLightTheme, useBreakpoint, useStore } from '../../helpers';
+import {
+	beautifyNumbers,
+	isLightTheme,
+	useBreakpoint,
+	useStore,
+	NETWORK_TO_ID,
+	isTokenSelected
+} from '../../helpers';
 import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { Theme } from '../../styles';
 import { WalletModal } from '../../components';
@@ -14,8 +21,9 @@ const StyledJazzIcon = styled.div`
 	width: ${pxToRem(16)};
 `;
 
-export const JazzIcon = ({ account }: { account: string }) => {
+export const JazzIcon = () => {
 	const ref = useRef<HTMLDivElement>();
+	const { account } = useEthers();
 
 	useEffect(() => {
 		if (account && ref.current) {
@@ -74,7 +82,7 @@ export const Wallet = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: { theme, account, sourceToken }
+		state: { theme, account, sourceNetwork, sourceToken }
 	} = useStore();
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 
@@ -82,7 +90,7 @@ export const Wallet = () => {
 	const tokenData =
 		// @ts-ignore
 		// eslint-disable-next-line
-		sourceToken && SOURCE_NETWORKS['1']['tokens'][sourceToken];
+		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
 	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
 	const balance = tokenData?.isNative
 		? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)
@@ -93,18 +101,20 @@ export const Wallet = () => {
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-				<JazzIcon account={account} />
+				<JazzIcon />
 			</Account>
 		</>
 	) : (
 		<Wrapper theme={theme}>
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
-			<Amount theme={theme}>
-				{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
-			</Amount>
+			{isTokenSelected(sourceToken) && (
+				<Amount theme={theme}>
+					{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
+				</Amount>
+			)}
 			<Account theme={theme} onClick={openModal}>
 				{account.slice(0, 6)}...{account.slice(account.length - 4, account.length)}
-				<JazzIcon account={account} />
+				<JazzIcon />
 			</Account>
 		</Wrapper>
 	);

@@ -114,16 +114,15 @@ type Props = {
 };
 
 export const Select = ({ data, checkedValue }: Props) => {
-	const [items, setItems] = useState(data);
+	const [items, setItems] = useState<SelectProps[]>(data);
 	const [isOpen, setIsOpen] = useState(false);
 	const {
 		state: { theme }
 	} = useStore();
 	const lightTheme = isLightTheme(theme);
-
 	const handleClick = (value: TransactionHeaderSortValue, index: number) => {
 		if (items.length > 0) {
-			const updatedItems = items.map((item: SelectProps, i: number) => {
+			const updatedItems = items.map((item: SelectProps, i: number): SelectProps => {
 				if (i === index) {
 					item.checked = true;
 				} else {
