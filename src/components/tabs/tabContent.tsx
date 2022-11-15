@@ -1,7 +1,7 @@
 import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import type { Theme } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, Theme } from '../../styles';
 import { DEFAULT_TRANSIITON, fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 import { useAxios } from '../../hooks';
@@ -23,7 +23,10 @@ const Content = styled.div`
 	display: block;
 	background: ${(props: StyleProps) => props.theme.background.secondary};
 	border: 1px solid
-		${(props: StyleProps) => (props.type === 'history' ? 'transparent' : props.theme.button.wallet)};
+		${(props: StyleProps) =>
+			props.type === 'history' ? 'transparent' : props.theme.border.default};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
+	border-top-left-radius: 0;
 `;
 
 export const ContentList = styled.ul`

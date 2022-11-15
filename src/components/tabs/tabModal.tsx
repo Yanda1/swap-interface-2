@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Tabs } from '../../components';
 import { pxToRem } from '../../styles';
+import type { Theme } from '../../styles';
 import {
 	CONTRACT_ADDRESSES,
 	ContractAdress,
@@ -22,9 +23,12 @@ const Wrapper = styled.div`
 	margin: ${pxToRem(76)} auto;
 `;
 
-const Paragraph = styled.p`
-	color: #b4b4b4;
-`;
+const Paragraph = styled.p(
+	() => css`
+		color: ${(props: { theme: Theme }) => props.theme.font.default};
+	`
+);
+
 type Props = {
 	productId: string;
 	account: string;
@@ -40,7 +44,7 @@ export const TabModal = () => {
 	const [isDepositing, setIsDepositing] = useState(false);
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
-		state: { productId, pair, isUserVerified, sourceNetwork, sourceToken }
+		state: { productId, pair, isUserVerified, sourceNetwork, sourceToken, theme }
 	} = useStore();
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<Props[]>('swaps', []);
 
@@ -224,7 +228,7 @@ export const TabModal = () => {
 		<Wrapper>
 			{swaps.length > 0 && (
 				<>
-					<Paragraph>Pending Swaps ({swaps.length})</Paragraph>
+					<Paragraph theme={theme}>Pending Swaps ({swaps.length})</Paragraph>
 					<Tabs data={swaps} />
 				</>
 			)}

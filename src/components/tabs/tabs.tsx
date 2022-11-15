@@ -29,7 +29,7 @@ const Tab = styled.div(({ active }: Props) => {
 		margin-right: ${spacing[4]};
 		background: ${theme.background.secondary};
 		border-radius: ${DEFAULT_BORDER_RADIUS} ${DEFAULT_BORDER_RADIUS} 0 0;
-		border: 1px solid ${theme.button.wallet};
+		border: 1px solid ${theme.border.default};
 		border-bottom: none;
 
 		&:nth-child(${++active}) {
