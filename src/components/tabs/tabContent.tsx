@@ -27,6 +27,8 @@ const Content = styled.div`
 			props.type === 'history' ? 'transparent' : props.theme.border.default};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-left-radius: 0;
+	margin-top: -1px;
+	z-index: -2;
 `;
 
 export const ContentList = styled.ul`
