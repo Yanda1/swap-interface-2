@@ -21,7 +21,6 @@ const Tab = styled.div(({ active }: Props) => {
 	} = useStore();
 
 	return css`
-		z-index: 10;
 		cursor: pointer;
 		color: ${theme.font.secondary};
 		padding: ${spacing[6]} ${spacing[6]};

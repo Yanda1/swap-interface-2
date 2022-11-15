@@ -75,7 +75,7 @@ const Account = styled.button`
 	}
 
 	&:hover {
-		outline: ${(props: StyledProps) => `1px solid ${props.theme.border.default}`};
+		outline: ${(props: StyledProps) => `1px solid ${props.theme.border.secondary}`};
 	}
 
 	&:active {

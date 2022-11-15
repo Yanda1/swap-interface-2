@@ -42,7 +42,7 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 		padding: ${isTypeSearch
 			? `${spacing[14]} ${spacing[14]} ${spacing[14]} ${spacing[42]}`
 			: `${spacing[18]} ${spacing[HORIZONTAL_PADDING]}`};
-		color: ${theme.font.secondary};
+		color: ${theme.font.default};
 		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		cursor: pointer;
@@ -93,6 +93,7 @@ const Message = styled.div`
 `;
 
 const Description = styled.div`
+	color: ${(props: ThemeProps) => props.theme.font.secondary};
 	margin: ${spacing[4]} 0;
 `;
 
@@ -146,7 +147,7 @@ export const TextField = ({
 			{isTypeSearch && <Icon src={search} alt="search-lens" />}
 			{(error || description) && type === 'text' && (
 				<Message>
-					{description && <Description>{description}</Description>}
+					{description && <Description theme={theme}>{description}</Description>}
 					{error && isActive && <Error theme={theme}>Invalid input</Error>}
 				</Message>
 			)}

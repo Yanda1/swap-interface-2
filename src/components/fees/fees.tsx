@@ -6,13 +6,14 @@ import {
 	DEFAULT_OUTLINE,
 	DEFAULT_OUTLINE_OFFSET
 } from '../../styles';
+import type { Theme } from '../../styles';
 import type { ThemeProps } from '../../styles';
 import { beautifyNumbers, isArrayType, useStore } from '../../helpers';
 import type { Fee } from '../../helpers';
 
 const Summary = styled.summary(
 	({ theme }: ThemeProps) => css`
-		color: ${theme.font.secondary};
+		color: ${theme.font.default};
 		margin-top: ${spacing[28]};
 		cursor: pointer;
 
@@ -28,12 +29,14 @@ const Summary = styled.summary(
 );
 
 const Details = styled.div(
-	({ color }: { color: string }) => css`
+	({ theme }: { theme: Theme }) => css`
+		color: ${theme.font.secondary};
+		margin-top: ${spacing[28]};
 		flex-direction: column;
 		padding: ${spacing[10]} ${spacing[16]};
 		margin: ${spacing[28]} 0 ${spacing[56]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
-		border: 1px solid ${color};
+		border: 1px solid ${theme.border.default};
 
 		& > * {
 			display: flex;
@@ -82,7 +85,7 @@ export const Fees = () => {
 			<Summary color={theme.font.default} theme={theme}>
 				<Detail value={allFees} />
 			</Summary>
-			<Details color={theme.border.default}>
+			<Details theme={theme}>
 				<Detail value={networkFee} />
 				<Detail value={protocolFee} />
 				<Detail value={cexFee} />
