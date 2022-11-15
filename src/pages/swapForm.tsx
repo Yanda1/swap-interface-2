@@ -230,11 +230,11 @@ export const SwapForm = () => {
 					</SwapInput>
 					<NamesWrapper single={false}>
 						<SwapNames>
-							<Name color={theme.font.pure}>{sourceToken}</Name>
+							<Name color={theme.font.secondary}>{sourceToken}</Name>
 							<Name color={theme.font.default}>({sourceNetwork})</Name>
 						</SwapNames>
 						<SwapNames pos="end" single={false}>
-							<Name color={limit.error ? theme.button.error : theme.font.pure}>
+							<Name color={limit.error ? theme.button.error : theme.font.secondary}>
 								{limit.message}
 							</Name>
 							<Name color={limit.error ? theme.button.error : theme.font.default}>
@@ -263,13 +263,13 @@ export const SwapForm = () => {
 					</SwapInput>
 					<NamesWrapper>
 						<SwapNames pos="end">
-							<Name color={theme.font.pure}>{destinationToken}</Name>
+							<Name color={theme.font.secondary}>{destinationToken}</Name>
 							<Name color={theme.font.default}>({destinationNetwork})</Name>
 						</SwapNames>
 					</NamesWrapper>
 				</Swap>
 			</Trader>
-			<ExchangeRate color={theme.font.pure}>
+			<ExchangeRate color={theme.font.secondary}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
 					: `1 ${sourceToken} = ${beautifyNumbers({

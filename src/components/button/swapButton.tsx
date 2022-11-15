@@ -118,7 +118,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	return (
 		<ButtonWrapper>
 			<Button disabled={isDisabled} color="default" onClick={onClick}>
-				SWAP
+				Swap
 			</Button>
 		</ButtonWrapper>
 	);

@@ -11,7 +11,15 @@ import {
 	NETWORK_TO_ID,
 	isTokenSelected
 } from '../../helpers';
-import { pxToRem, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import {
+	pxToRem,
+	spacing,
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSIITON,
+	mediaQuery,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_OUTLINE
+} from '../../styles';
 import type { Theme } from '../../styles';
 import { WalletModal } from '../../components';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
@@ -40,33 +48,34 @@ type StyledProps = {
 };
 
 const Wrapper = styled.div`
-	border: ${(props: StyledProps) => `1px solid ${props.theme.button.wallet}`};
-	border-radius: ${DEFAULT_BORDER_RADIUS};
 	display: flex;
-	align-items: center;
-	margin-left: -1px;
 `;
 
 const Amount = styled.div`
-	color: ${(props: StyledProps) => props.theme.font.pure};
-	padding: ${spacing[6]} ${spacing[14]};
+	border: ${(props: StyledProps) => `1px solid ${props.theme.border.default}`};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
+	padding: ${spacing[6]} ${spacing[18]} ${spacing[6]} ${spacing[14]};
+	margin-right: -${spacing[8]};
 `;
 const Account = styled.button`
-	background-color: ${(props: StyledProps) => props.theme.icon.default};
-	outline: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
-	border: 1px solid transparent;
-	color: ${(props: StyledProps) => props.theme.font.pure};
+	background-color: ${(props: StyledProps) => props.theme.background.secondary};
+	color: ${(props: StyledProps) => props.theme.font.default};
+	border: ${(props: StyledProps) => `1px solid ${props.theme.border.secondary}`};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
+	padding: ${spacing[6]} ${spacing[14]};
+	outline: 1px solid transparent;
 	display: flex;
+	align-items: center;
 	gap: ${spacing[4]};
-	padding: ${(props: StyledProps) => (isLightTheme(props.theme) ? spacing[6] : pxToRem(7))}
-		// TODO: mixing spacing & pxToRem is far from ideal
-		${spacing[10]};
+	transition: ${DEFAULT_TRANSIITON};
 	cursor: pointer;
-	margin-right: -1px;
+
+	${mediaQuery('s')} {
+		border-color: ${(props: StyledProps) => props.theme.font.default};
+	}
 
 	&:hover {
-		opacity: 0.8;
+		outline: ${(props: StyledProps) => `1px solid ${props.theme.border.default}`};
 	}
 
 	&:active {
@@ -74,7 +83,8 @@ const Account = styled.button`
 	}
 
 	&:focus-visible {
-		border: ${(props: StyledProps) => `1px solid ${props.theme.font.pure}`};
+		outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+		outline: ${(props: StyledProps) => DEFAULT_OUTLINE(props.theme)};
 	}
 `;
 

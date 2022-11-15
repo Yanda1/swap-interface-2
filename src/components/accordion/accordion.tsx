@@ -13,6 +13,8 @@ import { beautifyNumbers, useBreakpoint, useStore, WEI_TO_GLMR } from '../../hel
 import type { TransactionData } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_OUTLINE,
 	DEFAULT_TRANSIITON,
 	fontSize,
 	mediaQuery,
@@ -30,11 +32,11 @@ type StyleProps = {
 };
 
 export const Wrapper = styled.div`
-	background-color: ${(props: StyleProps) => props.theme.background.mobile};
+	background-color: ${(props: StyleProps) => props.theme.background.secondary};
 	margin-top: ${spacing[12]};
 	font-size: ${fontSize[16]};
 	line-height: ${fontSize[22]};
-	border: 1px solid ${(props: StyleProps) => props.theme.background.history};
+	border: 1px solid ${(props: StyleProps) => props.theme.background.tertiary};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	overflow: hidden;
 `;
@@ -42,7 +44,7 @@ export const Wrapper = styled.div`
 const TitleWrapper = styled.div`
 	cursor: pointer;
 	padding: ${spacing[12]} ${spacing[48]} ${spacing[12]} ${spacing[20]};
-	background-color: ${(props: StyleProps) => props.theme.background.mobile};
+	background-color: ${(props: StyleProps) => props.theme.background.secondary};
 	transition: ${DEFAULT_TRANSIITON};
 	position: relative;
 	z-index: 10;
@@ -55,8 +57,8 @@ const TitleWrapper = styled.div`
 	}
 
 	&:focus-visible {
-		outline: 1px solid ${(props: StyleProps) => props.theme.font.pure};
-		outline-offset: -1px;
+		outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+		outline: ${(props: StyleProps) => DEFAULT_OUTLINE(props.theme)};
 	}
 
 	&:hover {
@@ -90,7 +92,7 @@ const MobileHeaderSection = styled.div`
 const ArrowWrapper = styled.div`
 	width: ${spacing[10]};
 	height: ${spacing[10]};
-	background-color: ${(props: StyleProps) => props.theme.font.pure};
+	background-color: ${(props: StyleProps) => props.theme.font.secondary};
 	position: absolute;
 	top: 50%;
 	right: ${spacing[20]};
@@ -100,7 +102,7 @@ const ArrowWrapper = styled.div`
 const Arrow = styled.div`
 	width: 100%;
 	height: 100%;
-	background-color: ${(props: StyleProps) => props.theme.background.mobile};
+	background-color: ${(props: StyleProps) => props.theme.background.secondary};
 	position: absolute;
 	left: 15%;
 	top: 15%;
@@ -109,7 +111,7 @@ const Arrow = styled.div`
 const Content = styled.div`
 	height: ${(props: StyleProps) =>
 		props.open ? (props.height === 'small' ? pxToRem(128) : pxToRem(350)) : pxToRem(30)};
-	color: ${(props: StyleProps) => props.theme.font.pure};
+	color: ${(props: StyleProps) => props.theme.font.secondary};
 	text-align: center;
 	position: relative;
 	margin-top: ${(props: StyleProps) => (props.open ? '0px' : `-${spacing[30]}`)};
@@ -120,7 +122,7 @@ const Content = styled.div`
 			: 'all .2s cubic-bezier(0.6, -0.28, 0.735, 0.045)'};
 
 	&:not(:last-child) {
-		border-bottom: 1px solid ${(props: StyleProps) => props.theme.background.history};
+		border-bottom: 1px solid ${(props: StyleProps) => props.theme.background.tertiary};
 	}
 
 	${mediaQuery('s')} {
@@ -216,25 +218,25 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 						tabIndex="1"
 						onKeyDown={(e) => handleKeyDown(e, index)}>
 						<TitleTab flex={1} mobile={true}>
-							<TitleText color={theme.font.pure}>{item.header?.symbol}</TitleText>
+							<TitleText color={theme.font.secondary}>{item.header?.symbol}</TitleText>
 						</TitleTab>
 						<TitleTab>
 							Deposit Time:{' '}
-							<TitleText color={theme.font.pure}>
+							<TitleText color={theme.font.secondary}>
 								{/* TODO: timezone? */}
 								{formatDate(item.header?.timestamp)}
 							</TitleText>
 						</TitleTab>
 						<TitleTab>
 							Sent:{' '}
-							<TitleText color={theme.font.pure}>
+							<TitleText color={theme.font.secondary}>
 								{beautifyNumbers({ n: +item.header?.samt * WEI_TO_GLMR ?? '0' })}{' '}
 								{item.header?.scoin} (Moonbeam)
 							</TitleText>
 						</TitleTab>
 						<TitleTab>
 							Received:{' '}
-							<TitleText color={theme.font.pure}>
+							<TitleText color={theme.font.secondary}>
 								{beautifyNumbers({ n: item.withdrawl?.amount ?? '' })}{' '}
 								{item.withdrawl?.amount
 									? `${item.header?.fcoin} (
@@ -259,21 +261,21 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 									<MobileHeaderInfo color={theme.font.select}>
 										<MobileHeaderSection>
 											Deposit Time:{' '}
-											<TitleText color={theme.font.pure}>
+											<TitleText color={theme.font.secondary}>
 												{/* TODO: timezone? */}
 												{formatDate(item.header?.timestamp)}
 											</TitleText>
 										</MobileHeaderSection>
 										<MobileHeaderSection>
 											Sent:{' '}
-											<TitleText color={theme.font.pure}>
+											<TitleText color={theme.font.secondary}>
 												{beautifyNumbers({ n: +item.header?.samt * WEI_TO_GLMR ?? '0' })}{' '}
 												{item.header?.scoin} (Moonbeam)
 											</TitleText>
 										</MobileHeaderSection>
 										<MobileHeaderSection>
 											Received:{' '}
-											<TitleText color={theme.font.pure}>
+											<TitleText color={theme.font.secondary}>
 												{beautifyNumbers({ n: item.withdrawl?.amount ?? '' })}{' '}
 												{item.withdrawl?.amount
 													? `${item.header?.fcoin} (${item.header?.net})`
@@ -284,7 +286,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 								)}
 								{contentLoading ? (
 									<SpinnerWrapper>
-										<Spinner size="medium" color={theme.background.history} />
+										<Spinner size="medium" color={theme.background.tertiary} />
 									</SpinnerWrapper>
 								) : (
 									<ContentList>

@@ -16,7 +16,9 @@ import {
 	pxToRem,
 	spacing,
 	DEFAULT_BORDER_RADIUS,
-	theme as defaultTheme
+	theme as defaultTheme,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET
 } from '../../styles';
 import {
 	ButtonEnum,
@@ -67,14 +69,15 @@ const ThemeButton = styled.button`
 	cursor: pointer;
 	background: none;
 	border: none;
+	outline: 1px solid transparent;
 
 	&:hover {
 		opacity: 0.8;
 	}
 
 	&:focus-visible {
-		outline-offset: 2px;
-		outline: 1px solid ${(props: Props) => props.theme.font.default};
+		outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+		outline: ${(props: Props) => DEFAULT_OUTLINE(props.theme)};
 	}
 
 	&:active {
@@ -94,7 +97,7 @@ const Menu = styled.ul`
 	cursor: pointer;
 	border: 1px solid
 		${(props: Props) =>
-			isLightTheme(props.theme) ? props.theme.font.default : props.theme.font.pure};
+			isLightTheme(props.theme) ? props.theme.font.default : props.theme.font.secondary};
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};

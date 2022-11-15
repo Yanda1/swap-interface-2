@@ -1,18 +1,24 @@
 import styled, { css } from 'styled-components';
 import { useFees } from '../../hooks';
-import { DEFAULT_BORDER_RADIUS, spacing } from '../../styles';
-import type { Theme } from '../../styles';
-import { Fee, beautifyNumbers, useStore } from '../../helpers';
+import {
+	DEFAULT_BORDER_RADIUS,
+	spacing,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET
+} from '../../styles';
+import type { ThemeProps } from '../../styles';
+import { beautifyNumbers, isArrayType, useStore } from '../../helpers';
+import type { Fee } from '../../helpers';
 
 const Summary = styled.summary(
-	({ color, theme }: { color: string; theme: Theme }) => css`
-		color: ${theme.font.pure};
+	({ theme }: ThemeProps) => css`
+		color: ${theme.font.secondary};
 		margin-top: ${spacing[28]};
 		cursor: pointer;
 
 		&:focus-visible {
-			outline-offset: 2px;
-			outline: 1px solid ${color};
+			outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+			outline: ${DEFAULT_OUTLINE(theme)};
 		}
 
 		&:active {
@@ -36,6 +42,35 @@ const Details = styled.div(
 	`
 );
 
+const DetailWrapper = styled.div`
+	& > * {
+		padding: ${spacing[4]} 0;
+	}
+`;
+
+type Props = {
+	value: Fee | Fee[];
+};
+
+const Detail = ({ value }: Props) => {
+	const data = isArrayType(value) ? (value as Fee[]) : ([value] as Fee[]);
+
+	return !data[0].name ? (
+		<>{data[0].amount} USDT</>
+	) : (
+		<DetailWrapper>
+			<div>{data[0]?.name} Fee</div>
+			<div>
+				{data.map((fee: Fee) => (
+					<div style={{ textAlign: 'right' }}>
+						{fee.amount > 0 ? `${beautifyNumbers({ n: fee.amount })} ${fee.currency}` : '-'}
+					</div>
+				))}
+			</div>
+		</DetailWrapper>
+	);
+};
+
 export const Fees = () => {
 	const {
 		state: { theme }
@@ -45,44 +80,13 @@ export const Fees = () => {
 	return (
 		<details>
 			<Summary color={theme.font.default} theme={theme}>
-				Fee:{' '}
-				{allFees.amount > 0 ? `${beautifyNumbers({ n: allFees.amount })} ${allFees.currency}` : '-'}
+				<Detail value={allFees} />
 			</Summary>
-			<Details color={theme.font.default}>
-				<div>
-					<p>Network fee:</p>
-					<p>
-						{networkFee.amount > 0
-							? `${beautifyNumbers({ n: networkFee.amount })} ${networkFee.currency}`
-							: '-'}
-					</p>
-				</div>
-				<div>
-					<p>Protocol fee:</p>
-					<p>
-						{protocolFee.amount > 0
-							? `${beautifyNumbers({ n: protocolFee.amount })} ${protocolFee.currency}`
-							: '-'}
-					</p>
-				</div>
-				<div>
-					<p>CEX fee:</p>
-					<div>
-						{cexFee.map((fee: Fee) => (
-							<p style={{ textAlign: 'right' }} key={fee.currency}>
-								{fee.amount > 0 ? `${beautifyNumbers({ n: fee.amount })} ${fee.currency}` : '-'}
-							</p>
-						))}
-					</div>
-				</div>
-				<div>
-					<p>Withdrawal fee:</p>
-					<p>
-						{withdrawFee.amount > 0
-							? `${beautifyNumbers({ n: withdrawFee.amount })} ${withdrawFee.currency}`
-							: '-'}
-					</p>
-				</div>
+			<Details color={theme.border.default}>
+				<Detail value={networkFee} />
+				<Detail value={protocolFee} />
+				<Detail value={cexFee} />
+				<Detail value={withdrawFee} />
 			</Details>
 		</details>
 	);

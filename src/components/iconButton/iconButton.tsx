@@ -45,7 +45,14 @@ import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
-import { pxToRem, spacing, DEFAULT_BORDER_RADIUS, DEFAULT_TRANSIITON } from '../../styles';
+import {
+	pxToRem,
+	spacing,
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSIITON,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_OUTLINE
+} from '../../styles';
 import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
@@ -103,13 +110,14 @@ const Icon = styled.button(({ disabled }: Props) => {
 	return css`
 		cursor: ${!disabled && 'pointer'};
 		padding: ${spacing[8]};
-		border: 1px solid ${theme.font.default};
+		border: 1px solid ${theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: ${`linear-gradient(to left, ${theme.icon.default}, ${theme.icon.default})`};
+		background: ${`linear-gradient(to left, ${theme.background.secondary}, ${theme.background.secondary})`};
 		transition: ${DEFAULT_TRANSIITON};
+		outline: 1px solid transparent;
 
 		&:hover {
 			opacity: 0.8;
@@ -120,8 +128,8 @@ const Icon = styled.button(({ disabled }: Props) => {
 		}
 
 		&:focus-visible {
-			outline-offset: 2px;
-			outline: 1px solid ${theme.font.default};
+			outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+			outline: ${DEFAULT_OUTLINE(theme)};
 		}
 	`;
 });

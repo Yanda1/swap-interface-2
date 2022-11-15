@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ColorType, DEFAULT_TRANSIITON } from '../../styles';
+import { ColorType, DEFAULT_OUTLINE_OFFSET, DEFAULT_TRANSIITON, fontWeight } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
@@ -70,12 +70,13 @@ const StyledButton = styled.button(
 			justify-content: ${isLoading ? 'center' : 'space-between'};
 			max-width: ${isPrimary ? MAIN_MAX_WIDTH : pxToRem(160)};
 			width: 100%;
+			font-weight: ${isPrimary ? fontWeight.bold : fontWeight.regular};
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
 			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)};
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
 			padding: ${pxToRem(4)} ${pxToRem(12)};
 			color: ${isPure
-				? theme.font.pure
+				? theme.font.default
 				: isSecondaryDefault || isPrimaryTransparent
 				? theme.button.default
 				: '#FFF'};
@@ -96,6 +97,7 @@ const StyledButton = styled.button(
 			transition: ${DEFAULT_TRANSIITON};
 			margin: ${isSecondaryDefault && '1px'};
 			cursor: ${disabled && 'not-allowed'};
+			outline: 1px solid transparent;
 
 			&:hover {
 				opacity: ${!isSecondaryDefault && '0.8'};
@@ -103,12 +105,12 @@ const StyledButton = styled.button(
 			}
 
 			&:focus-visible {
-				outline-offset: 2px;
+				outline-offset: ${DEFAULT_OUTLINE_OFFSET};
 				outline: 1px solid
 					${isPrimary
 						? theme.button.default
 						: isPure
-						? theme.font.pure
+						? theme.background.secondary
 						: isLightTheme(theme)
 						? theme.button[setColor]
 						: '#FFF'};
