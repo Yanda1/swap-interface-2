@@ -4,13 +4,12 @@ import { createPortal } from 'react-dom';
 import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import type { ThemeProps } from '../../styles';
 import { hexToRgbA, useStore } from '../../helpers';
-
-// type StyleProps = Pick<Props, 'size'> & ThemeProps;
+import { useClickOutside } from '../../hooks';
 
 const Wrapper = styled.div(
 	({ theme }: ThemeProps) => css`
 		position: fixed;
-		inset: 0; /* inset sets all 4 values (top right bottom left) much like how we set padding, margin etc., */
+		inset: 0;
 		background-color: ${hexToRgbA(theme.modal.background, '0.8')};
 		display: flex;
 		flex-direction: column;
@@ -100,6 +99,10 @@ export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props)
 		state: { theme }
 	} = useStore();
 
+	const domNode = useClickOutside(() => {
+		handleClose();
+	});
+
 	useEffect(() => {
 		const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClose() : null);
 		document.body.addEventListener('keydown', closeOnEscapeKey);
@@ -109,13 +112,11 @@ export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props)
 		};
 	}, [handleClose]);
 
-	if (!isOpen) return null;
-
-	return (
+	return isOpen ? (
 		<PortalWrapper wrapperId="react-portal-modal-container">
 			<Wrapper theme={theme}>
 				{/* @ts-ignore */}
-				<Content theme={theme} size={size} id="portal">
+				<Content theme={theme} size={size} ref={domNode}>
 					<CloseIcon onClick={handleClose} theme={theme}>
 						&#x2715;
 					</CloseIcon>
@@ -123,5 +124,5 @@ export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props)
 				</Content>
 			</Wrapper>
 		</PortalWrapper>
-	);
+	) : null;
 };
