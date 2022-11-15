@@ -27,18 +27,19 @@ const Wrapper = styled.main`
 const Trader = styled.div`
 	display: flex;
 	gap: ${spacing[10]};
-	align-items: center;
+	align-items: stretch;
 
 	${mediaQuery('xs')} {
 		flex-direction: column;
+		align-items: center;
 	}
 `;
 
 const Swap = styled.div`
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 	gap: ${spacing[4]};
-	flex: 1;
 
 	${mediaQuery('xs')} {
 		width: 100%;
@@ -51,30 +52,24 @@ const SwapInput = styled.div`
 `;
 
 const NamesWrapper = styled.div(
-	({ single = true }: { single?: boolean }) => css`
+	() => css`
 		display: flex;
-		justify-content: ${single ? 'flex-start' : 'space-between'};
+		flex-direction: column;
+		gap: ${spacing[4]};
 
-		&:nth-child(2) {
-			margin-left: ${single ? 'auto' : '0'};
-		}
-
-		${mediaQuery('xs')} {
-			&:nth-child(2) {
-				margin-left: 0;
-			}
+		& div {
+			display: flex;
+			gap: ${spacing[4]};
 		}
 	`
 );
 
-const SwapNames = styled.div(
-	({ pos = 'start', single = true }: { pos?: string; single?: boolean }) => css`
-		display: flex;
-		flex-direction: column;
-		align-items: flex-${pos};
+const Names = styled.div(
+	({ justifyContent }: { justifyContent: 'space-between' | 'flex-end' | 'flex-start' }) => css`
+		justify-content: ${justifyContent};
 
 		${mediaQuery('xs')} {
-			align-items: ${single ? 'flex-start' : `flex-${pos}`};
+			justify-content: ${justifyContent === 'space-between' ? 'space-between' : 'flex-start'};
 		}
 	`
 );
@@ -90,7 +85,7 @@ const ExchangeRate = styled.div(
 	margin: ${spacing[28]} 0;
 	color: ${color};
 
-	${mediaQuery('s')} {
+	${mediaQuery('xs')} {
 	text-align: center;
 	}
 `
@@ -228,25 +223,21 @@ export const SwapForm = () => {
 							}}
 						/>
 					</SwapInput>
-					<NamesWrapper single={false}>
-						<SwapNames>
-							<Name color={theme.font.secondary}>{sourceToken}</Name>
-							<Name color={theme.font.default}>({sourceNetwork})</Name>
-						</SwapNames>
-						<SwapNames pos="end" single={false}>
-							<Name color={limit.error ? theme.button.error : theme.font.secondary}>
-								{limit.message}
-							</Name>
-							<Name color={limit.error ? theme.button.error : theme.font.default}>
-								{isTokenSelected(destinationToken) && beautifyNumbers({ n: limit.value })}
-							</Name>
-						</SwapNames>
+					<NamesWrapper>
+						<Names justifyContent="space-between">
+							<Name color={theme.font.default}>Balance: 12345</Name>
+							<Name color={theme.button.error}>Max</Name>
+						</Names>
+						<Names justifyContent="flex-start">
+							<Name color={theme.font.default}>{sourceToken}</Name>
+							<Name color={theme.font.secondary}>({sourceNetwork})</Name>
+						</Names>
 					</NamesWrapper>
 				</Swap>
 				{isLightTheme(theme) ? (
-					<SwapperLight style={{ marginBottom: 38 }} />
+					<SwapperLight style={{ margin: '18px 0 ' }} />
 				) : (
-					<SwapperDark style={{ marginBottom: 38 }} />
+					<SwapperDark style={{ margin: '18px 0 ' }} />
 				)}
 				<Swap>
 					<SwapInput>
@@ -262,14 +253,14 @@ export const SwapForm = () => {
 						/>
 					</SwapInput>
 					<NamesWrapper>
-						<SwapNames pos="end">
-							<Name color={theme.font.secondary}>{destinationToken}</Name>
-							<Name color={theme.font.default}>({destinationNetwork})</Name>
-						</SwapNames>
+						<Names justifyContent="flex-end">
+							<Name color={theme.font.default}>{destinationToken}</Name>
+							<Name color={theme.font.secondary}>({destinationNetwork})</Name>
+						</Names>
 					</NamesWrapper>
 				</Swap>
 			</Trader>
-			<ExchangeRate color={theme.font.secondary}>
+			<ExchangeRate color={theme.font.default}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
 					: `1 ${sourceToken} = ${beautifyNumbers({
