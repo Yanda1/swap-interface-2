@@ -4,16 +4,13 @@ export type Theme = {
 	name: ThemeName;
 	font: {
 		default: string;
-		pure: string;
+		secondary: string;
 		select: string;
 	};
 	background: {
 		default: string;
-		mobile: string;
-		history: string;
-	};
-	icon: {
-		default: string;
+		secondary: string;
+		tertiary: string;
 	};
 	button: {
 		default: string;
@@ -25,11 +22,14 @@ export type Theme = {
 		wallet: string;
 		transparent: string;
 	};
+	border: {
+		default: string;
+		secondary: string;
+	};
 	modal: {
 		default: string;
 		background: string;
 		shadow: string;
-		border: string;
 	};
 };
 
@@ -37,16 +37,13 @@ export const lightTheme: Theme = {
 	name: 'light',
 	font: {
 		default: '#5A5A5A',
-		pure: '#5A5A5A',
+		secondary: '#909090',
 		select: '#B4B4B4'
 	},
 	background: {
 		default: '#FFF',
-		mobile: '#F0F0F0',
-		history: '#494949'
-	},
-	icon: {
-		default: '#E8F0F6'
+		secondary: '#F0F0F0',
+		tertiary: '#494949'
 	},
 	button: {
 		default: '#00A8E8',
@@ -58,28 +55,28 @@ export const lightTheme: Theme = {
 		wallet: '#505050',
 		transparent: 'transparent'
 	},
+	border: {
+		default: '#E5E5E5',
+		secondary: '#E5E5E5'
+	},
 	modal: {
 		default: '#E5E5E5',
 		background: '#D6D6D6',
-		shadow: '#868686',
-		border: '#E5E5E5'
+		shadow: '#868686'
 	}
 };
 
 export const darkTheme: Theme = {
 	name: 'dark',
 	font: {
-		default: '#8C8D8F',
-		pure: '#FFF',
+		default: '#FFF',
+		secondary: '#B4B4B4',
 		select: '#B4B4B4'
 	},
 	background: {
 		default: '#161B20',
-		mobile: '#1C2125',
-		history: '#494949'
-	},
-	icon: {
-		default: '#172631'
+		secondary: '#1C2125',
+		tertiary: '#494949'
 	},
 	button: {
 		default: '#00A8E8',
@@ -91,11 +88,14 @@ export const darkTheme: Theme = {
 		wallet: '#505050',
 		transparent: 'transparent'
 	},
+	border: {
+		default: '#404040',
+		secondary: '#FFF'
+	},
 	modal: {
 		default: '#1C2125',
 		background: '#212426',
-		shadow: '#0A0A0A',
-		border: '#505050'
+		shadow: '#0A0A0A'
 	}
 };
 

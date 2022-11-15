@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { DestinationEnum, SourceEnum, useStore } from '../../helpers';
+import { AmountEnum, DestinationEnum, SourceEnum, useStore } from '../../helpers';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import {
 	fontSize,
@@ -38,7 +38,7 @@ const Title = styled.div(() => {
 	return css`
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[22]};
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		margin: ${spacing[20]} ${spacing[12]} ${spacing[12]};
 	`;
 });
@@ -65,7 +65,7 @@ const Item = styled.li((props: any) => {
 		align-items: center;
 		cursor: pointer;
 		font-size: ${fontSize[16]};
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		line-height: ${fontSize[22]};
 		margin: ${spacing[10]} 0;
 		border-radius: ${DEFAULT_BORDER_RADIUS};
@@ -111,6 +111,10 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				dispatch({
 					type: DestinationEnum.TOKEN,
 					payload: name
+				});
+				dispatch({
+					type: AmountEnum.AMOUNT,
+					payload: ''
 				});
 			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
 				await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);

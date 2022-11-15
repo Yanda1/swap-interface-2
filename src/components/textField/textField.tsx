@@ -6,7 +6,8 @@ import {
 	fontSize,
 	pxToRem,
 	spacing,
-	DEFAULT_TRANSIITON
+	DEFAULT_TRANSIITON,
+	DEFAULT_OUTLINE_OFFSET
 } from '../../styles';
 import search from '../../assets/search.png';
 import type { ThemeProps } from '../../styles';
@@ -41,27 +42,23 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 		padding: ${isTypeSearch
 			? `${spacing[14]} ${spacing[14]} ${spacing[14]} ${spacing[42]}`
 			: `${spacing[18]} ${spacing[HORIZONTAL_PADDING]}`};
-		color: ${theme.font.pure};
-		border: 1px solid
-			${error && isTypeNumber
-				? theme.button.error
-				: isTypeSearch
-				? theme.background.history
-				: theme.font.default};
+		color: ${theme.font.secondary};
+		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		cursor: pointer;
 		transition: ${DEFAULT_TRANSIITON};
 		width: ${isTypeSearch ? '100%' : `calc(100% - ${pxToRem(HORIZONTAL_PADDING * 2 + 2)})`};
+		outline: 1px solid transparent;
 
 		&:hover,
 		&:active {
-			border-color: ${error && isTypeNumber ? theme.button.error : theme.font.pure};
+			border-color: ${error && isTypeNumber ? theme.button.error : theme.font.secondary};
 			outline: none;
 		}
 
 		&:focus-visible {
-			outline-offset: 2px;
-			outline: 1px solid ${error && isTypeNumber ? theme.button.error : theme.font.default};
+			outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+			outline: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.secondary};
 		}
 
 		&-webkit-outer-spin-button,

@@ -17,11 +17,11 @@ type Props = {
 type StyleProps = Props & { theme: Theme };
 
 const Content = styled.div`
-	color: ${(props: StyleProps) => props.theme.font.pure};
+	color: ${(props: StyleProps) => props.theme.font.secondary};
 	padding: ${spacing[20]};
 
 	display: block;
-	background: ${(props: StyleProps) => props.theme.background.mobile};
+	background: ${(props: StyleProps) => props.theme.background.secondary};
 	border: 1px solid
 		${(props: StyleProps) => (props.type === 'history' ? 'transparent' : props.theme.button.wallet)};
 `;
@@ -87,7 +87,7 @@ export const ContentItemText = styled.div(() => {
 });
 
 export const ContentItemLink = styled.div`
-	color: ${(props: StyleProps) => props.theme.font.pure};
+	color: ${(props: StyleProps) => props.theme.font.secondary};
 	line-height: ${fontSize[16]};
 	text-decoration: underline;
 	cursor: pointer;
@@ -166,7 +166,9 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				) : null}
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemTitle>Conversion {sourceToken} {orders.s.replace(sourceToken, '')}</ContentItemTitle>
+						<ContentItemTitle>
+							Conversion {sourceToken} {orders.s.replace(sourceToken, '')}
+						</ContentItemTitle>
 						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
 						<ContentItemText>Quantity: {orders.q}</ContentItemText>
@@ -200,7 +202,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 					</ContentItem>
 				) : null}
 				{data?.[toggleIndex].complete === null ? (
-					<ContentItem theme={theme} color={theme.font.pure}>
+					<ContentItem theme={theme} color={theme.font.secondary}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}

@@ -7,6 +7,8 @@ export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 export const isNetworkSelected = (network: string) =>
 	network !== 'Select Network' && network !== ''; // TODO: refine both functions - nullish check - and create enum for "Select Network / Token"
 
+export const isArrayType = (value: any) => typeof value === 'object' && Array.isArray(value);
+
 export const isTokenSelected = (token: string) => token !== 'Select Token' && token !== '';
 
 type BeautifyNumbers = {
