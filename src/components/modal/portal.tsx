@@ -32,7 +32,7 @@ const Content = styled.div(
 		position: relative;
 		padding: ${spacing[40]} ${spacing[22]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
-		border: 1px solid ${theme.modal.border};
+		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
 	`
 );
@@ -46,7 +46,7 @@ const CloseIcon = styled.div(({ theme }: ThemeProps) => {
 		font-size: ${fontSize[16]};
 		padding: ${spacing[12]} ${spacing[14]};
 		font-weight: 400;
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 	`;
 });
 

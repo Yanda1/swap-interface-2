@@ -35,7 +35,7 @@ const AccountTitle = styled.div(() => {
 
 	return css`
 		font-size: ${fontSize[16]};
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		line-height: ${fontSize[22]};
 		margin-bottom: ${spacing[28]};
 	`;
@@ -72,7 +72,7 @@ const AccountNumber = styled.div(() => {
 	} = useStore();
 
 	return css`
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		margin-right: ${spacing[6]};
 	`;
 });
@@ -99,7 +99,7 @@ const IconContainer = styled.div(() => {
 			height: ${pxToRem(8)};
 			width: ${pxToRem(10)};
 			border: 1px solid ${theme.font.default};
-			background-color: ${theme.background.mobile};
+			background-color: ${theme.background.secondary};
 		}
 	`;
 });
