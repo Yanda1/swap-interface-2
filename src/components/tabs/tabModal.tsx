@@ -94,12 +94,6 @@ export const TabModal = () => {
 			gasLimitBufferPercentage: 25
 		}
 	);
-	// GET ALL UNFINISHED SWAPS
-	useEffect(() => {
-		const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => !swap.complete);
-		setSwaps(filteredSwaps);
-		setSwapsStorage(filteredSwaps);
-	}, [swapsStorage.length]);
 
 	// ADD NEW SWAP TO LOCAL STORAGE AND STATE
 	useEffect(() => {
@@ -115,12 +109,14 @@ export const TabModal = () => {
 				pair,
 				sourceToken
 			};
-			const uniqueSwaps: Props[] = _.uniqBy([...swapsStorage, order], 'productId');
+			const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => swap.complete === null);
+			const uniqueSwaps: Props[] = _.uniqBy([...filteredSwaps, order], 'productId');
 			setSwaps(uniqueSwaps);
 			setSwapsStorage(uniqueSwaps);
 		}
 	}, [productId]);
 
+	// Function with event listeners
 	const subscribeSwap = () => {
 		const swapsCopy: Props[] = [...swaps];
 		if (swaps.length > 0) {
@@ -194,6 +190,7 @@ export const TabModal = () => {
 		}
 	};
 
+	// UseEffect with logic for deposit (2 modal in MetaMask)
 	useEffect(() => {
 		setIsDepositing(false);
 		if (swapsStorage.length > 0) {
@@ -270,10 +267,8 @@ export const TabModal = () => {
 	}, [transactionState, transactionStateContract, transactionStateApproveContract]);
 
 	useEffect(() => {
-		if (swaps.length > 0) {
-			subscribeSwap();
-		}
-	}, [swaps, sourceTokenData]);
+		subscribeSwap();
+	}, [swaps, sourceToken]);
 
 	// SHOW SWAPS THAT RELATING TO OPEN ACCOUNT AT THIS MOMENT
 	const [accountSwaps, setAccountSwaps] = useState<Props[]>([]);

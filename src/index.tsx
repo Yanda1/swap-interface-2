@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+// import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import type { Config } from '@usedapp/core';
 import { DAppProvider, Mainnet, Moonbeam } from '@usedapp/core';
@@ -12,7 +12,7 @@ const config: Config = {
 	readOnlyChainId: Mainnet.chainId,
 	readOnlyUrls: {
 		[Mainnet.chainId]: 'https://eth-mainnet-public.unifra.io',
-		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network',
+		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network'
 
 		// [Localhost.chainId]: 'http://127.0.0.1:8545',
 	},
@@ -20,13 +20,13 @@ const config: Config = {
 };
 
 root.render(
-	<StrictMode>
-		<DAppProvider config={config}>
-			<AuthProvider>
-				<ToastProvider>
-					<App />
-				</ToastProvider>
-			</AuthProvider>
-		</DAppProvider>
-	</StrictMode>
+	// <StrictMode>
+	<DAppProvider config={config}>
+		<AuthProvider>
+			<ToastProvider>
+				<App />
+			</ToastProvider>
+		</AuthProvider>
+	</DAppProvider>
+	// </StrictMode>
 );
