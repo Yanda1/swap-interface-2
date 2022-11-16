@@ -5,7 +5,6 @@ import { useEtherBalance, useTokenBalance, useEthers } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import {
 	beautifyNumbers,
-	isLightTheme,
 	useBreakpoint,
 	useStore,
 	NETWORK_TO_ID,
@@ -99,12 +98,11 @@ export const Wallet = () => {
 	const etherBalance = account && useEtherBalance(account);
 	const tokenData =
 		// @ts-ignore
-		// eslint-disable-next-line
 		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
 	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
 	const balance = tokenData?.isNative
-		? etherBalance && parseFloat(formatEther(etherBalance)).toFixed(3)
-		: tokenBalance && parseFloat(formatUnits(tokenBalance, tokenData?.decimals)).toFixed(3);
+		? etherBalance && formatEther(etherBalance)
+		: tokenBalance && formatUnits(tokenBalance, tokenData?.decimals);
 
 	return isMobile ? (
 		<>

@@ -65,7 +65,7 @@ const Detail = ({ value }: Props) => {
 			<div>{data[0]?.name} Fee</div>
 			<div>
 				{data.map((fee: Fee) => (
-					<div style={{ textAlign: 'right' }}>
+					<div style={{ textAlign: 'right' }} key={fee.currency}>
 						{fee.amount > 0 ? `${beautifyNumbers({ n: fee.amount })} ${fee.currency}` : '-'}
 					</div>
 				))}

@@ -4,6 +4,7 @@ import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
+import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -17,7 +18,6 @@ import {
 } from '../helpers';
 import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
-import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -75,9 +75,21 @@ const Names = styled.div(
 );
 
 const Name = styled.div(
-	({ color }: { color: string }) => `
-	color: ${color};
-`
+	({ color }: { color: string }) => css`
+		color: ${color};
+	`
+);
+
+const MaxButton = styled.button(
+	({ color }: { color: string }) => css`
+		all: unset;
+		cursor: pointer;
+		color: ${color};
+
+		&:hover {
+			opacity: 0.8;
+		}
+	`
 );
 
 const ExchangeRate = styled.div(
@@ -224,10 +236,18 @@ export const SwapForm = () => {
 						/>
 					</SwapInput>
 					<NamesWrapper>
-						<Names justifyContent="space-between">
-							<Name color={theme.font.default}>Balance: 12345</Name>
-							<Name color={theme.button.error}>Max</Name>
-						</Names>
+						{+maxAmount > 0 && (
+							<Names justifyContent="space-between">
+								<Name color={theme.font.default}>
+									Balance: {beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} {sourceToken}
+								</Name>
+								<MaxButton
+									color={theme.button.error}
+									onClick={() => dispatch({ type: AmountEnum.AMOUNT, payload: maxAmount })}>
+									Max
+								</MaxButton>
+							</Names>
+						)}
 						<Names justifyContent="flex-start">
 							<Name color={theme.font.default}>{sourceToken}</Name>
 							<Name color={theme.font.secondary}>({sourceNetwork})</Name>
@@ -235,9 +255,9 @@ export const SwapForm = () => {
 					</NamesWrapper>
 				</Swap>
 				{isLightTheme(theme) ? (
-					<SwapperLight style={{ margin: '18px 0 ' }} />
+					<SwapperLight style={{ margin: '18px 0' }} />
 				) : (
-					<SwapperDark style={{ margin: '18px 0 ' }} />
+					<SwapperDark style={{ margin: '18px 0' }} />
 				)}
 				<Swap>
 					<SwapInput>
