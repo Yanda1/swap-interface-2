@@ -1,9 +1,9 @@
 import { ReactNode, useLayoutEffect, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { createPortal } from 'react-dom';
-import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import type { ThemeProps } from '../../styles';
-import { hexToRgbA, useStore } from '../../helpers';
+import { DestinationEnum, hexToRgbA, useStore } from '../../helpers';
 import { useClickOutside } from '../../hooks';
 
 const Wrapper = styled.div(
@@ -17,20 +17,21 @@ const Wrapper = styled.div(
 		justify-content: center;
 		overflow: hidden;
 		z-index: 1_000;
-		padding: ${spacing[40]} ${spacing[20]};
 	`
 );
 
 const Content = styled.div(
 	({ theme }: ThemeProps) => css`
-		max-width: 100%;
-		max-height: 100%;
 		background-color: ${theme.modal.default};
+		width: ${pxToRem(685)};
+		max-width: calc(100% - ${spacing[40]});
 		display: flex;
+		box-sizing: border-box;
 		align-items: center;
 		justify-content: center;
 		position: relative;
-		padding: ${spacing[40]} ${spacing[22]};
+		margin: ${spacing[40]} 0;
+		padding: ${spacing[48]} ${spacing[22]} ${spacing[24]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
@@ -43,7 +44,7 @@ const CloseIcon = styled.div(({ theme }: ThemeProps) => {
 		position: absolute;
 		top: 0;
 		right: 0;
-		font-size: ${fontSize[16]};
+		font-size: ${spacing[10]};
 		padding: ${spacing[12]} ${spacing[14]};
 		font-weight: 400;
 		color: ${theme.font.secondary};
@@ -96,15 +97,41 @@ type Props = {
 
 export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props) => {
 	const {
-		state: { theme }
+		state: { theme, destinationNetwork, destinationToken, sourceNetwork, sourceToken },
+		dispatch
 	} = useStore();
 
 	const domNode = useClickOutside(() => {
-		handleClose();
+		if (isOpen) handleClick();
+	});
+
+	const [selectedSourceTokenNetwork, setSelectedSourceTokenNetwork] = useState({
+		network: '',
+		token: ''
+	});
+	const [selectedDestinationTokenNetwork, setSelectedDestinationTokenNetwork] = useState({
+		network: '',
+		token: ''
 	});
 
 	useEffect(() => {
-		const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClose() : null);
+		if (isOpen) {
+			setSelectedSourceTokenNetwork({ network: sourceNetwork, token: sourceToken });
+			setSelectedDestinationTokenNetwork({ network: destinationNetwork, token: destinationToken });
+		}
+	}, [isOpen]);
+
+	const handleClick = () => {
+		// @ts-ignore
+		if (selectedSourceTokenNetwork.network === sourceNetwork) {
+			dispatch({ type: DestinationEnum.NETWORK, payload: selectedDestinationTokenNetwork.network });
+			dispatch({ type: DestinationEnum.TOKEN, payload: selectedDestinationTokenNetwork.token });
+		}
+		handleClose();
+	};
+
+	useEffect(() => {
+		const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClick() : null);
 		document.body.addEventListener('keydown', closeOnEscapeKey);
 
 		return () => {
@@ -117,7 +144,7 @@ export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props)
 			<Wrapper theme={theme}>
 				{/* @ts-ignore */}
 				<Content theme={theme} size={size} ref={domNode}>
-					<CloseIcon onClick={handleClose} theme={theme}>
+					<CloseIcon onClick={handleClick} theme={theme}>
 						&#x2715;
 					</CloseIcon>
 					{children}

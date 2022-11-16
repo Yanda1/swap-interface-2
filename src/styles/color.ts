@@ -31,6 +31,10 @@ export type Theme = {
 		background: string;
 		shadow: string;
 	};
+	list: {
+		hover: string;
+		active: string;
+	};
 };
 
 export const lightTheme: Theme = {
@@ -63,6 +67,10 @@ export const lightTheme: Theme = {
 		default: '#E5E5E5',
 		background: '#D6D6D6',
 		shadow: '#868686'
+	},
+	list: {
+		hover: '#F8F8F8',
+		active: '#EAEAEA'
 	}
 };
 
@@ -96,6 +104,10 @@ export const darkTheme: Theme = {
 		default: '#1C2125',
 		background: '#212426',
 		shadow: '#0A0A0A'
+	},
+	list: {
+		hover: '#1A1F25',
+		active: '#2A2F35'
 	}
 };
 

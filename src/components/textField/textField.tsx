@@ -15,24 +15,27 @@ import { useStore } from '../../helpers';
 
 type AlignProps = 'left' | 'right' | 'center';
 type TypeProps = 'text' | 'number' | 'search';
+type SizeProps = 'regular' | 'small';
 
 type StyledProps = {
 	align: AlignProps;
 	error: boolean;
 	type: TypeProps;
+	size: SizeProps;
 };
 
 const TextFieldWrapper = styled.div`
 	position: relative;
 `;
 
-const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
+const StyledTextField = styled.input(({ align, error, type, size }: StyledProps) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	const isTypeNumber = type === 'number';
 	const isTypeSearch = type === 'search';
+	const isSmall = size === 'small';
 
 	return css`
 		background: none;
@@ -40,7 +43,7 @@ const StyledTextField = styled.input(({ align, error, type }: StyledProps) => {
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[20]};
 		padding: ${isTypeSearch
-			? `${spacing[14]} ${spacing[14]} ${spacing[14]} ${spacing[42]}`
+			? `${spacing[isSmall ? 8 : 14]} ${spacing[14]} ${spacing[isSmall ? 8 : 14]} ${spacing[42]}`
 			: `${spacing[18]} ${spacing[HORIZONTAL_PADDING]}`};
 		color: ${theme.font.default};
 		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.default};
@@ -103,12 +106,14 @@ const Error = styled.div`
 `;
 
 type Props = {
+	// TODO: improve props ... size only on type search etc.
 	placeholder?: string;
 	disabled?: boolean;
 	type?: TypeProps;
 	value: string;
 	description?: string;
 	error?: boolean;
+	size?: SizeProps;
 	onChange?: (e?: any) => void;
 	align?: AlignProps;
 };
@@ -121,6 +126,7 @@ export const TextField = ({
 	onChange,
 	description,
 	error,
+	size = 'regular',
 	align = 'center'
 }: Props) => {
 	const {
@@ -131,6 +137,7 @@ export const TextField = ({
 
 	const textField = (
 		<>
+			{/* @ts-ignore */}
 			<StyledTextField
 				placeholder={placeholder}
 				disabled={disabled}
@@ -139,7 +146,7 @@ export const TextField = ({
 				value={value}
 				type={type}
 				min="0"
-				// @ts-ignore
+				size={size}
 				error={error}
 				onBlur={() => setIsActive(true)}
 				onFocus={() => setIsActive(false)}

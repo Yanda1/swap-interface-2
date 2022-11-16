@@ -2,15 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { AmountEnum, DestinationEnum, SourceEnum, useStore } from '../../helpers';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
-import {
-	fontSize,
-	pxToRem,
-	spacing,
-	DEFAULT_BORDER_RADIUS,
-	HORIZONTAL_PADDING,
-	SELECT_LIST_HEIGHT,
-	MAIN_MAX_WIDTH
-} from '../../styles';
+import { fontSize, spacing, DEFAULT_BORDER_RADIUS, SELECT_LIST_HEIGHT } from '../../styles';
 import { IconButton, TextField } from '../../components';
 
 const Wrapper = styled.div(() => {
@@ -21,10 +13,8 @@ const Wrapper = styled.div(() => {
 	return css`
 		display: flex;
 		flex-direction: column;
-		flex: 0 1 ${MAIN_MAX_WIDTH} / 2 - ${pxToRem(36)};
-		border: 1px solid ${theme.font.default};
+		width: 100%;
 		height: ${SELECT_LIST_HEIGHT};
-		padding: 0 ${spacing[HORIZONTAL_PADDING]};
 		background: ${theme.background.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 	`;
@@ -39,12 +29,17 @@ const Title = styled.div(() => {
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[22]};
 		color: ${theme.font.secondary};
-		margin: ${spacing[20]} ${spacing[12]} ${spacing[12]};
+		padding: ${spacing[12]};
 	`;
 });
 
+const TextFieldWrapper = styled.div`
+	margin: 0 ${spacing[12]} ${spacing[8]};
+`;
+
 const List = styled.ul`
 	overflow-y: auto;
+	margin: 0;
 	padding: 0;
 	height: ${SELECT_LIST_HEIGHT};
 
@@ -67,10 +62,12 @@ const Item = styled.li((props: any) => {
 		font-size: ${fontSize[16]};
 		color: ${theme.font.secondary};
 		line-height: ${fontSize[22]};
-		margin: ${spacing[10]} 0;
-		border-radius: ${DEFAULT_BORDER_RADIUS};
-		padding: ${spacing[12]} ${spacing[HORIZONTAL_PADDING]};
-		border: 1px solid ${props.activeBorder ? theme.button.default : theme.button.transparent};
+		padding: ${spacing[12]};
+		background-color: ${props.activeBorder ? theme.list.active : theme.button.transparent};
+
+		&:hover {
+			background-color: ${theme.list.hover};
+		}
 	`;
 });
 
@@ -159,12 +156,15 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	return (
 		<Wrapper data-testid="custom">
 			<Title>Select {listTitle[value as Value]}</Title>
-			<TextField
-				align="left"
-				value={search}
-				placeholder={placeholder}
-				onChange={(event) => setSearch(event.target.value)}
-			/>
+			<TextFieldWrapper>
+				<TextField
+					type="search"
+					size="small"
+					value={search}
+					placeholder={placeholder}
+					onChange={(event) => setSearch(event.target.value)}
+				/>
+			</TextFieldWrapper>
 			{data.length > 0 ? (
 				<List>
 					{dataList.map((el: string) => (
