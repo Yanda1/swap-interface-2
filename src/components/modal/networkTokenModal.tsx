@@ -148,7 +148,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	}, [chainId]);
 
 	return !isMobile ? (
-		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
+		<Portal handleClose={() => setShowModal(false)} isOpen={showModal} size="large">
 			{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 && (
 				<Wrapper>
 					<SelectWrapper>

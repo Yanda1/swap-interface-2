@@ -44,7 +44,7 @@ const StyledTextField = styled.input(({ align, error, type, size }: StyledProps)
 		line-height: ${fontSize[20]};
 		padding: ${isTypeSearch
 			? `${spacing[isSmall ? 8 : 14]} ${spacing[14]} ${spacing[isSmall ? 8 : 14]} ${spacing[42]}`
-			: `${spacing[18]} ${spacing[HORIZONTAL_PADDING]}`};
+			: `${spacing[isSmall ? 12 : 18]} ${spacing[HORIZONTAL_PADDING]}`};
 		color: ${theme.font.default};
 		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};

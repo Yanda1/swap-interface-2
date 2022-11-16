@@ -15,8 +15,9 @@ type Props = {
 const ModalWrapper = styled.div`
 	display: flex;
 	align-items: center;
-	column-gap: ${spacing[60]};
-	padding: ${spacing[18]} ${spacing[46]} 0 ${spacing[26]};
+	justify-content: space-between;
+	gap: ${spacing[12]};
+	width: 100%;
 
 	${mediaQuery('xs')} {
 		flex-direction: column;
@@ -25,8 +26,6 @@ const ModalWrapper = styled.div`
 		margin-bottom: ${spacing[8]};
 	}
 `;
-
-const ModalContainer = styled.div``;
 
 const AccountTitle = styled.div(() => {
 	const {
@@ -57,7 +56,7 @@ const CopyContainer = styled.div`
 
 const Account = styled.div`
 	display: inline-flex;
-	font-size: ${fontSize[18]};
+	font-size: ${fontSize[16]};
 	font-weight: ${fontWeight['regular']};
 	line-height: ${fontSize[26]};
 
@@ -135,7 +134,7 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	return (
 		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
 			<ModalWrapper>
-				<ModalContainer>
+				<div>
 					<AccountTitle>Account</AccountTitle>
 					<StatusContainer>Connected with Metamask</StatusContainer>
 					<Account>
@@ -150,7 +149,7 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 							{!isCopied ? 'Copy Address' : 'Copied!'}
 						</CopyText>
 					</CopyContainer>
-				</ModalContainer>
+				</div>
 				<Button variant="secondary" onClick={handleDisconnect}>
 					Disconnect
 				</Button>

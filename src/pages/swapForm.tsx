@@ -1,10 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
-import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
+import {
+	mediaQuery,
+	spacing,
+	MAIN_MAX_WIDTH,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET
+} from '../styles';
+import type { ThemeProps } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
-import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
+import { ReactComponent as SettingsDark } from '../assets/settings-dark.svg';
+import { ReactComponent as SettingsLight } from '../assets/settings-light.svg';
+import {
+	IconButton,
+	NetworkTokenModal,
+	SwapButton,
+	TextField,
+	Fees,
+	NotificationsModal
+} from '../components';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -14,7 +30,8 @@ import {
 	isTokenSelected,
 	beautifyNumbers,
 	useStore,
-	NETWORK_TO_ID
+	NETWORK_TO_ID,
+	useBreakpoint
 } from '../helpers';
 import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
@@ -22,6 +39,30 @@ import { useFees } from '../hooks';
 const Wrapper = styled.main`
 	margin: 0 auto;
 	max-width: ${MAIN_MAX_WIDTH};
+`;
+
+const Settings = styled.div`
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: ${spacing[16]};
+
+	& button {
+		all: unset;
+		cursor: pointer;
+
+		&:hover {
+			opacity: 0.8;
+		}
+
+		&:focus-visible {
+			outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+			outline: ${(props: ThemeProps) => DEFAULT_OUTLINE(props.theme)};
+		}
+
+		&:active {
+			outline: none;
+		}
+	}
 `;
 
 const Trader = styled.div`
@@ -124,12 +165,15 @@ export const SwapForm = () => {
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
+	const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+
+	const { isBreakpointWidth: isMobile } = useBreakpoint('xs');
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -217,6 +261,21 @@ export const SwapForm = () => {
 				setShowModal={setShowDestinationModal}
 				type="DESTINATION"
 			/>
+			<NotificationsModal
+				showModal={showNotificaitonsModal}
+				setShowModal={setShowNotificaitonsModal}
+			/>
+			{!isMobile && (
+				<Settings theme={theme}>
+					<button onClick={() => setShowNotificaitonsModal(!showNotificaitonsModal)}>
+						{isLightTheme(theme) ? (
+							<SettingsDark style={{ width: 22 }} />
+						) : (
+							<SettingsLight style={{ width: 22 }} />
+						)}
+					</button>
+				</Settings>
+			)}
 			<Trader>
 				<Swap>
 					<SwapInput>

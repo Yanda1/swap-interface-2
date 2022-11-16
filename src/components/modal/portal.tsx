@@ -6,6 +6,8 @@ import type { ThemeProps } from '../../styles';
 import { DestinationEnum, hexToRgbA, useStore } from '../../helpers';
 import { useClickOutside } from '../../hooks';
 
+type StyledProps = ThemeProps & { size: SizeProps };
+
 const Wrapper = styled.div(
 	({ theme }: ThemeProps) => css`
 		position: fixed;
@@ -21,9 +23,9 @@ const Wrapper = styled.div(
 );
 
 const Content = styled.div(
-	({ theme }: ThemeProps) => css`
+	({ theme, size }: StyledProps) => css`
 		background-color: ${theme.modal.default};
-		width: ${pxToRem(685)};
+		width: ${pxToRem(size === 'small' ? 450 : 685)};
 		max-width: calc(100% - ${spacing[40]});
 		display: flex;
 		box-sizing: border-box;
@@ -72,6 +74,8 @@ type WrapperProps = {
 	wrapperId: string;
 };
 
+type SizeProps = 'large' | 'small';
+
 const PortalWrapper = ({ children, wrapperId = 'react-portal-wrapper' }: WrapperProps) => {
 	const [wrapperElement, setWrapperElement] = useState<HTMLElement | null>(null);
 
@@ -100,7 +104,7 @@ type Props = {
 	children: ReactNode;
 	isOpen: boolean;
 	hasBackButton?: boolean;
-	size?: 'large' | 'small';
+	size?: SizeProps;
 	handleClose: () => void;
 	handleBack?: () => void;
 };
@@ -110,7 +114,7 @@ export const Portal = ({
 	isOpen,
 	hasBackButton = false,
 	handleClose,
-	size = 'large',
+	size = 'small',
 	handleBack
 }: Props) => {
 	const {

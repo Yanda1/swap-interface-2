@@ -64,7 +64,7 @@ export const lightTheme: Theme = {
 		secondary: '#E5E5E5'
 	},
 	modal: {
-		default: '#E5E5E5',
+		default: '#F0F0F0',
 		background: '#D6D6D6',
 		shadow: '#868686'
 	},
