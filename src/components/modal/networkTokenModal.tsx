@@ -6,8 +6,8 @@ import { mediaQuery, spacing } from '../../styles';
 import { Button, Modal, SelectList } from '../../components';
 import type { DestinationNetworks } from '../../helpers';
 import {
-	DestinationEnum,
 	CHAINS,
+	DestinationEnum,
 	isNetworkSelected,
 	isTokenSelected,
 	NETWORK_TO_ID,
@@ -21,7 +21,7 @@ import { useEthers } from '@usedapp/core';
 const ChildWrapper = styled.div`
 	display: flex;
 	flex-wrap: wrap;
-	margin: ${spacing[42]};
+	margin: ${spacing[42]} 0;
 	justify-content: center;
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};
