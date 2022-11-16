@@ -47,7 +47,7 @@ type Props = {
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const { chainId } = useEthers();
 
-	const [isShowList, setIsShowList] = useState(true);
+	const [showsNetworkList, setShowsNetworkList] = useState(true);
 	const { isBreakpointWidth: isMobile } = useBreakpoint(480);
 	const {
 		dispatch,
@@ -121,7 +121,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	};
 
 	const handleBack = () => {
-		setIsShowList(true);
+		setShowsNetworkList(true);
 		dispatch({
 			type: isSource ? SourceEnum.TOKEN : DestinationEnum.TOKEN,
 			payload: isSource ? 'Select Token' : 'Select Token'
@@ -129,7 +129,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	};
 
 	useEffect(() => {
-		setIsShowList(true);
+		setShowsNetworkList(true);
 	}, [showModal]);
 
 	useEffect(() => {
@@ -163,26 +163,30 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 							placeholder="Token Name"
 						/>
 					</SelectWrapper>
-					<Button disabled={isDisabled} onClick={handleSubmit} color="default">
+					<Button disabled={isDisabled} onClick={handleSubmit} color="transparent">
 						{isDisabled ? 'Please select Network and Token' : 'Select'}
 					</Button>
 				</Wrapper>
 			)}
 		</Portal>
 	) : (
-		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
+		<Portal
+			handleClose={() => setShowModal(false)}
+			isOpen={showModal}
+			hasBackButton={!showsNetworkList}
+			handleBack={handleBack}>
 			<Wrapper>
 				{/* @ts-ignore */}
 				{(isSource ? sourceNetworksList : destinationNetworksList)?.length > 0 ? (
 					<>
-						{isShowList && (
+						{showsNetworkList && (
 							<SelectList
 								value={isSource ? 'SOURCE_NETWORK' : 'NETWORK'}
 								data={isSource ? sourceNetworksList : destinationNetworksList}
 								placeholder="Network Name"
 							/>
 						)}
-						{!isShowList && (
+						{!showsNetworkList && (
 							<SelectList
 								value={isSource ? 'SOURCE_TOKEN' : 'TOKEN'}
 								data={isSource ? sourceTokensList : destinationTokensList}
@@ -193,16 +197,17 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 				) : (
 					<div>No available networks...</div>
 				)}
-				{isShowList && (
+				{showsNetworkList && (
 					<Button
-						onClick={() => setIsShowList(false)}
-						color={
-							isNetworkSelected(isSource ? sourceNetwork : destinationNetwork)
-								? 'transparent'
-								: 'transparent'
-						}
+						color="transparent"
+						onClick={() => setShowsNetworkList(false)}
 						disabled={!isNetworkSelected(isSource ? sourceNetwork : destinationNetwork)}>
 						NEXT
+					</Button>
+				)}
+				{!showsNetworkList && (
+					<Button color="transparent" onClick={handleSubmit} disabled={isDisabled}>
+						{isDisabled ? 'Please select Token' : 'Select'}
 					</Button>
 				)}
 			</Wrapper>

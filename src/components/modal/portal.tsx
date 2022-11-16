@@ -38,18 +38,26 @@ const Content = styled.div(
 	`
 );
 
-const CloseIcon = styled.div(({ theme }: ThemeProps) => {
-	return css`
-		cursor: pointer;
-		position: absolute;
-		top: 0;
-		right: 0;
-		font-size: ${spacing[10]};
-		padding: ${spacing[12]} ${spacing[14]};
-		font-weight: 400;
-		color: ${theme.font.secondary};
-	`;
-});
+const BackButton = styled.div(
+	({ theme }: ThemeProps) =>
+		css`
+			cursor: pointer;
+			position: absolute;
+			line-height: ${spacing[22]};
+			top: 0;
+			left: 0;
+			padding: ${spacing[12]} ${spacing[22]};
+			font-weight: 400;
+			color: ${theme.font.secondary};
+		`
+);
+
+const CloseIcon = styled(BackButton)`
+	font-size: ${spacing[10]};
+	padding: ${spacing[12]} ${spacing[14]};
+	left: unset;
+	right: 0;
+`;
 
 const createWrapperAndAppendToBody = (wrapperId: string) => {
 	const wrapperElement = document.createElement('div') as HTMLElement;
@@ -91,11 +99,20 @@ const PortalWrapper = ({ children, wrapperId = 'react-portal-wrapper' }: Wrapper
 type Props = {
 	children: ReactNode;
 	isOpen: boolean;
+	hasBackButton?: boolean;
 	size?: 'large' | 'small';
 	handleClose: () => void;
+	handleBack?: () => void;
 };
 
-export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props) => {
+export const Portal = ({
+	children,
+	isOpen,
+	hasBackButton = false,
+	handleClose,
+	size = 'large',
+	handleBack
+}: Props) => {
 	const {
 		state: { theme, destinationNetwork, destinationToken, sourceNetwork, sourceToken },
 		dispatch
@@ -114,13 +131,6 @@ export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props)
 		token: ''
 	});
 
-	useEffect(() => {
-		if (isOpen) {
-			setSelectedSourceTokenNetwork({ network: sourceNetwork, token: sourceToken });
-			setSelectedDestinationTokenNetwork({ network: destinationNetwork, token: destinationToken });
-		}
-	}, [isOpen]);
-
 	const handleClick = () => {
 		// @ts-ignore
 		if (selectedSourceTokenNetwork.network === sourceNetwork) {
@@ -129,6 +139,13 @@ export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props)
 		}
 		handleClose();
 	};
+
+	useEffect(() => {
+		if (isOpen) {
+			setSelectedSourceTokenNetwork({ network: sourceNetwork, token: sourceToken });
+			setSelectedDestinationTokenNetwork({ network: destinationNetwork, token: destinationToken });
+		}
+	}, [isOpen]);
 
 	useEffect(() => {
 		const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClick() : null);
@@ -144,6 +161,11 @@ export const Portal = ({ children, isOpen, handleClose, size = 'large' }: Props)
 			<Wrapper theme={theme}>
 				{/* @ts-ignore */}
 				<Content theme={theme} size={size} ref={domNode}>
+					{hasBackButton ? (
+						<BackButton onClick={handleBack} theme={theme}>
+							&#8592; BACK
+						</BackButton>
+					) : null}
 					<CloseIcon onClick={handleClick} theme={theme}>
 						&#x2715;
 					</CloseIcon>

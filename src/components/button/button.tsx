@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { ColorType, DEFAULT_OUTLINE_OFFSET, DEFAULT_TRANSIITON, fontWeight } from '../../styles';
+import { DEFAULT_OUTLINE_OFFSET, DEFAULT_TRANSIITON, fontWeight } from '../../styles';
+import type { ColorType } from '../../styles';
 import styled, { css } from 'styled-components';
 import moonbeam from '../../assets/moonbeam.svg';
 import metamask from '../../assets/metamask.svg';
@@ -58,7 +59,6 @@ const StyledButton = styled.button(
 		const setColor = icon ? 'icon' : color;
 		const isColorDefault = setColor === 'default';
 		const isPrimaryTransparent = variant === 'primary' && color === 'transparent';
-		const isPrimaryDisabled = variant === 'primary' && disabled;
 		const isSecondaryDefault = isSecondary && setColor === 'default';
 		const {
 			state: { theme }
@@ -70,7 +70,7 @@ const StyledButton = styled.button(
 			justify-content: ${isLoading ? 'center' : 'space-between'};
 			max-width: ${isPrimary ? MAIN_MAX_WIDTH : pxToRem(160)};
 			width: 100%;
-			font-weight: ${isPrimary ? fontWeight.bold : fontWeight.regular};
+			font-weight: ${isPrimary ? fontWeight.semibold : fontWeight.regular};
 			cursor: ${disabled ? 'not-allowed' : 'pointer'};
 			font-size: ${isPrimary ? pxToRem(16) : pxToRem(14)};
 			min-height: ${isPrimary ? pxToRem(57) : pxToRem(35)};
@@ -86,9 +86,7 @@ const StyledButton = styled.button(
 				? theme.button.disabled
 				: theme.button[setColor]};
 			border: 1px solid
-				${isPrimaryDisabled
-					? theme.button.disabled
-					: isSecondaryDefault || isPrimaryTransparent
+				${isSecondaryDefault || isPrimaryTransparent
 					? theme.button.default
 					: isPure || isColorDefault
 					? theme.button.transparent
@@ -98,6 +96,11 @@ const StyledButton = styled.button(
 			margin: ${isSecondaryDefault && '1px'};
 			cursor: ${disabled && 'not-allowed'};
 			outline: 1px solid transparent;
+
+			&[disabled] {
+				border-color: ${isPrimary ? theme.button.disabled : setColor};
+				color: ${!isPrimary || isPrimaryTransparent ? theme.button.disabled : '#FFF'};
+			}
 
 			&:hover {
 				opacity: ${!isSecondaryDefault && '0.8'};
