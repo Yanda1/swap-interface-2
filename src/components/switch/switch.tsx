@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useStore } from '../../helpers';
+import { pxToRem } from '../../styles';
 
 const StyledSwitch = styled.input(() => {
 	const {
@@ -10,11 +11,11 @@ const StyledSwitch = styled.input(() => {
 		-webkit-appearance: none;
 		-moz-appearance: none;
 		appearance: none;
-		width: 50px;
-		height: 22px;
+		width: ${pxToRem(50)};
+		height: ${pxToRem(22)};
 		display: inline-block;
 		position: relative;
-		border-radius: 18px;
+		border-radius: ${pxToRem(18)};
 		overflow: hidden;
 		outline: none;
 		border: none;
@@ -27,12 +28,12 @@ const StyledSwitch = styled.input(() => {
 			content: '';
 			display: block;
 			position: absolute;
-			width: 16px;
-			height: 16px;
+			width: ${pxToRem(16)};
+			height: ${pxToRem(16)};
 			background: ${theme.font.default};
 			left: 2px;
 			top: 2px;
-			border-radius: 18px;
+			border-radius: ${pxToRem(18)};
 			transition: all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s;
 		}
 
@@ -46,7 +47,7 @@ const StyledSwitch = styled.input(() => {
 		}
 
 		&:checked:before {
-			left: 31px;
+			left: ${pxToRem(31)};
 		}
 	`;
 });

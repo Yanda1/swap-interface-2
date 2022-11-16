@@ -152,13 +152,15 @@ export const Portal = ({
 	}, [isOpen]);
 
 	useEffect(() => {
-		const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClick() : null);
-		document.body.addEventListener('keydown', closeOnEscapeKey);
+		if (isOpen) {
+			const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClick() : null);
+			document.body.addEventListener('keydown', closeOnEscapeKey);
 
-		return () => {
-			document.body.removeEventListener('keydown', closeOnEscapeKey);
-		};
-	}, [handleClose]);
+			return () => {
+				document.body.removeEventListener('keydown', closeOnEscapeKey);
+			};
+		}
+	}, [isOpen]);
 
 	return isOpen ? (
 		<PortalWrapper wrapperId="react-portal-modal-container">
