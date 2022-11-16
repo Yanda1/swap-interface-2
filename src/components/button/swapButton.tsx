@@ -18,6 +18,7 @@ import {
 	NETWORK_TO_ID
 } from '../../helpers';
 import { spacing } from '../../styles';
+import { useFees } from '../../hooks';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -43,14 +44,22 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		},
 		dispatch
 	} = useStore();
+	const { chainId, library: web3Provider } = useEthers();
+	const { maxAmount, minAmount } = useFees();
+
 	const isDisabled =
 		!validInputs ||
 		!isTokenSelected(sourceToken) ||
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
 		+destinationAmount < 0;
+	const message =
+		+minAmount >= +maxAmount
+			? 'Insufficent funds'
+			: +minAmount < +amount
+			? `Max Amount ${maxAmount} ${sourceToken}`
+			: `Min Amount ${minAmount} ${sourceToken}`;
 
-	const { chainId, library: web3Provider } = useEthers();
 	const sourceTokenData =
 		// @ts-ignore
 		// eslint-disable-next-line
@@ -118,7 +127,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	return (
 		<ButtonWrapper>
 			<Button disabled={isDisabled} color="default" onClick={onClick}>
-				Swap
+				{isDisabled ? message : 'Swap'}
 			</Button>
 		</ButtonWrapper>
 	);
