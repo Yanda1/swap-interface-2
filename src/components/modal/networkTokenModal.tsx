@@ -3,10 +3,11 @@ import styled from 'styled-components';
 import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
-import { SelectList, Modal, Button } from '../../components';
+import { Button, Modal, SelectList } from '../../components';
+import type { DestinationNetworks } from '../../helpers';
 import {
-	DestinationEnum,
 	CHAINS,
+	DestinationEnum,
 	isNetworkSelected,
 	isTokenSelected,
 	NETWORK_TO_ID,
@@ -14,14 +15,13 @@ import {
 	useBreakpoint,
 	useStore
 } from '../../helpers';
-import type { DestinationNetworks } from '../../helpers';
 import _ from 'lodash';
 import { useEthers } from '@usedapp/core';
 
 const ChildWrapper = styled.div`
 	display: flex;
 	flex-wrap: wrap;
-	margin: ${spacing[56]} 0;
+	margin: ${spacing[42]} 0;
 	justify-content: center;
 	column-gap: ${spacing[28]};
 	row-gap: ${spacing[22]};

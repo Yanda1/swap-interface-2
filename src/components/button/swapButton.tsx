@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
@@ -18,6 +18,7 @@ import {
 	NETWORK_TO_ID
 } from '../../helpers';
 import { spacing } from '../../styles';
+import { useLocalStorage } from '../../hooks';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -39,7 +40,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationAddress,
 			destinationMemo,
 			isUserVerified,
-			destinationAmount
+			destinationAmount,
+			productId
 		},
 		dispatch
 	} = useStore();
@@ -62,8 +64,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	if (web3Provider) {
 		protocol.connect(web3Provider.getSigner());
 	}
-
-	const { send: sendCreateProcess } = useContractFunction(
+	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'createProcess(address,bytes32,string)',
@@ -72,7 +73,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			gasLimitBufferPercentage: 25
 		}
 	);
-	const { send: sendTokenCreateProcess } = useContractFunction(
+	const { send: sendTokenCreateProcess, state: transactionContractSwapState } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'createProcess(address,address,bytes32,string)',
@@ -81,6 +82,15 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			gasLimitBufferPercentage: 25
 		}
 	);
+
+	const [swapsStorage, setSwapsStorage] = useLocalStorage('swaps', []);
+	const [transactionState, setTransactionState] = useState<{
+		status: string;
+		errorMessage: string;
+	}>({
+		status: '',
+		errorMessage: ''
+	});
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
@@ -114,6 +124,40 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			}
 		}
 	}));
+
+	useEffect(() => {
+		if (transactionSwapState.status !== 'None' && transactionSwapState.errorMessage) {
+			setTransactionState({
+				...transactionState,
+				status: transactionSwapState.status,
+				errorMessage: transactionSwapState.errorMessage
+			});
+		} else if (
+			transactionContractSwapState.status !== 'None' &&
+			transactionContractSwapState.errorMessage
+		) {
+			setTransactionState({
+				...transactionState,
+				status: transactionContractSwapState.status,
+				errorMessage: transactionContractSwapState.errorMessage
+			});
+		}
+	}, [transactionSwapState, transactionContractSwapState]);
+
+	useEffect(() => {
+		if (
+			transactionState.status === 'Exception' &&
+			transactionState.errorMessage === 'user rejected transaction'
+		) {
+			if (swapsStorage) {
+				const copySwapsStorage = [...swapsStorage];
+				copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
+				setSwapsStorage(copySwapsStorage);
+				dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
+				setTransactionState({ status: '', errorMessage: '' });
+			}
+		}
+	}, [transactionState]);
 
 	return (
 		<ButtonWrapper>
