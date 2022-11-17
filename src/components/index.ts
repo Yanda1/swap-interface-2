@@ -1,4 +1,5 @@
 export * from './accordion/accordion';
+export * from './arrow/arrow';
 export * from './button/button';
 export * from './button/swapButton';
 export * from './fees/fees';
