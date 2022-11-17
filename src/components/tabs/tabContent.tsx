@@ -145,7 +145,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				{data?.[toggleIndex].costRequestCounter ? (
 					<ContentItem theme={theme} color={data.color} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Request Validation ({data?.[toggleIndex].costRequestCounter}/2)
+							Swap Request Validation ({data?.[toggleIndex]?.costRequestCounter}/2)
 						</ContentItemTitle>
 						<ContentItemText>
 							{data?.[toggleIndex].costRequestCounter < 2
@@ -164,9 +164,9 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{currentBlockNumber - data?.[toggleIndex].depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber - data?.[toggleIndex]?.depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: currentBlockNumber - data?.[toggleIndex].depositBlock >= BLOCKS_AMOUNT &&
+								: currentBlockNumber - data?.[toggleIndex]?.depositBlock >= BLOCKS_AMOUNT &&
 								  !data?.[toggleIndex].action.length
 								? 'Your deposit is received and should be confirmed soon.'
 								: null}
@@ -176,8 +176,8 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
-							Conversion {data?.[toggleIndex].sourceToken}{' '}
-							{orders.s.replace(data?.[toggleIndex].sourceToken, '')}
+							Conversion {data?.[toggleIndex]?.sourceToken}{' '}
+							{orders.s.replace(data?.[toggleIndex]?.sourceToken, '')}
 						</ContentItemTitle>
 						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
@@ -206,16 +206,16 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 						</ContentItemLink>
 					</ContentItem>
 				) : null}
-				{data?.[toggleIndex].complete ? (
+				{data?.[toggleIndex]?.complete ? (
 					<ContentItem theme={theme} color={theme.button.default}>
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
-				) : !data?.[toggleIndex].complete && data?.[toggleIndex].complete !== null ? (
+				) : !data?.[toggleIndex]?.complete && data?.[toggleIndex]?.complete !== null ? (
 					<ContentItem theme={theme} color={theme.font.pure}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data?.[toggleIndex].complete === null ? (
+				{data?.[toggleIndex]?.complete === null ? (
 					<SpinnerWrapper>
 						<Spinner size="medium" color="default" />
 					</SpinnerWrapper>
