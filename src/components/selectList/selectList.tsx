@@ -71,6 +71,11 @@ const Item = styled.li((props: any) => {
 	`;
 });
 
+const Name = styled.p`
+	margin: 0;
+	padding-left: ${spacing[10]};
+`;
+
 type Value = 'SOURCE_NETWORK' | 'SOURCE_TOKEN' | 'NETWORK' | 'TOKEN';
 
 type Props = {
@@ -179,7 +184,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 								icon={el}
 								iconOnly
 							/>
-							{el}
+							<Name>{el}</Name>
 						</Item>
 					))}
 				</List>

@@ -7,7 +7,8 @@ import {
 	ContentList,
 	ContentItemText,
 	ContentItemLink,
-	Spinner
+	Spinner,
+	Arrow
 } from '../../components';
 import { beautifyNumbers, useBreakpoint, useStore, WEI_TO_GLMR } from '../../helpers';
 import type { TransactionData } from '../../helpers';
@@ -43,7 +44,7 @@ export const Wrapper = styled.div`
 
 const TitleWrapper = styled.div`
 	cursor: pointer;
-	padding: ${spacing[12]} ${spacing[48]} ${spacing[12]} ${spacing[20]};
+	padding: ${spacing[12]} ${spacing[20]};
 	background-color: ${(props: StyleProps) => props.theme.background.secondary};
 	transition: ${DEFAULT_TRANSIITON};
 	position: relative;
@@ -87,26 +88,6 @@ const MobileHeaderInfo = styled.div`
 const MobileHeaderSection = styled.div`
 	display: flex;
 	gap: ${spacing[8]};
-`;
-
-export const ArrowWrapper = styled.div`
-	width: ${spacing[10]};
-	height: ${spacing[10]};
-	background-color: ${(props: StyleProps) => props.theme.font.secondary};
-	position: absolute;
-	top: 50%;
-	right: ${spacing[20]};
-	transition: ${DEFAULT_TRANSIITON};
-	transform: translate(-50%, -50%) rotate(${(props: StyleProps) => (props.open ? '45' : '-135')}deg);
-`;
-
-export const Arrow = styled.div`
-	width: 100%;
-	height: 100%;
-	background-color: ${(props: StyleProps) => props.theme.background.secondary};
-	position: absolute;
-	left: 15%;
-	top: 15%;
 `;
 
 const Content = styled.div`
@@ -245,10 +226,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 									: ''}
 							</TitleText>
 						</TitleTab>
-						{/* @ts-ignore */}
-						<ArrowWrapper open={item.open} theme={theme}>
-							<Arrow theme={theme}></Arrow>
-						</ArrowWrapper>
+						<Arrow open={item.open} />
 					</TitleWrapper>
 					<Content
 						theme={theme}

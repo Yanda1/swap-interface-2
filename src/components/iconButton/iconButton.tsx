@@ -140,7 +140,6 @@ const Img = styled.img(({ iconOnly }: Props) => {
 	return css`
 		height: ${iconOnly ? pxToRem(25) : pxToRem(40)};
 		width: ${iconOnly ? pxToRem(25) : pxToRem(40)};
-		margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
 		cursor: pointer;
 	`;
 });

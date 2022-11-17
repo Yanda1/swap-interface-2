@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
 import { Switch } from '../../components';
 
-describe('Button', () => {
+describe('Switch', () => {
 	it('should render a default button', () => {
 		const { getByText } = render(
 			<AuthProvider>

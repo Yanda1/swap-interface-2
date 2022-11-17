@@ -5,12 +5,16 @@ import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
+import { ReactComponent as CheckLight } from '../../assets/check-light.svg';
+import { ReactComponent as CheckDark } from '../../assets/check-dark.svg';
 import { ReactComponent as MenuDark } from '../../assets/menu-dark.svg';
 import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
-import { Theme, ColorType } from '../../styles';
+import MOON from '../../assets/glmr.png';
+import ETH from '../../assets/eth.png';
+import type { Theme, ColorType } from '../../styles';
 import {
 	mediaQuery,
 	pxToRem,
@@ -42,10 +46,11 @@ import {
 	DestinationEnum,
 	CHAINS,
 	hexToRgbA,
-	isNetworkSelected
+	isNetworkSelected,
+	SourceEnum
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
-import { Button, useToasts, Wallet, IconButton, ArrowWrapper, Arrow } from '../../components';
+import { Button, useToasts, Wallet, IconButton, Arrow } from '../../components';
 import type { IconType } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage } from '../../hooks';
 import _ from 'lodash';
@@ -105,12 +110,12 @@ const Menu = styled.ul`
 	position: absolute;
 	top: ${spacing[40]};
 	right: ${spacing[4]};
+	box-sizing: border-box;
 	max-width: calc(100% - ${pxToRem(8)});
 	background: ${(props: Props) => props.theme.background.secondary};
 	text-align: right;
 	padding: ${spacing[24]} ${spacing[18]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
-	cursor: pointer;
 	z-index: 1_000;
 
 	border: 1px solid ${(props: Props) => props.theme.border.default};
@@ -122,6 +127,19 @@ const Menu = styled.ul`
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
 	}
+`;
+
+const Networks = styled(Menu)`
+	width: 100%;
+
+	& li {
+		display: flex;
+		gap: ${spacing[10]};
+	}
+`;
+
+const NetworkWrapper = styled.div`
+	display: flex;
 `;
 
 export const Header = () => {
@@ -145,7 +163,7 @@ export const Header = () => {
 	const api = useAxios();
 
 	const [showMenu, setShowMenu] = useState(false);
-	const [showNetworkModal, setShowNetworkModal] = useState(false);
+	const [showNetworksList, setShowNetworksList] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
@@ -228,6 +246,20 @@ export const Header = () => {
 		}
 	};
 
+	const handleNetworkChange = async (name: string) => {
+		await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);
+		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+		dispatch({
+			type: SourceEnum.NETWORK,
+			payload: name
+		});
+		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+	};
+
 	const checkStatus = async () => {
 		if (!isUserVerified && account === userAccount && isNetworkConnected) {
 			setIsLoading(true);
@@ -284,7 +316,10 @@ export const Header = () => {
 		}
 	};
 
-	const domNode: any = useClickOutside(() => setShowMenu(false));
+	const domNode: any = useClickOutside(() => {
+		setShowMenu(false);
+		setShowNetworksList(false);
+	});
 
 	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
@@ -389,12 +424,10 @@ export const Header = () => {
 				</Button>
 			)}
 			{isMobile && isNetworkSelected(sourceNetwork) && (
-				<>
+				<NetworkWrapper>
 					<IconButton icon={sourceNetwork as IconType} iconOnly />
-					<ArrowWrapper theme={theme} open={showNetworkModal}>
-						<Arrow theme={theme}></Arrow>
-					</ArrowWrapper>
-				</>
+					<Arrow open={showNetworksList} onClick={() => setShowNetworksList(!showNetworksList)} />
+				</NetworkWrapper>
 			)}
 			{!isMobile && (
 				<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
@@ -429,6 +462,23 @@ export const Header = () => {
 							{isLightTheme(theme) ? <>Dark theme &#9733;</> : <>Light theme &#9733;</>}
 						</li>
 					</Menu>
+				</MenuWrapper>
+			)}
+			{showNetworksList && (
+				<MenuWrapper theme={theme}>
+					<Networks theme={theme} ref={domNode}>
+						{Object.values(CHAINS).map((chain) => (
+							<li onClick={() => handleNetworkChange(chain.name)}>
+								<img src={chain.name === 'ETH' ? ETH : MOON} style={{ height: 18 }} />
+								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
+								{sourceNetwork !== chain.name ? null : isLightTheme(theme) ? (
+									<CheckLight style={{ marginLeft: 'auto', marginTop: 4 }} />
+								) : (
+									<CheckDark style={{ marginLeft: 'auto', marginTop: 4 }} />
+								)}
+							</li>
+						))}
+					</Networks>
 				</MenuWrapper>
 			)}
 		</StyledHeader>
