@@ -41,11 +41,13 @@ import {
 	BasicStatusEnum,
 	DestinationEnum,
 	CHAINS,
-	hexToRgbA
+	hexToRgbA,
+	isNetworkSelected
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
-import { Button, useToasts, Wallet } from '../../components';
-import { useAxios, useLocalStorage, useClickOutside } from '../../hooks';
+import { Button, useToasts, Wallet, IconButton, ArrowWrapper, Arrow } from '../../components';
+import type { IconType } from '../../components';
+import { useAxios, useClickOutside, useLocalStorage } from '../../hooks';
 import _ from 'lodash';
 
 type Props = {
@@ -143,7 +145,7 @@ export const Header = () => {
 	const api = useAxios();
 
 	const [showMenu, setShowMenu] = useState(false);
-	const [showModal, setShowModal] = useState(false);
+	const [showNetworkModal, setShowNetworkModal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
@@ -263,7 +265,7 @@ export const Header = () => {
 			try {
 				activateBrowserWallet();
 			} catch (error) {
-				setShowModal(true);
+				console.log('error in connect wallet', error);
 			}
 		}
 
@@ -375,7 +377,6 @@ export const Header = () => {
 					{pathname !== '/transaction-history' ? 'Transaction History' : 'Swap Form'}
 				</Button>
 			)}
-			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account && isNetworkConnected ? (
 				<Wallet />
 			) : (
@@ -387,7 +388,14 @@ export const Header = () => {
 					{buttonStatus.text}
 				</Button>
 			)}
-
+			{isMobile && isNetworkSelected(sourceNetwork) && (
+				<>
+					<IconButton icon={sourceNetwork as IconType} iconOnly />
+					<ArrowWrapper theme={theme} open={showNetworkModal}>
+						<Arrow theme={theme}></Arrow>
+					</ArrowWrapper>
+				</>
+			)}
 			{!isMobile && (
 				<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
 					{isLight ? <Moon /> : <Sun />}
@@ -423,7 +431,6 @@ export const Header = () => {
 					</Menu>
 				</MenuWrapper>
 			)}
-			{showModal && <div>Modal</div>}
 		</StyledHeader>
 	);
 };

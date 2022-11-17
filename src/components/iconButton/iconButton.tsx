@@ -102,6 +102,8 @@ const icons = {
 	ERROR
 };
 
+export type IconType = keyof typeof icons;
+
 const Icon = styled.button(({ disabled }: Props) => {
 	const {
 		state: { theme }
@@ -145,52 +147,7 @@ const Img = styled.img(({ iconOnly }: Props) => {
 
 type Props = {
 	disabled?: boolean;
-	icon?:
-		| '1INCH'
-		| 'AION'
-		| 'ARBITRUM'
-		| 'AAVE'
-		| 'ACH'
-		| 'AGIX'
-		| 'ALICE'
-		| 'ANT'
-		| 'APE'
-		| 'AUDIO'
-		| 'BCH'
-		| 'BNT'
-		| 'CHZ'
-		| 'DAI'
-		| 'DOGE'
-		| 'DOT'
-		| 'FTT'
-		| 'LINK'
-		| 'MANA'
-		| 'OPTIMISM'
-		| 'QNT'
-		| 'SAND'
-		| 'SHIB'
-		| 'SUSHI'
-		| 'UNI'
-		| 'WBTC'
-		| 'BSC'
-		| 'USDT'
-		| 'GLMR'
-		| 'BTC'
-		| 'BNB'
-		| 'ETH'
-		| 'SOL'
-		| 'BUSD'
-		| 'TRX'
-		| 'MATIC'
-		| 'AVAXC'
-		| 'SEGWIT'
-		| 'XRP'
-		| 'XTZ'
-		| 'INFO'
-		| 'WARNING'
-		| 'SUCCESS'
-		| 'ERROR'
-		| 'Select Token';
+	icon?: IconType | 'Select Icon';
 	onClick?: () => void;
 	iconOnly?: boolean;
 };

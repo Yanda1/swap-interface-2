@@ -89,7 +89,7 @@ const MobileHeaderSection = styled.div`
 	gap: ${spacing[8]};
 `;
 
-const ArrowWrapper = styled.div`
+export const ArrowWrapper = styled.div`
 	width: ${spacing[10]};
 	height: ${spacing[10]};
 	background-color: ${(props: StyleProps) => props.theme.font.secondary};
@@ -99,7 +99,8 @@ const ArrowWrapper = styled.div`
 	transition: ${DEFAULT_TRANSIITON};
 	transform: translate(-50%, -50%) rotate(${(props: StyleProps) => (props.open ? '45' : '-135')}deg);
 `;
-const Arrow = styled.div`
+
+export const Arrow = styled.div`
 	width: 100%;
 	height: 100%;
 	background-color: ${(props: StyleProps) => props.theme.background.secondary};
