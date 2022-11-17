@@ -78,6 +78,7 @@ const Label = styled.p`
 
 const List = styled.ul`
 	position: absolute;
+	z-index: 100;
 	top: ${pxToRem(42)};
 	right: 0;
 	border: ${(props: StyleProps) => (props.open ? '1' : '0')}px solid

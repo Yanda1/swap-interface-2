@@ -8,7 +8,6 @@ export * from './modal/notificationsModal';
 export * from './modal/walletModal';
 export * from './header/header';
 export * from './modal/portal';
-export * from './network/network';
 export * from './select/select';
 export * from './selectList/selectList';
 export * from './spinner/spinner';

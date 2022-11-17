@@ -216,7 +216,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
 				) : !data?.[toggleIndex]?.complete && data?.[toggleIndex]?.complete !== null ? (
-					<ContentItem theme={theme} color={theme.font.pure}>
+					<ContentItem theme={theme} color={theme.font.default}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}

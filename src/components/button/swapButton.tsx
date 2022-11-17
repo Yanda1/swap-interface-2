@@ -15,7 +15,8 @@ import {
 	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore,
-	NETWORK_TO_ID
+	NETWORK_TO_ID,
+	beautifyNumbers
 } from '../../helpers';
 import { spacing } from '../../styles';
 import { useLocalStorage, useFees } from '../../hooks';
@@ -58,8 +59,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		+minAmount >= +maxAmount
 			? 'Insufficent funds'
 			: +minAmount < +amount
-			? `Max Amount ${maxAmount} ${sourceToken}`
-			: `Min Amount ${minAmount} ${sourceToken}`;
+			? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+			: `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`;
 
 	const sourceTokenData =
 		// @ts-ignore

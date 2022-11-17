@@ -48,7 +48,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const { chainId } = useEthers();
 
 	const [showsNetworkList, setShowsNetworkList] = useState(true);
-	const { isBreakpointWidth: isMobile } = useBreakpoint(480);
+	const { isBreakpointWidth: isMobile } = useBreakpoint('xs');
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }

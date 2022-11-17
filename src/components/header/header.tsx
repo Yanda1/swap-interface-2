@@ -44,8 +44,8 @@ import {
 	hexToRgbA
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
-import { Button, Network, useToasts, Wallet } from '../../components';
-import { useAxios, useClickOutside, useLocalStorage } from '../../hooks';
+import { Button, useToasts, Wallet } from '../../components';
+import { useAxios, useLocalStorage, useClickOutside } from '../../hooks';
 import _ from 'lodash';
 
 type Props = {
