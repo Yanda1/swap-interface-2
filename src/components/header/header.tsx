@@ -403,16 +403,21 @@ export const Header = () => {
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
 						<li
-							onClick={() =>
-								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/')
-							}>
+							onClick={() => {
+								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
+								setShowMenu(!showMenu);
+							}}>
 							{pathname !== '/transaction-history' ? (
 								<>Transaction History &#11044;</>
 							) : (
 								<>Swap Form &#11044;</>
 							)}
 						</li>
-						<li onClick={changeTheme}>
+						<li
+							onClick={() => {
+								changeTheme();
+								setShowMenu(!showMenu);
+							}}>
 							{isLightTheme(theme) ? <>Dark theme &#9733;</> : <>Light theme &#9733;</>}
 						</li>
 					</Menu>
