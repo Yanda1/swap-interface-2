@@ -5,8 +5,8 @@ import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList, Portal, Button } from '../../components';
 import {
-	DestinationEnum,
 	CHAINS,
+	DestinationEnum,
 	isNetworkSelected,
 	isTokenSelected,
 	NETWORK_TO_ID,
