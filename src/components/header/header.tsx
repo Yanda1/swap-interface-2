@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
@@ -10,7 +10,7 @@ import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
-import type { Theme, ColorType } from '../../styles';
+import { Theme, ColorType } from '../../styles';
 import {
 	mediaQuery,
 	pxToRem,
@@ -40,11 +40,12 @@ import {
 	routes,
 	BasicStatusEnum,
 	DestinationEnum,
-	CHAINS
+	CHAINS,
+	hexToRgbA
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
 import { Button, Network, useToasts, Wallet } from '../../components';
-import { useAxios, useLocalStorage } from '../../hooks';
+import { useAxios, useClickOutside, useLocalStorage } from '../../hooks';
 import _ from 'lodash';
 
 type Props = {
@@ -60,7 +61,8 @@ const StyledHeader = styled.header`
 
 	${mediaQuery('s')} {
 		height: ${pxToRem(55)};
-		gap: ${pxToRem(24)};
+		gap: ${spacing[16]};
+		justify-content: space-between;
 		margin-bottom: ${pxToRem(39.5)};
 	}
 `;
@@ -85,19 +87,35 @@ const ThemeButton = styled.button`
 	}
 `;
 
-const Menu = styled.ul`
+const MenuWrapper = styled.div`
 	position: fixed;
-	top: ${spacing[56]};
-	right: ${spacing[14]};
-	max-width: calc(100vw - ${pxToRem(28)});
-	background: ${(props: Props) => props.theme.background.default};
+	inset: 0;
+	background-color: ${(props: Props) => hexToRgbA(props.theme.modal.background, '0.8')};
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: 1000;
+	justify-content: center;
+	overflow: hidden;
+`;
+
+const Menu = styled.ul`
+	position: absolute;
+	top: ${spacing[40]};
+	right: ${spacing[4]};
+	max-width: calc(100% - ${pxToRem(8)});
+	background: ${(props: Props) => props.theme.background.secondary};
 	text-align: right;
-	padding: ${spacing[14]};
+	padding: ${spacing[24]} ${spacing[18]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	cursor: pointer;
-	border: 1px solid
-		${(props: Props) =>
-			isLightTheme(props.theme) ? props.theme.font.default : props.theme.font.secondary};
+	z-index: 1_000;
+
+	border: 1px solid ${(props: Props) => props.theme.border.default};
+
+	& > li {
+		list-style: none;
+	}
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
@@ -130,7 +148,6 @@ export const Header = () => {
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
-	const menuRef = useRef<HTMLUListElement | null>(null);
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
 
@@ -142,23 +159,6 @@ export const Header = () => {
 	const changeTheme = (): void => {
 		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
 		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(isLight));
-	};
-
-	const handleShowMenu = (): void => {
-		if (!showMenu) {
-			document.addEventListener('click', handleOutsideClick, { capture: true });
-		} else {
-			document.removeEventListener('click', handleOutsideClick, {
-				capture: true
-			});
-		}
-		setShowMenu(false);
-	};
-
-	const handleOutsideClick = (e: any): void => {
-		if (menuRef.current) {
-			if (!menuRef.current.contains(e.target)) handleShowMenu();
-		}
 	};
 
 	const checkNetwork = async (): Promise<void> => {
@@ -282,6 +282,8 @@ export const Header = () => {
 		}
 	};
 
+	const domNode: any = useClickOutside(() => setShowMenu(false));
+
 	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
 			makeBinanceKycCall(binanceToken);
@@ -358,7 +360,7 @@ export const Header = () => {
 	return (
 		<StyledHeader theme={theme}>
 			{isMobile ? (
-				<LogoMobile style={{ marginRight: 'auto' }} />
+				<LogoMobile />
 			) : isLight ? (
 				<LogoLight style={{ marginRight: 'auto' }} />
 			) : (
@@ -386,17 +388,35 @@ export const Header = () => {
 				</Button>
 			)}
 
-			<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
-				{isLight ? <Moon /> : <Sun />}
-			</ThemeButton>
+			{!isMobile && (
+				<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
+					{isLight ? <Moon /> : <Sun />}
+				</ThemeButton>
+			)}
 			{isMobile &&
-				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
+				(isLight ? (
+					<MenuLight onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }} />
+				) : (
+					<MenuDark onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }} />
+				))}
 			{showMenu && (
-				<Menu theme={theme} ref={menuRef}>
-					<li>Transaction History</li>
-					<li>Change Network</li>
-					<li>Logout</li>
-				</Menu>
+				<MenuWrapper theme={theme}>
+					<Menu theme={theme} ref={domNode}>
+						<li
+							onClick={() =>
+								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/')
+							}>
+							{pathname !== '/transaction-history' ? (
+								<>Transaction History &#11044;</>
+							) : (
+								<>Swap Form &#11044;</>
+							)}
+						</li>
+						<li onClick={changeTheme}>
+							{isLightTheme(theme) ? <>Dark theme &#9733;</> : <>Light theme &#9733;</>}
+						</li>
+					</Menu>
+				</MenuWrapper>
 			)}
 			{showModal && <div>Modal</div>}
 		</StyledHeader>

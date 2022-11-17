@@ -87,7 +87,6 @@ const List = styled.ul`
 	padding: 0;
 	text-align: right;
 	width: calc(100% - 0.125rem);
-	z-index: 100;
 	background: ${(props: StyleProps) => props.theme.background.default};
 	list-style: none;
 	overflow: hidden;

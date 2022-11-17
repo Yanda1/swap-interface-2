@@ -46,7 +46,7 @@ export const GlobalStyles = createGlobalStyle`
 
 		${mediaQuery('s')} {
 			background: ${(props: Props) =>
-				`linear-gradient(180deg, ${props.theme.background.secondary}, ${props.theme.background.secondary} 55px, ${props.theme.background.default} 55px);`}
+				`linear-gradient(180deg, ${props.theme.background.secondary}, ${props.theme.background.secondary} 52px, ${props.theme.background.default} 52px);`}
 		}
 	}
 
