@@ -397,11 +397,11 @@ export const Header = () => {
 	return (
 		<StyledHeader theme={theme}>
 			{isMobile ? (
-				<LogoMobile />
+				<LogoMobile style={{ width: '26px' }}/>
 			) : isLight ? (
-				<LogoLight style={{ marginRight: 'auto' }} />
+				<LogoLight style={{ marginRight: 'auto', width: '113px' }} />
 			) : (
-				<LogoDark style={{ marginRight: 'auto' }} />
+				<LogoDark style={{ marginRight: 'auto', width: '113px' }} />
 			)}
 			{!isMobile && (
 				<Button
