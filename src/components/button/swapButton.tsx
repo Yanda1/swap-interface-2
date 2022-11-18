@@ -3,7 +3,7 @@ import { useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
-import { utils } from 'ethers';
+import { utils, providers } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
 import type { ContractAdress } from '../../helpers';
@@ -70,7 +70,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
-	if (web3Provider) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
 		protocol.connect(web3Provider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
