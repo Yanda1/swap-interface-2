@@ -48,11 +48,11 @@ describe('SelectList', () => {
 			`
 		z-index: 10;
 		cursor: pointer;
-		color: ${darkTheme.font.pure};
+		color: ${darkTheme.font.secondary};
 		padding: ${spacing[6]} ${spacing[6]};
 		text-align: center;
 		margin-right: 0;
-		background: ${darkTheme.background.mobile};
+		background: ${darkTheme.background.secondary};
 		border-radius: ${DEFAULT_BORDER_RADIUS} ${DEFAULT_BORDER_RADIUS} 0 0;
 		border: 1px solid ${darkTheme.button.wallet};
 		border-bottom: 1px solid ${darkTheme.button.default};

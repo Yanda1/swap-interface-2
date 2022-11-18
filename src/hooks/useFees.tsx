@@ -191,17 +191,17 @@ export const useFees = () => {
 					'tokens'
 				]?.[destinationToken]?.['withdrawFee'];
 
-			return { amount: +withdrawFee, currency: destinationToken };
+			return { amount: +withdrawFee, currency: destinationToken, name: 'Withdrawal' };
 		} else {
-			return { amount: 0, currency: destinationToken };
+			return { amount: 0, currency: destinationToken, name: 'Withdrawal' };
 		}
 	}, [destinationToken, sourceToken]);
 
 	const protocolFee = useMemo((): Fee => {
 		if (amount) {
-			return { amount: +amount * PROTOCOL_FEE, currency: sourceToken };
+			return { amount: +amount * PROTOCOL_FEE, currency: sourceToken, name: 'Protocol' };
 		} else {
-			return { amount: 0, currency: sourceToken };
+			return { amount: 0, currency: sourceToken, name: 'Protocol' };
 		}
 	}, [amount]);
 
@@ -262,10 +262,11 @@ export const useFees = () => {
 
 			return {
 				amount: +utils.formatEther(calculatedFee['_hex']),
-				currency: sourceToken
+				currency: sourceToken,
+				name: 'Network'
 			};
 		} else {
-			return { amount: 0, currency: sourceToken };
+			return { amount: 0, currency: sourceToken, name: 'Network' };
 		}
 	}, [gasAmount, sourceToken]);
 
@@ -302,16 +303,17 @@ export const useFees = () => {
 					result *= edgePrice;
 					allCexFees.push({
 						amount: result * BINANCE_FEE,
-						currency: graphPath.path[i + 1]
+						currency: graphPath.path[i + 1],
+						name: 'CEX'
 					});
 				}
 
 				return allCexFees;
 			} else {
-				return [{ amount: 0, currency: sourceToken }];
+				return [{ amount: 0, currency: sourceToken, name: 'CEX' }];
 			}
 		} else {
-			return [{ amount: 0, currency: sourceToken }];
+			return [{ amount: 0, currency: sourceToken, name: 'CEX' }];
 		}
 	}, [destinationToken, amount]);
 

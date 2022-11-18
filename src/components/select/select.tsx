@@ -8,7 +8,9 @@ import {
 	fontSize,
 	mediaQuery,
 	pxToRem,
-	spacing
+	spacing,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET
 } from '../../styles';
 import type { Theme } from '../../styles';
 import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
@@ -28,7 +30,7 @@ const SelectWrapper = styled.div`
 
 const SelectBox = styled.button`
 	all: unset;
-	border: 1px solid ${(props: StyleProps) => props.theme.background.history};
+	border: 1px solid ${(props: StyleProps) => props.theme.border.default};
 	max-height: ${pxToRem(50)};
 	box-sizing: border-box;
 	display: inline-flex;
@@ -47,12 +49,12 @@ const SelectBox = styled.button`
 
 	&:hover,
 	&:active {
-		border-color: ${(props: StyleProps) => props.theme.font.pure};
+		border-color: ${(props: StyleProps) => props.theme.font.secondary};
 	}
 
 	&:focus-visible {
-		outline-offset: 2px;
-		outline: 1px solid white;
+		outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+		outline: ${(props: StyleProps) => DEFAULT_OUTLINE(props.theme)};
 	}
 `;
 
@@ -76,16 +78,16 @@ const Label = styled.p`
 
 const List = styled.ul`
 	position: absolute;
+	z-index: 100;
 	top: ${pxToRem(42)};
 	right: 0;
 	border: ${(props: StyleProps) => (props.open ? '1' : '0')}px solid
-		${(props: StyleProps) => props.theme.background.history};
+		${(props: StyleProps) => props.theme.background.tertiary};
 	min-width: calc(${pxToRem(175)} - 0.125rem);
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	padding: 0;
 	text-align: right;
 	width: calc(100% - 0.125rem);
-	z-index: 100;
 	background: ${(props: StyleProps) => props.theme.background.default};
 	list-style: none;
 	overflow: hidden;
@@ -103,7 +105,7 @@ const ListItem = styled.li`
 
 	&:hover,
 	&:focus {
-		background: ${(props: StyleProps) => props.theme.background.history};
+		background: ${(props: StyleProps) => props.theme.background.tertiary};
 		outline: none;
 	}
 `;

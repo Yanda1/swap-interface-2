@@ -1,5 +1,12 @@
 import { lightTheme, darkTheme } from '../styles';
-import { isLightTheme, beautifyNumbers, isNetworkSelected, isTokenSelected } from '../helpers';
+import {
+	isLightTheme,
+	beautifyNumbers,
+	isNetworkSelected,
+	isTokenSelected,
+	hexToRgbA,
+	isArrayType
+} from '../helpers';
 
 describe('Helpers should return the correct values', () => {
 	it(' isLightTheme() function should return the correct theme', () => {
@@ -24,5 +31,17 @@ describe('Helpers should return the correct values', () => {
 		expect(isTokenSelected('Select Token')).toBe(false);
 		expect(isTokenSelected('')).toBe(false);
 		expect(isTokenSelected('ETH')).toBe(true);
+	});
+
+	it('isArrayType() function should return the correct value', () => {
+		expect(isArrayType({})).toBe(false);
+		expect(isArrayType('string')).toBe(false);
+		expect(isArrayType([{}])).toBe(true);
+		expect(isArrayType([{ age: 12, name: 'test' }, 'string'])).toBe(true);
+	});
+
+	it('hexToRgbA() function should return the correct value', () => {
+		expect(hexToRgbA('#000000', '0.5')).toBe('rgba(0,0,0,0.5)');
+		expect(hexToRgbA('#b80213')).toBe('rgba(184,2,19,1)');
 	});
 });

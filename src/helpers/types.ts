@@ -10,7 +10,7 @@ export type ContractAdress = keyof typeof CONTRACT_ADDRESSES;
 export type ApiAuthType = { access: string; is_kyced: boolean; refresh: string };
 
 export type Price = { symbol: string; price: string };
-export type Fee = { amount: number; currency: string };
+export type Fee = { amount: number; currency: string; name?: string };
 export type GraphType = false | { distance: number; path: string[] };
 
 export type TransactionData = {

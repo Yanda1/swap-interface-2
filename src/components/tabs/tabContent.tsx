@@ -1,7 +1,7 @@
 import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import type { Theme } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, Theme } from '../../styles';
 import { DEFAULT_TRANSIITON, fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 import { useAxios } from '../../hooks';
@@ -18,13 +18,18 @@ type Props = {
 type StyleProps = Props & { theme: Theme };
 
 const Content = styled.div`
-	color: ${(props: StyleProps) => props.theme.font.pure};
+	color: ${(props: StyleProps) => props.theme.font.secondary};
 	padding: ${spacing[20]};
 
 	display: block;
-	background: ${(props: StyleProps) => props.theme.background.mobile};
+	background: ${(props: StyleProps) => props.theme.background.secondary};
 	border: 1px solid
-		${(props: StyleProps) => (props.type === 'history' ? 'transparent' : props.theme.button.wallet)};
+		${(props: StyleProps) =>
+			props.type === 'history' ? 'transparent' : props.theme.border.default};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
+	border-top-left-radius: 0;
+	margin-top: -1px;
+	z-index: -2;
 `;
 
 export const ContentList = styled.ul`
@@ -88,7 +93,7 @@ export const ContentItemText = styled.div(() => {
 });
 
 export const ContentItemLink = styled.div`
-	color: ${(props: StyleProps) => props.theme.font.pure};
+	color: ${(props: StyleProps) => props.theme.font.secondary};
 	line-height: ${fontSize[16]};
 	text-decoration: underline;
 	cursor: pointer;
@@ -211,7 +216,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
 				) : !data?.[toggleIndex]?.complete && data?.[toggleIndex]?.complete !== null ? (
-					<ContentItem theme={theme} color={theme.font.pure}>
+					<ContentItem theme={theme} color={theme.font.default}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}

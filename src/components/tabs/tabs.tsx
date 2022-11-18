@@ -21,15 +21,14 @@ const Tab = styled.div(({ active }: Props) => {
 	} = useStore();
 
 	return css`
-		z-index: 10;
 		cursor: pointer;
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		padding: ${spacing[6]} ${spacing[6]};
 		text-align: center;
 		margin-right: ${spacing[4]};
-		background: ${theme.background.mobile};
+		background: ${theme.background.secondary};
 		border-radius: ${DEFAULT_BORDER_RADIUS} ${DEFAULT_BORDER_RADIUS} 0 0;
-		border: 1px solid ${theme.button.wallet};
+		border: 1px solid ${theme.border.default};
 		border-bottom: none;
 
 		&:nth-child(${++active}) {

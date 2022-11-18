@@ -1,22 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
+import { ReactComponent as CheckLight } from '../../assets/check-light.svg';
+import { ReactComponent as CheckDark } from '../../assets/check-dark.svg';
 import { ReactComponent as MenuDark } from '../../assets/menu-dark.svg';
 import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
 import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
+import MOON from '../../assets/glmr.png';
+import ETH from '../../assets/eth.png';
 import type { Theme, ColorType } from '../../styles';
 import {
 	mediaQuery,
 	pxToRem,
 	spacing,
 	DEFAULT_BORDER_RADIUS,
-	theme as defaultTheme
+	theme as defaultTheme,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET
 } from '../../styles';
 import {
 	ButtonEnum,
@@ -38,11 +44,15 @@ import {
 	routes,
 	BasicStatusEnum,
 	DestinationEnum,
-	CHAINS
+	CHAINS,
+	hexToRgbA,
+	isNetworkSelected,
+	SourceEnum
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
-import { Button, Network, useToasts, Wallet } from '../../components';
-import { useAxios, useLocalStorage } from '../../hooks';
+import { Button, useToasts, Wallet, IconButton, Arrow } from '../../components';
+import type { IconType } from '../../components';
+import { useAxios, useClickOutside, useLocalStorage } from '../../hooks';
 import _ from 'lodash';
 
 type Props = {
@@ -58,7 +68,8 @@ const StyledHeader = styled.header`
 
 	${mediaQuery('s')} {
 		height: ${pxToRem(55)};
-		gap: ${pxToRem(24)};
+		gap: ${spacing[16]};
+		justify-content: space-between;
 		margin-bottom: ${pxToRem(39.5)};
 	}
 `;
@@ -67,14 +78,15 @@ const ThemeButton = styled.button`
 	cursor: pointer;
 	background: none;
 	border: none;
+	outline: 1px solid transparent;
 
 	&:hover {
 		opacity: 0.8;
 	}
 
 	&:focus-visible {
-		outline-offset: 2px;
-		outline: 1px solid ${(props: Props) => props.theme.font.default};
+		outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+		outline: ${(props: Props) => DEFAULT_OUTLINE(props.theme)};
 	}
 
 	&:active {
@@ -82,23 +94,52 @@ const ThemeButton = styled.button`
 	}
 `;
 
-const Menu = styled.ul`
+const MenuWrapper = styled.div`
 	position: fixed;
-	top: ${spacing[56]};
-	right: ${spacing[14]};
-	max-width: calc(100vw - ${pxToRem(28)});
-	background: ${(props: Props) => props.theme.background.default};
+	inset: 0;
+	background-color: ${(props: Props) => hexToRgbA(props.theme.modal.background, '0.8')};
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	z-index: 1000;
+	justify-content: center;
+	overflow: hidden;
+`;
+
+const Menu = styled.ul`
+	position: absolute;
+	top: ${spacing[40]};
+	right: ${spacing[4]};
+	box-sizing: border-box;
+	max-width: calc(100% - ${pxToRem(8)});
+	background: ${(props: Props) => props.theme.background.secondary};
 	text-align: right;
-	padding: ${spacing[14]};
+	padding: ${spacing[24]} ${spacing[18]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
-	cursor: pointer;
-	border: 1px solid
-		${(props: Props) =>
-			isLightTheme(props.theme) ? props.theme.font.default : props.theme.font.pure};
+	z-index: 1_000;
+
+	border: 1px solid ${(props: Props) => props.theme.border.default};
+
+	& > li {
+		list-style: none;
+	}
 
 	& > li:not(:last-child) {
 		margin-bottom: ${pxToRem(16)};
 	}
+`;
+
+const Networks = styled(Menu)`
+	width: 100%;
+
+	& li {
+		display: flex;
+		gap: ${spacing[10]};
+	}
+`;
+
+const NetworkWrapper = styled.div`
+	display: flex;
 `;
 
 export const Header = () => {
@@ -122,12 +163,11 @@ export const Header = () => {
 	const api = useAxios();
 
 	const [showMenu, setShowMenu] = useState(false);
-	const [showModal, setShowModal] = useState(false);
+	const [showNetworksList, setShowNetworksList] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
-	const menuRef = useRef<HTMLUListElement | null>(null);
 	const navigate = useNavigate();
 	const { pathname } = useLocation();
 
@@ -139,23 +179,6 @@ export const Header = () => {
 	const changeTheme = (): void => {
 		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
 		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(isLight));
-	};
-
-	const handleShowMenu = (): void => {
-		if (!showMenu) {
-			document.addEventListener('click', handleOutsideClick, { capture: true });
-		} else {
-			document.removeEventListener('click', handleOutsideClick, {
-				capture: true
-			});
-		}
-		setShowMenu(false);
-	};
-
-	const handleOutsideClick = (e: any): void => {
-		if (menuRef.current) {
-			if (!menuRef.current.contains(e.target)) handleShowMenu();
-		}
 	};
 
 	const checkNetwork = async (): Promise<void> => {
@@ -223,6 +246,20 @@ export const Header = () => {
 		}
 	};
 
+	const handleNetworkChange = async (name: string) => {
+		await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);
+		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+		dispatch({
+			type: SourceEnum.NETWORK,
+			payload: name
+		});
+		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
+		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+	};
+
 	const checkStatus = async () => {
 		if (!isUserVerified && account === userAccount && isNetworkConnected) {
 			setIsLoading(true);
@@ -260,7 +297,7 @@ export const Header = () => {
 			try {
 				activateBrowserWallet();
 			} catch (error) {
-				setShowModal(true);
+				console.log('error in connect wallet', error);
 			}
 		}
 
@@ -278,6 +315,11 @@ export const Header = () => {
 			}
 		}
 	};
+
+	const domNode: any = useClickOutside(() => {
+		setShowMenu(false);
+		setShowNetworksList(false);
+	});
 
 	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
@@ -355,7 +397,7 @@ export const Header = () => {
 	return (
 		<StyledHeader theme={theme}>
 			{isMobile ? (
-				<LogoMobile style={{ marginRight: 'auto' }} />
+				<LogoMobile />
 			) : isLight ? (
 				<LogoLight style={{ marginRight: 'auto' }} />
 			) : (
@@ -370,7 +412,6 @@ export const Header = () => {
 					{pathname !== '/transaction-history' ? 'Transaction History' : 'Swap Form'}
 				</Button>
 			)}
-			{showModal && <Network showModal={showModal} setShowModal={setShowModal} />}
 			{isUserVerified && account && isNetworkConnected ? (
 				<Wallet />
 			) : (
@@ -382,20 +423,64 @@ export const Header = () => {
 					{buttonStatus.text}
 				</Button>
 			)}
-
-			<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
-				{isLight ? <Moon /> : <Sun />}
-			</ThemeButton>
-			{isMobile &&
-				(isLight ? <MenuLight onClick={handleShowMenu} /> : <MenuDark onClick={handleShowMenu} />)}
-			{showMenu && (
-				<Menu theme={theme} ref={menuRef}>
-					<li>Transaction History</li>
-					<li>Change Network</li>
-					<li>Logout</li>
-				</Menu>
+			{isMobile && isNetworkSelected(sourceNetwork) && (
+				<NetworkWrapper>
+					<IconButton icon={sourceNetwork as IconType} iconOnly />
+					<Arrow open={showNetworksList} onClick={() => setShowNetworksList(!showNetworksList)} />
+				</NetworkWrapper>
 			)}
-			{showModal && <div>Modal</div>}
+			{!isMobile && (
+				<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
+					{isLight ? <Moon /> : <Sun />}
+				</ThemeButton>
+			)}
+			{isMobile &&
+				(isLight ? (
+					<MenuLight onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }} />
+				) : (
+					<MenuDark onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }} />
+				))}
+			{showMenu && (
+				<MenuWrapper theme={theme}>
+					<Menu theme={theme} ref={domNode}>
+						<li
+							onClick={() => {
+								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
+								setShowMenu(!showMenu);
+							}}>
+							{pathname !== '/transaction-history' ? (
+								<>Transaction History &#11044;</>
+							) : (
+								<>Swap Form &#11044;</>
+							)}
+						</li>
+						<li
+							onClick={() => {
+								changeTheme();
+								setShowMenu(!showMenu);
+							}}>
+							{isLightTheme(theme) ? <>Dark theme &#9733;</> : <>Light theme &#9733;</>}
+						</li>
+					</Menu>
+				</MenuWrapper>
+			)}
+			{showNetworksList && (
+				<MenuWrapper theme={theme}>
+					<Networks theme={theme} ref={domNode}>
+						{Object.values(CHAINS).map((chain) => (
+							<li onClick={() => handleNetworkChange(chain.name)}>
+								<img src={chain.name === 'ETH' ? ETH : MOON} style={{ height: 18 }} />
+								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
+								{sourceNetwork !== chain.name ? null : isLightTheme(theme) ? (
+									<CheckLight style={{ marginLeft: 'auto', marginTop: 4 }} />
+								) : (
+									<CheckDark style={{ marginLeft: 'auto', marginTop: 4 }} />
+								)}
+							</li>
+						))}
+					</Networks>
+				</MenuWrapper>
+			)}
 		</StyledHeader>
 	);
 };

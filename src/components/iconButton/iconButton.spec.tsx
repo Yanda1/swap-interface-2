@@ -25,7 +25,7 @@ describe('IconButton', () => {
 		expect(btn).toBeInTheDocument();
 		expect(btn).toHaveStyle(
 			`
-			background: ${darkTheme.icon.default};
+			background: ${darkTheme.background.secondary};
 			padding: ${spacing[8]};
 			border: 1px solid ${darkTheme.font.default};
 			border-radius: ${DEFAULT_BORDER_RADIUS};

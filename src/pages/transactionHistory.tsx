@@ -98,7 +98,7 @@ export const TransactionHistory = () => {
 				</Notifications>
 			) : loading ? (
 				<Notifications>
-					<Spinner size="medium" color={theme.background.history} />
+					<Spinner size="medium" color={theme.background.tertiary} />
 					Fetching your Transaction History
 				</Notifications>
 			) : (
