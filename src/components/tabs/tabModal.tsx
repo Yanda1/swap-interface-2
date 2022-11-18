@@ -7,7 +7,7 @@ import {
 	CONTRACT_ADDRESSES,
 	ContractAdress,
 	isNetworkSelected,
-	isRejectHandler,
+	isSwapRejected,
 	isTokenSelected,
 	NETWORK_TO_ID,
 	SERVICE_ADDRESS,
@@ -257,9 +257,9 @@ export const TabModal = () => {
 	// Remove last swap if the user cancels it (with native or non-native token)
 	useEffect(() => {
 		if (
-			isRejectHandler(swapState.status, swapState.errorMessage) ||
-			isRejectHandler(swapStateContract.status, swapStateContract.errorMessage) ||
-			isRejectHandler(swapStateApprove.status, swapStateApprove.errorMessage)
+			isSwapRejected(swapState.status, swapState.errorMessage) ||
+			isSwapRejected(swapStateContract.status, swapStateContract.errorMessage) ||
+			isSwapRejected(swapStateApprove.status, swapStateApprove.errorMessage)
 		) {
 			const swapsCopy: Props[] = [...swapsStorage];
 			swapsCopy.splice(swapsCopy.length - 1, 1);

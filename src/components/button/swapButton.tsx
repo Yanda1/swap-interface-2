@@ -10,7 +10,7 @@ import type { ContractAdress } from '../../helpers';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
-	isRejectHandler,
+	isSwapRejected,
 	isTokenSelected,
 	makeId,
 	NETWORK_TO_ID,
@@ -155,7 +155,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	}, [transactionSwapState, transactionContractSwapState]);
 
 	useEffect(() => {
-		if (isRejectHandler(transactionState.status, transactionState.errorMessage) && swapsStorage) {
+		if (isSwapRejected(transactionState.status, transactionState.errorMessage) && swapsStorage) {
 			const copySwapsStorage = [...swapsStorage];
 			copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
 			setSwapsStorage(copySwapsStorage);
