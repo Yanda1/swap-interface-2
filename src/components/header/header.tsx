@@ -278,7 +278,7 @@ export const Header = () => {
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					addToast('Your KYC process has been rejected - please start again!', 'warning');
-				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
+				} else if ((basic === BasicStatusEnum.INITIAL || basic === BasicStatusEnum.PASS) && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
