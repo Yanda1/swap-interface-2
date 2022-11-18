@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import styled, {css} from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Tabs } from '../../components';
-import { pxToRem } from '../../styles';
 import type { Theme } from '../../styles';
+import { pxToRem } from '../../styles';
 import {
 	CONTRACT_ADDRESSES,
 	ContractAdress,
 	isNetworkSelected,
+	isRejectHandler,
 	isTokenSelected,
 	NETWORK_TO_ID,
 	SERVICE_ADDRESS,
@@ -77,7 +78,7 @@ export const TabModal = () => {
 		}
 	}
 
-	const { send: sendTokenApprove, state: transactionStateApproveContract } = useContractFunction(
+	const { send: sendTokenApprove, state: swapStateApprove } = useContractFunction(
 		tokenContract,
 		'approve',
 		{
@@ -85,11 +86,11 @@ export const TabModal = () => {
 			gasLimitBufferPercentage: 10
 		}
 	);
-	const { sendTransaction, state: transactionState } = useSendTransaction({
+	const { sendTransaction, state: swapState } = useSendTransaction({
 		transactionName: 'Deposit',
 		gasLimitBufferPercentage: 10
 	});
-	const { send: sendDeposit, state: transactionStateContract } = useContractFunction(
+	const { send: sendDeposit, state: swapStateContract } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'deposit',
@@ -256,19 +257,16 @@ export const TabModal = () => {
 	// Remove last swap if the user cancels it (with native or non-native token)
 	useEffect(() => {
 		if (
-			(transactionState.status === 'Exception' &&
-				transactionState.errorMessage === 'user rejected transaction') ||
-			(transactionStateContract.status === 'Exception' &&
-				transactionStateContract.errorMessage === 'user rejected transaction') ||
-			(transactionStateApproveContract.status === 'Exception' &&
-				transactionStateApproveContract.errorMessage === 'user rejected transaction')
+			isRejectHandler(swapState.status, swapState.errorMessage) ||
+			isRejectHandler(swapStateContract.status, swapStateContract.errorMessage) ||
+			isRejectHandler(swapStateApprove.status, swapStateApprove.errorMessage)
 		) {
 			const swapsCopy: Props[] = [...swapsStorage];
 			swapsCopy.splice(swapsCopy.length - 1, 1);
 			setSwapsStorage(swapsCopy);
 			setSwaps(swapsCopy);
 		}
-	}, [transactionState, transactionStateContract, transactionStateApproveContract]);
+	}, [swapState, swapStateContract, swapStateApprove]);
 
 	useEffect(() => {
 		subscribeSwap();

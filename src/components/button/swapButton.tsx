@@ -8,18 +8,19 @@ import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
 import type { ContractAdress } from '../../helpers';
 import {
+	beautifyNumbers,
 	CONTRACT_ADDRESSES,
+	isRejectHandler,
 	isTokenSelected,
 	makeId,
+	NETWORK_TO_ID,
 	PairEnum,
 	ProductIdEnum,
 	SERVICE_ADDRESS,
-	useStore,
-	NETWORK_TO_ID,
-	beautifyNumbers
+	useStore
 } from '../../helpers';
 import { spacing } from '../../styles';
-import { useLocalStorage, useFees } from '../../hooks';
+import { useFees, useLocalStorage } from '../../hooks';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -154,17 +155,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	}, [transactionSwapState, transactionContractSwapState]);
 
 	useEffect(() => {
-		if (
-			transactionState.status === 'Exception' &&
-			transactionState.errorMessage === 'user rejected transaction'
-		) {
-			if (swapsStorage) {
-				const copySwapsStorage = [...swapsStorage];
-				copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
-				setSwapsStorage(copySwapsStorage);
-				dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
-				setTransactionState({ status: '', errorMessage: '' });
-			}
+		if (isRejectHandler(transactionState.status, transactionState.errorMessage) && swapsStorage) {
+			const copySwapsStorage = [...swapsStorage];
+			copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
+			setSwapsStorage(copySwapsStorage);
+			dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
+			setTransactionState({ status: '', errorMessage: '' });
 		}
 	}, [transactionState]);
 
