@@ -11,7 +11,7 @@ import {
 } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
 import { useEthers, useSendTransaction, useContractFunction, ERC20Interface } from '@usedapp/core';
-import { utils } from 'ethers';
+import { utils, providers } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
@@ -56,7 +56,7 @@ export const TabModal = () => {
 	const tokenContract =
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
-	if (web3Provider) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
 		protocol.connect(web3Provider.getSigner());
 		if (tokenContract) {
 			tokenContract.connect(web3Provider.getSigner());
