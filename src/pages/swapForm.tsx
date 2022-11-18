@@ -1,9 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
-import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
+import {
+	mediaQuery,
+	spacing,
+	MAIN_MAX_WIDTH,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET
+} from '../styles';
+import type { ThemeProps } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
+import { ReactComponent as SettingsDark } from '../assets/settings-dark.svg';
+import { ReactComponent as SettingsLight } from '../assets/settings-light.svg';
+import {
+	IconButton,
+	NetworkTokenModal,
+	SwapButton,
+	TextField,
+	Fees,
+	NotificationsModal
+} from '../components';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -13,32 +30,57 @@ import {
 	isTokenSelected,
 	beautifyNumbers,
 	useStore,
-	NETWORK_TO_ID
+	NETWORK_TO_ID,
+	useBreakpoint
 } from '../helpers';
 import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
-import { IconButton, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
 	max-width: ${MAIN_MAX_WIDTH};
 `;
 
+const Settings = styled.div`
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: ${spacing[16]};
+
+	& button {
+		all: unset;
+		cursor: pointer;
+
+		&:hover {
+			opacity: 0.8;
+		}
+
+		&:focus-visible {
+			outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+			outline: ${(props: ThemeProps) => DEFAULT_OUTLINE(props.theme)};
+		}
+
+		&:active {
+			outline: none;
+		}
+	}
+`;
+
 const Trader = styled.div`
 	display: flex;
 	gap: ${spacing[10]};
-	align-items: center;
+	align-items: stretch;
 
 	${mediaQuery('xs')} {
 		flex-direction: column;
+		align-items: center;
 	}
 `;
 
 const Swap = styled.div`
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
 	gap: ${spacing[4]};
-	flex: 1;
 
 	${mediaQuery('xs')} {
 		width: 100%;
@@ -51,38 +93,44 @@ const SwapInput = styled.div`
 `;
 
 const NamesWrapper = styled.div(
-	({ single = true }: { single?: boolean }) => css`
+	() => css`
 		display: flex;
-		justify-content: ${single ? 'flex-start' : 'space-between'};
+		flex-direction: column;
+		gap: ${spacing[4]};
 
-		&:nth-child(2) {
-			margin-left: ${single ? 'auto' : '0'};
-		}
-
-		${mediaQuery('xs')} {
-			&:nth-child(2) {
-				margin-left: 0;
-			}
+		& div {
+			display: flex;
+			gap: ${spacing[4]};
 		}
 	`
 );
 
-const SwapNames = styled.div(
-	({ pos = 'start', single = true }: { pos?: string; single?: boolean }) => css`
-		display: flex;
-		flex-direction: column;
-		align-items: flex-${pos};
+const Names = styled.div(
+	({ justifyContent }: { justifyContent: 'space-between' | 'flex-end' | 'flex-start' }) => css`
+		justify-content: ${justifyContent};
 
 		${mediaQuery('xs')} {
-			align-items: ${single ? 'flex-start' : `flex-${pos}`};
+			justify-content: ${justifyContent === 'space-between' ? 'space-between' : 'flex-start'};
 		}
 	`
 );
 
 const Name = styled.div(
-	({ color }: { color: string }) => `
-	color: ${color};
-`
+	({ color }: { color: string }) => css`
+		color: ${color};
+	`
+);
+
+const MaxButton = styled.button(
+	({ color }: { color: string }) => css`
+		all: unset;
+		cursor: pointer;
+		color: ${color};
+
+		&:hover {
+			opacity: 0.8;
+		}
+	`
 );
 
 const ExchangeRate = styled.div(
@@ -90,7 +138,7 @@ const ExchangeRate = styled.div(
 	margin: ${spacing[28]} 0;
 	color: ${color};
 
-	${mediaQuery('s')} {
+	${mediaQuery('xs')} {
 	text-align: center;
 	}
 `
@@ -117,12 +165,15 @@ export const SwapForm = () => {
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
+	const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+
+	const { isBreakpointWidth: isMobile } = useBreakpoint('xs');
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -210,6 +261,21 @@ export const SwapForm = () => {
 				setShowModal={setShowDestinationModal}
 				type="DESTINATION"
 			/>
+			<NotificationsModal
+				showModal={showNotificaitonsModal}
+				setShowModal={setShowNotificaitonsModal}
+			/>
+			{!isMobile && (
+				<Settings theme={theme}>
+					<button onClick={() => setShowNotificaitonsModal(!showNotificaitonsModal)}>
+						{isLightTheme(theme) ? (
+							<SettingsDark style={{ width: 22 }} />
+						) : (
+							<SettingsLight style={{ width: 22 }} />
+						)}
+					</button>
+				</Settings>
+			)}
 			<Trader>
 				<Swap>
 					<SwapInput>
@@ -228,25 +294,29 @@ export const SwapForm = () => {
 							}}
 						/>
 					</SwapInput>
-					<NamesWrapper single={false}>
-						<SwapNames>
-							<Name color={theme.font.pure}>{sourceToken}</Name>
-							<Name color={theme.font.default}>({sourceNetwork})</Name>
-						</SwapNames>
-						<SwapNames pos="end" single={false}>
-							<Name color={limit.error ? theme.button.error : theme.font.pure}>
-								{limit.message}
-							</Name>
-							<Name color={limit.error ? theme.button.error : theme.font.default}>
-								{isTokenSelected(destinationToken) && beautifyNumbers({ n: limit.value })}
-							</Name>
-						</SwapNames>
+					<NamesWrapper>
+						{+maxAmount > 0 && (
+							<Names justifyContent="space-between">
+								<Name color={theme.font.default}>
+									Balance: {beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} {sourceToken}
+								</Name>
+								<MaxButton
+									color={theme.button.error}
+									onClick={() => dispatch({ type: AmountEnum.AMOUNT, payload: maxAmount })}>
+									Max
+								</MaxButton>
+							</Names>
+						)}
+						<Names justifyContent="flex-start">
+							<Name color={theme.font.default}>{sourceToken}</Name>
+							<Name color={theme.font.secondary}>({sourceNetwork})</Name>
+						</Names>
 					</NamesWrapper>
 				</Swap>
 				{isLightTheme(theme) ? (
-					<SwapperLight style={{ marginBottom: 38 }} />
+					<SwapperLight style={{ margin: '18px 0' }} />
 				) : (
-					<SwapperDark style={{ marginBottom: 38 }} />
+					<SwapperDark style={{ margin: '18px 0' }} />
 				)}
 				<Swap>
 					<SwapInput>
@@ -262,14 +332,14 @@ export const SwapForm = () => {
 						/>
 					</SwapInput>
 					<NamesWrapper>
-						<SwapNames pos="end">
-							<Name color={theme.font.pure}>{destinationToken}</Name>
-							<Name color={theme.font.default}>({destinationNetwork})</Name>
-						</SwapNames>
+						<Names justifyContent="flex-end">
+							<Name color={theme.font.default}>{destinationToken}</Name>
+							<Name color={theme.font.secondary}>({destinationNetwork})</Name>
+						</Names>
 					</NamesWrapper>
 				</Swap>
 			</Trader>
-			<ExchangeRate color={theme.font.pure}>
+			<ExchangeRate color={theme.font.default}>
 				{!isTokenSelected(destinationToken)
 					? 'Please select token to see price'
 					: `1 ${sourceToken} = ${beautifyNumbers({

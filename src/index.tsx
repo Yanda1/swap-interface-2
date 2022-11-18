@@ -12,7 +12,7 @@ const config: Config = {
 	readOnlyChainId: Mainnet.chainId,
 	readOnlyUrls: {
 		[Mainnet.chainId]: 'https://eth-mainnet-public.unifra.io',
-		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network',
+		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network'
 
 		// [Localhost.chainId]: 'http://127.0.0.1:8545',
 	},

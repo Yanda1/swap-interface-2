@@ -7,6 +7,8 @@ export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 export const isNetworkSelected = (network: string) =>
 	network !== 'Select Network' && network !== ''; // TODO: refine both functions - nullish check - and create enum for "Select Network / Token"
 
+export const isArrayType = (value: any) => typeof value === 'object' && Array.isArray(value);
+
 export const isTokenSelected = (token: string) => token !== 'Select Token' && token !== '';
 
 type BeautifyNumbers = {
@@ -52,4 +54,10 @@ export const useBreakpoint = (size: BreakpointOrNumber) => {
 		isBreakpointWidth: windowWidth < (isString ? breakpoint[size as Breakpoint] : size),
 		isBreakpointHeight: windowHeight < (isString ? breakpoint[size as Breakpoint] : size)
 	};
+};
+
+export const hexToRgbA = (hex: string, alpha = '1'): string => {
+	const [r, g, b] = hex.match(/\w\w/g)!.map((x) => parseInt(x, 16));
+
+	return `rgba(${r},${g},${b},${alpha})`;
 };

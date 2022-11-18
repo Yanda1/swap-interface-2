@@ -1,9 +1,7 @@
-import styled, { css } from 'styled-components';
-import { Modal } from './modal';
-import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
-import { Button } from '../button/button';
-import { JazzIcon } from '../wallet/wallet';
 import { useState } from 'react';
+import styled, { css } from 'styled-components';
+import { Portal, JazzIcon, Button } from '../../components';
+import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
 import { ButtonEnum, button, useStore } from '../../helpers';
 import { useEthers } from '@usedapp/core';
 
@@ -17,8 +15,9 @@ type Props = {
 const ModalWrapper = styled.div`
 	display: flex;
 	align-items: center;
-	column-gap: ${spacing[60]};
-	padding: ${spacing[18]} ${spacing[46]} 0 ${spacing[26]};
+	justify-content: space-between;
+	gap: ${spacing[12]};
+	width: 100%;
 
 	${mediaQuery('xs')} {
 		flex-direction: column;
@@ -28,8 +27,6 @@ const ModalWrapper = styled.div`
 	}
 `;
 
-const ModalContainer = styled.div``;
-
 const AccountTitle = styled.div(() => {
 	const {
 		state: { theme }
@@ -37,7 +34,7 @@ const AccountTitle = styled.div(() => {
 
 	return css`
 		font-size: ${fontSize[16]};
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		line-height: ${fontSize[22]};
 		margin-bottom: ${spacing[28]};
 	`;
@@ -59,7 +56,7 @@ const CopyContainer = styled.div`
 
 const Account = styled.div`
 	display: inline-flex;
-	font-size: ${fontSize[18]};
+	font-size: ${fontSize[16]};
 	font-weight: ${fontWeight['regular']};
 	line-height: ${fontSize[26]};
 
@@ -74,7 +71,7 @@ const AccountNumber = styled.div(() => {
 	} = useStore();
 
 	return css`
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		margin-right: ${spacing[6]};
 	`;
 });
@@ -101,7 +98,7 @@ const IconContainer = styled.div(() => {
 			height: ${pxToRem(8)};
 			width: ${pxToRem(10)};
 			border: 1px solid ${theme.font.default};
-			background-color: ${theme.background.mobile};
+			background-color: ${theme.background.secondary};
 		}
 	`;
 });
@@ -135,9 +132,9 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	};
 
 	return (
-		<Modal showModal={showModal} setShowModal={setShowModal} background="default" width="small">
+		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
 			<ModalWrapper>
-				<ModalContainer>
+				<div>
 					<AccountTitle>Account</AccountTitle>
 					<StatusContainer>Connected with Metamask</StatusContainer>
 					<Account>
@@ -152,11 +149,11 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 							{!isCopied ? 'Copy Address' : 'Copied!'}
 						</CopyText>
 					</CopyContainer>
-				</ModalContainer>
+				</div>
 				<Button variant="secondary" onClick={handleDisconnect}>
 					Disconnect
 				</Button>
 			</ModalWrapper>
-		</Modal>
+		</Portal>
 	);
 };

@@ -125,7 +125,7 @@ describe('Button', () => {
 			</AuthProvider>
 		);
 		expect(screen.getByText(/Primary disabled Button/)).toHaveStyle(
-			`background-color: ${lightTheme.button.disabled}; color: ${darkTheme.font.pure}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${MAIN_MAX_WIDTH}`
+			`background-color: ${lightTheme.button.disabled}; color: ${darkTheme.font.secondary}; border: 1px solid ${lightTheme.button.disabled}; max-width: ${MAIN_MAX_WIDTH}`
 		);
 
 		expect(getByText(/Primary disabled Button/)).toMatchSnapshot();

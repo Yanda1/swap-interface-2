@@ -21,15 +21,14 @@ const Tab = styled.div(({ active }: Props) => {
 	} = useStore();
 
 	return css`
-		z-index: 10;
 		cursor: pointer;
-		color: ${theme.font.pure};
+		color: ${theme.font.secondary};
 		padding: ${spacing[6]} ${spacing[6]};
 		text-align: center;
 		margin-right: ${spacing[4]};
-		background: ${theme.background.mobile};
+		background: ${theme.background.secondary};
 		border-radius: ${DEFAULT_BORDER_RADIUS} ${DEFAULT_BORDER_RADIUS} 0 0;
-		border: 1px solid ${theme.button.wallet};
+		border: 1px solid ${theme.border.default};
 		border-bottom: none;
 
 		&:nth-child(${++active}) {
@@ -55,16 +54,17 @@ export const Tabs = ({ data }: Props) => {
 		<Wrapper data-testid="tabs-container">
 			<>
 				<TabsContainer>
-					{data?.length &&
-						data.map((item: any) => {
-							const index = data.indexOf(item);
+					{data?.length > 0
+						? data.map((item: any) => {
+								const index = data.indexOf(item);
 
-							return (
-								<Tab key={makeId(32)} onClick={() => handleToggle(index)} active={toggleIndex}>
-									{item.pair}
-								</Tab>
-							);
-						})}
+								return (
+									<Tab key={makeId(32)} onClick={() => handleToggle(index)} active={toggleIndex}>
+										{item.pair}
+									</Tab>
+								);
+						  })
+						: null}
 				</TabsContainer>
 				<TabContent data={data} toggleIndex={toggleIndex} />
 			</>

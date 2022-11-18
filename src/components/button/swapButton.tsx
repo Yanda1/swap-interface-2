@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
@@ -15,9 +15,11 @@ import {
 	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore,
-	NETWORK_TO_ID
+	NETWORK_TO_ID,
+	beautifyNumbers
 } from '../../helpers';
 import { spacing } from '../../styles';
+import { useLocalStorage, useFees } from '../../hooks';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -39,18 +41,27 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationAddress,
 			destinationMemo,
 			isUserVerified,
-			destinationAmount
+			destinationAmount,
+			productId
 		},
 		dispatch
 	} = useStore();
+	const { chainId, library: web3Provider } = useEthers();
+	const { maxAmount, minAmount } = useFees();
+
 	const isDisabled =
 		!validInputs ||
 		!isTokenSelected(sourceToken) ||
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
 		+destinationAmount < 0;
+	const message =
+		+minAmount >= +maxAmount
+			? 'Insufficent funds'
+			: +minAmount < +amount
+			? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+			: `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`;
 
-	const { chainId, library: web3Provider } = useEthers();
 	const sourceTokenData =
 		// @ts-ignore
 		// eslint-disable-next-line
@@ -62,8 +73,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
 		protocol.connect(web3Provider.getSigner());
 	}
-
-	const { send: sendCreateProcess } = useContractFunction(
+	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'createProcess(address,bytes32,string)',
@@ -72,7 +82,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			gasLimitBufferPercentage: 25
 		}
 	);
-	const { send: sendTokenCreateProcess } = useContractFunction(
+	const { send: sendTokenCreateProcess, state: transactionContractSwapState } = useContractFunction(
 		// @ts-ignore
 		protocol,
 		'createProcess(address,address,bytes32,string)',
@@ -81,6 +91,15 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			gasLimitBufferPercentage: 25
 		}
 	);
+
+	const [swapsStorage, setSwapsStorage] = useLocalStorage('swaps', []);
+	const [transactionState, setTransactionState] = useState<{
+		status: string;
+		errorMessage: string;
+	}>({
+		status: '',
+		errorMessage: ''
+	});
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
@@ -115,10 +134,44 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		}
 	}));
 
+	useEffect(() => {
+		if (transactionSwapState.status !== 'None' && transactionSwapState.errorMessage) {
+			setTransactionState({
+				...transactionState,
+				status: transactionSwapState.status,
+				errorMessage: transactionSwapState.errorMessage
+			});
+		} else if (
+			transactionContractSwapState.status !== 'None' &&
+			transactionContractSwapState.errorMessage
+		) {
+			setTransactionState({
+				...transactionState,
+				status: transactionContractSwapState.status,
+				errorMessage: transactionContractSwapState.errorMessage
+			});
+		}
+	}, [transactionSwapState, transactionContractSwapState]);
+
+	useEffect(() => {
+		if (
+			transactionState.status === 'Exception' &&
+			transactionState.errorMessage === 'user rejected transaction'
+		) {
+			if (swapsStorage) {
+				const copySwapsStorage = [...swapsStorage];
+				copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
+				setSwapsStorage(copySwapsStorage);
+				dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
+				setTransactionState({ status: '', errorMessage: '' });
+			}
+		}
+	}, [transactionState]);
+
 	return (
 		<ButtonWrapper>
 			<Button disabled={isDisabled} color="default" onClick={onClick}>
-				SWAP
+				{isDisabled ? message : 'Swap'}
 			</Button>
 		</ButtonWrapper>
 	);

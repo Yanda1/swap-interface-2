@@ -46,7 +46,7 @@ describe('SelectList', () => {
 			`
 			font-size: ${fontSize[16]};
 			line-height: ${fontSize[22]};
-			color: ${darkTheme.font.pure};
+			color: ${darkTheme.font.secondary};
 			margin: ${spacing[20]} ${spacing[12]} ${spacing[12]};
 			`
 		);
@@ -58,7 +58,7 @@ describe('SelectList', () => {
 			font-size: ${fontSize[16]};
 			line-height: ${fontSize[20]};
 			padding: ${spacing[18]} ${spacing[HORIZONTAL_PADDING]};
-			color: ${darkTheme.font.pure};
+			color: ${darkTheme.font.secondary};
 			border: 1px solid ${darkTheme.font.default};
 			border-radius: ${DEFAULT_BORDER_RADIUS};
 			cursor: pointer;
@@ -68,13 +68,13 @@ describe('SelectList', () => {
 		);
 
 		void userEvent.hover(input);
-		expect(input).toHaveStyleRule('border-color', `${darkTheme.font.pure}`, {
+		expect(input).toHaveStyleRule('border-color', `${darkTheme.font.secondary}`, {
 			modifier: ':hover'
 		});
 		expect(input).toHaveStyleRule('outline', 'none', {
 			modifier: ':hover'
 		});
-		expect(input).toHaveStyleRule('border-color', `${darkTheme.font.pure}`, {
+		expect(input).toHaveStyleRule('border-color', `${darkTheme.font.secondary}`, {
 			modifier: ':active'
 		});
 		expect(input).toHaveStyleRule('outline', 'none', {
@@ -96,7 +96,7 @@ describe('SelectList', () => {
 			align-items: center;
 			cursor: pointer;
 			font-size: ${fontSize[16]};
-			color: ${darkTheme.font.pure};
+			color: ${darkTheme.font.secondary};
 			line-height: ${fontSize[22]};
 			margin: ${spacing[10]} 0;
 			border-radius: ${DEFAULT_BORDER_RADIUS};
@@ -132,7 +132,7 @@ describe('SelectList', () => {
 		expect(warningContainer).toHaveStyle(`
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[22]};
-		color: ${darkTheme.font.pure};
+		color: ${darkTheme.font.secondary};
 		margin: ${spacing[20]} ${spacing[12]} ${spacing[12]};
 		`);
 	});

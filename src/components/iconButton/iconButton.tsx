@@ -45,7 +45,14 @@ import WARNING from '../../assets/warning.svg';
 import SUCCESS from '../../assets/success.svg';
 import ERROR from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
-import { pxToRem, spacing, DEFAULT_BORDER_RADIUS, DEFAULT_TRANSIITON } from '../../styles';
+import {
+	pxToRem,
+	spacing,
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSIITON,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_OUTLINE
+} from '../../styles';
 import type { DestinationNetworks } from '../../helpers';
 
 const icons = {
@@ -95,6 +102,8 @@ const icons = {
 	ERROR
 };
 
+export type IconType = keyof typeof icons;
+
 const Icon = styled.button(({ disabled }: Props) => {
 	const {
 		state: { theme }
@@ -103,13 +112,14 @@ const Icon = styled.button(({ disabled }: Props) => {
 	return css`
 		cursor: ${!disabled && 'pointer'};
 		padding: ${spacing[8]};
-		border: 1px solid ${theme.font.default};
+		border: 1px solid ${theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: ${`linear-gradient(to left, ${theme.icon.default}, ${theme.icon.default})`};
+		background: ${`linear-gradient(to left, ${theme.background.secondary}, ${theme.background.secondary})`};
 		transition: ${DEFAULT_TRANSIITON};
+		outline: 1px solid transparent;
 
 		&:hover {
 			opacity: 0.8;
@@ -120,8 +130,8 @@ const Icon = styled.button(({ disabled }: Props) => {
 		}
 
 		&:focus-visible {
-			outline-offset: 2px;
-			outline: 1px solid ${theme.font.default};
+			outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+			outline: ${DEFAULT_OUTLINE(theme)};
 		}
 	`;
 });
@@ -130,59 +140,13 @@ const Img = styled.img(({ iconOnly }: Props) => {
 	return css`
 		height: ${iconOnly ? pxToRem(25) : pxToRem(40)};
 		width: ${iconOnly ? pxToRem(25) : pxToRem(40)};
-		margin-right: ${iconOnly ? pxToRem(10) : pxToRem(0)};
 		cursor: pointer;
 	`;
 });
 
 type Props = {
 	disabled?: boolean;
-	icon?:
-		| '1INCH'
-		| 'AION'
-		| 'ARBITRUM'
-		| 'AAVE'
-		| 'ACH'
-		| 'AGIX'
-		| 'ALICE'
-		| 'ANT'
-		| 'APE'
-		| 'AUDIO'
-		| 'BCH'
-		| 'BNT'
-		| 'CHZ'
-		| 'DAI'
-		| 'DOGE'
-		| 'DOT'
-		| 'FTT'
-		| 'LINK'
-		| 'MANA'
-		| 'OPTIMISM'
-		| 'QNT'
-		| 'SAND'
-		| 'SHIB'
-		| 'SUSHI'
-		| 'UNI'
-		| 'WBTC'
-		| 'BSC'
-		| 'USDT'
-		| 'GLMR'
-		| 'BTC'
-		| 'BNB'
-		| 'ETH'
-		| 'SOL'
-		| 'BUSD'
-		| 'TRX'
-		| 'MATIC'
-		| 'AVAXC'
-		| 'SEGWIT'
-		| 'XRP'
-		| 'XTZ'
-		| 'INFO'
-		| 'WARNING'
-		| 'SUCCESS'
-		| 'ERROR'
-		| 'Select Token';
+	icon?: IconType | 'Select Icon';
 	onClick?: () => void;
 	iconOnly?: boolean;
 };
