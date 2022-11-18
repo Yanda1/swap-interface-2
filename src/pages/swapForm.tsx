@@ -4,7 +4,7 @@ import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import {
 	mediaQuery,
 	spacing,
-	MAIN_MAX_WIDTH,
+	MAIN_MAX_WIDTH
 	// DEFAULT_OUTLINE,
 	// DEFAULT_OUTLINE_OFFSET
 } from '../styles';
@@ -30,7 +30,7 @@ import {
 	isTokenSelected,
 	beautifyNumbers,
 	useStore,
-	NETWORK_TO_ID,
+	NETWORK_TO_ID
 	// useBreakpoint
 } from '../helpers';
 import type { Fee } from '../helpers';
@@ -265,7 +265,7 @@ export const SwapForm = () => {
 				showModal={showNotificaitonsModal}
 				setShowModal={setShowNotificaitonsModal}
 			/>
-			{!isMobile && (
+			{/* {!isMobile && (
 				<Settings theme={theme}>
 					<button onClick={() => setShowNotificaitonsModal(!showNotificaitonsModal)}>
 						{isLightTheme(theme) ? (

@@ -46,7 +46,7 @@ export const lightTheme: Theme = {
 	},
 	background: {
 		default: '#FFF',
-		secondary: '#F0F0F0',
+		secondary: '#F8F8F8',
 		tertiary: '#494949'
 	},
 	button: {

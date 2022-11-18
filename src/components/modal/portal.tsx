@@ -1,10 +1,10 @@
 import { ReactNode, useLayoutEffect, useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { createPortal } from 'react-dom';
+import { useClickOutside } from '../../hooks';
 import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import type { ThemeProps } from '../../styles';
 import { DestinationEnum, hexToRgbA, useStore } from '../../helpers';
-import { useClickOutside } from '../../hooks';
 
 type StyledProps = ThemeProps & { size: SizeProps };
 
@@ -31,7 +31,8 @@ const Content = styled.div(
 		box-sizing: border-box;
 		align-items: center;
 		justify-content: center;
-		position: relative;
+		position: ${size === 'small' ? 'absolute' : 'relative'};
+		top: ${size === 'small' ? pxToRem(90) : null};
 		margin: ${spacing[40]} 0;
 		padding: ${spacing[48]} ${spacing[22]} ${spacing[24]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
