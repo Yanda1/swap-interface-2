@@ -19,7 +19,7 @@ import {
 	SwapButton,
 	TextField,
 	Fees,
-	NotificationsModal
+	// NotificationsModal
 } from '../components';
 import {
 	AmountEnum,
@@ -261,7 +261,7 @@ export const SwapForm = () => {
 				setShowModal={setShowDestinationModal}
 				type="DESTINATION"
 			/>
-			<NotificationsModal
+			{/* <NotificationsModal
 				showModal={showNotificaitonsModal}
 				setShowModal={setShowNotificaitonsModal}
 			/>

@@ -278,7 +278,7 @@ export const Header = () => {
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					addToast('Your KYC process has been rejected - please start again!', 'warning');
-				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
+				} else if ((basic === BasicStatusEnum.INITIAL || basic === BasicStatusEnum.PASS) && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
@@ -397,11 +397,11 @@ export const Header = () => {
 	return (
 		<StyledHeader theme={theme}>
 			{isMobile ? (
-				<LogoMobile />
+				<LogoMobile style={{ width: '26px' }}/>
 			) : isLight ? (
-				<LogoLight style={{ marginRight: 'auto' }} />
+				<LogoLight style={{ marginRight: 'auto', width: '113px' }} />
 			) : (
-				<LogoDark style={{ marginRight: 'auto' }} />
+				<LogoDark style={{ marginRight: 'auto', width: '113px' }} />
 			)}
 			{!isMobile && (
 				<Button
