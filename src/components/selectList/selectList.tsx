@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { AmountEnum, DestinationEnum, SourceEnum, useStore } from '../../helpers';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
-import { fontSize, spacing, DEFAULT_BORDER_RADIUS, SELECT_LIST_HEIGHT } from '../../styles';
+import { fontSize, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import { IconButton, TextField } from '../../components';
 
 const Wrapper = styled.div(() => {
@@ -16,7 +16,6 @@ const Wrapper = styled.div(() => {
 		width: 100%;
 		background: ${theme.background.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
-		height: ${SELECT_LIST_HEIGHT};
 		overflow: auto;
 	`;
 });

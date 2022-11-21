@@ -37,7 +37,8 @@ const Content = styled.div(
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
-		max-height: calc(100% - ${spacing[40]});
+		height: calc(100% - ${spacing[40]});
+		max-height: ${pxToRem(530)};
 	`
 );
 
@@ -137,7 +138,6 @@ export const Portal = ({
 	});
 
 	const handleClick = () => {
-		// @ts-ignore
 		if (selectedSourceTokenNetwork.network === sourceNetwork) {
 			dispatch({ type: DestinationEnum.NETWORK, payload: selectedDestinationTokenNetwork.network });
 			dispatch({ type: DestinationEnum.TOKEN, payload: selectedDestinationTokenNetwork.token });
@@ -153,14 +153,12 @@ export const Portal = ({
 	}, [isOpen]);
 
 	useEffect(() => {
-		if (isOpen) {
-			const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClick() : null);
-			document.body.addEventListener('keydown', closeOnEscapeKey);
+		const closeOnEscapeKey = (e: any) => (e.key === 'Escape' && isOpen ? handleClick() : null);
+		document.body.addEventListener('keydown', closeOnEscapeKey);
 
-			return () => {
-				document.body.removeEventListener('keydown', closeOnEscapeKey);
-			};
-		}
+		return () => {
+			document.body.removeEventListener('keydown', closeOnEscapeKey);
+		};
 	}, [isOpen]);
 
 	return isOpen ? (
