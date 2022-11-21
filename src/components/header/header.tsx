@@ -366,7 +366,7 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		if (account && storage && storage?.account !== account) {
+		if (account && storage?.account && storage?.account !== account) {
 			addToast(
 				'Please login to the account that has already passed KYC or connect wallet again',
 				'warning'
