@@ -448,18 +448,14 @@ export const Header = () => {
 								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
 								setShowMenu(!showMenu);
 							}}>
-							{pathname !== '/transaction-history' ? (
-								<>Transaction History &#11044;</>
-							) : (
-								<>Swap Form &#11044;</>
-							)}
+							{pathname !== '/transaction-history' ? <>Transaction History</> : <>Swap Form</>}
 						</li>
 						<li
 							onClick={() => {
 								changeTheme();
 								setShowMenu(!showMenu);
 							}}>
-							{isLightTheme(theme) ? <>Dark theme &#9733;</> : <>Light theme &#9733;</>}
+							{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
 						</li>
 					</Menu>
 				</MenuWrapper>

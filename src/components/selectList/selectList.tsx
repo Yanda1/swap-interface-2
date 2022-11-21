@@ -14,9 +14,10 @@ const Wrapper = styled.div(() => {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		height: ${SELECT_LIST_HEIGHT};
 		background: ${theme.background.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
+		height: ${SELECT_LIST_HEIGHT};
+		overflow: auto;
 	`;
 });
 
@@ -41,7 +42,6 @@ const List = styled.ul`
 	overflow-y: auto;
 	margin: 0;
 	padding: 0;
-	height: ${SELECT_LIST_HEIGHT};
 
 	&::-webkit-scrollbar,
 	&::-webkit-scrollbar-track,

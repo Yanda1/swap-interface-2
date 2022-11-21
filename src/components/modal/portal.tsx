@@ -29,15 +29,15 @@ const Content = styled.div(
 		max-width: calc(100% - ${spacing[40]});
 		display: flex;
 		box-sizing: border-box;
-		align-items: center;
-		justify-content: center;
+		align-items: stretch;
+		justify-content: flex-start;
 		position: ${size === 'small' ? 'absolute' : 'relative'};
 		top: ${size === 'small' ? pxToRem(90) : null};
-		margin: ${spacing[40]} 0;
 		padding: ${spacing[48]} ${spacing[22]} ${spacing[24]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
+		max-height: calc(100% - ${spacing[40]});
 	`
 );
 
