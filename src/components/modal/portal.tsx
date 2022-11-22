@@ -38,7 +38,7 @@ const Content = styled.div(
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
 		height: calc(100% - ${spacing[40]});
-		max-height: ${pxToRem(530)};
+		max-height: ${pxToRem(size === 'small' ? 220 : 530)};
 	`
 );
 
@@ -153,13 +153,15 @@ export const Portal = ({
 	}, [isOpen]);
 
 	useEffect(() => {
-		const closeOnEscapeKey = (e: any) => (e.key === 'Escape' && isOpen ? handleClick() : null);
+		const closeOnEscapeKey = (e: any) => {
+			if (isOpen && e.key === 'Escape') handleClick();
+		};
 		document.body.addEventListener('keydown', closeOnEscapeKey);
 
 		return () => {
 			document.body.removeEventListener('keydown', closeOnEscapeKey);
 		};
-	}, [isOpen]);
+	});
 
 	return isOpen ? (
 		<PortalWrapper wrapperId="react-portal-modal-container">
