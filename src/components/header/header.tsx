@@ -293,6 +293,18 @@ export const Header = () => {
 	};
 
 	const handleButtonClick = async () => {
+		if (
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+		) {
+			addToast(
+				'Please use the browser provided in your wallet (e.g. MetaMask) to connect',
+				'warning',
+				10000
+			);
+
+			return;
+		}
+
 		if (!account) {
 			try {
 				activateBrowserWallet();
