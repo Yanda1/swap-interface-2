@@ -17,6 +17,7 @@ const Wrapper = styled.div(() => {
 		background: ${theme.background.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		overflow: auto;
+		flex-grow: 1;
 	`;
 });
 

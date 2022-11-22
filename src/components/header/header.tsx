@@ -293,8 +293,18 @@ export const Header = () => {
 	};
 
 	const handleButtonClick = async () => {
+		let metamaskMissing = false;
+		if (!account) {
+			try {
+				activateBrowserWallet();
+			} catch (error) {
+				console.log('error in connect wallet', error);
+				metamaskMissing = true;
+			}
+		}
 		if (
-			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
+			metamaskMissing
 		) {
 			window.open(
 				'https://metamask.app.link/dapp/app.tiwanaku.finance',
@@ -304,19 +314,9 @@ export const Header = () => {
 
 			return;
 		}
-
-		if (!account) {
-			try {
-				activateBrowserWallet();
-			} catch (error) {
-				console.log('error in connect wallet', error);
-			}
-		}
-
 		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
 			await checkNetwork();
 		}
-
 		if (chainId && account) {
 			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
