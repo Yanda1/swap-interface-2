@@ -294,6 +294,7 @@ export const Header = () => {
 
 	const handleButtonClick = async () => {
 		let metamaskMissing = false;
+
 		if (!account) {
 			try {
 				activateBrowserWallet();
@@ -307,16 +308,27 @@ export const Header = () => {
 			metamaskMissing
 		) {
 			window.open(
-				'https://metamask.app.link/dapp/app.tiwanaku.finance',
+				`https://metamask.app.link/dapp/${process.env.REACT_APP_PROD_URL}`,
 				'_blank',
 				'noopener,noreferrer'
 			);
 
 			return;
 		}
+
+		// if (!account) {
+		// 	try {
+		// 		activateBrowserWallet();
+		// 		setTimeout(() => location.reload(), 25); // TODO: SOLVE PROPERLY - just a temporary fix !!!
+		// 	} catch (error) {
+		// 		console.log('error in connect wallet', error);
+		// 	}
+		// }
+
 		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
 			await checkNetwork();
 		}
+
 		if (chainId && account) {
 			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
