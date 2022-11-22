@@ -37,7 +37,7 @@ export const Wrapper = styled.div`
 	margin-top: ${spacing[12]};
 	font-size: ${fontSize[16]};
 	line-height: ${fontSize[22]};
-	border: 1px solid ${(props: StyleProps) => props.theme.background.tertiary};
+	border: 1px solid ${(props: StyleProps) => props.theme.border.default};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	overflow: hidden;
 `;
@@ -45,7 +45,8 @@ export const Wrapper = styled.div`
 const TitleWrapper = styled.div`
 	cursor: pointer;
 	padding: ${spacing[12]} ${spacing[20]};
-	background-color: ${(props: StyleProps) => props.theme.background.secondary};
+	background-color: ${(props: StyleProps) =>
+		props.open ? props.theme.background.secondary : props.theme.background.default};
 	transition: ${DEFAULT_TRANSIITON};
 	position: relative;
 	z-index: 10;
@@ -104,7 +105,7 @@ const Content = styled.div`
 			: 'all .2s cubic-bezier(0.6, -0.28, 0.735, 0.045)'};
 
 	&:not(:last-child) {
-		border-bottom: 1px solid ${(props: StyleProps) => props.theme.background.tertiary};
+		border-bottom: 1px solid ${(props: StyleProps) => props.theme.border.default};
 	}
 
 	${mediaQuery('s')} {
@@ -196,6 +197,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 						theme={theme}
 						onClick={() => handleClick(index)}
 						key={index}
+						open={item.open}
 						// @ts-ignore
 						tabIndex="1"
 						onKeyDown={(e) => handleKeyDown(e, index)}>

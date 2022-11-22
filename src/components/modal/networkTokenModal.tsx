@@ -202,7 +202,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 						color="transparent"
 						onClick={() => setShowsNetworkList(false)}
 						disabled={!isNetworkSelected(isSource ? sourceNetwork : destinationNetwork)}>
-						NEXT
+						Next
 					</Button>
 				)}
 				{!showsNetworkList && (
