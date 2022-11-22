@@ -296,10 +296,10 @@ export const Header = () => {
 		if (
 			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 		) {
-			addToast(
-				'Please use the browser provided in your wallet (e.g. MetaMask) to connect',
-				'warning',
-				10000
+			window.open(
+				'https://metamask.app.link/dapp/app.tiwanaku.finance',
+				'_blank',
+				'noopener,noreferrer'
 			);
 
 			return;
