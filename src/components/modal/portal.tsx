@@ -149,6 +149,9 @@ export const Portal = ({
 		if (isOpen) {
 			setSelectedSourceTokenNetwork({ network: sourceNetwork, token: sourceToken });
 			setSelectedDestinationTokenNetwork({ network: destinationNetwork, token: destinationToken });
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = 'unset';
 		}
 	}, [isOpen]);
 
