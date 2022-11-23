@@ -71,6 +71,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
 	if (web3Provider) {
+		// @ts-ignore
 		protocol.connect(web3Provider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(

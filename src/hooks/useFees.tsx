@@ -70,7 +70,8 @@ export const useFees = () => {
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
 	if (web3Provider && isNetworkConnected) {
-		contract.connect(web3Provider.getSigner());
+		// @ts-ignore
+		contract.connect((web3Provider as EthersProvider).getSigner());
 	}
 	const walletBalance = useEtherBalance(account);
 	const tokenBalance = useTokenBalance(sourceTokenData?.contractAddr, account);

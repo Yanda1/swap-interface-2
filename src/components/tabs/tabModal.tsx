@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import styled, {css} from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Tabs } from '../../components';
 import { pxToRem } from '../../styles';
 import type { Theme } from '../../styles';
@@ -71,8 +71,10 @@ export const TabModal = () => {
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
 	if (web3Provider) {
+		// @ts-ignore
 		protocol.connect(web3Provider.getSigner());
 		if (tokenContract) {
+			// @ts-ignore
 			tokenContract.connect(web3Provider.getSigner());
 		}
 	}
