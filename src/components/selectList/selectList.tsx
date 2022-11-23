@@ -155,6 +155,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 							});
 							dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
 						}
+					} else if (error.code === 4001) {
+						return;
 					} else {
 						addToast('Something went wrong - please try again');
 					}

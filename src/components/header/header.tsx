@@ -212,22 +212,10 @@ export const Header = () => {
 	};
 
 	const checkNetwork = async (): Promise<void> => {
-		// TODO: improve, seems to have a lot of redundancies
-		// @ts-ignore
-		if (Object.keys(CHAINS).includes(chainId?.toString())) {
+		if (Object.keys(CHAINS).includes(chainId?.toString() as string)) {
 			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId); // TODO: has to be dynamic
-
-			if (library) {
-				// @ts-ignore
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS[chainId === 1 ? '1' : '1284']);
-			}
 		} else {
 			await switchNetwork(Mainnet.chainId);
-
-			if (library) {
-				// @ts-ignore
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']);
-			}
 		}
 	};
 
@@ -244,7 +232,6 @@ export const Header = () => {
 				});
 				setStorage({ account, access: res.access, isKyced: res.is_kyced, refresh: res.refresh });
 			} catch (error: any) {
-				// TODO: do we need toast here?
 				addToast('You have rejected signing the nonce. To proceed login again!', 'info');
 			}
 			setIsLoading(false);
@@ -264,15 +251,46 @@ export const Header = () => {
 	};
 
 	const handleNetworkChange = async (name: string) => {
-		await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);
-		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
-		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
-		dispatch({
-			type: SourceEnum.NETWORK,
-			payload: name
-		});
-		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		setShowNetworksList(!showNetworksList);
+		try {
+			// @ts-ignore
+			await ethereum.request({
+				method: 'wallet_switchEthereumChain',
+				params: [
+					{
+						chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+					}
+				]
+			});
+		} catch (error: any) {
+			if (error.code === 4902 && name === 'GLMR') {
+				try {
+					// @ts-ignore
+					await ethereum.request({
+						method: 'wallet_addEthereumChain',
+						params: NETWORK_PARAMS['1284']
+					});
+					dispatch({
+						type: SourceEnum.NETWORK,
+						payload: name
+					});
+					dispatch({
+						type: SourceEnum.TOKEN,
+						payload: name
+					});
+				} catch (e) {
+					dispatch({
+						type: SourceEnum.NETWORK,
+						payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+					});
+					dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+				}
+			} else if (error.code === 4001) {
+				return;
+			} else {
+				addToast('Something went wrong - please try again');
+			}
+		}
 		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
 		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 	};
@@ -315,6 +333,7 @@ export const Header = () => {
 		if (!account) {
 			try {
 				activateBrowserWallet();
+				setTimeout(() => location.reload(), 25); // TODO: SOLVE PROPERLY - just a temporary fix !!!
 			} catch (error) {
 				console.log('error in connect wallet', error);
 				metamaskMissing = true;
@@ -332,15 +351,6 @@ export const Header = () => {
 
 			return;
 		}
-
-		// if (!account) {
-		// 	try {
-		// 		activateBrowserWallet();
-		// 		setTimeout(() => location.reload(), 25); // TODO: SOLVE PROPERLY - just a temporary fix !!!
-		// 	} catch (error) {
-		// 		console.log('error in connect wallet', error);
-		// 	}
-		// }
 
 		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
 			await checkNetwork();
@@ -505,7 +515,7 @@ export const Header = () => {
 				<MenuWrapper theme={theme}>
 					<Networks theme={theme} ref={domNode}>
 						{Object.values(CHAINS).map((chain) => (
-							<li onClick={() => handleNetworkChange(chain.name)}>
+							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
 								<img src={chain.name === 'ETH' ? ETH : MOON} style={{ height: 18 }} />
 								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
 								{sourceNetwork !== chain.name ? null : isLightTheme(theme) ? (
