@@ -22,7 +22,7 @@ import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../data/sourceNetworks.json';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, utils, providers } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import axios from 'axios';
@@ -69,9 +69,8 @@ export const useFees = () => {
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
-	if (web3Provider && isNetworkConnected) {
-		// @ts-ignore
-		contract.connect((web3Provider as EthersProvider).getSigner());
+	if (web3Provider && isNetworkConnected && !(web3Provider instanceof providers.FallbackProvider)) {
+		contract.connect(web3Provider.getSigner());
 	}
 	const walletBalance = useEtherBalance(account);
 	const tokenBalance = useTokenBalance(sourceTokenData?.contractAddr, account);

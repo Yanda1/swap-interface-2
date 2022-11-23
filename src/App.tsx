@@ -23,6 +23,10 @@ type Props = {
 };
 
 export const GlobalStyles = createGlobalStyle`
+	html {
+		background-color: ${(props: Props) => props.theme.background.default};
+	}
+
 	body {
 		font-family: ${fontFamily};
 		font-style: ${fontStyle.normal};

@@ -35,6 +35,7 @@ const Toaster = styled.div(({ color }: { color: ColorType }) => {
 		font-size: ${fontSize[14]};
 		margin: ${spacing[10]};
 		padding: ${spacing[10]};
+		gap: ${spacing[8]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 	`;
 });

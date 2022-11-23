@@ -68,6 +68,8 @@ export enum PairEnum {
 	PAIR = 'PAIR'
 }
 
+type SourceNetworks = 'ETH' | 'GLMR' | 'Select Network';
+
 type VerificationAction = {
 	type: VerificationEnum;
 	payload: boolean | string;
@@ -133,7 +135,7 @@ type State = {
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
 	theme: Theme;
-	sourceNetwork: string;
+	sourceNetwork: SourceNetworks;
 	sourceToken: string;
 	destinationWallet: string;
 	destinationNetwork: string;
@@ -211,7 +213,7 @@ const authReducer = (state: State, action: Action): State => {
 		case AmountEnum.AMOUNT:
 			return { ...state, amount: action.payload };
 		case SourceEnum.NETWORK:
-			return { ...state, sourceNetwork: action.payload };
+			return { ...state, sourceNetwork: action.payload as SourceNetworks };
 		case SourceEnum.TOKEN:
 			return { ...state, sourceToken: action.payload };
 		case DestinationEnum.WALLET:
