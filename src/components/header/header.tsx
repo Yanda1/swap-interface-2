@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
+import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -204,7 +204,7 @@ export const Header = () => {
 	const noKycStatusMessage = 'kyc verify not exist';
 
 	const isLight = isLightTheme(theme);
-	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
+	const { activate, library, account, chainId, switchNetwork } = useEthers();
 
 	const changeTheme = (): void => {
 		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
@@ -328,21 +328,32 @@ export const Header = () => {
 	};
 
 	const handleButtonClick = async () => {
-		let metamaskMissing = false;
+		let metamaskMissing = true;
+		// Check for Metamask support
+		try {
+			// @ts-ignore
+			const provider = new ethers.providers.Web3Provider(window.ethereum);
+			if (provider) {
+				metamaskMissing = false;
+			}
+		} catch (error) {
+			console.log('Can\'t find a Web3Provider in the browser');
+		}
 
-		if (!account) {
+		// Connect if not connected and Metamask exists
+		if (!account && !metamaskMissing) {
 			try {
-				activateBrowserWallet();
-				setTimeout(() => location.reload(), 25); // TODO: SOLVE PROPERLY - just a temporary fix !!!
+				await activate(new MetamaskConnector());
 			} catch (error) {
 				console.log('error in connect wallet', error);
-				metamaskMissing = true;
 			}
 		}
+
 		if (
 			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
 			metamaskMissing
 		) {
+			// Resolve missing Metamask for mobiles
 			window.open(
 				`https://metamask.app.link/dapp/${process.env.REACT_APP_PROD_URL}`,
 				'_blank',
@@ -350,6 +361,10 @@ export const Header = () => {
 			);
 
 			return;
+		} else if (metamaskMissing) {
+			// Resolve missing Metamask for PCs
+			addToast('Looks like your browser doesent have Metamask wallet. Please install it first and then try again.');
+			setTimeout(() => window.open('https://metamask.io/download/', '_blank', 'noopener,noreferrer'), 5000);
 		}
 
 		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
