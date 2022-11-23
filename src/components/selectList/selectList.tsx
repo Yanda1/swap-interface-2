@@ -3,7 +3,8 @@ import styled, { css } from 'styled-components';
 import { AmountEnum, DestinationEnum, SourceEnum, useStore } from '../../helpers';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import { fontSize, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { IconButton, TextField } from '../../components';
+import { IconButton, NETWORK_PARAMS, TextField, useToasts } from '../../components';
+import { ethers } from 'ethers';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -86,6 +87,8 @@ type Props = {
 
 export const SelectList = ({ data, placeholder, value }: Props) => {
 	const { chainId, switchNetwork } = useEthers();
+	// @ts-ignore
+	const { addToast } = useToasts();
 
 	const [search, setSearch] = useState('');
 	const dataList =
@@ -119,15 +122,43 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					payload: ''
 				});
 			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
-				await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);
-				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
-				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
-				dispatch({
-					type: SourceEnum.NETWORK,
-					payload: name
-				});
-				dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+				try {
+					// @ts-ignore
+					await ethereum.request({
+						method: 'wallet_switchEthereumChain',
+						params: [
+							{
+								chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+							}
+						]
+					});
+				} catch (error: any) {
+					if (error.code === 4902 && name === 'GLMR') {
+						try {
+							// @ts-ignore
+							await ethereum.request({
+								method: 'wallet_addEthereumChain',
+								params: NETWORK_PARAMS['1284']
+							});
+							dispatch({
+								type: SourceEnum.NETWORK,
+								payload: name
+							});
+							dispatch({
+								type: SourceEnum.TOKEN,
+								payload: name
+							});
+						} catch (e) {
+							dispatch({
+								type: SourceEnum.NETWORK,
+								payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+							});
+							dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+						}
+					} else {
+						addToast('Something went wrong - please try again');
+					}
+				}
 				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
 				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 			} else if (value === 'SOURCE_TOKEN') {

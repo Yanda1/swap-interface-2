@@ -47,7 +47,8 @@ import {
 	CHAINS,
 	hexToRgbA,
 	isNetworkSelected,
-	SourceEnum
+	SourceEnum,
+	MOONBEAM_URL
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
 import { Button, useToasts, Wallet, IconButton, Arrow } from '../../components';
@@ -142,6 +143,35 @@ const NetworkWrapper = styled.div`
 	display: flex;
 `;
 
+export const NETWORK_PARAMS = {
+	'1': [
+		{
+			chainId: ethers.utils.hexValue(Mainnet.chainId),
+			chainName: Mainnet.chainName,
+			rpcUrls: [ETHEREUM_URL],
+			nativeCurrency: {
+				name: 'Ethereum',
+				symbol: 'ETH',
+				decimals: 18
+			},
+			blockExplorerUrls: ['https://etherscan.io/']
+		}
+	],
+	'1284': [
+		{
+			chainId: ethers.utils.hexValue(Moonbeam.chainId),
+			chainName: Moonbeam.chainName,
+			rpcUrls: [MOONBEAM_URL],
+			nativeCurrency: {
+				name: 'Glimer',
+				symbol: 'GLMR',
+				decimals: 18
+			},
+			blockExplorerUrls: ['https://moonscan.io/']
+		}
+	]
+};
+
 export const Header = () => {
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
 	const {
@@ -183,26 +213,13 @@ export const Header = () => {
 
 	const checkNetwork = async (): Promise<void> => {
 		// TODO: improve, seems to have a lot of redundancies
-		const NETWORK_PARAMS = [
-			{
-				chainId: ethers.utils.hexValue(Mainnet.chainId),
-				chainName: Mainnet.chainName,
-				rpcUrls: [ETHEREUM_URL],
-				nativeCurrency: {
-					name: 'Ethereum',
-					symbol: 'ETH',
-					decimals: 18
-				},
-				blockExplorerUrls: ['https://moonscan.io/']
-			}
-		];
 		// @ts-ignore
 		if (Object.keys(CHAINS).includes(chainId?.toString())) {
 			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId); // TODO: has to be dynamic
 
 			if (library) {
 				// @ts-ignore
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']); // TODO: @daniel - are we just going for the Ethereum chain?
+				await library.send('wallet_addEthereumChain', NETWORK_PARAMS[chainId === 1 ? '1' : '1284']);
 			}
 		} else {
 			await switchNetwork(Mainnet.chainId);
