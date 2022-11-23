@@ -133,7 +133,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 						]
 					});
 				} catch (error: any) {
-					if (error.code === 4902 && name === 'GLMR') {
+					if (error.code === 4902 || error.code === -32603 && name === 'GLMR') {
 						try {
 							// @ts-ignore
 							await ethereum.request({
