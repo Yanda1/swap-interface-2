@@ -52,7 +52,8 @@ export const useFees = () => {
 			amount,
 			isNetworkConnected,
 			destinationAddress,
-			account
+			account,
+			destinationAmount
 		}
 	} = useStore();
 
@@ -329,6 +330,16 @@ export const useFees = () => {
 		return { amount: allFees, currency: FEE_CURRENCY };
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
+	const percentage = useMemo(
+		() =>
+			destinationAmount
+				? (allFees.amount /
+						(getPrice(destinationToken, FEE_CURRENCY) * +destinationAmount + allFees.amount)) *
+				  100
+				: '',
+		[allFees.amount, destinationToken, destinationAmount]
+	);
+
 	const marginalCosts = useMemo(() => {
 		let minAmount = '';
 		let maxAmount = '';
@@ -389,6 +400,7 @@ export const useFees = () => {
 		networkFee,
 		cexFee,
 		allFees,
-		getPrice
+		getPrice,
+		percentage
 	};
 };

@@ -59,7 +59,7 @@ const Detail = ({ value }: Props) => {
 	const data = isArrayType(value) ? (value as Fee[]) : ([value] as Fee[]);
 
 	return !data[0].name ? (
-		<>{data[0].amount} USDT</>
+		<>{beautifyNumbers({ n: data[0].amount, digits: 4 })} USDT</>
 	) : (
 		<DetailWrapper>
 			<div>{data[0]?.name} Fee</div>
@@ -78,12 +78,13 @@ export const Fees = () => {
 	const {
 		state: { theme }
 	} = useStore();
-	const { withdrawFee, protocolFee, networkFee, cexFee, allFees } = useFees();
+	const { withdrawFee, protocolFee, networkFee, cexFee, allFees, percentage } = useFees();
 
 	return (
 		<details>
 			<Summary color={theme.font.default} theme={theme}>
-				<Detail value={allFees} />
+				<Detail value={allFees} />{' '}
+				{percentage && `(${beautifyNumbers({ n: percentage, digits: 2 })}%)`}
 			</Summary>
 			<Details theme={theme}>
 				<Detail value={networkFee} />
