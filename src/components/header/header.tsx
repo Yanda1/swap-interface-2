@@ -263,7 +263,7 @@ export const Header = () => {
 				]
 			});
 		} catch (error: any) {
-			if (error.code === 4902 || error.code === -32603 && name === 'GLMR') {
+			if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
 				try {
 					// @ts-ignore
 					await ethereum.request({
@@ -337,7 +337,7 @@ export const Header = () => {
 				metamaskMissing = false;
 			}
 		} catch (error) {
-			console.log('Can\'t find a Web3Provider in the browser');
+			console.log('Can not find a Web3Provider in the browser');
 		}
 
 		// Connect if not connected and Metamask exists
@@ -363,8 +363,13 @@ export const Header = () => {
 			return;
 		} else if (metamaskMissing) {
 			// Resolve missing Metamask for PCs
-			addToast('Looks like your browser doesent have Metamask wallet. Please install it first and then try again.');
-			setTimeout(() => window.open('https://metamask.io/download/', '_blank', 'noopener,noreferrer'), 5000);
+			addToast(
+				'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
+			);
+			setTimeout(
+				() => window.open('https://metamask.io/download/', '_blank', 'noopener,noreferrer'),
+				5000
+			);
 		}
 
 		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {

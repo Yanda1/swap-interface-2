@@ -167,7 +167,6 @@ export const SwapForm = () => {
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
 	const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
-	const [isDisabled, setIsDisabled] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
@@ -177,7 +176,6 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
-			setIsDisabled(+minAmount >= +maxAmount);
 			const message =
 				+minAmount >= +maxAmount
 					? 'Insufficent funds'
@@ -287,7 +285,6 @@ export const SwapForm = () => {
 							type="number"
 							placeholder="Amount"
 							error={limit.error}
-							disabled={isDisabled}
 							value={amount}
 							onChange={(e) => {
 								dispatch({ type: AmountEnum.AMOUNT, payload: e.target.value });
