@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import styled, {css} from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Tabs } from '../../components';
 import { pxToRem } from '../../styles';
 import type { Theme } from '../../styles';
@@ -73,7 +73,7 @@ export const TabModal = () => {
 	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
 		protocol.connect(web3Provider.getSigner());
 		if (tokenContract) {
-			tokenContract.connect(web3Provider.getSigner());
+			tokenContract.connect((web3Provider).getSigner());
 		}
 	}
 
