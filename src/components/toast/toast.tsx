@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS, ColorType } from '../../styles';
+import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import type { ColorType } from '../../styles';
 import { useStore } from '../../helpers';
 import { IconButton } from '../iconButton/iconButton';
 

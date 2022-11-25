@@ -53,11 +53,6 @@ describe('Button', () => {
 				</Button>
 			</AuthProvider>
 		);
-		expect(screen.getByText(/Secondary icon Button/)).toHaveStyle(
-			`background-color: ${
-				lightTheme.button.icon
-			}; color: #FFF; border: 1px solid #FFF; max-width: ${pxToRem(160)}`
-		);
 		expect(getByRole('img')).toBeInTheDocument();
 		expect(getByText(/Secondary icon Button/)).toMatchSnapshot();
 
