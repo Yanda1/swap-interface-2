@@ -38,7 +38,7 @@ const Content = styled.div(
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
 		height: calc(100% - ${spacing[40]});
-		max-height: ${pxToRem(size === 'small' ? 220 : 530)};
+		max-height: ${pxToRem(size === 'small' ? 305 : 530)};
 	`
 );
 

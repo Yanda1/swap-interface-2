@@ -23,7 +23,6 @@ const ModalWrapper = styled.div`
 		flex-direction: column;
 		align-items: flex-start;
 		padding: ${spacing[18]} ${spacing[46]} 0 ${spacing[14]};
-		margin-bottom: ${spacing[8]};
 	}
 `;
 
