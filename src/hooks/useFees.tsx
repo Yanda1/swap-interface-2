@@ -330,7 +330,7 @@ export const useFees = () => {
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
 	const percentageOfAllFeesToAmount = useMemo(
-		() => (amount ? (allFees.amount / (getPrice(FEE_CURRENCY, sourceToken) * +amount)) * 100 : ''),
+		() => (amount ? (allFees.amount / (getPrice(sourceToken, FEE_CURRENCY) * +amount)) * 100 : ''),
 		[allFees.amount, destinationToken, amount]
 	);
 
