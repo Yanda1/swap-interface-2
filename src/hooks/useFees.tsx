@@ -329,6 +329,11 @@ export const useFees = () => {
 		return { amount: allFees, currency: FEE_CURRENCY };
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
+	const percentageOfAllFeesToAmount = useMemo(
+		() => (amount ? (allFees.amount / (getPrice(sourceToken, FEE_CURRENCY) * +amount)) * 100 : ''),
+		[allFees.amount, destinationToken, amount]
+	);
+
 	const marginalCosts = useMemo(() => {
 		let minAmount = '';
 		let maxAmount = '';
@@ -389,6 +394,7 @@ export const useFees = () => {
 		networkFee,
 		cexFee,
 		allFees,
-		getPrice
+		getPrice,
+		percentageOfAllFeesToAmount
 	};
 };
