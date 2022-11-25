@@ -117,8 +117,6 @@ const Menu = styled.ul`
 	text-align: right;
 	padding: ${spacing[24]} ${spacing[18]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
-	z-index: 1_000;
-
 	border: 1px solid ${(props: Props) => props.theme.border.default};
 
 	& > li {
@@ -204,7 +202,7 @@ export const Header = () => {
 	const noKycStatusMessage = 'kyc verify not exist';
 
 	const isLight = isLightTheme(theme);
-	const { activate, library, account, chainId, switchNetwork } = useEthers();
+	const { activate, library, account, chainId, switchNetwork, activateBrowserWallet } = useEthers();
 
 	const changeTheme = (): void => {
 		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
@@ -329,7 +327,15 @@ export const Header = () => {
 
 	const handleButtonClick = async () => {
 		let metamaskMissing = true;
-		// Check for Metamask support
+		const onMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			navigator.userAgent
+		);
+		console.log(
+			'account, metamaskMissing, onMobileDevice',
+			account,
+			metamaskMissing,
+			onMobileDevice
+		);
 		try {
 			// @ts-ignore
 			const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -340,36 +346,38 @@ export const Header = () => {
 			console.log('Can not find a Web3Provider in the browser');
 		}
 
-		// Connect if not connected and Metamask exists
-		if (!account && !metamaskMissing) {
-			try {
-				await activate(new MetamaskConnector());
-			} catch (error) {
-				console.log('error in connect wallet', error);
+		if (!account) {
+			if (onMobileDevice && metamaskMissing) {
+				window.open(
+					`https://metamask.app.link/dapp/${process.env.REACT_APP_PROD_URL}`,
+					'_blank',
+					'noopener,noreferrer'
+				);
 			}
-		}
-
-		if (
-			/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) &&
-			metamaskMissing
-		) {
-			// Resolve missing Metamask for mobiles
-			window.open(
-				`https://metamask.app.link/dapp/${process.env.REACT_APP_PROD_URL}`,
-				'_blank',
-				'noopener,noreferrer'
-			);
-
-			return;
-		} else if (metamaskMissing) {
-			// Resolve missing Metamask for PCs
-			addToast(
-				'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
-			);
-			setTimeout(
-				() => window.open('https://metamask.io/download/', '_blank', 'noopener,noreferrer'),
-				5000
-			);
+			if (onMobileDevice && !metamaskMissing) {
+				try {
+					await activate(new MetamaskConnector());
+				} catch (error) {
+					console.log('error in connect wallet', error);
+				}
+			}
+			if (!onMobileDevice && metamaskMissing) {
+				console.log('HERE');
+				addToast(
+					'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
+				);
+				setTimeout(
+					() => window.open('https://metamask.io/download/', '_blank', 'noopener,noreferrer'),
+					5000
+				);
+			}
+			if (!onMobileDevice && !metamaskMissing) {
+				try {
+					activateBrowserWallet();
+				} catch (error) {
+					console.log('error in connect wallet', error);
+				}
+			}
 		}
 
 		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
