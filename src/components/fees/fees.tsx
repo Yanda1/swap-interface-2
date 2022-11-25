@@ -78,7 +78,14 @@ export const Fees = () => {
 	const {
 		state: { theme }
 	} = useStore();
-	const { withdrawFee, protocolFee, networkFee, cexFee, allFees, percentage } = useFees();
+	const {
+		withdrawFee,
+		protocolFee,
+		networkFee,
+		cexFee,
+		allFees,
+		percentageOfAllFeesToAmount: percentage
+	} = useFees();
 
 	return (
 		<details>
