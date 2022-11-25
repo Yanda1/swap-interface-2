@@ -31,7 +31,7 @@ const Toaster = styled.div(({ color }: { color: ColorType }) => {
 		display: flex;
 		align-items: center;
 		background: ${theme.button[color]};
-		color: #fff;
+		color: ${theme.background.default};
 		cursor: pointer;
 		font-size: ${fontSize[14]};
 		margin: ${spacing[10]};
