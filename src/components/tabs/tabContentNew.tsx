@@ -36,7 +36,7 @@ const Content = styled.div`
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-left-radius: 0;
 	margin-top: -1px;
-	z-index: -2;
+	z-index: 10;
 `;
 
 export const ContentList = styled.ul`
@@ -119,8 +119,7 @@ const SpinnerWrapper = styled.div`
 	}
 `;
 
-export const TabContentNew = ({ swap, type = 'swap', selectItem = false }: any) => {
-	console.log('swap in new Content', swap);
+export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 	const [withdrawLink, setWithdrawLink] = useState<{
 		amount: string;
 		status: number;
@@ -132,9 +131,8 @@ export const TabContentNew = ({ swap, type = 'swap', selectItem = false }: any) 
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = swap && swap.action;
-	console.log(orders);
-	const withdrawal = swap && swap.withdraw;
+	const orders = swap && swap.action[0];
+	const withdrawal = swap && swap.withdraw[0];
 	const api = useAxios();
 
 	const getWithDrawLink = async () => {
@@ -152,12 +150,12 @@ export const TabContentNew = ({ swap, type = 'swap', selectItem = false }: any) 
 		void getWithDrawLink();
 	}, [withdrawal]);
 
-	return swap && selectItem ? (
+	return swap ? (
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
 				{swap.costRequestCounter ? (
-					<ContentItem theme={theme} color={swap.color} key={makeId(32)}>
+					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
 							Swap Request Validation ({swap.costRequestCounter}/2)
 						</ContentItemTitle>
@@ -171,7 +169,7 @@ export const TabContentNew = ({ swap, type = 'swap', selectItem = false }: any) 
 				{currentBlockNumber && swap.depositBlock ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							{!swap.action.length
+							{!swap?.action.length
 								? `Deposit confirmation (${
 										currentBlockNumber - swap.depositBlock
 								  }/${BLOCKS_AMOUNT})`
@@ -186,7 +184,7 @@ export const TabContentNew = ({ swap, type = 'swap', selectItem = false }: any) 
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{orders.length > 0 ? (
+				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
 							Conversion {swap.sourceToken} {orders.s.replace(swap.sourceToken, '')}
@@ -200,7 +198,7 @@ export const TabContentNew = ({ swap, type = 'swap', selectItem = false }: any) 
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{withdrawal.length > 0 && !withdrawLink ? (
+				{withdrawal && !withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemLink theme={theme}>Withdrawal in process</ContentItemLink>
 						<ContentItemText>

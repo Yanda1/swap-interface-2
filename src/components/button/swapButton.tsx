@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { useContractFunction, useEthers } from '@usedapp/core';
+import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
@@ -19,7 +19,6 @@ import {
 } from '../../helpers';
 import { spacing } from '../../styles';
 import { useFees, useLocalStorage } from '../../hooks';
-import _ from 'lodash';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -34,7 +33,6 @@ type Props = {
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
 	const { account } = useEthers();
 	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
-	// TODO: ADD TYPES
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('swaps', []);
 
 	const {
@@ -53,6 +51,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	} = useStore();
 	const { chainId, library: web3Provider } = useEthers();
 	const { maxAmount, minAmount } = useFees();
+	const currentBlockNumber = useBlockNumber();
 
 	const isDisabled =
 		!validInputs ||
@@ -96,14 +95,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		}
 	);
 
-	// const [transactionState, setTransactionState] = useState<{
-	// 	status: string;
-	// 	errorMessage: string;
-	// }>({
-	// 	status: '',
-	// 	errorMessage: ''
-	// });
-
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
 			const productId = utils.id(makeId(32));
@@ -117,14 +108,11 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				daddr: destinationAddress,
 				tag: destinationMemo
 			};
-			// dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
 			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
 
 			if (sourceTokenData?.isNative) {
-				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues).then(() =>
-					console.log('send create proccess', transactionSwapState, transactionSwapState)
-				);
+				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
 			} else {
 				console.log(
 					'Calling sendTokenCreateProcess with the contractAddr',
@@ -155,11 +143,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 					withdraw: [],
 					complete: null,
 					pair,
-					sourceToken
+					sourceToken,
+					currentBlockNumber
 				};
-				// TODO: add types
-				const uniqueSwaps: any = _.uniqBy([...swapsStorage, swap], 'productId');
-				setSwapsStorage(uniqueSwaps);
+				setSwapsStorage([...swapsStorage, swap]);
 				setSwapProductId('');
 			}
 		} else if (
@@ -169,40 +156,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				transactionContractSwapState.errorMessage === 'user rejected transaction')
 		) {
 			setSwapProductId('');
+
+			return;
 		} else {
 			return;
 		}
 	}, [transactionContractSwapState, transactionSwapState]);
-
-	// useEffect(() => {
-	// 	console.log(transactionSwapState);
-	// 	if (transactionSwapState.status !== 'None' && transactionSwapState.errorMessage) {
-	// 		setTransactionState({
-	// 			...transactionState,
-	// 			status: transactionSwapState.status,
-	// 			errorMessage: transactionSwapState.errorMessage
-	// 		});
-	// 	} else if (
-	// 		transactionContractSwapState.status !== 'None' &&
-	// 		transactionContractSwapState.errorMessage
-	// 	) {
-	// 		setTransactionState({
-	// 			...transactionState,
-	// 			status: transactionContractSwapState.status,
-	// 			errorMessage: transactionContractSwapState.errorMessage
-	// 		});
-	// 	}
-	// }, [transactionSwapState, transactionContractSwapState]);
-
-	// useEffect(() => {
-	// 	if (isSwapRejected(transactionState.status, transactionState.errorMessage) && swapsStorage) {
-	// 		const copySwapsStorage = [...swapsStorage];
-	// 		copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
-	// 		setSwapsStorage(copySwapsStorage);
-	// 		dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
-	// 		setTransactionState({ status: '', errorMessage: '' });
-	// 	}
-	// }, [transactionState]);
 
 	return (
 		<ButtonWrapper>

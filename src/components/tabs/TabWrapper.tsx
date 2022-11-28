@@ -15,9 +15,9 @@ import { Contract } from '@ethersproject/contracts';
 import { useEffect, useMemo, useState } from 'react';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { useLocalStorage } from '../../hooks';
-import { TabsNew } from './tabsNew';
+import { TabContentNew } from './tabContentNew';
 
-type Props = {
+type Swap = {
 	swapProductId: string;
 	account: string;
 	costRequestCounter: number;
@@ -27,12 +27,18 @@ type Props = {
 	complete: null | boolean;
 	pair: string;
 	sourceToken: string;
+	currentBlockNumber: any;
 };
 
-export const TabWrapper = ({ swap }: any) => {
-	const [swapsStorage, setSwapsStorage] = useLocalStorage<Props[]>('swaps', []);
+type Props = {
+	swap: Swap;
+	isVisible: boolean;
+};
+
+export const TabWrapper = ({ swap, isVisible }: Props) => {
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<Swap[]>('swaps', []);
 	const [isDepositing, setIsDepositing] = useState(false);
-	// const { account } = useEthers();
+	const { account } = useEthers();
 	const {
 		state: { sourceNetwork, sourceToken }
 	} = useStore();
@@ -90,9 +96,9 @@ export const TabWrapper = ({ swap }: any) => {
 			isSwapRejected(swapStateContract.status, swapStateContract.errorMessage) ||
 			isSwapRejected(swapStateApprove.status, swapStateApprove.errorMessage)
 		) {
-			const swapsCopy: Props[] = [...swapsStorage];
+			const swapsCopy: Swap[] = [...swapsStorage];
 			const index: number = swapsStorage.findIndex(
-				(el: Props) => el.swapProductId === swap.swapProductId
+				(el: Swap) => el.swapProductId === swap.swapProductId
 			);
 			swapsCopy.splice(index, 1);
 			setSwapsStorage(swapsCopy);
@@ -112,41 +118,86 @@ export const TabWrapper = ({ swap }: any) => {
 					);
 					if (!isDepositing) {
 						setIsDepositing(true);
-						protocol.on(filter, (customer, service, productId, cost, event) => {
-							console.log(
-								'Oracle deposit estimation:',
-								event,
-								utils.formatUnits(cost, sourceTokenData?.decimals)
+						const costResponseFilter = protocol.filters.CostResponse(
+							account,
+							SERVICE_ADDRESS,
+							swap.swapProductId
+						);
+
+						async function fetchEvent() {
+							const event: any = await protocol.queryFilter(
+								costResponseFilter,
+								swap.currentBlockNumber
 							);
+							if (event.length > 0) {
+								if (sourceTokenData?.isNative) {
+									console.log('sendTransaction for the Native Coin');
+									void sendTransaction({
+										to: protocolAddress,
+										value: event[0]?.args.cost
+									}).then(() => setIsDepositing(false));
+								} else {
+									console.log('sendTokenApprove for the Token');
+									sendTokenApprove(protocolAddress, event[0]?.args.cost)
+										.then((result) => {
+											console.log(
+												'Approved ',
+												utils.formatUnits(
+													JSON.parse(event[0]?.args.data.cost),
+													sourceTokenData?.decimals
+												),
+												' tokens of "',
+												protocolAddress,
+												'" contract.',
+												result
+											);
 
-							if (sourceTokenData?.isNative) {
-								console.log('sendTransaction for the Native Coin');
-								void sendTransaction({ to: protocolAddress, value: cost }).then(() =>
-									setIsDepositing(false)
-								);
+											void sendDeposit(event[0]?.args.cost).then(() => setIsDepositing(false));
+										})
+										.catch((error: any) => {
+											console.log('Error in sending approve', error);
+										});
+								}
 							} else {
-								console.log('sendTokenApprove for the Token');
-								sendTokenApprove(protocolAddress, cost)
-									.then((result) => {
-										console.log(
-											'Approved ',
-											utils.formatUnits(cost, sourceTokenData?.decimals),
-											' tokens of "',
-											protocolAddress,
-											'" contract.',
-											result
-										);
+								protocol.on(filter, (customer, service, productId, cost, event) => {
+									console.log(
+										'Oracle deposit estimation:',
+										event,
+										utils.formatUnits(cost, sourceTokenData?.decimals)
+									);
 
-										void sendDeposit(cost).then(() => setIsDepositing(false));
-									})
-									.catch((error: any) => {
-										console.log('Error in sending approve', error);
-									});
+									if (sourceTokenData?.isNative) {
+										console.log('sendTransaction for the Native Coin');
+										void sendTransaction({ to: protocolAddress, value: cost }).then(() =>
+											setIsDepositing(false)
+										);
+									} else {
+										console.log('sendTokenApprove for the Token');
+										sendTokenApprove(protocolAddress, cost)
+											.then((result) => {
+												console.log(
+													'Approved ',
+													utils.formatUnits(cost, sourceTokenData?.decimals),
+													' tokens of "',
+													protocolAddress,
+													'" contract.',
+													result
+												);
+
+												void sendDeposit(cost).then(() => setIsDepositing(false));
+											})
+											.catch((error: any) => {
+												console.log('Error in sending approve', error);
+											});
+									}
+								});
 							}
-						});
+						}
+
+						void fetchEvent();
 					} else {
 						setIsDepositing(false);
-						const swapsCopy: Props[] = [...swapsStorage];
+						const swapsCopy: Swap[] = [...swapsStorage];
 						const index = swapsStorage.findIndex((el) => el.swapProductId === swap.swapProductId);
 						swapsCopy.splice(index, 1);
 						setSwapsStorage(swapsCopy);
@@ -158,78 +209,122 @@ export const TabWrapper = ({ swap }: any) => {
 
 	// Trigger function event listener
 	useEffect(() => {
-		eventListener(swap);
+		void eventListener(swap);
 	}, [swap]);
 
 	// Function event listener
-	const eventListener = (swap: Props) => {
+	const eventListener = async (swap: Swap) => {
 		if (swap) {
 			if (swap.sourceToken === sourceToken) {
 				const swapsCopy = [...swapsStorage];
 				const findSwap: any = swapsStorage.find(
-					(item: Props) => item.swapProductId === swap.swapProductId
+					(item: Swap) => item.swapProductId === swap.swapProductId
 				);
 				const index: number = swapsCopy.indexOf(findSwap);
 
 				if (swap.costRequestCounter < 2) {
-					protocol.on(
-						protocol.filters.CostRequest(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-						(account, service, localProductId, amount, event) => {
-							console.log('---COST REQUEST EVENT---', event);
-							swap.costRequestCounter += 1;
-							swapsCopy[index] = swap;
-							setSwapsStorage(swapsCopy);
-						}
-					);
+					const filter = protocol.filters.CostRequest(account, SERVICE_ADDRESS, swap.swapProductId);
+					const events = await protocol.queryFilter(filter, swap.currentBlockNumber);
+					if (events.length > 0) {
+						swap.costRequestCounter = events.length;
+						swapsCopy[index] = swap;
+						setSwapsStorage(swapsCopy);
+					} else {
+						protocol.on(
+							protocol.filters.CostRequest(swap.account, SERVICE_ADDRESS, swap.swapProductId),
+							(account, service, localProductId, amount, event) => {
+								console.log('---COST REQUEST EVENT---', event);
+								swap.costRequestCounter += 1;
+								swapsCopy[index] = swap;
+								setSwapsStorage(swapsCopy);
+							}
+						);
+					}
 				}
 
 				if (!swap.depositBlock) {
-					protocol.on(
-						protocol.filters.Deposit(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-						(customer, service, localProductId, amount, event) => {
-							console.log('DEPOSIT EVENT', event);
-							swap.depositBlock = event.blockNumber;
-							swapsCopy[index] = swap;
-							setSwapsStorage(swapsCopy);
-						}
-					);
+					const filter = protocol.filters.Deposit(account, SERVICE_ADDRESS, swap.swapProductId);
+					const events: any = await protocol.queryFilter(filter, swap.currentBlockNumber);
+
+					if (events.length > 0) {
+						swap.depositBlock = events[0].blockNumber;
+						swapsCopy[index] = swap;
+						setSwapsStorage(swapsCopy);
+					} else {
+						protocol.on(
+							protocol.filters.Deposit(swap.account, SERVICE_ADDRESS, swap.swapProductId),
+							(customer, service, localProductId, amount, event) => {
+								console.log('DEPOSIT EVENT', event);
+								swap.depositBlock = event.blockNumber;
+								swapsCopy[index] = swap;
+								setSwapsStorage(swapsCopy);
+							}
+						);
+					}
 				}
 
 				if (!swap.action.length || !swap.withdraw.length) {
-					protocol.on(
-						protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-						(customer, service, localProductId, data, event) => {
-							console.log('---Action EVENT---', event);
-							const parsedData = JSON.parse(event.args?.data);
-
+					const filter = protocol.filters.Action(account, SERVICE_ADDRESS, swap.swapProductId);
+					const events: any = await protocol.queryFilter(filter, swap.currentBlockNumber);
+					if (events.length > 0) {
+						events.map((event: any) => {
+							const parsedData: any = JSON.parse(event.args.data);
 							if (parsedData.t === 0) {
 								swap.action = [parsedData];
 								swapsCopy[index] = swap;
 
 								setSwapsStorage(swapsCopy);
-							} else {
+							} else if (parsedData.t === 1) {
 								swap.withdraw = [parsedData];
 								swapsCopy[index] = swap;
 
 								setSwapsStorage(swapsCopy);
 							}
-						}
-					);
+						});
+					} else {
+						protocol.on(
+							protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.swapProductId),
+							(customer, service, localProductId, data, event) => {
+								console.log('---Action EVENT---', event);
+								const parsedData = JSON.parse(event.args?.data);
+
+								if (parsedData.t === 0) {
+									swap.action = [parsedData];
+									swapsCopy[index] = swap;
+
+									setSwapsStorage(swapsCopy);
+								} else {
+									swap.withdraw = [parsedData];
+									swapsCopy[index] = swap;
+
+									setSwapsStorage(swapsCopy);
+								}
+							}
+						);
+					}
 				}
 
 				if (!swap.complete && swap.complete === null) {
-					protocol.on(
-						protocol.filters.Complete(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-						(customer, service, localProductId, amount, event) => {
-							console.log('---COMPLETE EVENT---', event);
-							swap.complete = event.args.success;
-							swapsCopy[index] = swap;
+					const filter = protocol.filters.Complete(account, SERVICE_ADDRESS, swap.swapProductId);
+					const events: any = await protocol.queryFilter(filter, swap.currentBlockNumber);
+					if (events.length > 0) {
+						swap.complete = events.complete;
+						swapsCopy[index] = swap;
+						setSwapsStorage(swapsCopy);
+					} else {
+						protocol.on(
+							protocol.filters.Complete(swap.account, SERVICE_ADDRESS, swap.swapProductId),
+							(customer, service, localProductId, amount, event) => {
+								console.log('---COMPLETE EVENT---', event);
+								swap.complete = event.args.success;
+								swapsCopy[index] = swap;
 
-							setSwapsStorage(swapsCopy);
-						}
-					);
+								setSwapsStorage(swapsCopy);
+							}
+						);
+					}
 				}
-				if (swap.complete || (!swap.complete && swap.complete !== null)) {
+				if (swap.complete || swap.complete !== null) {
 					swapsCopy.splice(index, 1);
 					setSwapsStorage(swapsCopy);
 				}
@@ -237,5 +332,5 @@ export const TabWrapper = ({ swap }: any) => {
 		}
 	};
 
-	return <TabsNew swap={swap} />;
+	return isVisible && <TabContentNew swap={swap} />;
 };
