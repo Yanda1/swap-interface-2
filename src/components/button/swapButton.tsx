@@ -1,18 +1,19 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
-import { utils, providers } from 'ethers';
+import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
 import type { ContractAdress } from '../../helpers';
 import {
+	beautifyNumbers,
 	CONTRACT_ADDRESSES,
 	isTokenSelected,
 	makeId,
+	NETWORK_TO_ID,
 	PairEnum,
-	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
@@ -68,7 +69,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	const sourceTokenData =
 		// @ts-ignore
-		// eslint-disable-next-line
 		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
 
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
