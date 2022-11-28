@@ -1,26 +1,25 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
-import { utils } from 'ethers';
+import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
 import type { ContractAdress } from '../../helpers';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
-	isSwapRejected,
 	isTokenSelected,
 	makeId,
 	NETWORK_TO_ID,
 	PairEnum,
-	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
 import { spacing } from '../../styles';
 import { useFees, useLocalStorage } from '../../hooks';
+import _ from 'lodash';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -33,6 +32,11 @@ type Props = {
 };
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
+	const { account } = useEthers();
+	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
+	// TODO: ADD TYPES
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('swaps', []);
+
 	const {
 		state: {
 			sourceNetwork,
@@ -43,7 +47,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationMemo,
 			isUserVerified,
 			destinationAmount,
-			productId
+			pair
 		},
 		dispatch
 	} = useStore();
@@ -71,7 +75,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
-	if (web3Provider) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
 		protocol.connect(web3Provider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
@@ -93,18 +97,18 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		}
 	);
 
-	const [swapsStorage, setSwapsStorage] = useLocalStorage('swaps', []);
-	const [transactionState, setTransactionState] = useState<{
-		status: string;
-		errorMessage: string;
-	}>({
-		status: '',
-		errorMessage: ''
-	});
+	// const [transactionState, setTransactionState] = useState<{
+	// 	status: string;
+	// 	errorMessage: string;
+	// }>({
+	// 	status: '',
+	// 	errorMessage: ''
+	// });
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
 			const productId = utils.id(makeId(32));
+			setSwapProductId(productId);
 
 			const namedValues = {
 				scoin: sourceToken,
@@ -114,12 +118,14 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				daddr: destinationAddress,
 				tag: destinationMemo
 			};
-			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
+			// dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
 			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
 
 			if (sourceTokenData?.isNative) {
-				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues).then(() =>
+					console.log('send create proccess', transactionSwapState, transactionSwapState)
+				);
 			} else {
 				console.log(
 					'Calling sendTokenCreateProcess with the contractAddr',
@@ -136,33 +142,68 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	}));
 
 	useEffect(() => {
-		if (transactionSwapState.status !== 'None' && transactionSwapState.errorMessage) {
-			setTransactionState({
-				...transactionState,
-				status: transactionSwapState.status,
-				errorMessage: transactionSwapState.errorMessage
-			});
-		} else if (
-			transactionContractSwapState.status !== 'None' &&
-			transactionContractSwapState.errorMessage
+		if (
+			transactionSwapState.status === 'Mining' ||
+			transactionContractSwapState.status === 'Mining'
 		) {
-			setTransactionState({
-				...transactionState,
-				status: transactionContractSwapState.status,
-				errorMessage: transactionContractSwapState.errorMessage
-			});
+			if (swapProductId && account) {
+				const swap = {
+					swapProductId,
+					account,
+					costRequestCounter: 0,
+					depositBlock: 0,
+					action: [],
+					withdraw: [],
+					complete: null,
+					pair,
+					sourceToken
+				};
+				// TODO: add types
+				const uniqueSwaps: any = _.uniqBy([...swapsStorage, swap], 'productId');
+				setSwapsStorage(uniqueSwaps);
+				setSwapProductId('');
+			}
+		} else if (
+			(transactionSwapState.status === 'Exception' &&
+				transactionSwapState.errorMessage === 'user rejected transaction') ||
+			(transactionContractSwapState.status === 'Exception' &&
+				transactionContractSwapState.errorMessage === 'user rejected transaction')
+		) {
+			setSwapProductId('');
+		} else {
+			return;
 		}
-	}, [transactionSwapState, transactionContractSwapState]);
+	}, [transactionContractSwapState, transactionSwapState]);
 
-	useEffect(() => {
-		if (isSwapRejected(transactionState.status, transactionState.errorMessage) && swapsStorage) {
-			const copySwapsStorage = [...swapsStorage];
-			copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
-			setSwapsStorage(copySwapsStorage);
-			dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
-			setTransactionState({ status: '', errorMessage: '' });
-		}
-	}, [transactionState]);
+	// useEffect(() => {
+	// 	console.log(transactionSwapState);
+	// 	if (transactionSwapState.status !== 'None' && transactionSwapState.errorMessage) {
+	// 		setTransactionState({
+	// 			...transactionState,
+	// 			status: transactionSwapState.status,
+	// 			errorMessage: transactionSwapState.errorMessage
+	// 		});
+	// 	} else if (
+	// 		transactionContractSwapState.status !== 'None' &&
+	// 		transactionContractSwapState.errorMessage
+	// 	) {
+	// 		setTransactionState({
+	// 			...transactionState,
+	// 			status: transactionContractSwapState.status,
+	// 			errorMessage: transactionContractSwapState.errorMessage
+	// 		});
+	// 	}
+	// }, [transactionSwapState, transactionContractSwapState]);
+
+	// useEffect(() => {
+	// 	if (isSwapRejected(transactionState.status, transactionState.errorMessage) && swapsStorage) {
+	// 		const copySwapsStorage = [...swapsStorage];
+	// 		copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
+	// 		setSwapsStorage(copySwapsStorage);
+	// 		dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
+	// 		setTransactionState({ status: '', errorMessage: '' });
+	// 	}
+	// }, [transactionState]);
 
 	return (
 		<ButtonWrapper>

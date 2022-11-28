@@ -1,28 +1,27 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { DestinationNetworks, Fee, GraphType, Price } from '../helpers';
 import {
 	BINANCE_EXCHANGE_INFO,
+	BINANCE_FEE,
 	BINANCE_PRICE_TICKER,
 	CONTRACT_ADDRESSES,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
+	FEE_CURRENCY,
+	Graph,
+	isNetworkSelected,
 	isTokenSelected,
 	makeId,
+	NETWORK_TO_ID,
 	PROTOCOL_FEE,
-	SERVICE_ADDRESS,
-	Graph,
-	BINANCE_FEE,
-	FEE_CURRENCY,
 	PROTOCOL_FEE_FACTOR,
-	isNetworkSelected,
-	useStore,
-	NETWORK_TO_ID
+	SERVICE_ADDRESS,
+	useStore
 } from '../helpers';
-import type { Price, Fee } from '../helpers';
-import type { GraphType, DestinationNetworks } from '../helpers';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../data/sourceNetworks.json';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
-import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
-import { BigNumber, utils } from 'ethers';
+import { useEtherBalance, useEthers, useGasPrice, useTokenBalance } from '@usedapp/core';
+import { BigNumber, providers, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import axios from 'axios';
@@ -69,7 +68,7 @@ export const useFees = () => {
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
-	if (web3Provider && isNetworkConnected) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider) && isNetworkConnected) {
 		contract.connect(web3Provider.getSigner());
 	}
 	const walletBalance = useEtherBalance(account);

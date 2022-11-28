@@ -15,11 +15,11 @@ import {
 } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
 import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
-import { utils } from 'ethers';
+import { providers, utils } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
-import _ from 'lodash';
+import { TabWrapper } from './TabWrapper';
 
 const Wrapper = styled.div`
 	max-width: 100%;
@@ -33,7 +33,7 @@ const Paragraph = styled.p(
 );
 
 type Props = {
-	productId: string;
+	swapProductId: string;
 	account: string;
 	costRequestCounter: number;
 	depositBlock: number;
@@ -48,7 +48,7 @@ export const TabModal = () => {
 	const [isDepositing, setIsDepositing] = useState(false);
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
-		state: { productId, pair, isUserVerified, sourceNetwork, sourceToken, theme }
+		state: { isUserVerified, sourceNetwork, sourceToken, theme }
 	} = useStore();
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<Props[]>('swaps', []);
 
@@ -71,7 +71,7 @@ export const TabModal = () => {
 	const tokenContract =
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
-	if (web3Provider) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
 		protocol.connect(web3Provider.getSigner());
 		if (tokenContract) {
 			tokenContract.connect(web3Provider.getSigner());
@@ -100,26 +100,33 @@ export const TabModal = () => {
 		}
 	);
 
-	// ADD NEW SWAP TO LOCAL STORAGE AND STATE
+	// useEffect(() => {
+	// 	if (productId && account) {
+	// 		const order = {
+	// 			productId,
+	// 			account,
+	// 			costRequestCounter: 0,
+	// 			depositBlock: 0,
+	// 			action: [],
+	// 			withdraw: [],
+	// 			complete: null,
+	// 			pair,
+	// 			sourceToken
+	// 		};
+	// 		const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => swap.complete === null);
+	// 		const uniqueSwaps: Props[] = _.uniqBy([...filteredSwaps, order], 'productId');
+	// 		setSwaps(uniqueSwaps);
+	// 		setSwapsStorage(uniqueSwaps);
+	// 	}
+	// }, [productId]);
+
+	// GET ALL UNFINISHED SWAPS
 	useEffect(() => {
-		if (productId && account) {
-			const order = {
-				productId,
-				account,
-				costRequestCounter: 0,
-				depositBlock: 0,
-				action: [],
-				withdraw: [],
-				complete: null,
-				pair,
-				sourceToken
-			};
+		if (swapsStorage.length > 0) {
 			const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => swap.complete === null);
-			const uniqueSwaps: Props[] = _.uniqBy([...filteredSwaps, order], 'productId');
-			setSwaps(uniqueSwaps);
-			setSwapsStorage(uniqueSwaps);
+			setSwaps(filteredSwaps);
 		}
-	}, [productId]);
+	}, [swapsStorage.length]);
 
 	// Function with event listeners
 	const subscribeSwap = () => {
@@ -129,7 +136,7 @@ export const TabModal = () => {
 				if (swap.sourceToken === sourceToken) {
 					if (swap.costRequestCounter < 2) {
 						protocol.on(
-							protocol.filters.CostRequest(swap.account, SERVICE_ADDRESS, swap.productId),
+							protocol.filters.CostRequest(swap.account, SERVICE_ADDRESS, swap.swapProductId),
 							(account, service, localProductId, amount, event) => {
 								console.log('---COST REQUEST EVENT---', event);
 								swap.costRequestCounter += 1;
@@ -141,7 +148,7 @@ export const TabModal = () => {
 					}
 					if (!swap.depositBlock) {
 						protocol.on(
-							protocol.filters.Deposit(swap.account, SERVICE_ADDRESS, swap.productId),
+							protocol.filters.Deposit(swap.account, SERVICE_ADDRESS, swap.swapProductId),
 							(customer, service, localProductId, amount, event) => {
 								console.log('SWAPS CONTRACT', event);
 								swap.depositBlock = event.blockNumber;
@@ -153,7 +160,7 @@ export const TabModal = () => {
 					}
 					if (!swap.action.length || !swap.withdraw.length) {
 						protocol.on(
-							protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.productId),
+							protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.swapProductId),
 							(customer, service, localProductId, data, event) => {
 								console.log('---ORDER EVENT---', event);
 								const parsedData = JSON.parse(event.args?.data);
@@ -174,7 +181,7 @@ export const TabModal = () => {
 					}
 					if (!swap.complete) {
 						protocol.on(
-							protocol.filters.Complete(swap.account, SERVICE_ADDRESS, swap.productId),
+							protocol.filters.Complete(swap.account, SERVICE_ADDRESS, swap.swapProductId),
 							(customer, service, localProductId, amount, event) => {
 								console.log('---COMPLETE EVENT---', event);
 								swap.complete = event.args.success;
@@ -205,14 +212,14 @@ export const TabModal = () => {
 						const filter = protocol.filters.CostResponse(
 							swap.account,
 							SERVICE_ADDRESS,
-							swap.productId
+							swap.swapProductId
 						);
 						if (!isDepositing) {
 							setIsDepositing(true);
 							protocol.on(filter, (customer, service, productId, cost, event) => {
-								console.log('---COST RESPONSE EVENT---', event);
 								console.log(
 									'Oracle deposit estimation:',
+									event,
 									utils.formatUnits(cost, sourceTokenData?.decimals)
 								);
 
@@ -268,6 +275,7 @@ export const TabModal = () => {
 		}
 	}, [swapState, swapStateContract, swapStateApprove]);
 
+	// Trigger function en swaps array changes
 	useEffect(() => {
 		subscribeSwap();
 	}, [swaps, sourceToken]);
@@ -287,6 +295,9 @@ export const TabModal = () => {
 				<>
 					<Paragraph theme={theme}>Pending Swaps ({swaps.length})</Paragraph>
 					<Tabs data={accountSwaps} />
+					{accountSwaps.map((swap: Props) => (
+						<TabWrapper swap={swap} />
+					))}
 				</>
 			)}
 		</Wrapper>
