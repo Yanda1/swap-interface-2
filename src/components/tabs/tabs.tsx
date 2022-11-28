@@ -33,6 +33,7 @@ const Tab = styled.div(({ active }: Props) => {
 
 		&:nth-child(${++active}) {
 			border-bottom: 1px solid ${theme.button.default};
+			z-index: 1;
 		}
 
 		&:last-child {

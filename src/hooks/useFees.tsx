@@ -1,27 +1,27 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { DestinationNetworks, Fee, GraphType, Price } from '../helpers';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import {
 	BINANCE_EXCHANGE_INFO,
-	BINANCE_FEE,
 	BINANCE_PRICE_TICKER,
 	CONTRACT_ADDRESSES,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
-	FEE_CURRENCY,
-	Graph,
-	isNetworkSelected,
 	isTokenSelected,
 	makeId,
-	NETWORK_TO_ID,
 	PROTOCOL_FEE,
-	PROTOCOL_FEE_FACTOR,
 	SERVICE_ADDRESS,
-	useStore
+	Graph,
+	BINANCE_FEE,
+	FEE_CURRENCY,
+	PROTOCOL_FEE_FACTOR,
+	isNetworkSelected,
+	useStore,
+	NETWORK_TO_ID
 } from '../helpers';
+import type { GraphType, DestinationNetworks, Price, Fee } from '../helpers';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../data/sourceNetworks.json';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
-import { useEtherBalance, useEthers, useGasPrice, useTokenBalance } from '@usedapp/core';
-import { BigNumber, providers, utils } from 'ethers';
+import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
+import { BigNumber, utils, providers } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
 import { formatEther, formatUnits } from '@ethersproject/units';
 import axios from 'axios';
@@ -68,7 +68,7 @@ export const useFees = () => {
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
-	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider) && isNetworkConnected) {
+	if (web3Provider && isNetworkConnected && !(web3Provider instanceof providers.FallbackProvider)) {
 		contract.connect(web3Provider.getSigner());
 	}
 	const walletBalance = useEtherBalance(account);
@@ -328,6 +328,11 @@ export const useFees = () => {
 		return { amount: allFees, currency: FEE_CURRENCY };
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
+	const percentageOfAllFeesToAmount = useMemo(
+		() => (amount ? (allFees.amount / (getPrice(sourceToken, FEE_CURRENCY) * +amount)) * 100 : ''),
+		[allFees.amount, destinationToken, amount]
+	);
+
 	const marginalCosts = useMemo(() => {
 		let minAmount = '';
 		let maxAmount = '';
@@ -388,6 +393,7 @@ export const useFees = () => {
 		networkFee,
 		cexFee,
 		allFees,
-		getPrice
+		getPrice,
+		percentageOfAllFeesToAmount
 	};
 };

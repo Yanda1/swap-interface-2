@@ -34,6 +34,9 @@ const Wrapper = styled.div`
 
 const SelectWrapper = styled.div`
 	display: flex;
+	flex-grow: 1;
+	align-self: stretch;
+	overflow: hidden;
 	width: 100%;
 	gap: ${spacing[18]};
 `;
@@ -171,6 +174,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		</Portal>
 	) : (
 		<Portal
+			size="large"
 			handleClose={() => setShowModal(false)}
 			isOpen={showModal}
 			hasBackButton={!showsNetworkList}

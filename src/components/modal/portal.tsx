@@ -29,15 +29,16 @@ const Content = styled.div(
 		max-width: calc(100% - ${spacing[40]});
 		display: flex;
 		box-sizing: border-box;
-		align-items: center;
-		justify-content: center;
+		align-items: stretch;
+		justify-content: flex-start;
 		position: ${size === 'small' ? 'absolute' : 'relative'};
 		top: ${size === 'small' ? pxToRem(90) : null};
-		margin: ${spacing[40]} 0;
 		padding: ${spacing[48]} ${spacing[22]} ${spacing[24]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
+		height: calc(100% - ${spacing[40]});
+		max-height: ${pxToRem(size === 'small' ? 305 : 530)};
 	`
 );
 
@@ -137,7 +138,6 @@ export const Portal = ({
 	});
 
 	const handleClick = () => {
-		// @ts-ignore
 		if (selectedSourceTokenNetwork.network === sourceNetwork) {
 			dispatch({ type: DestinationEnum.NETWORK, payload: selectedDestinationTokenNetwork.network });
 			dispatch({ type: DestinationEnum.TOKEN, payload: selectedDestinationTokenNetwork.token });
@@ -149,19 +149,22 @@ export const Portal = ({
 		if (isOpen) {
 			setSelectedSourceTokenNetwork({ network: sourceNetwork, token: sourceToken });
 			setSelectedDestinationTokenNetwork({ network: destinationNetwork, token: destinationToken });
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = 'unset';
 		}
 	}, [isOpen]);
 
 	useEffect(() => {
-		if (isOpen) {
-			const closeOnEscapeKey = (e: any) => (e.key === 'Escape' ? handleClick() : null);
-			document.body.addEventListener('keydown', closeOnEscapeKey);
+		const closeOnEscapeKey = (e: any) => {
+			if (isOpen && e.key === 'Escape') handleClick();
+		};
+		document.body.addEventListener('keydown', closeOnEscapeKey);
 
-			return () => {
-				document.body.removeEventListener('keydown', closeOnEscapeKey);
-			};
-		}
-	}, [isOpen]);
+		return () => {
+			document.body.removeEventListener('keydown', closeOnEscapeKey);
+		};
+	});
 
 	return isOpen ? (
 		<PortalWrapper wrapperId="react-portal-modal-container">

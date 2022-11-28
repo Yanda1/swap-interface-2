@@ -1,19 +1,18 @@
-import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
-import { providers, utils } from 'ethers';
+import { utils, providers } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
 import type { ContractAdress } from '../../helpers';
 import {
-	beautifyNumbers,
 	CONTRACT_ADDRESSES,
 	isTokenSelected,
 	makeId,
-	NETWORK_TO_ID,
 	PairEnum,
+	ProductIdEnum,
 	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';

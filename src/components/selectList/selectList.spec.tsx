@@ -9,8 +9,7 @@ import {
 	pxToRem,
 	spacing,
 	HORIZONTAL_PADDING,
-	DEFAULT_BORDER_RADIUS,
-	SELECT_LIST_HEIGHT
+	DEFAULT_BORDER_RADIUS
 } from '../../styles';
 
 describe('SelectList', () => {
@@ -35,7 +34,6 @@ describe('SelectList', () => {
 			flex-direction: column;
 			flex: 0 1 ${pxToRem(450 / 2 - 36)};
 			border: 1px solid ${darkTheme.font.default};
-			height: ${SELECT_LIST_HEIGHT};
 			padding: 0 ${spacing[HORIZONTAL_PADDING]};
 			background: ${darkTheme.background.default};
 			border-radius: ${DEFAULT_BORDER_RADIUS};
