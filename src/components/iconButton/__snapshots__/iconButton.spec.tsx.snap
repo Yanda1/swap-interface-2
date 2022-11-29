@@ -10,6 +10,7 @@ exports[`IconButton should render a IconButton with icon only 1`] = `
 <img
   alt="ETH"
   class="c0"
+  data-testid="icon-button"
   src="eth.png"
 />
 `;
@@ -58,6 +59,7 @@ exports[`IconButton should render a disabled IconButton with img and Text 1`] = 
 
 <button
   class="c0"
+  data-testid="icon-button"
   disabled=""
 >
   <img

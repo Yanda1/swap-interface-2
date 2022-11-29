@@ -4,7 +4,7 @@ import { AuthProvider } from '../../helpers';
 import { Switch } from '../../components';
 
 describe('Switch', () => {
-	it('should render a default button', () => {
+	it('should render the switch component', () => {
 		const { getByTestId } = render(
 			<AuthProvider>
 				<Switch />

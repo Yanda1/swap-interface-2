@@ -1,11 +1,16 @@
 import 'jest-styled-components';
 import { render } from '@testing-library/react';
 import { Arrow } from '../../components';
+import { AuthProvider } from '../../helpers';
 
 describe('Arrow', () => {
 	it('should render a default button', () => {
-		const { getByText } = render(<Arrow open={true} />);
+		const { getByTestId } = render(
+			<AuthProvider>
+				<Arrow open={true} />
+			</AuthProvider>
+		);
 
-		expect(getByText(/Arrow/)).toMatchSnapshot();
+		expect(getByTestId('arrow')).toMatchSnapshot();
 	});
 });

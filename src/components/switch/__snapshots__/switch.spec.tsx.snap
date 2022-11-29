@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Switch should render a default button 1`] = `
+exports[`Switch should render the switch component 1`] = `
 .c0 {
   -webkit-appearance: none;
   -moz-appearance: none;

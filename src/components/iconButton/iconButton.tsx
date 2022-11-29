@@ -153,7 +153,7 @@ type Props = {
 
 export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props) => {
 	return !iconOnly ? (
-		<Icon disabled={disabled} onClick={onClick}>
+		<Icon disabled={disabled} onClick={onClick} data-testid="icon-button">
 			{!icon || !isTokenSelected(icon) ? (
 				<QuestionMark style={{ width: 40, height: 40 }} />
 			) : (
@@ -162,9 +162,9 @@ export const IconButton = ({ disabled = false, icon, onClick, iconOnly }: Props)
 			)}
 		</Icon>
 	) : !icon || !isTokenSelected(icon) ? (
-		<QuestionMark style={{ width: 40, height: 40 }} />
+		<QuestionMark style={{ width: 40, height: 40 }} data-testid="icon-button" />
 	) : (
 		// @ts-ignore
-		<Img src={icons[icon as DestinationNetworks]} alt={icon} iconOnly />
+		<Img src={icons[icon as DestinationNetworks]} alt={icon} iconOnly data-testid="icon-button" />
 	);
 };

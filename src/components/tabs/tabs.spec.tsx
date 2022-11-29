@@ -160,7 +160,7 @@ describe('SelectList', () => {
 			max-width: 100%;
 			`);
 
-		const TabsContainer = getByTestId('tabs');
+		const TabsContainer = getByTestId('tabs-container');
 		expect(TabsContainer).toBeInTheDocument();
 	});
 });
