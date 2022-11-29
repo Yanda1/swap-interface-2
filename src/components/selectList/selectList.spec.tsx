@@ -22,7 +22,7 @@ describe('SelectList', () => {
 		);
 
 		const element = getByTestId('custom');
-		const title = getByText('SELECT NETWORK');
+		const title = getByText('Select Network');
 		const input = getByRole('textbox');
 		const list = getByRole('list');
 		const listItem = getByText('ETH');
@@ -39,7 +39,7 @@ describe('SelectList', () => {
 			border-radius: ${DEFAULT_BORDER_RADIUS};
 		`);
 
-		expect(title).toHaveTextContent('SELECT NETWORK');
+		expect(title).toHaveTextContent('Select Network');
 		expect(title).toHaveStyle(
 			`
 			font-size: ${fontSize[16]};

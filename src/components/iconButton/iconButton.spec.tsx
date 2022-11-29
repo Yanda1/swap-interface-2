@@ -2,7 +2,7 @@ import 'jest-styled-components';
 import { render } from '@testing-library/react';
 import { IconButton } from './iconButton';
 import { AuthProvider } from '../../helpers';
-import { darkTheme, DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
+import { darkTheme, DEFAULT_BORDER_RADIUS, lightTheme, pxToRem, spacing } from '../../styles';
 import userEvent from '@testing-library/user-event';
 
 describe('IconButton', () => {
@@ -17,17 +17,15 @@ describe('IconButton', () => {
 
 		expect(img).toBeInTheDocument();
 		expect(img).toHaveAttribute('alt', 'ETH');
-		expect(img).toHaveStyle(
-			`width: ${pxToRem(40)}; height: ${pxToRem(40)}; cursor: pointer; margin-right: ${pxToRem(0)};`
-		);
+		expect(img).toHaveStyle(`width: ${pxToRem(40)}; height: ${pxToRem(40)}; cursor: pointer;`);
 
 		expect(btn).toMatchSnapshot();
 		expect(btn).toBeInTheDocument();
 		expect(btn).toHaveStyle(
 			`
-			background: ${darkTheme.background.secondary};
+			background: ${lightTheme.background.secondary};
 			padding: ${spacing[8]};
-			border: 1px solid ${darkTheme.font.default};
+			border: 1px solid ${darkTheme.border.default};
 			border-radius: ${DEFAULT_BORDER_RADIUS};
 			`
 		);
@@ -58,8 +56,6 @@ describe('IconButton', () => {
 
 		expect(img).toBeInTheDocument();
 		expect(img).toHaveAttribute('alt', 'ETH');
-		expect(img).toHaveStyle(
-			`width: ${pxToRem(25)}; height: ${pxToRem(25)}; cursor: pointer; margin-right: ${pxToRem(10)}`
-		);
+		expect(img).toHaveStyle(`width: ${pxToRem(25)}; height: ${pxToRem(25)}; cursor: pointer;`);
 	});
 });

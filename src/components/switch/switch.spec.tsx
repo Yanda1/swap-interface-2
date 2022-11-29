@@ -5,12 +5,12 @@ import { Switch } from '../../components';
 
 describe('Switch', () => {
 	it('should render a default button', () => {
-		const { getByText } = render(
+		const { getByTestId } = render(
 			<AuthProvider>
 				<Switch />
 			</AuthProvider>
 		);
 
-		expect(getByText(/Switch/)).toMatchSnapshot();
+		expect(getByTestId('switch')).toMatchSnapshot();
 	});
 });

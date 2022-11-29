@@ -4,7 +4,7 @@ import { AuthProvider } from '../../helpers';
 
 describe('TextField', () => {
 	it('should match snapshot', () => {
-		const {getByPlaceholderText} = render(
+		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField
 					disabled
@@ -20,7 +20,7 @@ describe('TextField', () => {
 	});
 
 	it('should match style', () => {
-		const {getByPlaceholderText} = render(
+		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField
 					disabled
@@ -33,12 +33,12 @@ describe('TextField', () => {
 		);
 		const textField = getByPlaceholderText(/placeholder/i);
 		expect(textField).toHaveStyle(
-			'border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem; padding: 1.125rem 0.625rem;'
+			'border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem; padding: 1.125rem 0.5rem;'
 		);
 	});
 
 	it('should set props correctly', () => {
-		const {getByPlaceholderText} = render(
+		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField disabled value="value" placeholder="placeholder" type="number" />
 			</AuthProvider>
