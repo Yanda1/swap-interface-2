@@ -106,7 +106,6 @@ const Error = styled.div`
 `;
 
 type Props = {
-	// TODO: improve props ... size only on type search etc.
 	placeholder?: string;
 	disabled?: boolean;
 	type?: TypeProps;
