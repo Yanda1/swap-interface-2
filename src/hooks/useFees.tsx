@@ -16,8 +16,7 @@ import {
 	useStore,
 	NETWORK_TO_ID
 } from '../helpers';
-import type { Price, Fee } from '../helpers';
-import type { GraphType, DestinationNetworks } from '../helpers';
+import type { GraphType, DestinationNetworks, Price, Fee } from '../helpers';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../data/sourceNetworks.json';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';

@@ -1,25 +1,24 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { useContractFunction, useEthers } from '@usedapp/core';
+import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
-import { utils, providers } from 'ethers';
+import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
 import type { ContractAdress } from '../../helpers';
 import {
+	beautifyNumbers,
 	CONTRACT_ADDRESSES,
 	isTokenSelected,
 	makeId,
-	PairEnum,
-	ProductIdEnum,
-	SERVICE_ADDRESS,
-	useStore,
 	NETWORK_TO_ID,
-	beautifyNumbers
+	PairEnum,
+	SERVICE_ADDRESS,
+	useStore
 } from '../../helpers';
 import { spacing } from '../../styles';
-import { useLocalStorage, useFees } from '../../hooks';
+import { useFees, useLocalStorage } from '../../hooks';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -32,6 +31,10 @@ type Props = {
 };
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
+	const { account } = useEthers();
+	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('swaps', []);
+
 	const {
 		state: {
 			sourceNetwork,
@@ -42,12 +45,13 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationMemo,
 			isUserVerified,
 			destinationAmount,
-			productId
+			pair
 		},
 		dispatch
 	} = useStore();
 	const { chainId, library: web3Provider } = useEthers();
 	const { maxAmount, minAmount } = useFees();
+	const currentBlockNumber = useBlockNumber();
 
 	const isDisabled =
 		!validInputs ||
@@ -64,7 +68,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	const sourceTokenData =
 		// @ts-ignore
-		// eslint-disable-next-line
 		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
 
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
@@ -92,18 +95,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		}
 	);
 
-	const [swapsStorage, setSwapsStorage] = useLocalStorage('swaps', []);
-	const [transactionState, setTransactionState] = useState<{
-		status: string;
-		errorMessage: string;
-	}>({
-		status: '',
-		errorMessage: ''
-	});
-
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
 			const productId = utils.id(makeId(32));
+			setSwapProductId(productId);
 
 			const namedValues = {
 				scoin: sourceToken,
@@ -113,7 +108,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				daddr: destinationAddress,
 				tag: destinationMemo
 			};
-			dispatch({ type: ProductIdEnum.PRODUCTID, payload: productId });
 			const shortNamedValues = JSON.stringify(namedValues);
 			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
 
@@ -135,38 +129,39 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	}));
 
 	useEffect(() => {
-		if (transactionSwapState.status !== 'None' && transactionSwapState.errorMessage) {
-			setTransactionState({
-				...transactionState,
-				status: transactionSwapState.status,
-				errorMessage: transactionSwapState.errorMessage
-			});
-		} else if (
-			transactionContractSwapState.status !== 'None' &&
-			transactionContractSwapState.errorMessage
-		) {
-			setTransactionState({
-				...transactionState,
-				status: transactionContractSwapState.status,
-				errorMessage: transactionContractSwapState.errorMessage
-			});
-		}
-	}, [transactionSwapState, transactionContractSwapState]);
-
-	useEffect(() => {
 		if (
-			transactionState.status === 'Exception' &&
-			transactionState.errorMessage === 'user rejected transaction'
+			transactionSwapState.status === 'Mining' ||
+			transactionContractSwapState.status === 'Mining'
 		) {
-			if (swapsStorage) {
-				const copySwapsStorage = [...swapsStorage];
-				copySwapsStorage.splice(copySwapsStorage[productId as any], 1);
-				setSwapsStorage(copySwapsStorage);
-				dispatch({ type: ProductIdEnum.PRODUCTID, payload: '' });
-				setTransactionState({ status: '', errorMessage: '' });
+			if (swapProductId && account) {
+				const swap = {
+					swapProductId,
+					account,
+					costRequestCounter: 0,
+					depositBlock: 0,
+					action: [],
+					withdraw: [],
+					complete: null,
+					pair,
+					sourceToken,
+					currentBlockNumber
+				};
+				setSwapsStorage([...swapsStorage, swap]);
+				setSwapProductId('');
 			}
+		} else if (
+			(transactionSwapState.status === 'Exception' &&
+				transactionSwapState.errorMessage === 'user rejected transaction') ||
+			(transactionContractSwapState.status === 'Exception' &&
+				transactionContractSwapState.errorMessage === 'user rejected transaction')
+		) {
+			setSwapProductId('');
+
+			return;
+		} else {
+			return;
 		}
-	}, [transactionState]);
+	}, [transactionContractSwapState, transactionSwapState]);
 
 	return (
 		<ButtonWrapper>
