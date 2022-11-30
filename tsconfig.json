@@ -11,6 +11,7 @@
 		"noFallthroughCasesInSwitch": true,
 		"module": "commonjs",
 		"moduleResolution": "node",
+		"modulePaths": ["<rootdir>/src"],
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
