@@ -1,24 +1,23 @@
-name: CI for Tiwanaku
+name: CI
 
-on: [pull_request]
+on: [push]
 
 jobs:
-  testing:
-    runs-on: ubuntu-latest
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        node_version: [14]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v1
+        with:
+          node_version: ${{ matrix.node_version }}
 
-      - name: Set Node.js 16.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-
-      - name: run yarn install
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
-      - name: run yarn tests
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: test
+      - name: run CI
+        run: |
+          yarn install
+          yarn test
