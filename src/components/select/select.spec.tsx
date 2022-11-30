@@ -36,7 +36,7 @@ describe('Select', () => {
 		expect(getByTestId('select')).toMatchSnapshot();
 	});
 
-	it('should show options onClick', async () => {
+	it('should show options onClick', () => {
 		const mockedOnChange = jest.fn();
 		const data: SelectProps[] = [
 			{ name: 'Sort by', value: undefined, checked: true },
@@ -62,6 +62,6 @@ describe('Select', () => {
 		expect(list).toHaveStyle('max-height: 0');
 
 		fireEvent.click(button);
-		await waitFor(() => expect(list).toHaveStyle(`max-height: ${pxToRem(500)}`));
+		expect(list).toHaveStyle(`max-height: ${pxToRem(500)}`);
 	});
 });

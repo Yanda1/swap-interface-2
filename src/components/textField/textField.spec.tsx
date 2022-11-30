@@ -1,8 +1,23 @@
 import { TextField } from './textField';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
+import { darkTheme } from '../../styles';
 
 describe('TextField', () => {
+	it('should render without errors', () => {
+		const { getByPlaceholderText } = render(
+			<AuthProvider>
+				<TextField
+					value="Test value"
+					placeholder="placeholder"
+					onChange={() => console.log('value changed')}
+				/>
+			</AuthProvider>
+		);
+
+		expect(getByPlaceholderText(/placeholder/i)).toBeTruthy();
+	});
+
 	it.each<[boolean, string, string, boolean]>([
 		[false, 'text', 'small', false],
 		[true, 'number', 'regular', true],
@@ -22,6 +37,7 @@ describe('TextField', () => {
 						size={size}
 						error={error}
 						description={'Text Field Component'}
+						onChange={() => console.log('value changed')}
 					/>
 				</AuthProvider>
 			);
