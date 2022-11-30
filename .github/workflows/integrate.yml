@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  testing:
+  RUN_UNIT_TESTS:
     runs-on: ubuntu-latest
 
     strategy:
