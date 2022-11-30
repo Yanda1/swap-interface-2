@@ -1,5 +1,5 @@
 import 'jest-styled-components';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
 import type { SelectProps } from '../../helpers';
 import { Select } from '../../components';
@@ -7,7 +7,6 @@ import { pxToRem } from '../../styles';
 
 describe('Select', () => {
 	it('should render without errors', () => {
-		const mockedOnChange = jest.fn();
 		const { getByTestId } = render(
 			<AuthProvider>
 				<Select
@@ -37,7 +36,6 @@ describe('Select', () => {
 	});
 
 	it('should show options onClick', () => {
-		const mockedOnChange = jest.fn();
 		const data: SelectProps[] = [
 			{ name: 'Sort by', value: undefined, checked: true },
 			{ name: 'Symbol', value: 'symbol', checked: false },

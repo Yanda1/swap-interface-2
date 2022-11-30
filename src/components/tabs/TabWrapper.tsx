@@ -159,7 +159,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 										});
 								}
 							} else {
-								protocol.on(filter, (customer, service, productId, cost, event) => {
+								protocol.on(filter, (_customer, _service, _productId, cost, event) => {
 									console.log(
 										'Oracle deposit estimation:',
 										event,
@@ -232,7 +232,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 					} else {
 						protocol.on(
 							protocol.filters.CostRequest(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-							(account, service, localProductId, amount, event) => {
+							(_account, _service, _localProductId, _amount, event) => {
 								console.log('---COST REQUEST EVENT---', event);
 								swap.costRequestCounter += 1;
 								swapsCopy[index] = swap;
@@ -253,7 +253,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 					} else {
 						protocol.on(
 							protocol.filters.Deposit(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-							(customer, service, localProductId, amount, event) => {
+							(_customer, _service, _localProductId, _amount, event) => {
 								console.log('DEPOSIT EVENT', event);
 								swap.depositBlock = event.blockNumber;
 								swapsCopy[index] = swap;
@@ -284,7 +284,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 					} else {
 						protocol.on(
 							protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-							(customer, service, localProductId, data, event) => {
+							(_customer, _service, _localProductId, _data, event) => {
 								console.log('---Action EVENT---', event);
 								const parsedData = JSON.parse(event.args?.data);
 
@@ -314,7 +314,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 					} else {
 						protocol.on(
 							protocol.filters.Complete(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-							(customer, service, localProductId, amount, event) => {
+							(_customer, _service, _localProductId, _amount, event) => {
 								console.log('---COMPLETE EVENT---', event);
 								swap.complete = event.args.success;
 								swapsCopy[index] = swap;

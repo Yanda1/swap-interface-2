@@ -1,7 +1,6 @@
 import { TextField } from './textField';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
-import { darkTheme } from '../../styles';
 
 describe('TextField', () => {
 	it('should render without errors', () => {
