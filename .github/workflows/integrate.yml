@@ -20,4 +20,4 @@ jobs:
       - name: run yarn install
         run: yarn install
       - name: run yarn test
-        run: yarn test
+        run: yarn test:ci --verbose --maxWorkers=2
