@@ -5,7 +5,8 @@ import {
 	isNetworkSelected,
 	isTokenSelected,
 	hexToRgbA,
-	isArrayType
+	isArrayType,
+	isSwapRejected
 } from '../helpers';
 
 describe('Helpers should return the correct values', () => {
@@ -43,5 +44,12 @@ describe('Helpers should return the correct values', () => {
 	it('hexToRgbA() function should return the correct value', () => {
 		expect(hexToRgbA('#000000', '0.5')).toBe('rgba(0,0,0,0.5)');
 		expect(hexToRgbA('#b80213')).toBe('rgba(184,2,19,1)');
+	});
+
+	it('isSwapRejected() function should return the correct value', () => {
+		expect(isSwapRejected('Exception', 'user rejected transaction')).toBe(true);
+		expect(isSwapRejected('Exception', 'user confirmed transaction')).toBe(false);
+		expect(isSwapRejected('Success', 'user rejected transaction')).toBe(false);
+		expect(isSwapRejected('Success', 'user confirmed transaction')).toBe(false);
 	});
 });
