@@ -67,7 +67,7 @@ export const TabModal = () => {
 	const {
 		state: { isUserVerified, theme }
 	} = useStore();
-	const [swapsStorage] = useLocalStorage<Props[]>('swaps', []);
+	const [swapsStorage] = useLocalStorage<Props[]>('localSwaps', []);
 	const { account } = useEthers();
 
 	// GET ALL UNFINISHED SWAPS

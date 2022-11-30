@@ -36,7 +36,7 @@ type Props = {
 };
 
 export const TabWrapper = ({ swap, isVisible }: Props) => {
-	const [swapsStorage, setSwapsStorage] = useLocalStorage<Swap[]>('swaps', []);
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<Swap[]>('localSwaps', []);
 	const [isDepositing, setIsDepositing] = useState(false);
 	const { account } = useEthers();
 	const {
