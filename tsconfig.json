@@ -19,7 +19,7 @@
 		"preserveConstEnums": true,
 		"removeComments": false,
 		"sourceMap": true,
-		"jsx": "react"
+		"jsx": "react-jsx"
 	},
 	"include": ["src"]
 }
