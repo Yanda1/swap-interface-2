@@ -31,6 +31,9 @@ type Props = {
 };
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
+	if (localStorage.getItem('swaps')) {
+		localStorage.removeItem('swaps');
+	}
 	const { account } = useEthers();
 	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('localSwaps', []);
