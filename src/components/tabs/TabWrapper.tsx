@@ -27,7 +27,7 @@ type Swap = {
 	complete: null | boolean;
 	pair: string;
 	sourceToken: string;
-	currentBlockNumber: any;
+	currentBlockNumber: number | string;
 };
 
 type Props = {
@@ -332,5 +332,5 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 		}
 	};
 
-	return isVisible && <TabContentNew swap={swap} />;
+	return isVisible ? <TabContentNew swap={swap} /> : null;
 };

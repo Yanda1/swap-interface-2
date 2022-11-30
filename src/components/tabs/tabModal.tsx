@@ -18,6 +18,10 @@ const Paragraph = styled.p(
 	`
 );
 
+type Active = {
+	active: number;
+};
+
 type Props = {
 	swapProductId: string;
 	account: string;
@@ -28,9 +32,10 @@ type Props = {
 	complete: null | boolean;
 	pair: string;
 	sourceToken: string;
+	currentBlockNumber: number | string;
 };
 
-const Tab = styled.div(({ active }: any) => {
+const Tab = styled.div(({ active }: Active) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -93,7 +98,7 @@ export const TabModal = () => {
 					<div style={{ display: 'flex' }}>
 						{accountSwaps.map((swap: Props, index: number) => (
 							<Tab
-								// @ts-ignore
+								key={swap.swapProductId}
 								active={toggleIndex}
 								onClick={() => {
 									setSelectedProductId(swap.swapProductId);
@@ -104,8 +109,11 @@ export const TabModal = () => {
 						))}
 					</div>
 					{accountSwaps.map((swap: Props) => (
-						// @ts-ignore
-						<TabWrapper swap={swap} isVisible={swap.swapProductId === selectedProductId} />
+						<TabWrapper
+							key={swap.swapProductId}
+							swap={swap}
+							isVisible={swap.swapProductId === selectedProductId}
+						/>
 					))}
 				</>
 			)}
