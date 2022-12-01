@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
@@ -196,7 +196,7 @@ export const Header = () => {
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const { pathname } = useLocation();
 
 	const noKycStatusMessage = 'kyc verify not exist';
@@ -482,7 +482,7 @@ export const Header = () => {
 			) : (
 				<LogoDark style={{ marginRight: 'auto', width: '113px' }} />
 			)}
-			{!isMobile && (
+			{/* {!isMobile && (
 				<Button
 					variant="pure"
 					onClick={() =>
@@ -490,7 +490,7 @@ export const Header = () => {
 					}>
 					{pathname !== '/transaction-history' ? 'Transaction History' : 'Swap Form'}
 				</Button>
-			)}
+			)} */}
 			{isUserVerified && account && isNetworkConnected ? (
 				<Wallet />
 			) : (
@@ -522,13 +522,13 @@ export const Header = () => {
 			{showMenu && (
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
-						<li
+						{/* <li
 							onClick={() => {
 								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
 								setShowMenu(!showMenu);
 							}}>
 							{pathname !== '/transaction-history' ? <>Transaction History</> : <>Swap Form</>}
-						</li>
+						</li> */}
 						<li
 							onClick={() => {
 								changeTheme();
