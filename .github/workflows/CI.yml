@@ -3,7 +3,6 @@ name: CI/CD
 on:
   push:
     branches:
-      # We can define multiple branches as well
       - master
   pull_request:
     branches:
@@ -11,7 +10,6 @@ on:
 
 jobs:
   TEST_ENV:
-    # Defines the type of runner the job runs on
     runs-on: ubuntu-latest
 
     steps:
@@ -22,6 +20,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14
+
       - name: sets Timezone for iOS runner
         uses: szenius/set-timezone@v1.0
         with:
