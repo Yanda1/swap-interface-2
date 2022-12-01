@@ -27,7 +27,7 @@ type Swap = {
 	complete: null | boolean;
 	pair: string;
 	sourceToken: string;
-	currentBlockNumber: any;
+	currentBlockNumber: number;
 };
 
 type Props = {
@@ -36,7 +36,7 @@ type Props = {
 };
 
 export const TabWrapper = ({ swap, isVisible }: Props) => {
-	const [swapsStorage, setSwapsStorage] = useLocalStorage<Swap[]>('swaps', []);
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<Swap[]>('localSwaps', []);
 	const [isDepositing, setIsDepositing] = useState(false);
 	const { account } = useEthers();
 	const {
@@ -332,5 +332,5 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 		}
 	};
 
-	return isVisible && <TabContentNew swap={swap} />;
+	return isVisible ? <TabContentNew swap={swap} /> : null;
 };
