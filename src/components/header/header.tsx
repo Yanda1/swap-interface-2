@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
+import { useLocation } from 'react-router-dom';
+import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
 import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
@@ -47,7 +47,8 @@ import {
 	CHAINS,
 	hexToRgbA,
 	isNetworkSelected,
-	SourceEnum
+	SourceEnum,
+	MOONBEAM_URL
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
 import { Button, useToasts, Wallet, IconButton, Arrow } from '../../components';
@@ -116,8 +117,6 @@ const Menu = styled.ul`
 	text-align: right;
 	padding: ${spacing[24]} ${spacing[18]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
-	z-index: 1_000;
-
 	border: 1px solid ${(props: Props) => props.theme.border.default};
 
 	& > li {
@@ -141,6 +140,35 @@ const Networks = styled(Menu)`
 const NetworkWrapper = styled.div`
 	display: flex;
 `;
+
+export const NETWORK_PARAMS = {
+	'1': [
+		{
+			chainId: ethers.utils.hexValue(Mainnet.chainId),
+			chainName: Mainnet.chainName,
+			rpcUrls: [ETHEREUM_URL],
+			nativeCurrency: {
+				name: 'Ethereum',
+				symbol: 'ETH',
+				decimals: 18
+			},
+			blockExplorerUrls: ['https://etherscan.io/']
+		}
+	],
+	'1284': [
+		{
+			chainId: ethers.utils.hexValue(Moonbeam.chainId),
+			chainName: Moonbeam.chainName,
+			rpcUrls: [MOONBEAM_URL],
+			nativeCurrency: {
+				name: 'Glimer',
+				symbol: 'GLMR',
+				decimals: 18
+			},
+			blockExplorerUrls: ['https://moonscan.io/']
+		}
+	]
+};
 
 export const Header = () => {
 	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
@@ -168,13 +196,13 @@ export const Header = () => {
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const { pathname } = useLocation();
 
 	const noKycStatusMessage = 'kyc verify not exist';
 
 	const isLight = isLightTheme(theme);
-	const { activateBrowserWallet, library, account, chainId, switchNetwork } = useEthers();
+	const { activate, library, account, chainId, switchNetwork, activateBrowserWallet } = useEthers();
 
 	const changeTheme = (): void => {
 		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
@@ -182,35 +210,10 @@ export const Header = () => {
 	};
 
 	const checkNetwork = async (): Promise<void> => {
-		// TODO: improve, seems to have a lot of redundancies
-		const NETWORK_PARAMS = [
-			{
-				chainId: ethers.utils.hexValue(Mainnet.chainId),
-				chainName: Mainnet.chainName,
-				rpcUrls: [ETHEREUM_URL],
-				nativeCurrency: {
-					name: 'Ethereum',
-					symbol: 'ETH',
-					decimals: 18
-				},
-				blockExplorerUrls: ['https://moonscan.io/']
-			}
-		];
-		// @ts-ignore
-		if (Object.keys(CHAINS).includes(chainId?.toString())) {
+		if (Object.keys(CHAINS).includes(chainId?.toString() as string)) {
 			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId); // TODO: has to be dynamic
-
-			if (library) {
-				// @ts-ignore
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']); // TODO: @daniel - are we just going for the Ethereum chain?
-			}
 		} else {
 			await switchNetwork(Mainnet.chainId);
-
-			if (library) {
-				// @ts-ignore
-				await library.send('wallet_addEthereumChain', NETWORK_PARAMS['1']);
-			}
 		}
 	};
 
@@ -247,15 +250,46 @@ export const Header = () => {
 	};
 
 	const handleNetworkChange = async (name: string) => {
-		await switchNetwork(chainId !== 1 ? Mainnet.chainId : Moonbeam.chainId);
-		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
-		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
-		dispatch({
-			type: SourceEnum.NETWORK,
-			payload: name
-		});
-		dispatch({ type: SourceEnum.TOKEN, payload: 'Select Token' });
+		setShowNetworksList(!showNetworksList);
+		try {
+			// @ts-ignore
+			await ethereum.request({
+				method: 'wallet_switchEthereumChain',
+				params: [
+					{
+						chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+					}
+				]
+			});
+		} catch (error: any) {
+			if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
+				try {
+					// @ts-ignore
+					await ethereum.request({
+						method: 'wallet_addEthereumChain',
+						params: NETWORK_PARAMS['1284']
+					});
+					dispatch({
+						type: SourceEnum.NETWORK,
+						payload: name
+					});
+					dispatch({
+						type: SourceEnum.TOKEN,
+						payload: name
+					});
+				} catch (e) {
+					dispatch({
+						type: SourceEnum.NETWORK,
+						payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+					});
+					dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+				}
+			} else if (error.code === 4001) {
+				return;
+			} else {
+				addToast('Something went wrong - please try again');
+			}
+		}
 		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
 		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
 	};
@@ -293,11 +327,57 @@ export const Header = () => {
 	};
 
 	const handleButtonClick = async () => {
+		let metamaskMissing = true;
+		const onMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			navigator.userAgent
+		);
+		console.log(
+			'account, metamaskMissing, onMobileDevice',
+			account,
+			metamaskMissing,
+			onMobileDevice
+		);
+		try {
+			// @ts-ignore
+			const provider = new ethers.providers.Web3Provider(window.ethereum);
+			if (provider) {
+				metamaskMissing = false;
+			}
+		} catch (error) {
+			console.log('Can not find a Web3Provider in the browser');
+		}
+
 		if (!account) {
-			try {
-				activateBrowserWallet();
-			} catch (error) {
-				console.log('error in connect wallet', error);
+			if (onMobileDevice && metamaskMissing) {
+				window.open(
+					`https://metamask.app.link/dapp/${process.env.REACT_APP_PROD_URL}`,
+					'_blank',
+					'noopener,noreferrer'
+				);
+			}
+			if (onMobileDevice && !metamaskMissing) {
+				try {
+					await activate(new MetamaskConnector());
+				} catch (error) {
+					console.log('error in connect wallet', error);
+				}
+			}
+			if (!onMobileDevice && metamaskMissing) {
+				console.log('HERE');
+				addToast(
+					'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
+				);
+				setTimeout(
+					() => window.open('https://metamask.io/download/', '_blank', 'noopener,noreferrer'),
+					5000
+				);
+			}
+			if (!onMobileDevice && !metamaskMissing) {
+				try {
+					activateBrowserWallet();
+				} catch (error) {
+					console.log('error in connect wallet', error);
+				}
 			}
 		}
 
@@ -366,7 +446,7 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		if (account && storage && storage?.account !== account) {
+		if (account && storage?.account && storage?.account !== account) {
 			addToast(
 				'Switch to your verified account on Metamask to come back to CryptoYou.',
 				'error'
@@ -409,7 +489,7 @@ export const Header = () => {
 					<LogoDark style={{  width: '200px' }} />
 				</a>
 			)}
-			{!isMobile && (
+			{/* {!isMobile && (
 				<Button
 					variant="pure"
 					onClick={() =>
@@ -417,7 +497,7 @@ export const Header = () => {
 					}>
 					{pathname !== '/transaction-history' ? 'Transaction History' : 'Cross-Chain Form'}
 				</Button>
-			)}
+			)} */}
 			{isUserVerified && account && isNetworkConnected ? (
 				<Wallet />
 			) : (
@@ -449,23 +529,19 @@ export const Header = () => {
 			{showMenu && (
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
-						<li
+						{/* <li
 							onClick={() => {
 								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
 								setShowMenu(!showMenu);
 							}}>
-							{pathname !== '/transaction-history' ? (
-								<>Transaction History &#11044;</>
-							) : (
-								<>Cross-Chain Swap &#11044;</>
-							)}
-						</li>
+							{pathname !== '/transaction-history' ? <>Transaction History &#11044;</> : <>Cross-Chain Swap &#11044;</>}
+						</li> */}
 						<li
 							onClick={() => {
 								changeTheme();
 								setShowMenu(!showMenu);
 							}}>
-							{isLightTheme(theme) ? <>Dark theme &#9733;</> : <>Light theme &#9733;</>}
+							{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
 						</li>
 					</Menu>
 				</MenuWrapper>
@@ -474,7 +550,7 @@ export const Header = () => {
 				<MenuWrapper theme={theme}>
 					<Networks theme={theme} ref={domNode}>
 						{Object.values(CHAINS).map((chain) => (
-							<li onClick={() => handleNetworkChange(chain.name)}>
+							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
 								<img src={chain.name === 'ETH' ? ETH : MOON} style={{ height: 18 }} />
 								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
 								{sourceNetwork !== chain.name ? null : isLightTheme(theme) ? (

@@ -5,8 +5,9 @@ import { spacing } from '../../styles';
 
 const Wrapper = styled.div`
 	display: flex;
+	justify-content: center;
 	flex-direction: column;
-	gap: ${spacing[14]};
+	gap: ${spacing[28]};
 	width: 100%;
 `;
 

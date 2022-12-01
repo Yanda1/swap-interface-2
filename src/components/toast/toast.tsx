@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS, ColorType } from '../../styles';
+import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import type { ColorType } from '../../styles';
 import { useStore } from '../../helpers';
 import { IconButton } from '../iconButton/iconButton';
 
@@ -30,11 +31,12 @@ const Toaster = styled.div(({ color }: { color: ColorType }) => {
 		display: flex;
 		align-items: center;
 		background: ${theme.button[color]};
-		color: #fff;
+		color: ${theme.background.default};
 		cursor: pointer;
 		font-size: ${fontSize[14]};
 		margin: ${spacing[10]};
 		padding: ${spacing[10]};
+		gap: ${spacing[8]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 	`;
 });

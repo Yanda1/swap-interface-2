@@ -61,3 +61,6 @@ export const hexToRgbA = (hex: string, alpha = '1'): string => {
 
 	return `rgba(${r},${g},${b},${alpha})`;
 };
+
+export const isSwapRejected = (status: string, errorMessage: any) =>
+	status === 'Exception' && errorMessage === 'user rejected transaction';

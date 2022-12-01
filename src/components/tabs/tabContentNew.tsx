@@ -1,8 +1,15 @@
 import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
-import { DEFAULT_BORDER_RADIUS, Theme } from '../../styles';
-import { DEFAULT_TRANSIITON, fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import {
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSIITON,
+	fontSize,
+	mediaQuery,
+	pxToRem,
+	spacing,
+	Theme
+} from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 import { useAxios } from '../../hooks';
 import { useEffect, useState } from 'react';
@@ -29,6 +36,7 @@ const Content = styled.div`
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-left-radius: 0;
 	margin-top: -1px;
+	z-index: 10;
 `;
 
 export const ContentList = styled.ul`
@@ -111,7 +119,7 @@ const SpinnerWrapper = styled.div`
 	}
 `;
 
-export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
+export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 	const [withdrawLink, setWithdrawLink] = useState<{
 		amount: string;
 		status: number;
@@ -123,8 +131,8 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data?.[toggleIndex]?.action[0];
-	const withdrawal = data?.[toggleIndex]?.withdraw[0];
+	const orders = swap && swap.action[0];
+	const withdrawal = swap && swap.withdraw[0];
 	const api = useAxios();
 
 	const getWithDrawLink = async () => {
@@ -142,36 +150,35 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 		void getWithDrawLink();
 	}, [withdrawal]);
 
-	return data.length > 0 ? (
+	return swap ? (
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
-				{data?.[toggleIndex].costRequestCounter ? (
-					<ContentItem theme={theme} color={data.color} key={makeId(32)}>
+				{swap.costRequestCounter ? (
+					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Request Validation ({data?.[toggleIndex]?.costRequestCounter}/2)
+							Swap Request Validation ({swap.costRequestCounter}/2)
 						</ContentItemTitle>
 						<ContentItemText>
-							{data?.[toggleIndex].costRequestCounter < 2
+							{swap.costRequestCounter < 2
 								? 'Your Swap request is under validation. Please wait until full confirmation.'
 								: 'Your Swap request successfully validated.'}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{currentBlockNumber && data?.[toggleIndex]?.depositBlock ? (
+				{currentBlockNumber && swap.depositBlock ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							{!data?.[toggleIndex]?.action.length
+							{!swap?.action.length
 								? `Deposit confirmation (${
-										currentBlockNumber - data?.[toggleIndex]?.depositBlock
+										currentBlockNumber - swap.depositBlock
 								  }/${BLOCKS_AMOUNT})`
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{currentBlockNumber - data?.[toggleIndex]?.depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber - swap.depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: currentBlockNumber - data?.[toggleIndex]?.depositBlock >= BLOCKS_AMOUNT &&
-								  !data?.[toggleIndex].action.length
+								: currentBlockNumber - swap.depositBlock >= BLOCKS_AMOUNT && !swap.action.length
 								? 'Your deposit is received and should be confirmed soon.'
 								: null}
 						</ContentItemText>
@@ -180,8 +187,7 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
-							Conversion {data?.[toggleIndex]?.sourceToken}{' '}
-							{orders.s.replace(data?.[toggleIndex]?.sourceToken, '')}
+							Conversion {swap.sourceToken} {orders.s.replace(swap.sourceToken, '')}
 						</ContentItemTitle>
 						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
@@ -210,16 +216,16 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 						</ContentItemLink>
 					</ContentItem>
 				) : null}
-				{data?.[toggleIndex]?.complete ? (
+				{swap.complete ? (
 					<ContentItem theme={theme} color={theme.button.default}>
 						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
 					</ContentItem>
-				) : !data?.[toggleIndex]?.complete && data?.[toggleIndex]?.complete !== null ? (
+				) : !swap.complete && swap.complete !== null ? (
 					<ContentItem theme={theme} color={theme.font.default}>
 						<ContentItemText>No valid operations spotted!</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data?.[toggleIndex]?.complete === null ? (
+				{swap.complete === null ? (
 					<SpinnerWrapper>
 						<Spinner size="medium" color="default" />
 					</SpinnerWrapper>

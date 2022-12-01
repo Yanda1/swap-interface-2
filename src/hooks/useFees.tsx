@@ -16,8 +16,7 @@ import {
 	useStore,
 	NETWORK_TO_ID
 } from '../helpers';
-import type { Price, Fee } from '../helpers';
-import type { GraphType, DestinationNetworks } from '../helpers';
+import type { GraphType, DestinationNetworks, Price, Fee } from '../helpers';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../data/sourceNetworks.json';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
@@ -329,6 +328,11 @@ export const useFees = () => {
 		return { amount: allFees, currency: FEE_CURRENCY };
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
+	const percentageOfAllFeesToAmount = useMemo(
+		() => (amount ? (allFees.amount / (getPrice(sourceToken, FEE_CURRENCY) * +amount)) * 100 : ''),
+		[allFees.amount, destinationToken, amount]
+	);
+
 	const marginalCosts = useMemo(() => {
 		let minAmount = '';
 		let maxAmount = '';
@@ -389,6 +393,7 @@ export const useFees = () => {
 		networkFee,
 		cexFee,
 		allFees,
-		getPrice
+		getPrice,
+		percentageOfAllFeesToAmount
 	};
 };
