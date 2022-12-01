@@ -22,7 +22,7 @@ describe('TextField', () => {
 		[true, 'number', 'regular', true],
 		[true, 'search', 'small', false]
 	])(
-		'should match snapshot for value disabled %s, %s, type %s and size %s',
+		'should match snapshot for value disabled: %s, type: %s, size: %s and error: %s',
 		(disabled, type, size, error) => {
 			const { getByPlaceholderText } = render(
 				<AuthProvider>

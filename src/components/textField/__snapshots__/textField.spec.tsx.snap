@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TextField should match snapshot for value disabled false, text, type small and size false 1`] = `
+exports[`TextField should match snapshot for value disabled: false, type: text, size: small and error: false 1`] = `
 <input
   class="sc-gswNZR iCinao"
   min="0"
@@ -10,7 +10,7 @@ exports[`TextField should match snapshot for value disabled false, text, type sm
 />
 `;
 
-exports[`TextField should match snapshot for value disabled true, number, type regular and size true 1`] = `
+exports[`TextField should match snapshot for value disabled: true, type: number, size: regular and error: true 1`] = `
 <input
   class="sc-gswNZR geoCEg"
   disabled=""
@@ -21,7 +21,7 @@ exports[`TextField should match snapshot for value disabled true, number, type r
 />
 `;
 
-exports[`TextField should match snapshot for value disabled true, search, type small and size false 1`] = `
+exports[`TextField should match snapshot for value disabled: true, type: search, size: small and error: false 1`] = `
 <input
   class="sc-gswNZR buhSNw"
   disabled=""

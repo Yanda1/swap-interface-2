@@ -68,4 +68,4 @@ export const isSwapRejected = (status: string, errorMessage: any) =>
 	status === 'Exception' && errorMessage === 'user rejected transaction';
 
 export const formatDate = (ts: number | undefined): string =>
-	ts ? format(utcToZonedTime(new Date(ts * 1000), timeZone), 'dd/MM/yyyy hh:mm:ss') : 'n/a';
+	ts ? format(utcToZonedTime(new Date(ts * 1000), timeZone), 'dd/MM/yyyy HH:mm:ss') : 'n/a';
