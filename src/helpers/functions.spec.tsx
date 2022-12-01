@@ -6,7 +6,8 @@ import {
 	isTokenSelected,
 	hexToRgbA,
 	isArrayType,
-	isSwapRejected
+	isSwapRejected,
+	formatDate
 } from '../helpers';
 
 describe('Helpers should return the correct values', () => {
@@ -51,5 +52,10 @@ describe('Helpers should return the correct values', () => {
 		expect(isSwapRejected('Exception', 'user confirmed transaction')).toBe(false);
 		expect(isSwapRejected('Success', 'user rejected transaction')).toBe(false);
 		expect(isSwapRejected('Success', 'user confirmed transaction')).toBe(false);
+	});
+
+	it('formatDate() function should return the correct value', () => {
+		expect(formatDate(1669895567)).toBe('01/12/2022 12:52:47');
+		expect(formatDate(undefined)).toBe('n/a');
 	});
 });

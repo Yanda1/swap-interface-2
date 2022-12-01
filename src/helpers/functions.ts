@@ -1,6 +1,7 @@
 import type { Breakpoint, BreakpointOrNumber, Theme } from './../styles';
 import { breakpoint } from './../styles';
 import { useLayoutEffect, useState } from 'react';
+import { format } from 'date-fns';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 
@@ -64,3 +65,6 @@ export const hexToRgbA = (hex: string, alpha = '1'): string => {
 
 export const isSwapRejected = (status: string, errorMessage: any) =>
 	status === 'Exception' && errorMessage === 'user rejected transaction';
+
+export const formatDate = (ts: number | undefined): string =>
+	ts ? format(new Date(ts * 1000), 'dd/MM/yyyy hh:mm:ss') : 'n/a';
