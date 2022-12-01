@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`TextField should match snapshot for value disabled: false, type: number, size: small and error: true 1`] = `
+<input
+  class="sc-gswNZR hXaogt"
+  min="0"
+  placeholder="placeholder"
+  type="number"
+  value="Test value"
+/>
+`;
+
 exports[`TextField should match snapshot for value disabled: false, type: text, size: small and error: false 1`] = `
 <input
   class="sc-gswNZR iCinao"

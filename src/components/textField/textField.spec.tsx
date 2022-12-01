@@ -20,7 +20,8 @@ describe('TextField', () => {
 	it.each<[boolean, string, string, boolean]>([
 		[false, 'text', 'small', false],
 		[true, 'number', 'regular', true],
-		[true, 'search', 'small', false]
+		[true, 'search', 'small', false],
+		[false, 'number', 'small', true]
 	])(
 		'should match snapshot for value disabled: %s, type: %s, size: %s and error: %s',
 		(disabled, type, size, error) => {
