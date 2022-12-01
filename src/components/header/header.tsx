@@ -230,7 +230,8 @@ export const Header = () => {
 				});
 				setStorage({ account, access: res.access, isKyced: res.is_kyced, refresh: res.refresh });
 			} catch (error: any) {
-				addToast('You have rejected signing the nonce. To proceed login again!', 'info');
+				// TODO: do we need toast here?
+				addToast('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', 'error');
 			}
 			setIsLoading(false);
 		}
@@ -310,7 +311,7 @@ export const Header = () => {
 				// TODO: move this part to context?
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-					addToast('Your KYC process has been rejected - please start again!', 'warning');
+					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'error');
 				} else if ((basic === BasicStatusEnum.INITIAL || basic === BasicStatusEnum.PASS) && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 				} else if (kyc === KycStatusEnum.REVIEW) {
@@ -447,8 +448,8 @@ export const Header = () => {
 
 		if (account && storage?.account && storage?.account !== account) {
 			addToast(
-				'Please login to the account that has already passed KYC or connect wallet again',
-				'warning'
+				'Switch to your verified account on Metamask to come back to CryptoYou.',
+				'error'
 			);
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
@@ -476,11 +477,17 @@ export const Header = () => {
 	return (
 		<StyledHeader theme={theme}>
 			{isMobile ? (
-				<LogoMobile style={{ width: '26px' }}/>
+				<a href="https://cryptoyou.io" target="_blank" >
+					<LogoMobile style={{ width: '26px' }}/>
+				</a>
 			) : isLight ? (
-				<LogoLight style={{ marginRight: 'auto', width: '113px' }} />
+				<a href="https://cryptoyou.io" target="_blank" style={{ marginRight: 'auto', marginTop: '20px', marginLeft: '20px'}}>
+					<LogoLight style={{ width: '200px' }} />
+				</a>
 			) : (
-				<LogoDark style={{ marginRight: 'auto', width: '113px' }} />
+				<a href="https://cryptoyou.io" target="_blank" style={{ marginRight: 'auto', marginTop: '20px', marginLeft: '20px'}}>
+					<LogoDark style={{  width: '200px' }} />
+				</a>
 			)}
 			{/* {!isMobile && (
 				<Button
@@ -488,7 +495,7 @@ export const Header = () => {
 					onClick={() =>
 						navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/')
 					}>
-					{pathname !== '/transaction-history' ? 'Transaction History' : 'Swap Form'}
+					{pathname !== '/transaction-history' ? 'Transaction History' : 'Cross-Chain Form'}
 				</Button>
 			)} */}
 			{isUserVerified && account && isNetworkConnected ? (
@@ -527,7 +534,7 @@ export const Header = () => {
 								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
 								setShowMenu(!showMenu);
 							}}>
-							{pathname !== '/transaction-history' ? <>Transaction History</> : <>Swap Form</>}
+							{pathname !== '/transaction-history' ? <>Transaction History &#11044;</> : <>Cross-Chain Swap &#11044;</>}
 						</li> */}
 						<li
 							onClick={() => {
