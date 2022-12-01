@@ -27,7 +27,7 @@ type Swap = {
 	complete: null | boolean;
 	pair: string;
 	sourceToken: string;
-	currentBlockNumber: number | string;
+	currentBlockNumber: number;
 };
 
 type Props = {
