@@ -192,7 +192,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	}, [destinationToken, destinationNetwork, sourceNetwork, sourceToken]); // TODO: add destinationWallet later
 
 	return (
-		<Wrapper data-testid="custom">
+		<Wrapper data-testid="select-list">
 			<Title>Select {listTitle[value as Value]}</Title>
 			<TextFieldWrapper>
 				<TextField

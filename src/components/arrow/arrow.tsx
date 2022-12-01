@@ -46,7 +46,7 @@ export const Arrow = ({ open, onClick }: Props) => {
 
 	return (
 		// @ts-ignore
-		<ArrowWrapper onClick={onClick} theme={theme}>
+		<ArrowWrapper onClick={onClick} theme={theme} data-testid="arrow">
 			<Icon src={isLightTheme(theme) ? arrowLight : arrowDark} open={open} />
 		</ArrowWrapper>
 	);

@@ -1,8 +1,10 @@
 import type { Breakpoint, BreakpointOrNumber, Theme } from './../styles';
 import { breakpoint } from './../styles';
 import { useLayoutEffect, useState } from 'react';
+import { format, utcToZonedTime } from 'date-fns-tz';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
+const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
 
 export const isNetworkSelected = (network: string) =>
 	network !== 'Select Network' && network !== ''; // TODO: refine both functions - nullish check - and create enum for "Select Network / Token"
@@ -64,3 +66,6 @@ export const hexToRgbA = (hex: string, alpha = '1'): string => {
 
 export const isSwapRejected = (status: string, errorMessage: any) =>
 	status === 'Exception' && errorMessage === 'user rejected transaction';
+
+export const formatDate = (ts: number | undefined): string =>
+	ts ? format(utcToZonedTime(new Date(ts * 1000), timeZone), 'dd/MM/yyyy HH:mm:ss') : 'n/a';

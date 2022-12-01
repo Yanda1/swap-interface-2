@@ -49,9 +49,6 @@ type Props = {
 };
 
 const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
-	const {
-		state: { theme }
-	} = useStore();
 	const icon = type?.toUpperCase();
 	const color = type === 'info' ? 'default' : type;
 
