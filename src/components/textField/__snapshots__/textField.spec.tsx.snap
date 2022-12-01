@@ -1,51 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TextField should match snapshot for value disabled: false, type: number, size: small and error: left 1`] = `
-<input
-  class="sc-gswNZR eIciHh"
-  min="0"
-  placeholder="placeholder"
-  type="number"
-  value="Test value"
-/>
-`;
-
-exports[`TextField should match snapshot for value disabled: false, type: number, size: small and error: true 1`] = `
-<input
-  class="sc-gswNZR hXaogt"
-  min="0"
-  placeholder="placeholder"
-  type="number"
-  value="Test value"
-/>
-`;
-
 exports[`TextField should match snapshot for value disabled: false, type: number, size: small, align: left, error: true and description: description 1`] = `
 <input
   class="sc-gswNZR eIciHh"
   min="0"
   placeholder="placeholder"
   type="number"
-  value="Test value"
-/>
-`;
-
-exports[`TextField should match snapshot for value disabled: false, type: text, size: small and error: false 1`] = `
-<input
-  class="sc-gswNZR iCinao"
-  min="0"
-  placeholder="placeholder"
-  type="text"
-  value="Test value"
-/>
-`;
-
-exports[`TextField should match snapshot for value disabled: false, type: text, size: small and error: left 1`] = `
-<input
-  class="sc-gswNZR gQJYlY"
-  min="0"
-  placeholder="placeholder"
-  type="text"
   value="Test value"
 />
 `;
@@ -60,28 +20,6 @@ exports[`TextField should match snapshot for value disabled: false, type: text, 
 />
 `;
 
-exports[`TextField should match snapshot for value disabled: true, type: number, size: regular and error: right 1`] = `
-<input
-  class="sc-gswNZR jaFHyf"
-  disabled=""
-  min="0"
-  placeholder="placeholder"
-  type="number"
-  value="Test value"
-/>
-`;
-
-exports[`TextField should match snapshot for value disabled: true, type: number, size: regular and error: true 1`] = `
-<input
-  class="sc-gswNZR geoCEg"
-  disabled=""
-  min="0"
-  placeholder="placeholder"
-  type="number"
-  value="Test value"
-/>
-`;
-
 exports[`TextField should match snapshot for value disabled: true, type: number, size: regular, align: right, error: true and description: description 1`] = `
 <input
   class="sc-gswNZR jaFHyf"
@@ -89,28 +27,6 @@ exports[`TextField should match snapshot for value disabled: true, type: number,
   min="0"
   placeholder="placeholder"
   type="number"
-  value="Test value"
-/>
-`;
-
-exports[`TextField should match snapshot for value disabled: true, type: search, size: small and error: center 1`] = `
-<input
-  class="sc-gswNZR buhSNw"
-  disabled=""
-  min="0"
-  placeholder="placeholder"
-  type="search"
-  value="Test value"
-/>
-`;
-
-exports[`TextField should match snapshot for value disabled: true, type: search, size: small and error: false 1`] = `
-<input
-  class="sc-gswNZR buhSNw"
-  disabled=""
-  min="0"
-  placeholder="placeholder"
-  type="search"
   value="Test value"
 />
 `;

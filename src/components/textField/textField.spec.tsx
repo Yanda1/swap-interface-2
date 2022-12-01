@@ -33,9 +33,7 @@ describe('TextField', () => {
 						placeholder="placeholder"
 						align={align}
 						description={description}
-						// @ts-ignore
 						type={type}
-						// @ts-ignore
 						size={size}
 						error={error}
 						onChange={() => console.log('value changed')}
