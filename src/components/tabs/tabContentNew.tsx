@@ -1,5 +1,4 @@
-import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
-import { format } from 'date-fns';
+import { BLOCKS_AMOUNT, formatDate, makeId, routes, useStore } from '../../helpers';
 import styled, { css } from 'styled-components';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -193,9 +192,7 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 						<ContentItemText>Pair: {orders.s}</ContentItemText>
 						<ContentItemText>Quantity: {orders.q}</ContentItemText>
 						<ContentItemText>Price: {orders.p}</ContentItemText>
-						<ContentItemText>
-							Time: {format(new Date(orders.ts * 1000), 'dd/MM/yyyy kk:mm:ss')}
-						</ContentItemText>
+						<ContentItemText>Time: {formatDate(orders.ts)}</ContentItemText>
 					</ContentItem>
 				) : null}
 				{withdrawal && !withdrawLink ? (

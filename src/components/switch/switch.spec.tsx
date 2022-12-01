@@ -4,13 +4,13 @@ import { AuthProvider } from '../../helpers';
 import { Switch } from '../../components';
 
 describe('Switch', () => {
-	it('should render a default button', () => {
-		const { getByText } = render(
+	it('should render the switch component', () => {
+		const { getByTestId } = render(
 			<AuthProvider>
 				<Switch />
 			</AuthProvider>
 		);
 
-		expect(getByText(/Switch/)).toMatchSnapshot();
+		expect(getByTestId('switch')).toMatchSnapshot();
 	});
 });

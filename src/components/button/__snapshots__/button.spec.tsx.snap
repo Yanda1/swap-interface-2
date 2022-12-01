@@ -13,6 +13,7 @@ exports[`Button should render a default button 1`] = `
   justify-content: space-between;
   max-width: 28.125rem;
   width: 100%;
+  font-weight: 600;
   cursor: pointer;
   font-size: 1rem;
   min-height: 3.5625rem;
@@ -23,6 +24,12 @@ exports[`Button should render a default button 1`] = `
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: #6D6D6D;
+  color: #FFF;
 }
 
 .c0:hover {
@@ -30,7 +37,7 @@ exports[`Button should render a default button 1`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
+  outline-offset: 1px;
   outline: 1px solid #00A8E8;
 }
 
@@ -39,6 +46,7 @@ exports[`Button should render a default button 1`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="default"
 >
@@ -59,17 +67,24 @@ exports[`Button should render a primary disabled button 1`] = `
   justify-content: space-between;
   max-width: 28.125rem;
   width: 100%;
+  font-weight: 600;
   cursor: not-allowed;
   font-size: 1rem;
   min-height: 3.5625rem;
   padding: 0.25rem 0.75rem;
   color: #FFF;
   background-color: #6D6D6D;
-  border: 1px solid #6D6D6D;
+  border: 1px solid transparent;
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
   cursor: not-allowed;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: #6D6D6D;
+  color: #FFF;
 }
 
 .c0:hover {
@@ -77,7 +92,7 @@ exports[`Button should render a primary disabled button 1`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
+  outline-offset: 1px;
   outline: 1px solid #00A8E8;
 }
 
@@ -86,6 +101,7 @@ exports[`Button should render a primary disabled button 1`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="default"
   disabled=""
@@ -107,17 +123,24 @@ exports[`Button should render a primary disabled button 2`] = `
   justify-content: space-between;
   max-width: 28.125rem;
   width: 100%;
+  font-weight: 600;
   cursor: not-allowed;
   font-size: 1rem;
   min-height: 3.5625rem;
   padding: 0.25rem 0.75rem;
   color: #FFF;
   background-color: #6D6D6D;
-  border: 1px solid #6D6D6D;
+  border: 1px solid transparent;
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
   cursor: not-allowed;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: #6D6D6D;
+  color: #FFF;
 }
 
 .c0:hover {
@@ -125,7 +148,7 @@ exports[`Button should render a primary disabled button 2`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
+  outline-offset: 1px;
   outline: 1px solid #00A8E8;
 }
 
@@ -134,6 +157,7 @@ exports[`Button should render a primary disabled button 2`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="default"
   disabled=""
@@ -155,6 +179,7 @@ exports[`Button should render a pure button 1`] = `
   justify-content: space-between;
   max-width: 10rem;
   width: 100%;
+  font-weight: 400;
   cursor: pointer;
   font-size: 0.875rem;
   min-height: 2.1875rem;
@@ -165,6 +190,12 @@ exports[`Button should render a pure button 1`] = `
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: default;
+  color: #6D6D6D;
 }
 
 .c0:hover {
@@ -172,8 +203,8 @@ exports[`Button should render a pure button 1`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
-  outline: 1px solid #FFF;
+  outline-offset: 1px;
+  outline: 1px solid #1C2125;
 }
 
 .c0:active {
@@ -181,6 +212,7 @@ exports[`Button should render a pure button 1`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="default"
 >
@@ -201,6 +233,7 @@ exports[`Button should render a secondary default button 1`] = `
   justify-content: space-between;
   max-width: 10rem;
   width: 100%;
+  font-weight: 400;
   cursor: pointer;
   font-size: 0.875rem;
   min-height: 2.1875rem;
@@ -212,6 +245,12 @@ exports[`Button should render a secondary default button 1`] = `
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
   margin: 1px;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: default;
+  color: #6D6D6D;
 }
 
 .c0:hover {
@@ -219,7 +258,7 @@ exports[`Button should render a secondary default button 1`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
+  outline-offset: 1px;
   outline: 1px solid #FFF;
 }
 
@@ -228,6 +267,7 @@ exports[`Button should render a secondary default button 1`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="default"
 >
@@ -248,6 +288,7 @@ exports[`Button should render a secondary error button 1`] = `
   justify-content: space-between;
   max-width: 10rem;
   width: 100%;
+  font-weight: 400;
   cursor: pointer;
   font-size: 0.875rem;
   min-height: 2.1875rem;
@@ -258,6 +299,12 @@ exports[`Button should render a secondary error button 1`] = `
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: error;
+  color: #6D6D6D;
 }
 
 .c0:hover {
@@ -265,7 +312,7 @@ exports[`Button should render a secondary error button 1`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
+  outline-offset: 1px;
   outline: 1px solid #FFF;
 }
 
@@ -274,6 +321,7 @@ exports[`Button should render a secondary error button 1`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="error"
 >
@@ -297,6 +345,7 @@ exports[`Button should render a secondary icon button 1`] = `
   justify-content: space-between;
   max-width: 10rem;
   width: 100%;
+  font-weight: 400;
   cursor: pointer;
   font-size: 0.875rem;
   min-height: 2.1875rem;
@@ -307,6 +356,12 @@ exports[`Button should render a secondary icon button 1`] = `
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: icon;
+  color: #6D6D6D;
 }
 
 .c0:hover {
@@ -314,7 +369,7 @@ exports[`Button should render a secondary icon button 1`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
+  outline-offset: 1px;
   outline: 1px solid #FFF;
 }
 
@@ -323,6 +378,7 @@ exports[`Button should render a secondary icon button 1`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="default"
 >
@@ -347,6 +403,7 @@ exports[`Button should render a secondary warning button 1`] = `
   justify-content: space-between;
   max-width: 10rem;
   width: 100%;
+  font-weight: 400;
   cursor: pointer;
   font-size: 0.875rem;
   min-height: 2.1875rem;
@@ -357,6 +414,12 @@ exports[`Button should render a secondary warning button 1`] = `
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: warning;
+  color: #6D6D6D;
 }
 
 .c0:hover {
@@ -364,7 +427,7 @@ exports[`Button should render a secondary warning button 1`] = `
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
+  outline-offset: 1px;
   outline: 1px solid #FFF;
 }
 
@@ -373,6 +436,7 @@ exports[`Button should render a secondary warning button 1`] = `
 }
 
 <button
+  aria-label="button"
   class="c0"
   color="warning"
 >

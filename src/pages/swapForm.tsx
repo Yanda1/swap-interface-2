@@ -8,7 +8,7 @@ import {
 	// DEFAULT_OUTLINE,
 	// DEFAULT_OUTLINE_OFFSET
 } from '../styles';
-import type { ThemeProps } from '../styles';
+// import type { ThemeProps } from '../styles';
 import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
 // import { ReactComponent as SettingsDark } from '../assets/settings-dark.svg';

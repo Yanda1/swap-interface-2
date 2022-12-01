@@ -3,49 +3,45 @@ import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
 
 describe('TextField', () => {
-	it('should match snapshot', () => {
-		const {getByPlaceholderText} = render(
+	it('should render without errors', () => {
+		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField
-					disabled
-					value="Test Value"
+					value="Test value"
 					placeholder="placeholder"
-					type="number"
-					description={'Text Field Component'}
+					onChange={() => console.log('value changed')}
 				/>
 			</AuthProvider>
 		);
-		const textField = getByPlaceholderText(/placeholder/i);
-		expect(textField).toMatchSnapshot();
+
+		expect(getByPlaceholderText(/placeholder/i)).toBeTruthy();
 	});
 
-	it('should match style', () => {
-		const {getByPlaceholderText} = render(
-			<AuthProvider>
-				<TextField
-					disabled
-					value="Test Value"
-					placeholder="placeholder"
-					type="number"
-					description={'Text Field Component'}
-				/>
-			</AuthProvider>
-		);
-		const textField = getByPlaceholderText(/placeholder/i);
-		expect(textField).toHaveStyle(
-			'border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem; padding: 1.125rem 0.625rem;'
-		);
-	});
+	it.each<[boolean, string, string, boolean]>([
+		[false, 'text', 'small', false],
+		[true, 'number', 'regular', true],
+		[true, 'search', 'small', false]
+	])(
+		'should match snapshot for value disabled: %s, type: %s, size: %s and error: %s',
+		(disabled, type, size, error) => {
+			const { getByPlaceholderText } = render(
+				<AuthProvider>
+					<TextField
+						disabled={disabled}
+						value="Test value"
+						placeholder="placeholder"
+						// @ts-ignore
+						type={type}
+						// @ts-ignore
+						size={size}
+						error={error}
+						description={'Text Field Component'}
+						onChange={() => console.log('value changed')}
+					/>
+				</AuthProvider>
+			);
 
-	it('should set props correctly', () => {
-		const {getByPlaceholderText} = render(
-			<AuthProvider>
-				<TextField disabled value="value" placeholder="placeholder" type="number" />
-			</AuthProvider>
-		);
-		const textField = getByPlaceholderText(/placeholder/i) as HTMLInputElement;
-		expect(textField.placeholder).toBe('placeholder');
-		expect(textField.disabled).toBe(true);
-		expect(textField.type).toBe('number');
-	});
+			expect(getByPlaceholderText(/placeholder/i)).toMatchSnapshot();
+		}
+	);
 });

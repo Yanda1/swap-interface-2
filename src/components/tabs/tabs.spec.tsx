@@ -1,9 +1,8 @@
 import 'jest-styled-components';
 import { render } from '@testing-library/react';
-import { AuthProvider } from '../../helpers';
+import { AuthProvider, formatDate } from '../../helpers';
 import { Tabs } from './tabs';
 import { darkTheme, DEFAULT_BORDER_RADIUS, spacing } from '../../styles';
-import { format } from 'date-fns';
 
 describe('SelectList', () => {
 	it('Render tab component with one tab', function () {
@@ -97,9 +96,7 @@ describe('SelectList', () => {
 		const itemTextPrice = getByText(`Price: ${eventsData[0].action[0].p}`);
 		expect(itemTextPrice).toBeInTheDocument();
 
-		const itemTextTime = getByText(
-			`Time: ${format(new Date(eventsData[0].action[0].ts * 1000), 'dd/MM/yyyy kk:mm:ss')}`
-		);
+		const itemTextTime = getByText(`Time: ${formatDate(eventsData[0].action[0].ts * 1000)}`);
 		expect(itemTextTime).toBeInTheDocument();
 
 		const itemTextStatus = getByText('Successful swap!');
@@ -160,7 +157,7 @@ describe('SelectList', () => {
 			max-width: 100%;
 			`);
 
-		const TabsContainer = getByTestId('tabs');
+		const TabsContainer = getByTestId('tabs-container');
 		expect(TabsContainer).toBeInTheDocument();
 	});
 });
