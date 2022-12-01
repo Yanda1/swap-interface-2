@@ -5,6 +5,8 @@ import { format, utcToZonedTime } from 'date-fns-tz';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 const { timeZone: localTimeZone } = Intl.DateTimeFormat().resolvedOptions();
+const timeZone =
+	process.env.NODE_ENV === 'test' ? process.env.REACT_APP_TEST_TIMEZONE : localTimeZone;
 
 export const isNetworkSelected = (network: string) =>
 	network !== 'Select Network' && network !== ''; // TODO: refine both functions - nullish check - and create enum for "Select Network / Token"
@@ -68,4 +70,6 @@ export const isSwapRejected = (status: string, errorMessage: any) =>
 	status === 'Exception' && errorMessage === 'user rejected transaction';
 
 export const formatDate = (ts: number | undefined): string =>
-	ts ? format(utcToZonedTime(new Date(ts * 1000), localTimeZone), 'dd/MM/yyyy HH:mm:ss') : 'n/a';
+	ts
+		? format(utcToZonedTime(new Date(ts * 1000), timeZone as string), 'dd/MM/yyyy HH:mm:ss')
+		: 'n/a';
