@@ -10,6 +10,7 @@ import type { ContractAdress } from '../../helpers';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
+	isSwapRejected,
 	isTokenSelected,
 	makeId,
 	NETWORK_TO_ID,
@@ -159,10 +160,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				setIsDepositConfirmed(!isDepositConfirmed);
 			}
 		} else if (
-			(transactionSwapState.status === 'Exception' &&
-				transactionSwapState.errorMessage === 'user rejected transaction') ||
-			(transactionContractSwapState.status === 'Exception' &&
-				transactionContractSwapState.errorMessage === 'user rejected transaction')
+			isSwapRejected(transactionSwapState.status, transactionSwapState.errorMessage) ||
+			isSwapRejected(transactionContractSwapState.status, transactionContractSwapState.errorMessage)
 		) {
 			setSwapProductId('');
 

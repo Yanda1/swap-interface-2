@@ -3,6 +3,8 @@ import {
 	CONTRACT_ADDRESSES,
 	ContractAdress,
 	isNetworkSelected,
+	isSwapConfirmed,
+	isSwapFailed,
 	isSwapRejected,
 	isTokenSelected,
 	NETWORK_TO_ID,
@@ -99,9 +101,9 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 			isSwapRejected(swapState.status, swapState.errorMessage) ||
 			isSwapRejected(swapStateContract.status, swapStateContract.errorMessage) ||
 			isSwapRejected(swapStateApprove.status, swapStateApprove.errorMessage) ||
-			swapState.status === 'Fail' ||
-			swapStateContract.status === 'Fail' ||
-			swapStateApprove.status === 'Fail'
+			isSwapFailed(swapState.status) ||
+			isSwapFailed(swapStateContract.status) ||
+			isSwapFailed(swapStateApprove.status)
 		) {
 			const swapsCopy = [...swapsStorage];
 			const findSwap: any = swapsStorage.find(
@@ -112,9 +114,9 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 			setSwapsStorage(swapsCopy);
 			setIsDepositConfirmed(!isDepositConfirmed);
 		} else if (
-			swapState.status === 'Success' ||
-			swapStateContract.status === 'Success' ||
-			swapStateApprove.status === 'Success'
+			isSwapConfirmed(swapState.status) ||
+			isSwapConfirmed(swapStateContract.status) ||
+			isSwapConfirmed(swapStateApprove.status)
 		) {
 			setIsDepositConfirmed(!isDepositConfirmed);
 		}
