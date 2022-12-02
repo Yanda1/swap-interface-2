@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Switch should render a large portal 1`] = `
+exports[`Switch should match snapshort for a large sized portal 1`] = `
 .c0 {
   background-color: #1C2125;
   width: 42.8125rem;
@@ -57,7 +57,7 @@ exports[`Switch should render a large portal 1`] = `
 </div>
 `;
 
-exports[`Switch should render a small portal  1`] = `
+exports[`Switch should match snapshort for a small sized portal 1`] = `
 .c0 {
   background-color: #1C2125;
   width: 28.125rem;

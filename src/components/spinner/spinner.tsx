@@ -3,8 +3,10 @@ import { useStore } from '../../helpers';
 import { pxToRem } from '../../styles';
 import type { ColorType } from '../../styles';
 
+export type SpinnerSizeProps = 'small' | 'medium';
+
 type Props = {
-	size?: 'small' | 'medium';
+	size?: SpinnerSizeProps;
 	color?: string;
 };
 

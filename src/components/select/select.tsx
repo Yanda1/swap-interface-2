@@ -15,6 +15,7 @@ import {
 import type { Theme } from '../../styles';
 import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
 import type { SelectProps } from '../../helpers';
+import { useClickOutside } from '../../hooks';
 
 type StyleProps = {
 	theme: Theme;
@@ -145,8 +146,11 @@ export const Select = ({ data, checkedValue }: Props) => {
 		}
 	};
 
+	const domNode = useClickOutside(() => setIsOpen(false));
+
 	return (
-		<SelectWrapper theme={theme} data-testid="select">
+		// @ts-ignore
+		<SelectWrapper theme={theme} data-testid="select" ref={domNode}>
 			<SelectButton theme={theme} onClick={() => setIsOpen(!isOpen)}>
 				{items.map((item: SelectProps, i: number) => (
 					<SelectedItem checked={item.checked} key={i}>

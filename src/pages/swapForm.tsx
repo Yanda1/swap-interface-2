@@ -31,7 +31,7 @@ import {
 	beautifyNumbers,
 	useStore,
 	NETWORK_TO_ID
-	// useBreakpoint
+	// useMedia
 } from '../helpers';
 import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
@@ -172,7 +172,7 @@ export const SwapForm = () => {
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
 
-	// const { isBreakpointWidth: isMobile } = useBreakpoint('xs');
+	// const { isMobileWidth } = useMedia('xs');
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -263,7 +263,7 @@ export const SwapForm = () => {
 				showModal={showNotificaitonsModal}
 				setShowModal={setShowNotificaitonsModal}
 			/>
-			{/* {!isMobile && (
+			{/* {!isMobileWidth && (
 				<Settings theme={theme}>
 					<button onClick={() => setShowNotificaitonsModal(!showNotificaitonsModal)}>
 						{isLightTheme(theme) ? (

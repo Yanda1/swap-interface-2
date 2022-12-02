@@ -3,13 +3,7 @@ import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
 import { useEtherBalance, useTokenBalance, useEthers } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
-import {
-	beautifyNumbers,
-	useBreakpoint,
-	useStore,
-	NETWORK_TO_ID,
-	isTokenSelected
-} from '../../helpers';
+import { beautifyNumbers, useStore, NETWORK_TO_ID, isTokenSelected } from '../../helpers';
 import {
 	pxToRem,
 	spacing,
@@ -20,6 +14,7 @@ import {
 	DEFAULT_OUTLINE
 } from '../../styles';
 import type { Theme } from '../../styles';
+import { useMedia } from '../../hooks';
 import { WalletModal } from '../../components';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 
@@ -93,7 +88,7 @@ export const Wallet = () => {
 	const {
 		state: { theme, account, sourceNetwork, sourceToken }
 	} = useStore();
-	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
+	const { mobileWidth: isMobile } = useMedia('s');
 
 	const etherBalance = account && useEtherBalance(account);
 	const tokenData =

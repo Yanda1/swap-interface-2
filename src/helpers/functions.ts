@@ -1,6 +1,4 @@
-import type { Breakpoint, BreakpointOrNumber, Theme } from './../styles';
-import { breakpoint } from './../styles';
-import { useLayoutEffect, useState } from 'react';
+import type { Theme } from './../styles';
 import { format, utcToZonedTime } from 'date-fns-tz';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
@@ -33,31 +31,6 @@ export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
 	}
 
 	return trimZeros(res);
-};
-
-export const useWindowSize = () => {
-	const [size, setSize] = useState([0, 0]);
-	useLayoutEffect(() => {
-		const updateSize = () => {
-			setSize([window.innerWidth, window.innerHeight]);
-		};
-		window.addEventListener('resize', updateSize);
-		updateSize();
-
-		return () => window.removeEventListener('resize', updateSize);
-	}, []);
-
-	return size;
-};
-
-export const useBreakpoint = (size: BreakpointOrNumber) => {
-	const [windowWidth, windowHeight] = useWindowSize();
-	const isString = typeof size === typeof 'string';
-
-	return {
-		isBreakpointWidth: windowWidth < (isString ? breakpoint[size as Breakpoint] : size),
-		isBreakpointHeight: windowHeight < (isString ? breakpoint[size as Breakpoint] : size)
-	};
 };
 
 export const hexToRgbA = (hex: string, alpha = '1'): string => {

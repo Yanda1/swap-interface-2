@@ -1,30 +1,22 @@
 import 'jest-styled-components';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
-import { Portal } from '..';
+import { Portal } from '../../components';
+import type { PortalSizeProps } from '../../components';
 
 describe('Switch', () => {
-	it('should render a large portal', () => {
-		const { getByText } = render(
-			<AuthProvider>
-				<Portal size="large" isOpen={true} handleClose={() => console.log('close portal')}>
-					portal
-				</Portal>
-			</AuthProvider>
-		);
+	it.each<[PortalSizeProps]>([['small'], ['large']])(
+		'should match snapshort for a %s sized portal',
+		(size) => {
+			const { getByText } = render(
+				<AuthProvider>
+					<Portal size={size} isOpen={true} handleClose={() => console.log('close portal')}>
+						portal
+					</Portal>
+				</AuthProvider>
+			);
 
-		expect(getByText('portal')).toMatchSnapshot();
-	});
-
-	it('should render a small portal ', () => {
-		const { getByText } = render(
-			<AuthProvider>
-				<Portal isOpen={true} handleClose={() => console.log('close portal')}>
-					portal
-				</Portal>
-			</AuthProvider>
-		);
-
-		expect(getByText('portal')).toMatchSnapshot();
-	});
+			expect(getByText('portal')).toMatchSnapshot();
+		}
+	);
 });

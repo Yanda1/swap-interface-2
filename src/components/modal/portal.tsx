@@ -6,7 +6,7 @@ import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import type { ThemeProps } from '../../styles';
 import { DestinationEnum, hexToRgbA, useStore } from '../../helpers';
 
-type StyledProps = ThemeProps & { size: SizeProps };
+type StyledProps = ThemeProps & { size: PortalSizeProps };
 
 const Wrapper = styled.div(
 	({ theme }: ThemeProps) => css`
@@ -76,7 +76,7 @@ type WrapperProps = {
 	wrapperId: string;
 };
 
-type SizeProps = 'large' | 'small';
+export type PortalSizeProps = 'large' | 'small';
 
 const PortalWrapper = ({ children, wrapperId = 'react-portal-wrapper' }: WrapperProps) => {
 	const [wrapperElement, setWrapperElement] = useState<HTMLElement | null>(null);
@@ -106,7 +106,7 @@ type Props = {
 	children: ReactNode;
 	isOpen: boolean;
 	hasBackButton?: boolean;
-	size?: SizeProps;
+	size?: PortalSizeProps;
 	handleClose: () => void;
 	handleBack?: () => void;
 };
