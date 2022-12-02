@@ -4,6 +4,7 @@ import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList, Portal, Button } from '../../components';
+import { useMedia } from '../../hooks';
 import {
 	CHAINS,
 	DestinationEnum,
@@ -11,7 +12,6 @@ import {
 	isTokenSelected,
 	NETWORK_TO_ID,
 	SourceEnum,
-	useBreakpoint,
 	useStore
 } from '../../helpers';
 import type { DestinationNetworks } from '../../helpers';
@@ -51,7 +51,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const { chainId } = useEthers();
 
 	const [showsNetworkList, setShowsNetworkList] = useState(true);
-	const { isBreakpointWidth: isMobile } = useBreakpoint('xs');
+	const { mobileWidth: isMobile } = useMedia('xs');
 	const {
 		dispatch,
 		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }
