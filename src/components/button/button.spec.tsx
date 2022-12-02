@@ -14,7 +14,7 @@ describe('Button', () => {
 		expect(getByText(/Primary default Button/)).toMatchSnapshot();
 	});
 
-	it('should render a secondary default button', async () => {
+	it('should render a secondary default button', () => {
 		const { getByText } = render(
 			<AuthProvider>
 				<Button onClick={() => console.log('test')} variant={'secondary'}>
@@ -26,7 +26,7 @@ describe('Button', () => {
 		expect(getByText(/Secondary default Button/)).toMatchSnapshot();
 	});
 
-	it('should render a secondary icon button', async () => {
+	it('should render a secondary icon button', () => {
 		const { getByText, getByRole } = render(
 			<AuthProvider>
 				<Button onClick={() => console.log('test')} variant="secondary" icon="moonbeam">
@@ -38,7 +38,7 @@ describe('Button', () => {
 		expect(getByText(/Secondary icon Button/)).toMatchSnapshot();
 	});
 
-	it('should render a secondary warning button', async () => {
+	it('should render a secondary warning button', () => {
 		const { getByText } = render(
 			<AuthProvider>
 				<Button onClick={() => console.log('test')} variant={'secondary'} color={'warning'}>
@@ -50,7 +50,7 @@ describe('Button', () => {
 		expect(getByText(/Secondary warning Button/)).toMatchSnapshot();
 	});
 
-	it('should render a secondary error button', async () => {
+	it('should render a secondary error button', () => {
 		const { getByText } = render(
 			<AuthProvider>
 				<Button onClick={() => console.log('test')} variant={'secondary'} color={'error'}>
