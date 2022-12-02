@@ -37,6 +37,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const { account } = useEthers();
 	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('localSwaps', []);
+	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
+		'isDepositConfirmed',
+		true
+	);
 
 	const {
 		state: {
@@ -57,6 +61,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const currentBlockNumber = useBlockNumber();
 
 	const isDisabled =
+		!isDepositConfirmed ||
 		!validInputs ||
 		!isTokenSelected(sourceToken) ||
 		!isTokenSelected(destinationToken) ||
@@ -151,6 +156,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				};
 				setSwapsStorage([...swapsStorage, swap]);
 				setSwapProductId('');
+				setIsDepositConfirmed(!isDepositConfirmed);
 			}
 		} else if (
 			(transactionSwapState.status === 'Exception' &&
