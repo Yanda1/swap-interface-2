@@ -32,10 +32,10 @@ interface PureProps {
 	icon?: never;
 }
 
-interface IconOnlyProps {
+export type IconOnlyProps = {
 	icon?: 'moonbeam' | 'metamask';
 	color?: never;
-}
+};
 
 interface ColorOnlyProps {
 	color?: ColorType;
@@ -49,10 +49,10 @@ type SecondaryProps = {
 } & ColorIconProps;
 
 type IndividualProps = PrimaryProps | SecondaryProps | PureProps;
-type Props = IndividualProps & CommonProps;
+export type ButtonProps = IndividualProps & CommonProps;
 
 const StyledButton = styled.button(
-	({ variant = 'primary', color = 'default', disabled = false, icon, isLoading }: Props) => {
+	({ variant = 'primary', color = 'default', disabled = false, icon, isLoading }: ButtonProps) => {
 		const isPrimary = variant === 'primary';
 		const isSecondary = variant === 'secondary';
 		const isPure = variant === 'pure';
@@ -134,7 +134,7 @@ export const Button = ({
 	icon,
 	isLoading,
 	onClick
-}: Props) => {
+}: ButtonProps) => {
 	return (
 		// @ts-ignore
 		<StyledButton
