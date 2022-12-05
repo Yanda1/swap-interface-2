@@ -111,7 +111,6 @@ export const Button = ({
 	onClick
 }: ButtonProps) => {
 	return (
-		// @ts-ignore
 		<StyledButton
 			color={color}
 			variant={variant}
