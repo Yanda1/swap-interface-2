@@ -6,6 +6,7 @@
 	"dependencies": {
 		"@ethersproject/abi": "5.7.0",
 		"@ethersproject/contracts": "5.7.0",
+		"@ethersproject/units": "^5.7.0",
 		"@metamask/jazzicon": "^2.0.0",
 		"@testing-library/jest-dom": "^5.14.1",
 		"@testing-library/react": "^13.0.0",
@@ -33,8 +34,7 @@
 		"react-router-dom": "^6.4.1",
 		"react-scripts": "5.0.1",
 		"sass": "^1.54.4",
-		"styled-components": "^5.3.5",
-		"typescript": "^4.4.2"
+		"styled-components": "^5.3.5"
 	},
 	"resolutions": {
 		"@ethersproject/abi": "5.2.0",
@@ -42,9 +42,15 @@
 	},
 	"scripts": {
 		"start": "react-scripts start",
-		"build": "react-scripts build",
-		"test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!axios)/\"",
+		"build": "yarn clean:app && yarn && yarn build:app",
+		"build:app": "react-scripts build",
+		"test": "yarn test:unit && yarn test:dependencies",
+		"test:unit": "react-scripts test --transformIgnorePatterns \"node_modules/(?!axios)/\"",
+		"test:dependencies": "npx depcruise --config .dependency-cruiser.js src --exclude src/*/index.ts",
 		"coverage": "jest --converage",
+		"clean:app": "yarn clean:app:build && yarn clean:app:node_modules",
+		"clean:app:build": "rm -rf ./dist && rm -rf ./www",
+		"clean:app:node_modules": "rm -rf ./node_modules && rm -rf ./yarn-error.log",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix",
 		"format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
@@ -68,6 +74,7 @@
 		]
 	},
 	"devDependencies": {
+		"typescript": "^4.4.2",
 		"@typescript-eslint/eslint-plugin": "^5.33.0",
 		"@typescript-eslint/parser": "^5.33.0",
 		"eslint": "8.28.0",

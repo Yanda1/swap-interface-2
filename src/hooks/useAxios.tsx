@@ -51,7 +51,6 @@ export const useAxios = () => {
 			dispatch({ type: VerificationEnum.REFRESH, payload: newTokens.data.refresh });
 			setStorage({ ...storage, access: newTokens.data.access, refresh: newTokens.data.refresh });
 
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			req.headers!.Authorization = `Bearer ${newTokens.data.access}`;
 
 			return req;

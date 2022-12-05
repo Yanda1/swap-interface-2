@@ -3,13 +3,7 @@ import { BASE_URL, BINANCE_PROD_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY, routes } fro
 import axios from 'axios';
 import type { ApiAuthType } from '../helpers';
 
-export enum STATUS_ENUM {
-	NONCE = 'NONCE',
-	AUTH = 'AUTH',
-	PASS = 'PASS'
-}
-
-export const getMetamaskMessage = (nonce: string): string =>
+const getMetamaskMessage = (nonce: string): string =>
 	`0x${Buffer.from('Please sign this one time nonce: ' + nonce, 'utf8').toString('hex')}`;
 
 export const loadBinanceKycScript = (cb?: any) => {
