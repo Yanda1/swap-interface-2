@@ -42,6 +42,10 @@ export const hexToRgbA = (hex: string, alpha = '1'): string => {
 export const isSwapRejected = (status: string, errorMessage: any) =>
 	status === 'Exception' && errorMessage === 'user rejected transaction';
 
+export const isSwapFailed = (status: string) => status === 'Fail';
+
+export const isSwapConfirmed = (status: string) => status === 'Success';
+
 export const formatDate = (ts: number | undefined): string =>
 	ts
 		? format(utcToZonedTime(new Date(ts * 1000), timeZone as string), 'dd/MM/yyyy HH:mm:ss')

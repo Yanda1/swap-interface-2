@@ -7,10 +7,11 @@ import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import { ContractAdress } from '../../helpers';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
+	ContractAdress,
+	isSwapRejected,
 	isTokenSelected,
 	makeId,
 	NETWORK_TO_ID,
@@ -38,6 +39,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const { account } = useEthers();
 	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('localSwaps', []);
+	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
+		'isDepositConfirmed',
+		true
+	);
 
 	const {
 		state: {
@@ -58,6 +63,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const currentBlockNumber = useBlockNumber();
 
 	const isDisabled =
+		!isDepositConfirmed ||
 		!validInputs ||
 		!isTokenSelected(sourceToken) ||
 		!isTokenSelected(destinationToken) ||
@@ -76,8 +82,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				'hasTag'
 		  ] && !destinationMemo
 		? 'Please insert a valid Destination Memo'
-		: 'Please insert a valid Destination Address';
-
+		: !destinationAddress
+		? 'Please insert a valid Destination Address'
+		: 'Wait for deposit';
 	const sourceTokenData =
 		// @ts-ignore
 		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
@@ -160,12 +167,11 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				};
 				setSwapsStorage([...swapsStorage, swap]);
 				setSwapProductId('');
+				setIsDepositConfirmed(!isDepositConfirmed);
 			}
 		} else if (
-			(transactionSwapState.status === 'Exception' &&
-				transactionSwapState.errorMessage === 'user rejected transaction') ||
-			(transactionContractSwapState.status === 'Exception' &&
-				transactionContractSwapState.errorMessage === 'user rejected transaction')
+			isSwapRejected(transactionSwapState.status, transactionSwapState.errorMessage) ||
+			isSwapRejected(transactionContractSwapState.status, transactionContractSwapState.errorMessage)
 		) {
 			setSwapProductId('');
 
