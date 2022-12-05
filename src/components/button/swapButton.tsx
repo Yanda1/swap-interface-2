@@ -7,10 +7,10 @@ import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import { ContractAdress } from '../../helpers';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
+	ContractAdress,
 	isSwapRejected,
 	isTokenSelected,
 	makeId,
@@ -73,6 +73,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		? 'Swap'
 		: !isTokenSelected(destinationToken)
 		? 'Please select Network and Token'
+		: !isDepositConfirmed
+		? 'Wait for deposit'
 		: +amount < +minAmount
 		? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
 		: +amount > +maxAmount
