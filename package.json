@@ -45,7 +45,7 @@
 		"build": "yarn clean:app && yarn && yarn build:app",
 		"build:app": "react-scripts build",
 		"test": "yarn test:unit && yarn test:dependencies",
-		"test:unit": "react-scripts test --transformIgnorePatterns \"node_modules/(?!axios)/\"",
+		"test:unit": "react-scripts test",
 		"test:dependencies": "npx depcruise --config .dependency-cruiser.js src --exclude src/*/index.ts",
 		"coverage": "jest --converage",
 		"clean:app": "yarn clean:app:build && yarn clean:app:node_modules",
@@ -71,6 +71,11 @@
 			"last 1 chrome version",
 			"last 1 firefox version",
 			"last 1 safari version"
+		]
+	},
+	"jest": {
+		"transformIgnorePatterns": [
+			"/node_modules/(?!axios)"
 		]
 	},
 	"devDependencies": {
