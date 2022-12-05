@@ -73,8 +73,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		? 'Swap'
 		: !isTokenSelected(destinationToken)
 		? 'Please select Network and Token'
-		: !isDepositConfirmed
-		? 'Wait for deposit'
 		: +amount < +minAmount
 		? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
 		: +amount > +maxAmount
@@ -84,8 +82,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				'hasTag'
 		  ] && !destinationMemo
 		? 'Please insert a valid Destination Memo'
-		: 'Please insert a valid Destination Address';
-
+		: !destinationAddress
+		? 'Please insert a valid Destination Address'
+		: 'Wait for deposit';
 	const sourceTokenData =
 		// @ts-ignore
 		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
