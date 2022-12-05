@@ -4,4 +4,4 @@ export type ThemeProps = {
 	theme: Theme;
 };
 
-export type ColorType = 'default' | 'error' | 'warning' | 'icon' | 'success';
+export type ColorType = 'default' | 'error' | 'warning' | 'success' | 'transparent';

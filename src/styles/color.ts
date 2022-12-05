@@ -16,7 +16,6 @@ export type Theme = {
 		default: string;
 		error: string;
 		warning: string;
-		icon: string;
 		disabled: string;
 		success: string;
 		wallet: string;
@@ -53,7 +52,6 @@ export const lightTheme: Theme = {
 		default: '#00A8E8',
 		error: '#DE3434',
 		warning: '#FD862F',
-		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108',
 		wallet: '#505050',
@@ -90,7 +88,6 @@ export const darkTheme: Theme = {
 		default: '#00A8E8',
 		error: '#DE3434',
 		warning: '#FD862F',
-		icon: '#172631',
 		disabled: '#6D6D6D',
 		success: '#18C108',
 		wallet: '#505050',
