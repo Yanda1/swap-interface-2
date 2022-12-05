@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  unit-test:
+  Tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +37,7 @@ jobs:
       - name: Install package dependencies
         run: yarn install
 
-      - name: Execute unit cases
+      - name: Execute unit tests
         run: yarn test:unit
-      - name: Execute dependency-cruiser cases
+      - name: Execute dependency-cruiser tests
         run: yarn test:dependencies
