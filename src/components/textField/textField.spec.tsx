@@ -1,4 +1,4 @@
-import { TextField } from './textField';
+import { AlignProps, SizeProps, TextField, TypeProps } from './textField';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
 
@@ -17,26 +17,25 @@ describe('TextField', () => {
 		expect(getByPlaceholderText(/placeholder/i)).toBeTruthy();
 	});
 
-	it.each<[boolean, string, string, boolean]>([
-		[false, 'text', 'small', false],
-		[true, 'number', 'regular', true],
-		[true, 'search', 'small', false],
-		[false, 'number', 'small', true]
+	it.each<[boolean, TypeProps, SizeProps, AlignProps, boolean, string]>([
+		[false, 'text', 'small', 'left', false, 'description'],
+		[true, 'number', 'regular', 'right', true, 'description'],
+		[true, 'search', 'small', 'center', false, ''],
+		[false, 'number', 'small', 'left', true, 'description']
 	])(
-		'should match snapshot for value disabled: %s, type: %s, size: %s and error: %s',
-		(disabled, type, size, error) => {
+		'should match snapshot for value disabled: %s, type: %s, size: %s, align: %s, error: %s and description: %s',
+		(disabled, type, size, align, error, description) => {
 			const { getByPlaceholderText } = render(
 				<AuthProvider>
 					<TextField
 						disabled={disabled}
 						value="Test value"
 						placeholder="placeholder"
-						// @ts-ignore
+						align={align}
+						description={description}
 						type={type}
-						// @ts-ignore
 						size={size}
 						error={error}
-						description={'Text Field Component'}
 						onChange={() => console.log('value changed')}
 					/>
 				</AuthProvider>

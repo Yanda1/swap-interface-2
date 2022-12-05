@@ -1,12 +1,13 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
+import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import type { ContractAdress } from '../../helpers';
+import { ContractAdress } from '../../helpers';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
@@ -68,12 +69,20 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
 		+destinationAmount < 0;
-	const message =
-		+minAmount >= +maxAmount
-			? 'Insufficent funds'
-			: +minAmount < +amount
-			? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-			: `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`;
+	const message = !isDisabled
+		? 'Swap'
+		: !isTokenSelected(destinationToken)
+		? 'Please select Network and Token'
+		: +amount < +minAmount
+		? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+		: +amount > +maxAmount
+		? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+		: // @ts-ignore
+		DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'hasTag'
+		  ] && !destinationMemo
+		? 'Please insert a valid Destination Memo'
+		: 'Please insert a valid Destination Address';
 
 	const sourceTokenData =
 		// @ts-ignore
@@ -174,7 +183,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	return (
 		<ButtonWrapper>
 			<Button disabled={isDisabled} color="default" onClick={onClick}>
-				{isDisabled ? message : 'Swap'}
+				{message}
 			</Button>
 		</ButtonWrapper>
 	);

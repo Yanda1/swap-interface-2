@@ -9,7 +9,7 @@ import {
 	Spinner,
 	Arrow
 } from '../../components';
-import { beautifyNumbers, useBreakpoint, useStore, WEI_TO_GLMR, formatDate } from '../../helpers';
+import { beautifyNumbers, useStore, WEI_TO_GLMR, formatDate } from '../../helpers';
 import type { TransactionData } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -23,6 +23,7 @@ import {
 } from '../../styles';
 import type { Theme } from '../../styles';
 import { Notifications } from '../../pages';
+import { useMedia } from '../../hooks';
 
 type StyleProps = {
 	theme: Theme;
@@ -156,7 +157,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const { isBreakpointWidth: mobile } = useBreakpoint('s');
+	const { mobileWidth } = useMedia('s');
 
 	useEffect(() => {
 		const accordion: any[] = [];
@@ -234,7 +235,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 						<ContentText open={item.open}>
 							<EmptyColumn />
 							<ContentColumn>
-								{mobile && (
+								{mobileWidth && (
 									<MobileHeaderInfo color={theme.font.select}>
 										<MobileHeaderSection>
 											Deposit Time:{' '}
