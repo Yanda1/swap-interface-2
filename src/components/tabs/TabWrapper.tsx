@@ -293,7 +293,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 								setSwapsStorage(swapsCopy);
 							}
 						});
-					} else if (events.length >= 1 && events.length < 2) {
+					} else if (events.length < 2) {
 						events?.map((event: any) => {
 							const parsedData: any = JSON.parse(event.args.data);
 							if (parsedData.t === 0) {
@@ -308,26 +308,6 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 								setSwapsStorage(swapsCopy);
 							}
 						});
-						protocol.on(
-							protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.swapProductId),
-							(_customer, _service, _localProductId, _data, event) => {
-								console.log('---Action EVENT---', event);
-								const parsedData = JSON.parse(event.args?.data);
-
-								if (parsedData.t === 0) {
-									swap.action = [parsedData];
-									swapsCopy[index] = swap;
-
-									setSwapsStorage(swapsCopy);
-								} else {
-									swap.withdraw = [parsedData];
-									swapsCopy[index] = swap;
-
-									setSwapsStorage(swapsCopy);
-								}
-							}
-						);
-					} else {
 						protocol.on(
 							protocol.filters.Action(swap.account, SERVICE_ADDRESS, swap.swapProductId),
 							(_customer, _service, _localProductId, _data, event) => {
