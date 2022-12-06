@@ -39,5 +39,6 @@ jobs:
 
       - name: Execute unit tests
         run: yarn test:unit
+
       - name: Execute dependency-cruiser tests
         run: yarn test:dependencies
