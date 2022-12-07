@@ -91,6 +91,12 @@ const MobileHeaderSection = styled.div`
 	gap: ${spacing[8]};
 `;
 
+const AccordionItem = styled.div`
+	&:not(:last-child) {
+		border-bottom: 1px solid ${(props: StyleProps) => props.theme.border.default};
+	}
+`;
+
 const Content = styled.div`
 	height: ${(props: StyleProps) =>
 		props.open ? (props.height === 'small' ? pxToRem(128) : pxToRem(350)) : pxToRem(30)};
@@ -189,11 +195,10 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 	return accordionItems?.length > 0 ? (
 		<Wrapper theme={theme} data-testid="accordion">
 			{accordionItems.map((item: DataProps, index: number) => (
-				<>
+				<AccordionItem key={index} theme={theme}>
 					<TitleWrapper
 						theme={theme}
 						onClick={() => handleClick(index)}
-						key={index}
 						open={item.open}
 						// @ts-ignore
 						tabIndex="1"
@@ -233,7 +238,6 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 								transition: DEFAULT_TRANSIITON
 							}}
 						/>
-						{/* <Arrow open={item.open} /> */}
 					</TitleWrapper>
 					<Content
 						theme={theme}
@@ -335,7 +339,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 							</ContentColumn>
 						</ContentText>
 					</Content>
-				</>
+				</AccordionItem>
 			))}
 		</Wrapper>
 	) : (

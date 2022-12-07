@@ -1,7 +1,7 @@
 import 'jest-styled-components';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
-import { Button } from './button';
+import { Button } from '../../components';
 import type { ColorType } from '../../styles';
 
 describe('Button', () => {

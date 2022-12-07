@@ -140,18 +140,18 @@ const Icons = {
 };
 
 export type IconType = keyof typeof Icons;
-type SizeProps = 'small' | 'medium' | 'large' | number;
+export type SizeType = 'small' | 'medium' | 'large' | number;
 
 type Props = {
 	icon: IconType | undefined;
-	size?: SizeProps;
+	size?: SizeType;
 	onClick?: () => void;
 	style?: CSSProperties;
 };
 
 type StyleProps = Omit<Props, 'icon'> & ThemeProps;
 
-const fontSize = (size: SizeProps) => {
+const fontSize = (size: SizeType) => {
 	switch (size) {
 		case 'small':
 			return pxToRem(24);
@@ -219,7 +219,7 @@ export const Icon = ({ icon, size, onClick, style = {} }: Props) => {
 	const Icon = icon ? Icons[icon] : undefined;
 
 	return Icon ? (
-		<StyledIcon onClick={onClick} size={size} theme={theme} style={style}>
+		<StyledIcon onClick={onClick} size={size} theme={theme} style={style} data-testid="icon">
 			<Icon onClick={onClick ?? null} theme={theme} />
 		</StyledIcon>
 	) : null;

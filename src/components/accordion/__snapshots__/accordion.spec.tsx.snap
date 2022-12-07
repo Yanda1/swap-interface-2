@@ -1,0 +1,410 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Accordion should match snapshot 1`] = `
+.c0 {
+  background-color: #1C2125;
+  margin-top: 0.75rem;
+  font-size: 1rem;
+  line-height: 1.375rem;
+  border: 1px solid #404040;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.c2 {
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
+  background-color: #161B20;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  position: relative;
+  z-index: 10;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+.c2:last-child {
+  border-bottom: none;
+}
+
+.c2:focus-visible {
+  outline-offset: 1px;
+  outline: 1px solid #FFF;
+}
+
+.c2:hover {
+  opacity: 0.65;
+}
+
+.c3 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+.c5 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  -webkit-flex: 2;
+  -ms-flex: 2;
+  flex: 2;
+}
+
+.c4 {
+  color: #B4B4B4;
+}
+
+.c1:not(:last-child) {
+  border-bottom: 1px solid #404040;
+}
+
+.c7 {
+  height: 1.875rem;
+  color: #B4B4B4;
+  text-align: center;
+  position: relative;
+  margin-top: -1.875rem;
+  text-align: left;
+  -webkit-transition: all .2s cubic-bezier(0.6,-0.28,0.735,0.045);
+  transition: all .2s cubic-bezier(0.6,-0.28,0.735,0.045);
+}
+
+.c7:not(:last-child) {
+  border-bottom: 1px solid #404040;
+}
+
+.c9 {
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+}
+
+.c10 {
+  -webkit-flex: 6;
+  -ms-flex: 6;
+  flex: 6;
+}
+
+.c8 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 0.5rem;
+  visibility: hidden;
+  opacity: 0;
+  overflow: auto;
+  padding: 0.75rem 3rem 0.75rem 1.25rem;
+  overflow-y: scroll;
+  -webkit-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
+}
+
+.c6 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c6 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 1.25rem;
+}
+
+.c11 {
+  list-style: none;
+  padding: 0;
+}
+
+.c12 {
+  list-style: none;
+  padding: 0 0 1.625rem 1.25rem;
+  border-left: 1px solid #FFF;
+  position: relative;
+  margin-left: 0.625rem;
+  font-size: 1rem;
+}
+
+.c12:last-child {
+  border: 0;
+  padding-bottom: 0;
+}
+
+.c12:before {
+  content: '';
+  width: 1rem;
+  height: 1rem;
+  background: #FFF;
+  border-radius: 50%;
+  position: absolute;
+  left: -0.5rem;
+  top: 0;
+}
+
+.c12:last-of-type > div {
+  line-height: 1rem;
+}
+
+.c13 {
+  line-height: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.c14 {
+  color: #B4B4B4;
+  line-height: 1.375rem;
+}
+
+.c16 {
+  color: #00A8E8;
+  line-height: 1.375rem;
+}
+
+.c15 {
+  color: #B4B4B4;
+  line-height: 1rem;
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+  cursor: pointer;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c15:hover {
+  color: #00A8E8;
+}
+
+@media (max-width:760px) {
+  .c5 {
+    display: none;
+  }
+}
+
+@media (max-width:760px) {
+  .c7 {
+    height: 1.875rem;
+  }
+}
+
+@media (max-width:760px) {
+  .c8 {
+    display: inline-block;
+  }
+}
+
+@media (max-width:760px) {
+  .c12:before {
+    width: 0.875rem;
+    height: 0.875rem;
+    left: -0.4375rem;
+  }
+}
+
+<div
+  class="c0"
+  data-testid="accordion"
+>
+  <div
+    class="c1"
+  >
+    <div
+      class="c2"
+      tabindex="1"
+    >
+      <div
+        class="c3"
+      >
+        <div
+          class="c4"
+          color="#B4B4B4"
+        >
+          GLMRBTC
+        </div>
+      </div>
+      <div
+        class="c5"
+      >
+        Deposit Time:
+         
+        <div
+          class="c4"
+          color="#B4B4B4"
+        >
+          n/a
+        </div>
+      </div>
+      <div
+        class="c5"
+      >
+        Sent:
+         
+        <div
+          class="c4"
+          color="#B4B4B4"
+        >
+          0.0
+           
+          BTC
+           (Moonbeam)
+        </div>
+      </div>
+      <div
+        class="c5"
+      >
+        Received:
+         
+        <div
+          class="c4"
+          color="#B4B4B4"
+        >
+          40.0
+           
+          GLMR (
+								test)
+        </div>
+      </div>
+      <div
+        class="c6"
+        data-testid="icon"
+        size="20"
+        style="transform: rotate(0deg); transition: all .2s ease-in-out;"
+      >
+        <svg
+          theme="[object Object]"
+        >
+          arrow-light.svg
+        </svg>
+      </div>
+    </div>
+    <div
+      class="c7"
+      height="large"
+    >
+      <div
+        class="c8"
+      >
+        <div
+          class="c9"
+        />
+        <div
+          class="c10"
+        >
+          <ul
+            class="c11"
+          >
+            <li
+              class="c12"
+            >
+              <div
+                class="c13"
+              >
+                Successfull Deposit
+              </div>
+              <div
+                class="c14"
+              >
+                Gas fee: 
+                039328423342
+              </div>
+            </li>
+            <li
+              class="c12"
+            >
+              <div
+                class="c13"
+              >
+                Buy Order 
+                GLMRBTC
+              </div>
+              <div
+                class="c14"
+              >
+                Quantity: 
+                100.0
+                 
+                BTC
+              </div>
+              <div
+                class="c14"
+              >
+                Exchange Rate: 
+                10
+              </div>
+              <div
+                class="c14"
+              >
+                Date: 
+                24/11/1970 15:25:32
+              </div>
+              <div
+                class="c14"
+              >
+                CEX Fee: 
+                4.0
+                 
+                GLMR
+              </div>
+            </li>
+            <li
+              class="c12"
+            >
+              <div
+                class="c15"
+              >
+                Withdraw Transaction Link
+              </div>
+              <div
+                class="c14"
+              >
+                Withdrawal Fee:
+                 
+                7.0
+                 
+                GLMR
+              </div>
+            </li>
+            <li
+              class="c12"
+            >
+              <div
+                class="c16"
+                color="#00A8E8"
+              >
+                Successful swap!
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
