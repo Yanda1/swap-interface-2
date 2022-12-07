@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
 import { darkTheme } from '../styles';
 import type { ColorType, Theme } from '../styles';
+import { Request } from '../helpers';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -68,7 +69,7 @@ export enum PairEnum {
 	PAIR = 'PAIR'
 }
 
-type SourceNetworks = 'ETH' | 'GLMR' | 'Select Network';
+type SourceNetworks = 'ETH' | 'GLMR' | Request.NETWORK;
 
 type VerificationAction = {
 	type: VerificationEnum;
@@ -175,11 +176,11 @@ const initialState: State = {
 	kycStatus: KycStatusEnum.PROCESS,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
-	destinationWallet: 'Select Wallet',
-	sourceNetwork: 'Select Network',
-	sourceToken: 'Select Token',
-	destinationNetwork: 'Select Network',
-	destinationToken: 'Select Token',
+	destinationWallet: Request.WALlET,
+	sourceNetwork: Request.NETWORK,
+	sourceToken: Request.TOKEN,
+	destinationNetwork: Request.NETWORK,
+	destinationToken: Request.TOKEN,
 	destinationAddress: '',
 	destinationAmount: '',
 	destinationMemo: '',
