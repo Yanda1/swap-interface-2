@@ -174,7 +174,7 @@ const StyledIcon = styled.div`
 	${(props: StyleProps) =>
 		props.onClick && props.size === 'large'
 			? css`
-					padding: ${spacing[8]};
+					padding: ${spacing[8]} ${spacing[12]};
 					border: 1px solid ${props.theme.border.default};
 					border-radius: ${DEFAULT_BORDER_RADIUS};
 					display: flex;
@@ -182,6 +182,10 @@ const StyledIcon = styled.div`
 					justify-content: center;
 					background: ${`linear-gradient(to left, ${props.theme.background.secondary}, ${props.theme.background.secondary})`};
 					transition: ${DEFAULT_TRANSIITON};
+
+					& svg {
+						font-size: ${spacing[32]};
+					}
 			  `
 			: null}
 	${(props: StyleProps) =>
