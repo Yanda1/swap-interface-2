@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import { CSSProperties } from 'react';
+import styled, { css } from 'styled-components';
 import { ReactComponent as INCH } from '../../assets/1inch.svg';
 import { ReactComponent as AAVE } from '../../assets/aave.svg';
 import { ReactComponent as AVAXC } from '../../assets/avaxc.svg';
@@ -45,7 +46,33 @@ import { ReactComponent as ERROR } from '../../assets/error.svg';
 import { ReactComponent as QuestionMark } from '../../assets/question-mark.svg';
 import { ReactComponent as Sun } from '../../assets/sun.svg';
 import { ReactComponent as Moon } from '../../assets/moon.svg';
-import { pxToRem } from '../../styles';
+import { ReactComponent as MenuDark } from '../../assets/menu-dark.svg';
+import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
+import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
+import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
+import { ReactComponent as CheckLight } from '../../assets/check-light.svg';
+import { ReactComponent as CheckDark } from '../../assets/check-dark.svg';
+import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
+import { ReactComponent as ArrowDark } from '../../assets/arrow-dark.svg';
+import { ReactComponent as ArrowLight } from '../../assets/arrow-light.svg';
+import { ReactComponent as ArrowFullDark } from '../../assets/arrow-full-dark.svg';
+import { ReactComponent as ArrowFullLight } from '../../assets/arrow-full-light.svg';
+import { ReactComponent as Search } from '../../assets/search.svg';
+import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
+import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
+import { ReactComponent as SettingsDark } from '../../assets/settings-dark.svg';
+import { ReactComponent as SettingsLight } from '../../assets/settings-light.svg';
+
+import {
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_TRANSIITON,
+	pxToRem,
+	spacing
+} from '../../styles';
+import type { ThemeProps } from '../../styles';
+import { useStore } from '../../helpers';
 
 const Icons = {
 	'1inch': INCH,
@@ -61,11 +88,11 @@ const Icons = {
 	bch: BCH,
 	bnt: BNT,
 	chz: CHZ,
-	dat: DAI,
+	dai: DAI,
 	doge: DOGE,
 	dot: DOT,
 	ftt: FTT,
-	lnk: LINK,
+	link: LINK,
 	mana: MANA,
 	optimism: OPTIMISM,
 	qnt: QNT,
@@ -86,47 +113,114 @@ const Icons = {
 	matic: MATIC,
 	avaxc: AVAXC,
 	xrp: XRP,
-	xyz: XTZ,
+	xtz: XTZ,
 	info: INFO,
 	warning: WARNING,
 	success: SUCCESS,
 	error: ERROR,
 	questionMark: QuestionMark,
 	sun: Sun,
-	moon: Moon
+	moon: Moon,
+	menuDark: MenuDark,
+	menuLight: MenuLight,
+	logoDark: LogoDark,
+	logoLight: LogoLight,
+	checkDark: CheckDark,
+	checkLight: CheckLight,
+	logoMobile: LogoMobile,
+	arrowDark: ArrowDark,
+	arrowLight: ArrowLight,
+	arrowFullDark: ArrowFullDark,
+	arrowFullLight: ArrowFullLight,
+	search: Search,
+	swapperDark: SwapperDark,
+	swapperLight: SwapperLight,
+	settingsDark: SettingsDark,
+	settingsLight: SettingsLight
 };
 
 export type IconType = keyof typeof Icons;
-type SizeProps = 'small' | 'medium' | 'large';
+type SizeProps = 'small' | 'medium' | 'large' | number;
 
 type Props = {
-	icon: IconType;
+	icon: IconType | undefined;
 	size?: SizeProps;
 	onClick?: () => void;
+	style?: CSSProperties;
 };
 
-export const Icon = ({ icon, size, onClick }: Props) => {
-	const Icon = Icons[icon ?? 'questionMark'];
+type StyleProps = Omit<Props, 'icon'> & ThemeProps;
 
-	const iconSize = size ?? 'medium';
+const fontSize = (size: SizeProps) => {
+	switch (size) {
+		case 'small':
+			return pxToRem(24);
+		case 'medium':
+			return pxToRem(32);
+		case 'large':
+			return pxToRem(40);
+		default:
+			return pxToRem(size);
+	}
+};
 
-	const fontSize = (size: SizeProps) => {
-		switch (size) {
-			case 'small':
-				return pxToRem(24);
-			case 'medium':
-				return pxToRem(32);
-			case 'large':
-				return pxToRem(40);
-		}
-	};
+const StyledIcon = styled.div`
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	cursor: ${(props: StyleProps) => (props.onClick ? 'pointer' : 'unset')};
+	transition: ${DEFAULT_TRANSIITON};
 
-	const StyledIcon = styled(Icon)`
+	${(props: StyleProps) =>
+		props.onClick && props.size === 'large'
+			? css`
+					padding: ${spacing[8]};
+					border: 1px solid ${props.theme.border.default};
+					border-radius: ${DEFAULT_BORDER_RADIUS};
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background: ${`linear-gradient(to left, ${props.theme.background.secondary}, ${props.theme.background.secondary})`};
+					transition: ${DEFAULT_TRANSIITON};
+			  `
+			: null}
+	${(props: StyleProps) =>
+		props.onClick
+			? css`
+					outline: 1px solid transparent;
+
+					&:hover {
+						opacity: 0.8;
+					}
+
+					&:focus-visible {
+						outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+						outline: ${(props: StyleProps) => DEFAULT_OUTLINE(props.theme)};
+					}
+
+					&:active {
+						outline: none;
+					}
+			  `
+			: null}
+
+	& > * {
 		width: 1em;
 		height: 1em;
-		font-size: ${fontSize(iconSize)};
-		cursor: ${(props: Props) => (props.onClick ? 'pointer' : 'unset')};
-	`;
+		font-size: ${(props: StyleProps) => fontSize(props.size ?? 'medium')};
+	}
+`;
 
-	return <StyledIcon onClick={onClick ?? null} />;
+export const Icon = ({ icon, size, onClick, style = {} }: Props) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	const Icon = icon ? Icons[icon] : undefined;
+
+	return Icon ? (
+		<StyledIcon onClick={onClick} size={size} theme={theme} style={style}>
+			<Icon onClick={onClick ?? null} theme={theme} />
+		</StyledIcon>
+	) : null;
 };

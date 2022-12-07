@@ -1,17 +1,18 @@
 import { format, utcToZonedTime } from 'date-fns-tz';
 import type { Theme } from './../styles';
-import { Request } from '../helpers';
+import { DefaultSelectEnum } from '../helpers';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 const { timeZone: localTimeZone } = Intl.DateTimeFormat().resolvedOptions();
 const timeZone =
 	process.env.NODE_ENV === 'test' ? process.env.REACT_APP_TEST_TIMEZONE : localTimeZone;
 
-export const isNetworkSelected = (network: string) => network !== Request.NETWORK && network !== ''; // TODO: refine both functions - nullish check - and create enum for "Select Network / Token"
+export const isNetworkSelected = (network: string) =>
+	network !== DefaultSelectEnum.NETWORK && network !== '';
+
+export const isTokenSelected = (token: string) => token !== DefaultSelectEnum.TOKEN && token !== '';
 
 export const isArrayType = (value: any) => typeof value === 'object' && Array.isArray(value);
-
-export const isTokenSelected = (token: string) => token !== Request.TOKEN && token !== '';
 
 type BeautifyNumbers = {
 	n: string | number;

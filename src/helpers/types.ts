@@ -7,12 +7,6 @@ export type Sources = typeof SOURCE_NETWORKS;
 export type DestinationNetworks = keyof Networks;
 export type ContractAdress = keyof typeof CONTRACT_ADDRESSES;
 
-export enum Request {
-	WALlET = 'Select Wallet',
-	TOKEN = 'Select Token',
-	NETWORK = 'Select Network'
-}
-
 export type ApiAuthType = { access: string; is_kyced: boolean; refresh: string };
 
 export type Price = { symbol: string; price: string };

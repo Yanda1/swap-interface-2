@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
-import { ReactComponent as ArrowFullDark } from '../../assets/arrow-full-dark.svg';
-import { ReactComponent as ArrowFullLight } from '../../assets/arrow-full-light.svg';
 import {
 	DEFAULT_BORDER_RADIUS,
 	DEFAULT_TRANSIITON,
@@ -16,6 +14,7 @@ import type { Theme } from '../../styles';
 import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
 import type { SelectProps } from '../../helpers';
 import { useClickOutside } from '../../hooks';
+import { Icon } from '../../components';
 
 type StyleProps = {
 	theme: Theme;
@@ -163,15 +162,11 @@ export const Select = ({ data, checkedValue }: Props) => {
 						<Label>{item.name}</Label>
 					</SelectedItem>
 				))}
-				{lightTheme ? (
-					<ArrowFullDark
-						style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: DEFAULT_TRANSIITON }}
-					/>
-				) : (
-					<ArrowFullLight
-						style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: DEFAULT_TRANSIITON }}
-					/>
-				)}
+				<Icon
+					size={20}
+					icon={lightTheme ? 'arrowFullDark' : 'arrowFullLight'}
+					style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: DEFAULT_TRANSIITON }}
+				/>
 			</SelectButton>
 			{/* @ts-ignore */}
 			<List theme={theme} open={isOpen}>

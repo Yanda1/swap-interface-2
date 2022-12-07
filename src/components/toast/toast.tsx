@@ -3,7 +3,8 @@ import styled, { css } from 'styled-components';
 import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { ColorType } from '../../styles';
 import { useStore } from '../../helpers';
-import { IconButton } from '../iconButton/iconButton';
+import { Icon } from '../../components';
+import type { IconType } from '../../components';
 
 const ToastContext = createContext({});
 
@@ -49,16 +50,11 @@ type Props = {
 };
 
 const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
-	const icon = type?.toUpperCase();
 	const color = type === 'info' ? 'default' : type;
 
 	return (
 		<Toaster color={color} onClick={onDismiss}>
-			<IconButton
-				// @ts-ignore
-				icon={icon}
-				iconOnly
-			/>
+			<Icon icon={type as IconType} />
 			{message}
 		</Toaster>
 	);

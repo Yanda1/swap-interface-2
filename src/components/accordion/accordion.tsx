@@ -7,9 +7,9 @@ import {
 	ContentItemText,
 	ContentItemLink,
 	Spinner,
-	Arrow
+	Icon
 } from '../../components';
-import { beautifyNumbers, useStore, WEI_TO_GLMR, formatDate } from '../../helpers';
+import { beautifyNumbers, useStore, WEI_TO_GLMR, formatDate, isLightTheme } from '../../helpers';
 import type { TransactionData } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -225,7 +225,15 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 									: ''}
 							</TitleText>
 						</TitleTab>
-						<Arrow open={item.open} />
+						<Icon
+							size={20}
+							icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+							style={{
+								transform: `rotate(${item.open ? 180 : 0}deg)`,
+								transition: DEFAULT_TRANSIITON
+							}}
+						/>
+						{/* <Arrow open={item.open} /> */}
 					</TitleWrapper>
 					<Content
 						theme={theme}

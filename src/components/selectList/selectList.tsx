@@ -1,9 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { AmountEnum, DestinationEnum, SourceEnum, useStore } from '../../helpers';
+import {
+	AmountEnum,
+	DefaultSelectEnum,
+	DestinationEnum,
+	SourceEnum,
+	useStore
+} from '../../helpers';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import { fontSize, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { IconButton, NETWORK_PARAMS, TextField, useToasts } from '../../components';
+import { Icon, NETWORK_PARAMS, TextField, useToasts } from '../../components';
+import type { IconType } from '../../components';
 import { ethers } from 'ethers';
 
 const Wrapper = styled.div(() => {
@@ -107,7 +114,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					payload: name
 				});
 			} else if (value === 'NETWORK') {
-				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
 				dispatch({
 					type: DestinationEnum.NETWORK,
 					payload: name
@@ -161,15 +168,15 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 						addToast('Something went wrong - please try again');
 					}
 				}
-				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
+				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
 			} else if (value === 'SOURCE_TOKEN') {
 				dispatch({
 					type: SourceEnum.TOKEN,
 					payload: name
 				});
-				dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-				dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
+				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
 			}
 		},
 		[destinationToken, destinationNetwork, sourceNetwork, sourceToken, value] // TODO: add destinationWallet later
@@ -212,11 +219,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 							activeBorder={valueToWatch[value as Value] === el}
 							onClick={() => handleClick(el)}
 							key={el}>
-							<IconButton
-								// @ts-ignore
-								icon={el}
-								iconOnly
-							/>
+							<Icon icon={el.toLowerCase() as IconType} size="small" />
 							<Name>{el}</Name>
 						</Item>
 					))}
