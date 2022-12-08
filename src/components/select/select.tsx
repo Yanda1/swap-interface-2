@@ -15,6 +15,7 @@ import {
 import type { Theme } from '../../styles';
 import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
 import type { SelectProps } from '../../helpers';
+import { useClickOutside } from '../../hooks';
 
 type StyleProps = {
 	theme: Theme;
@@ -28,7 +29,7 @@ const SelectWrapper = styled.div`
 	line-height: ${fontSize[20]};
 `;
 
-const SelectBox = styled.button`
+const SelectButton = styled.button`
 	all: unset;
 	border: 1px solid ${(props: StyleProps) => props.theme.border.default};
 	max-height: ${pxToRem(50)};
@@ -145,9 +146,12 @@ export const Select = ({ data, checkedValue }: Props) => {
 		}
 	};
 
+	const domNode = useClickOutside(() => setIsOpen(false));
+
 	return (
-		<SelectWrapper theme={theme} data-testid="select">
-			<SelectBox theme={theme} onClick={() => setIsOpen(!isOpen)}>
+		// @ts-ignore
+		<SelectWrapper theme={theme} data-testid="select" ref={domNode}>
+			<SelectButton theme={theme} onClick={() => setIsOpen(!isOpen)}>
 				{items.map((item: SelectProps, i: number) => (
 					<SelectedItem checked={item.checked} key={i}>
 						<RadioButton
@@ -168,7 +172,7 @@ export const Select = ({ data, checkedValue }: Props) => {
 						style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: DEFAULT_TRANSIITON }}
 					/>
 				)}
-			</SelectBox>
+			</SelectButton>
 			{/* @ts-ignore */}
 			<List theme={theme} open={isOpen}>
 				{items.map((item: SelectProps, i: number) => (

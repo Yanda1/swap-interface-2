@@ -1,13 +1,16 @@
 import styled, { css } from 'styled-components';
 import { useStore } from '../../helpers';
-import { ColorType, pxToRem } from '../../styles';
+import { pxToRem } from '../../styles';
+import type { ColorType } from '../../styles';
 
-type SpinnerProps = {
-	size?: 'small' | 'medium';
+export type SpinnerSizeProps = 'small' | 'medium';
+
+type Props = {
+	size?: SpinnerSizeProps;
 	color?: string;
 };
 
-export const Spinner = styled.div(({ size = 'small', color = 'default' }: SpinnerProps) => {
+export const Spinner = styled.div(({ size = 'small', color = 'default' }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -26,11 +29,6 @@ export const Spinner = styled.div(({ size = 'small', color = 'default' }: Spinne
 		-webkit-animation: spin 1s ease-in-out infinite;
 
 		@keyframes spin {
-			to {
-				-webkit-transform: rotate(360deg);
-			}
-		}
-		@-webkit-keyframes spin {
 			to {
 				-webkit-transform: rotate(360deg);
 			}

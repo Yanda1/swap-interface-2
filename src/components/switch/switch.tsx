@@ -53,5 +53,5 @@ const StyledSwitch = styled.input(() => {
 });
 
 export const Switch = () => {
-	return <StyledSwitch type="checkbox" />;
+	return <StyledSwitch type="checkbox" data-testid="switch" />;
 };

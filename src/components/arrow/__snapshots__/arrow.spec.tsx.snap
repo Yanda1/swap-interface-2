@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Arrow should render a default button 1`] = `
+.c0 {
+  all: unset;
+  cursor: pointer;
+  padding-left: 0.875rem;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+.c0:focus-visible {
+  outline-offset: 1px;
+  outline: 1px solid #FFF;
+}
+
+.c0:active {
+  outline: none;
+}
+
+.c1 {
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  -webkit-transform: translate(-50%,-50%) rotate(180deg);
+  -ms-transform: translate(-50%,-50%) rotate(180deg);
+  transform: translate(-50%,-50%) rotate(180deg);
+}
+
+<button
+  class="c0"
+  data-testid="arrow"
+>
+  <img
+    class="c1"
+    open=""
+    src="arrow-light.png"
+  />
+</button>
+`;

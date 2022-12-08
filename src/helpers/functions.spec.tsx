@@ -1,12 +1,15 @@
-import { lightTheme, darkTheme } from '../styles';
+import { darkTheme, lightTheme } from '../styles';
 import {
-	isLightTheme,
 	beautifyNumbers,
-	isNetworkSelected,
-	isTokenSelected,
+	formatDate,
 	hexToRgbA,
 	isArrayType,
-	isSwapRejected
+	isLightTheme,
+	isNetworkSelected,
+	isSwapConfirmed,
+	isSwapFailed,
+	isSwapRejected,
+	isTokenSelected
 } from '../helpers';
 
 describe('Helpers should return the correct values', () => {
@@ -51,5 +54,22 @@ describe('Helpers should return the correct values', () => {
 		expect(isSwapRejected('Exception', 'user confirmed transaction')).toBe(false);
 		expect(isSwapRejected('Success', 'user rejected transaction')).toBe(false);
 		expect(isSwapRejected('Success', 'user confirmed transaction')).toBe(false);
+	});
+
+	it('isSwapFailed() function should return the correct value', () => {
+		expect(isSwapFailed('Fail')).toBe(true);
+		expect(isSwapFailed('Exception')).toBe(false);
+		expect(isSwapFailed('Success')).toBe(false);
+	});
+
+	it('isSwapConfirmed() function should return the correct value', () => {
+		expect(isSwapConfirmed('Success')).toBe(true);
+		expect(isSwapConfirmed('Exception')).toBe(false);
+		expect(isSwapConfirmed('Fail')).toBe(false);
+	});
+
+	it('formatDate() function should return the correct value', () => {
+		expect(formatDate(1669895567)).toBe('01/12/2022 12:52:47');
+		expect(formatDate(undefined)).toBe('n/a');
 	});
 });

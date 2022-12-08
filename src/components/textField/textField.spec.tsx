@@ -1,51 +1,47 @@
-import { TextField } from './textField';
+import { AlignProps, SizeProps, TextField, TypeProps } from './textField';
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../../helpers';
 
 describe('TextField', () => {
-	it('should match snapshot', () => {
-		const {getByPlaceholderText} = render(
+	it('should render without errors', () => {
+		const { getByPlaceholderText } = render(
 			<AuthProvider>
 				<TextField
-					disabled
-					value="Test Value"
+					value="Test value"
 					placeholder="placeholder"
-					type="number"
-					description={'Text Field Component'}
+					onChange={() => console.log('value changed')}
 				/>
 			</AuthProvider>
 		);
-		const textField = getByPlaceholderText(/placeholder/i);
-		expect(textField).toMatchSnapshot();
+
+		expect(getByPlaceholderText(/placeholder/i)).toBeTruthy();
 	});
 
-	it('should match style', () => {
-		const {getByPlaceholderText} = render(
-			<AuthProvider>
-				<TextField
-					disabled
-					value="Test Value"
-					placeholder="placeholder"
-					type="number"
-					description={'Text Field Component'}
-				/>
-			</AuthProvider>
-		);
-		const textField = getByPlaceholderText(/placeholder/i);
-		expect(textField).toHaveStyle(
-			'border-radius: 0.375rem; font-size: 1rem; line-height: 1.25rem; padding: 1.125rem 0.625rem;'
-		);
-	});
+	it.each<[boolean, TypeProps, SizeProps, AlignProps, boolean, string]>([
+		[false, 'text', 'small', 'left', false, 'description'],
+		[true, 'number', 'regular', 'right', true, 'description'],
+		[true, 'search', 'small', 'center', false, ''],
+		[false, 'number', 'small', 'left', true, 'description']
+	])(
+		'should match snapshot for value disabled: %s, type: %s, size: %s, align: %s, error: %s and description: %s',
+		(disabled, type, size, align, error, description) => {
+			const { getByPlaceholderText } = render(
+				<AuthProvider>
+					<TextField
+						disabled={disabled}
+						value="Test value"
+						placeholder="placeholder"
+						align={align}
+						description={description}
+						type={type}
+						size={size}
+						error={error}
+						onChange={() => console.log('value changed')}
+					/>
+				</AuthProvider>
+			);
 
-	it('should set props correctly', () => {
-		const {getByPlaceholderText} = render(
-			<AuthProvider>
-				<TextField disabled value="value" placeholder="placeholder" type="number" />
-			</AuthProvider>
-		);
-		const textField = getByPlaceholderText(/placeholder/i) as HTMLInputElement;
-		expect(textField.placeholder).toBe('placeholder');
-		expect(textField.disabled).toBe(true);
-		expect(textField.type).toBe('number');
-	});
+			expect(getByPlaceholderText(/placeholder/i)).toMatchSnapshot();
+		}
+	);
 });

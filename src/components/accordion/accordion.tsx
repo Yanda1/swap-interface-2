@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
 import {
 	ContentItem,
@@ -10,7 +9,7 @@ import {
 	Spinner,
 	Arrow
 } from '../../components';
-import { beautifyNumbers, useBreakpoint, useStore, WEI_TO_GLMR } from '../../helpers';
+import { beautifyNumbers, useStore, WEI_TO_GLMR, formatDate } from '../../helpers';
 import type { TransactionData } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -24,6 +23,7 @@ import {
 } from '../../styles';
 import type { Theme } from '../../styles';
 import { Notifications } from '../../pages';
+import { useMedia } from '../../hooks';
 
 type StyleProps = {
 	theme: Theme;
@@ -157,7 +157,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const { isBreakpointWidth: mobile } = useBreakpoint('s');
+	const { mobileWidth } = useMedia('s');
 
 	useEffect(() => {
 		const accordion: any[] = [];
@@ -185,9 +185,6 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 			handleClick(i);
 		}
 	};
-
-	const formatDate = (ts: number | undefined): string =>
-		ts ? format(new Date(ts * 1000), 'dd/MM/yyyy hh:mm') : 'n/a'; // TODO: helper?
 
 	return accordionItems?.length > 0 ? (
 		<Wrapper theme={theme} data-testid="accordion">
@@ -238,7 +235,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 						<ContentText open={item.open}>
 							<EmptyColumn />
 							<ContentColumn>
-								{mobile && (
+								{mobileWidth && (
 									<MobileHeaderInfo color={theme.font.select}>
 										<MobileHeaderSection>
 											Deposit Time:{' '}

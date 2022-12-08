@@ -1,15 +1,17 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
+import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
-import type { ContractAdress } from '../../helpers';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
+	ContractAdress,
+	isSwapRejected,
 	isTokenSelected,
 	makeId,
 	NETWORK_TO_ID,
@@ -31,9 +33,16 @@ type Props = {
 };
 
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
+	if (localStorage.getItem('swaps')) {
+		localStorage.removeItem('swaps');
+	}
 	const { account } = useEthers();
 	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
-	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('swaps', []);
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('localSwaps', []);
+	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
+		'isDepositConfirmed',
+		true
+	);
 
 	const {
 		state: {
@@ -54,18 +63,28 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const currentBlockNumber = useBlockNumber();
 
 	const isDisabled =
+		!isDepositConfirmed ||
 		!validInputs ||
 		!isTokenSelected(sourceToken) ||
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
 		+destinationAmount < 0;
-	const message =
-		+minAmount >= +maxAmount
-			? 'Insufficent funds'
-			: +minAmount < +amount
-			? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-			: `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`;
-
+	const message = !isDisabled
+		? 'Swap'
+		: !isTokenSelected(destinationToken)
+		? 'Please select Network and Token'
+		: +amount < +minAmount
+		? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+		: +amount > +maxAmount
+		? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+		: // @ts-ignore
+		DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'hasTag'
+		  ] && !destinationMemo
+		? 'Please insert a valid Destination Memo'
+		: !destinationAddress
+		? 'Please insert a valid Destination Address'
+		: 'Wait for deposit';
 	const sourceTokenData =
 		// @ts-ignore
 		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
@@ -148,12 +167,11 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				};
 				setSwapsStorage([...swapsStorage, swap]);
 				setSwapProductId('');
+				setIsDepositConfirmed(!isDepositConfirmed);
 			}
 		} else if (
-			(transactionSwapState.status === 'Exception' &&
-				transactionSwapState.errorMessage === 'user rejected transaction') ||
-			(transactionContractSwapState.status === 'Exception' &&
-				transactionContractSwapState.errorMessage === 'user rejected transaction')
+			isSwapRejected(transactionSwapState.status, transactionSwapState.errorMessage) ||
+			isSwapRejected(transactionContractSwapState.status, transactionContractSwapState.errorMessage)
 		) {
 			setSwapProductId('');
 
@@ -166,7 +184,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	return (
 		<ButtonWrapper>
 			<Button disabled={isDisabled} color="default" onClick={onClick}>
-				{isDisabled ? message : 'Swap'}
+				{message}
 			</Button>
 		</ButtonWrapper>
 	);

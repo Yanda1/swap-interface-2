@@ -35,7 +35,6 @@ import {
 	makeBinanceKycCall,
 	ETHEREUM_URL,
 	ThemeEnum,
-	useBreakpoint,
 	useStore,
 	VerificationEnum,
 	button,
@@ -53,7 +52,7 @@ import {
 import type { ApiAuthType } from '../../helpers';
 import { Button, useToasts, Wallet, IconButton, Arrow } from '../../components';
 import type { IconType } from '../../components';
-import { useAxios, useClickOutside, useLocalStorage } from '../../hooks';
+import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
 
 type Props = {
@@ -171,7 +170,7 @@ export const NETWORK_PARAMS = {
 };
 
 export const Header = () => {
-	const { isBreakpointWidth: isMobile } = useBreakpoint('s');
+	const { mobileWidth: isMobile } = useMedia('s');
 	const {
 		state: {
 			buttonStatus,
@@ -331,12 +330,7 @@ export const Header = () => {
 		const onMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
 			navigator.userAgent
 		);
-		console.log(
-			'account, metamaskMissing, onMobileDevice',
-			account,
-			metamaskMissing,
-			onMobileDevice
-		);
+
 		try {
 			// @ts-ignore
 			const provider = new ethers.providers.Web3Provider(window.ethereum);

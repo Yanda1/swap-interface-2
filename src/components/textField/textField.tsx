@@ -13,9 +13,9 @@ import search from '../../assets/search.png';
 import type { ThemeProps } from '../../styles';
 import { useStore } from '../../helpers';
 
-type AlignProps = 'left' | 'right' | 'center';
-type TypeProps = 'text' | 'number' | 'search';
-type SizeProps = 'regular' | 'small';
+export type AlignProps = 'left' | 'right' | 'center';
+export type TypeProps = 'text' | 'number' | 'search';
+export type SizeProps = 'regular' | 'small';
 
 type StyledProps = {
 	align: AlignProps;
@@ -28,7 +28,7 @@ const TextFieldWrapper = styled.div`
 	position: relative;
 `;
 
-const StyledTextField = styled.input(({ align, error, type, size }: StyledProps) => {
+const Input = styled.input(({ align, error, type, size }: StyledProps) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -106,7 +106,6 @@ const Error = styled.div`
 `;
 
 type Props = {
-	// TODO: improve props ... size only on type search etc.
 	placeholder?: string;
 	disabled?: boolean;
 	type?: TypeProps;
@@ -138,7 +137,7 @@ export const TextField = ({
 	const textField = (
 		<>
 			{/* @ts-ignore */}
-			<StyledTextField
+			<Input
 				placeholder={placeholder}
 				disabled={disabled}
 				onChange={onChange}

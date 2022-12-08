@@ -1,8 +1,10 @@
-import type { Breakpoint, BreakpointOrNumber, Theme } from './../styles';
-import { breakpoint } from './../styles';
-import { useLayoutEffect, useState } from 'react';
+import type { Theme } from './../styles';
+import { format, utcToZonedTime } from 'date-fns-tz';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
+const { timeZone: localTimeZone } = Intl.DateTimeFormat().resolvedOptions();
+const timeZone =
+	process.env.NODE_ENV === 'test' ? process.env.REACT_APP_TEST_TIMEZONE : localTimeZone;
 
 export const isNetworkSelected = (network: string) =>
 	network !== 'Select Network' && network !== ''; // TODO: refine both functions - nullish check - and create enum for "Select Network / Token"
@@ -31,31 +33,6 @@ export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
 	return trimZeros(res);
 };
 
-export const useWindowSize = () => {
-	const [size, setSize] = useState([0, 0]);
-	useLayoutEffect(() => {
-		const updateSize = () => {
-			setSize([window.innerWidth, window.innerHeight]);
-		};
-		window.addEventListener('resize', updateSize);
-		updateSize();
-
-		return () => window.removeEventListener('resize', updateSize);
-	}, []);
-
-	return size;
-};
-
-export const useBreakpoint = (size: BreakpointOrNumber) => {
-	const [windowWidth, windowHeight] = useWindowSize();
-	const isString = typeof size === typeof 'string';
-
-	return {
-		isBreakpointWidth: windowWidth < (isString ? breakpoint[size as Breakpoint] : size),
-		isBreakpointHeight: windowHeight < (isString ? breakpoint[size as Breakpoint] : size)
-	};
-};
-
 export const hexToRgbA = (hex: string, alpha = '1'): string => {
 	const [r, g, b] = hex.match(/\w\w/g)!.map((x) => parseInt(x, 16));
 
@@ -64,3 +41,12 @@ export const hexToRgbA = (hex: string, alpha = '1'): string => {
 
 export const isSwapRejected = (status: string, errorMessage: any) =>
 	status === 'Exception' && errorMessage === 'user rejected transaction';
+
+export const isSwapFailed = (status: string) => status === 'Fail';
+
+export const isSwapConfirmed = (status: string) => status === 'Success';
+
+export const formatDate = (ts: number | undefined): string =>
+	ts
+		? format(utcToZonedTime(new Date(ts * 1000), timeZone as string), 'dd/MM/yyyy HH:mm:ss')
+		: 'n/a';

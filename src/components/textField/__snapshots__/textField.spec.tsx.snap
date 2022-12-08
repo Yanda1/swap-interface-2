@@ -1,12 +1,43 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TextField should match snapshot 1`] = `
+exports[`TextField should match snapshot for value disabled: false, type: number, size: small, align: left, error: true and description: description 1`] = `
 <input
-  class="sc-gswNZR csvlN"
+  class="sc-gswNZR eIciHh"
+  min="0"
+  placeholder="placeholder"
+  type="number"
+  value="Test value"
+/>
+`;
+
+exports[`TextField should match snapshot for value disabled: false, type: text, size: small, align: left, error: false and description: description 1`] = `
+<input
+  class="sc-gswNZR gQJYlY"
+  min="0"
+  placeholder="placeholder"
+  type="text"
+  value="Test value"
+/>
+`;
+
+exports[`TextField should match snapshot for value disabled: true, type: number, size: regular, align: right, error: true and description: description 1`] = `
+<input
+  class="sc-gswNZR jaFHyf"
   disabled=""
   min="0"
   placeholder="placeholder"
   type="number"
-  value="Test Value"
+  value="Test value"
+/>
+`;
+
+exports[`TextField should match snapshot for value disabled: true, type: search, size: small, align: center, error: false and description:  1`] = `
+<input
+  class="sc-gswNZR buhSNw"
+  disabled=""
+  min="0"
+  placeholder="placeholder"
+  type="search"
+  value="Test value"
 />
 `;

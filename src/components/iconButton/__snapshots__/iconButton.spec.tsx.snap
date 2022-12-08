@@ -4,13 +4,13 @@ exports[`IconButton should render a IconButton with icon only 1`] = `
 .c0 {
   height: 1.5625rem;
   width: 1.5625rem;
-  margin-right: 0.625rem;
   cursor: pointer;
 }
 
 <img
   alt="ETH"
   class="c0"
+  data-testid="icon-button"
   src="eth.png"
 />
 `;
@@ -18,7 +18,7 @@ exports[`IconButton should render a IconButton with icon only 1`] = `
 exports[`IconButton should render a disabled IconButton with img and Text 1`] = `
 .c0 {
   padding: 0.5rem;
-  border: 1px solid #8C8D8F;
+  border: 1px solid #404040;
   border-radius: 0.375rem;
   display: -webkit-box;
   display: -webkit-flex;
@@ -32,9 +32,10 @@ exports[`IconButton should render a disabled IconButton with img and Text 1`] = 
   -webkit-justify-content: center;
   -ms-flex-pack: center;
   justify-content: center;
-  background: linear-gradient(to left,#172631,#172631);
+  background: linear-gradient(to left,#1C2125,#1C2125);
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
+  outline: 1px solid transparent;
 }
 
 .c0:hover {
@@ -46,19 +47,19 @@ exports[`IconButton should render a disabled IconButton with img and Text 1`] = 
 }
 
 .c0:focus-visible {
-  outline-offset: 2px;
-  outline: 1px solid #8C8D8F;
+  outline-offset: 1px;
+  outline: 1px solid #FFF;
 }
 
 .c1 {
   height: 2.5rem;
   width: 2.5rem;
-  margin-right: 0rem;
   cursor: pointer;
 }
 
 <button
   class="c0"
+  data-testid="icon-button"
   disabled=""
 >
   <img

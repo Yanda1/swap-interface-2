@@ -9,13 +9,15 @@ exports[`Select should match snapshot 1`] = `
 }
 
 .c1 {
-  border: 1px solid #494949;
-  max-height: 50px;
+  all: unset;
+  border: 1px solid #404040;
+  max-height: 3.125rem;
+  box-sizing: border-box;
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  min-width: 9.6875rem;
+  min-width: 10.9375rem;
   cursor: pointer;
   gap: 0.75rem;
   border-radius: 0.375rem;
@@ -34,8 +36,12 @@ exports[`Select should match snapshot 1`] = `
 
 .c1:hover,
 .c1:active {
-  border-color: #FFF;
-  outline: none;
+  border-color: #B4B4B4;
+}
+
+.c1:focus-visible {
+  outline-offset: 1px;
+  outline: 1px solid #FFF;
 }
 
 .c2 {
@@ -67,12 +73,15 @@ exports[`Select should match snapshot 1`] = `
 
 .c6 {
   position: absolute;
+  z-index: 100;
   top: 2.625rem;
+  right: 0;
   border: 0px solid #494949;
-  min-width: 9.6875rem;
+  min-width: calc(10.9375rem - 0.125rem);
   border-radius: 0.375rem;
   padding: 0;
-  z-index: 100;
+  text-align: right;
+  width: calc(100% - 0.125rem);
   background: #161B20;
   list-style: none;
   overflow: hidden;
@@ -88,19 +97,15 @@ exports[`Select should match snapshot 1`] = `
   transition: all .2s ease-in-out;
 }
 
-.c7:hover {
+.c7:hover,
+.c7:focus {
   background: #494949;
+  outline: none;
 }
 
 @media (max-width:760px) {
   .c1 {
-    width: calc(100% - 42px);
-  }
-}
-
-@media (max-width:760px) {
-  .c6 {
-    width: calc(100% - 2px);
+    width: 100%;
   }
 }
 
@@ -108,7 +113,7 @@ exports[`Select should match snapshot 1`] = `
   class="c0"
   data-testid="select"
 >
-  <div
+  <button
     class="c1"
   >
     <div
@@ -132,12 +137,12 @@ exports[`Select should match snapshot 1`] = `
       <input
         class="c3"
         type="checkbox"
-        value="ETHGLMR"
+        value="Symbol"
       />
       <p
         class="c4"
       >
-        ETHGLMR
+        Symbol
       </p>
     </div>
     <div
@@ -146,12 +151,12 @@ exports[`Select should match snapshot 1`] = `
       <input
         class="c3"
         type="checkbox"
-        value="BTCETH"
+        value="Date"
       />
       <p
         class="c4"
       >
-        BTCETH
+        Date
       </p>
     </div>
     <div
@@ -160,12 +165,26 @@ exports[`Select should match snapshot 1`] = `
       <input
         class="c3"
         type="checkbox"
-        value="ETHKDJKF"
+        value="Base Asset"
       />
       <p
         class="c4"
       >
-        ETHKDJKF
+        Base Asset
+      </p>
+    </div>
+    <div
+      class="c5"
+    >
+      <input
+        class="c3"
+        type="checkbox"
+        value="Quote Asset"
+      />
+      <p
+        class="c4"
+      >
+        Quote Asset
       </p>
     </div>
     <svg
@@ -173,29 +192,39 @@ exports[`Select should match snapshot 1`] = `
     >
       arrow-full-light.svg
     </svg>
-  </div>
+  </button>
   <ul
     class="c6"
   >
     <li
       class="c7"
+      tabindex="1"
     >
       Sort by
     </li>
     <li
       class="c7"
+      tabindex="1"
     >
-      ETHGLMR
+      Symbol
     </li>
     <li
       class="c7"
+      tabindex="1"
     >
-      BTCETH
+      Date
     </li>
     <li
       class="c7"
+      tabindex="1"
     >
-      ETHKDJKF
+      Base Asset
+    </li>
+    <li
+      class="c7"
+      tabindex="1"
+    >
+      Quote Asset
     </li>
   </ul>
 </div>
