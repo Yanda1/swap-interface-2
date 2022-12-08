@@ -165,7 +165,7 @@ export const SwapForm = () => {
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
-	const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
+	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useLocation } from 'react-router-dom';
 import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
@@ -196,7 +195,7 @@ export const Header = () => {
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
 	// const navigate = useNavigate();
-	const { pathname } = useLocation();
+	// const { pathname } = useLocation();
 
 	const noKycStatusMessage = 'kyc verify not exist';
 
