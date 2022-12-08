@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useLocation } from 'react-router-dom';
 import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
 import { ethers } from 'ethers';
 import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
