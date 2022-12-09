@@ -225,15 +225,6 @@ export const SwapForm = () => {
 	const handleSwap = (): void => {
 		// @ts-ignore
 		swapButtonRef.current.onSubmit();
-		// dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
-		// dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
-		// dispatch({ type: DestinationEnum.ADDRESS, payload: '' });
-		// dispatch({ type: DestinationEnum.WALLET, payload: DefaultSelectEnum.WALLET });
-		// dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
-		// dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
-		// dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
-		// dispatch({ type: DestinationEnum.MEMO, payload: '' });
-		// dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
 
 	return (
