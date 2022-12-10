@@ -7,9 +7,9 @@ import {
 	ContentItemText,
 	ContentItemLink,
 	Spinner,
-	Arrow
+	Icon
 } from '../../components';
-import { beautifyNumbers, useStore, WEI_TO_GLMR, formatDate } from '../../helpers';
+import { beautifyNumbers, useStore, WEI_TO_GLMR, formatDate, isLightTheme } from '../../helpers';
 import type { TransactionData } from '../../helpers';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -89,6 +89,12 @@ const MobileHeaderInfo = styled.div`
 const MobileHeaderSection = styled.div`
 	display: flex;
 	gap: ${spacing[8]};
+`;
+
+const AccordionItem = styled.div`
+	&:not(:last-child) {
+		border-bottom: 1px solid ${(props: StyleProps) => props.theme.border.default};
+	}
 `;
 
 const Content = styled.div`
@@ -189,11 +195,10 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 	return accordionItems?.length > 0 ? (
 		<Wrapper theme={theme} data-testid="accordion">
 			{accordionItems.map((item: DataProps, index: number) => (
-				<>
+				<AccordionItem key={index} theme={theme}>
 					<TitleWrapper
 						theme={theme}
 						onClick={() => handleClick(index)}
-						key={index}
 						open={item.open}
 						// @ts-ignore
 						tabIndex="1"
@@ -225,7 +230,14 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 									: ''}
 							</TitleText>
 						</TitleTab>
-						<Arrow open={item.open} />
+						<Icon
+							size={20}
+							icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+							style={{
+								transform: `rotate(${item.open ? 180 : 0}deg)`,
+								transition: DEFAULT_TRANSIITON
+							}}
+						/>
 					</TitleWrapper>
 					<Content
 						theme={theme}
@@ -327,7 +339,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 							</ContentColumn>
 						</ContentText>
 					</Content>
-				</>
+				</AccordionItem>
 			))}
 		</Wrapper>
 	) : (

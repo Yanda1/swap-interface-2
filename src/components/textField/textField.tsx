@@ -9,9 +9,9 @@ import {
 	DEFAULT_TRANSIITON,
 	DEFAULT_OUTLINE_OFFSET
 } from '../../styles';
-import search from '../../assets/search.png';
 import type { ThemeProps } from '../../styles';
 import { useStore } from '../../helpers';
+import { Icon } from '../../components';
 
 export type AlignProps = 'left' | 'right' | 'center';
 export type TypeProps = 'text' | 'number' | 'search';
@@ -82,14 +82,6 @@ const Input = styled.input(({ align, error, type, size }: StyledProps) => {
 	`;
 });
 
-const Icon = styled.img`
-	position: absolute;
-	top: 50%;
-	left: ${pxToRem(20)};
-	transform: translate(-50%, -50%);
-	width: ${pxToRem(18)};
-`;
-
 const Message = styled.div`
 	display: flex;
 	justify-content: space-between;
@@ -150,7 +142,18 @@ export const TextField = ({
 				onBlur={() => setIsActive(true)}
 				onFocus={() => setIsActive(false)}
 			/>
-			{isTypeSearch && <Icon src={search} alt="search-lens" />}
+			{isTypeSearch && (
+				<Icon
+					icon="search"
+					size={20}
+					style={{
+						position: 'absolute',
+						transform: ' translate(-50%, -50%)',
+						top: '50%',
+						left: 20
+					}}
+				/>
+			)}
 			{(error || description) && type === 'text' && (
 				<Message>
 					{description && <Description theme={theme}>{description}</Description>}

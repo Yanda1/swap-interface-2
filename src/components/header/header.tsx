@@ -3,26 +3,13 @@ import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
 import { ethers } from 'ethers';
-import { ReactComponent as LogoDark } from '../../assets/logo-dark.svg';
-import { ReactComponent as LogoLight } from '../../assets/logo-light.svg';
-import { ReactComponent as CheckLight } from '../../assets/check-light.svg';
-import { ReactComponent as CheckDark } from '../../assets/check-dark.svg';
-import { ReactComponent as MenuDark } from '../../assets/menu-dark.svg';
-import { ReactComponent as MenuLight } from '../../assets/menu-light.svg';
-import { ReactComponent as LogoMobile } from '../../assets/logo-mobile.svg';
-import { ReactComponent as Sun } from '../../assets/sun.svg';
-import { ReactComponent as Moon } from '../../assets/moon.svg';
-import MOON from '../../assets/glmr.png';
-import ETH from '../../assets/eth.png';
-import type { Theme, ColorType } from '../../styles';
+import { Theme, ColorType, DEFAULT_TRANSIITON } from '../../styles';
 import {
 	mediaQuery,
 	pxToRem,
 	spacing,
 	DEFAULT_BORDER_RADIUS,
-	theme as defaultTheme,
-	DEFAULT_OUTLINE,
-	DEFAULT_OUTLINE_OFFSET
+	theme as defaultTheme
 } from '../../styles';
 import {
 	ButtonEnum,
@@ -47,10 +34,11 @@ import {
 	hexToRgbA,
 	isNetworkSelected,
 	SourceEnum,
-	MOONBEAM_URL
+	MOONBEAM_URL,
+	DefaultSelectEnum
 } from '../../helpers';
 import type { ApiAuthType } from '../../helpers';
-import { Button, useToasts, Wallet, IconButton, Arrow } from '../../components';
+import { Button, useToasts, Wallet, Icon } from '../../components';
 import type { IconType } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
@@ -71,26 +59,6 @@ const StyledHeader = styled.header`
 		gap: ${spacing[16]};
 		justify-content: space-between;
 		margin-bottom: ${pxToRem(39.5)};
-	}
-`;
-
-const ThemeButton = styled.button`
-	cursor: pointer;
-	background: none;
-	border: none;
-	outline: 1px solid transparent;
-
-	&:hover {
-		opacity: 0.8;
-	}
-
-	&:focus-visible {
-		outline-offset: ${DEFAULT_OUTLINE_OFFSET};
-		outline: ${(props: Props) => DEFAULT_OUTLINE(props.theme)};
-	}
-
-	&:active {
-		outline: none;
 	}
 `;
 
@@ -132,12 +100,17 @@ const Networks = styled(Menu)`
 
 	& li {
 		display: flex;
+		align-items: center;
 		gap: ${spacing[10]};
 	}
 `;
 
-const NetworkWrapper = styled.div`
+const NetworkWrapper = styled.button`
+	all: unset;
 	display: flex;
+	gap: ${spacing[8]};
+	align-items: center;
+	cursor: pointer;
 `;
 
 export const NETWORK_PARAMS = {
@@ -288,8 +261,8 @@ export const Header = () => {
 				addToast('Something went wrong - please try again');
 			}
 		}
-		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
+		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
 	};
 
 	const checkStatus = async () => {
@@ -401,8 +374,8 @@ export const Header = () => {
 	}, [binanceToken, binanceScriptLoaded]);
 
 	useEffect(() => {
-		dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-		dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
+		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
+		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
 	}, [sourceNetwork]);
 
 	useEffect(() => {
@@ -469,13 +442,11 @@ export const Header = () => {
 
 	return (
 		<StyledHeader theme={theme}>
-			{isMobile ? (
-				<LogoMobile />
-			) : isLight ? (
-				<LogoLight style={{ marginRight: 'auto' }} />
-			) : (
-				<LogoDark style={{ marginRight: 'auto' }} />
-			)}
+			<Icon
+				icon={isMobile ? 'logoMobile' : isLight ? 'logoLight' : 'logoDark'}
+				style={{ marginRight: 'auto' }}
+				size={isMobile ? 'medium' : 112}
+			/>
 			{!isMobile && (
 				<Button
 					variant="pure"
@@ -497,22 +468,26 @@ export const Header = () => {
 				</Button>
 			)}
 			{isMobile && isNetworkSelected(sourceNetwork) && (
-				<NetworkWrapper>
-					<IconButton icon={sourceNetwork as IconType} iconOnly />
-					<Arrow open={showNetworksList} onClick={() => setShowNetworksList(!showNetworksList)} />
+				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon
+						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+						size={16}
+						style={{
+							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
+							transition: DEFAULT_TRANSIITON
+						}}
+					/>
 				</NetworkWrapper>
 			)}
-			{!isMobile && (
-				<ThemeButton theme={theme} onClick={changeTheme} aria-label="change theme">
-					{isLight ? <Moon /> : <Sun />}
-				</ThemeButton>
+			{!isMobile && <Icon icon={isLight ? 'moon' : 'sun'} onClick={changeTheme} size="small" />}
+			{isMobile && (
+				<Icon
+					icon={isLight ? 'menuLight' : 'menuDark'}
+					onClick={() => setShowMenu(!showMenu)}
+					size="small"
+				/>
 			)}
-			{isMobile &&
-				(isLight ? (
-					<MenuLight onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }} />
-				) : (
-					<MenuDark onClick={() => setShowMenu(!showMenu)} style={{ cursor: 'pointer' }} />
-				))}
 			{showMenu && (
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
@@ -538,13 +513,19 @@ export const Header = () => {
 					<Networks theme={theme} ref={domNode}>
 						{Object.values(CHAINS).map((chain) => (
 							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
-								<img src={chain.name === 'ETH' ? ETH : MOON} style={{ height: 18 }} />
+								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
 								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
-								{sourceNetwork !== chain.name ? null : isLightTheme(theme) ? (
-									<CheckLight style={{ marginLeft: 'auto', marginTop: 4 }} />
-								) : (
-									<CheckDark style={{ marginLeft: 'auto', marginTop: 4 }} />
-								)}
+								<Icon
+									icon={
+										sourceNetwork !== chain.name
+											? undefined
+											: isLightTheme(theme)
+											? 'checkLight'
+											: 'checkDark'
+									}
+									size={16}
+									style={{ marginLeft: 'auto' }}
+								/>
 							</li>
 						))}
 					</Networks>

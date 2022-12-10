@@ -68,7 +68,13 @@ export enum PairEnum {
 	PAIR = 'PAIR'
 }
 
-type SourceNetworks = 'ETH' | 'GLMR' | 'Select Network';
+export enum DefaultSelectEnum {
+	WALlET = 'Select Wallet',
+	TOKEN = 'Select Token',
+	NETWORK = 'Select Network'
+}
+
+type SourceNetworks = 'ETH' | 'GLMR' | DefaultSelectEnum.NETWORK;
 
 type VerificationAction = {
 	type: VerificationEnum;
@@ -135,7 +141,7 @@ type State = {
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
 	theme: Theme;
-	sourceNetwork: SourceNetworks;
+	sourceNetwork: string;
 	sourceToken: string;
 	destinationWallet: string;
 	destinationNetwork: string;
@@ -175,11 +181,11 @@ const initialState: State = {
 	kycStatus: KycStatusEnum.PROCESS,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
-	destinationWallet: 'Select Wallet',
-	sourceNetwork: 'Select Network',
-	sourceToken: 'Select Token',
-	destinationNetwork: 'Select Network',
-	destinationToken: 'Select Token',
+	destinationWallet: DefaultSelectEnum.WALlET,
+	sourceNetwork: DefaultSelectEnum.NETWORK as SourceNetworks,
+	sourceToken: DefaultSelectEnum.TOKEN,
+	destinationNetwork: DefaultSelectEnum.NETWORK,
+	destinationToken: DefaultSelectEnum.TOKEN,
 	destinationAddress: '',
 	destinationAmount: '',
 	destinationMemo: '',

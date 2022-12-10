@@ -7,6 +7,7 @@ import { SelectList, Portal, Button } from '../../components';
 import { useMedia } from '../../hooks';
 import {
 	CHAINS,
+	DefaultSelectEnum,
 	DestinationEnum,
 	isNetworkSelected,
 	isTokenSelected,
@@ -127,7 +128,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		setShowsNetworkList(true);
 		dispatch({
 			type: isSource ? SourceEnum.TOKEN : DestinationEnum.TOKEN,
-			payload: isSource ? 'Select Token' : 'Select Token'
+			payload: DefaultSelectEnum.TOKEN
 		});
 	};
 

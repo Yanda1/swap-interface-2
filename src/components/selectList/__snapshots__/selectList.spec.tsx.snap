@@ -1,10 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SelectList should render a select list with 3 items 1`] = `
+.c5 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c5 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 1.25rem;
+}
+
 .c8 {
-  height: 1.5625rem;
-  width: 1.5625rem;
-  cursor: pointer;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c8 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 1.5rem;
 }
 
 .c3 {
@@ -53,16 +95,6 @@ exports[`SelectList should render a select list with 3 items 1`] = `
 
 .c4[type='number'] {
   -moz-appearance: textfield;
-}
-
-.c5 {
-  position: absolute;
-  top: 50%;
-  left: 1.25rem;
-  -webkit-transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
-  transform: translate(-50%,-50%);
-  width: 1.125rem;
 }
 
 .c0 {
@@ -155,11 +187,18 @@ exports[`SelectList should render a select list with 3 items 1`] = `
         type="search"
         value=""
       />
-      <img
-        alt="search-lens"
+      <div
         class="c5"
-        src="search.png"
-      />
+        data-testid="icon"
+        size="20"
+        style="position: absolute; transform: translate(-50%, -50%); top: 50%; left: 20px;"
+      >
+        <svg
+          theme="[object Object]"
+        >
+          search.svg
+        </svg>
+      </div>
     </div>
   </div>
   <ul
@@ -169,12 +208,16 @@ exports[`SelectList should render a select list with 3 items 1`] = `
       class="c7"
       value="NETWORK"
     >
-      <img
-        alt="ETH"
+      <div
         class="c8"
-        data-testid="icon-button"
-        src="eth.png"
-      />
+        data-testid="icon"
+      >
+        <svg
+          theme="[object Object]"
+        >
+          eth.svg
+        </svg>
+      </div>
       <p
         class="c9"
       >
@@ -185,12 +228,16 @@ exports[`SelectList should render a select list with 3 items 1`] = `
       class="c7"
       value="NETWORK"
     >
-      <img
-        alt="BTC"
+      <div
         class="c8"
-        data-testid="icon-button"
-        src="btc.png"
-      />
+        data-testid="icon"
+      >
+        <svg
+          theme="[object Object]"
+        >
+          btc.svg
+        </svg>
+      </div>
       <p
         class="c9"
       >
@@ -201,12 +248,16 @@ exports[`SelectList should render a select list with 3 items 1`] = `
       class="c7"
       value="NETWORK"
     >
-      <img
-        alt="USDT"
+      <div
         class="c8"
-        data-testid="icon-button"
-        src="usdt.png"
-      />
+        data-testid="icon"
+      >
+        <svg
+          theme="[object Object]"
+        >
+          usdt.svg
+        </svg>
+      </div>
       <p
         class="c9"
       >
