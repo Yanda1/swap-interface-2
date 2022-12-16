@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
-import { darkTheme } from '../styles';
 import type { ColorType, Theme } from '../styles';
+import { darkTheme } from '../styles';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -159,6 +159,8 @@ enum ButtonName {
 	CHANGE_NETWORK = 'CHANGE_NETWORK',
 	PASS_KYC = 'PASS_KYC',
 	CHECK_KYC = 'CHECK_KYC',
+	CHECK_KYC_L2 = 'CHECK_KYC_L2',
+	PASS_KYC_L2 = 'PASS_KYC_L2',
 	LOGIN = 'LOGIN'
 }
 
@@ -167,8 +169,10 @@ type ButtonStatus = { [key in ButtonName]: { color: ColorType; text: string } };
 export const button: ButtonStatus = {
 	CONNECT_WALLET: { color: 'default', text: 'Connect Wallet' },
 	CHANGE_NETWORK: { color: 'error', text: 'Change Network' },
-	PASS_KYC: { color: 'warning', text: 'Pass KYC' },
-	CHECK_KYC: { color: 'success', text: 'Check KYC' },
+	PASS_KYC: { color: 'warning', text: 'Pass KYC L1' },
+	CHECK_KYC: { color: 'success', text: 'Check KYC L1' },
+	PASS_KYC_L2: { color: 'warning', text: 'Pass KYC L2' },
+	CHECK_KYC_L2: { color: 'warning', text: 'Check KYC L2' },
 	LOGIN: { color: 'default', text: 'Login' }
 };
 
@@ -266,7 +270,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		if (account && !isUserVerified && isNetworkConnected) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
-
+		// Add variable KYC l2 status should be kycL2Status === KycL2StatusEnum.PASS
 		if (kycStatus === KycStatusEnum.PASS && isNetworkConnected && account) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		}

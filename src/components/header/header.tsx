@@ -1,47 +1,50 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Mainnet, MetamaskConnector, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
-import { Theme, ColorType, DEFAULT_TRANSIITON } from '../../styles';
 import {
+	ColorType,
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSIITON,
 	mediaQuery,
 	pxToRem,
 	spacing,
-	DEFAULT_BORDER_RADIUS,
+	Theme,
 	theme as defaultTheme
 } from '../../styles';
+import type { ApiAuthType } from '../../helpers';
 import {
+	BasicStatusEnum,
+	button,
 	ButtonEnum,
+	CHAINS,
+	DefaultSelectEnum,
+	DestinationEnum,
+	ETHEREUM_URL,
 	getAuthTokensFromNonce,
+	hexToRgbA,
 	INITIAL_STORAGE,
 	isLightTheme,
+	isNetworkSelected,
+	KycEnum,
+	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
 	makeBinanceKycCall,
-	ETHEREUM_URL,
+	MOONBEAM_URL,
+	routes,
+	SourceEnum,
 	ThemeEnum,
 	useStore,
-	VerificationEnum,
-	button,
-	KycStatusEnum,
-	KycEnum,
-	routes,
-	BasicStatusEnum,
-	DestinationEnum,
-	CHAINS,
-	hexToRgbA,
-	isNetworkSelected,
-	SourceEnum,
-	MOONBEAM_URL,
-	DefaultSelectEnum
+	VerificationEnum
 } from '../../helpers';
-import type { ApiAuthType } from '../../helpers';
-import { Button, useToasts, Wallet, Icon } from '../../components';
 import type { IconType } from '../../components';
+import { Button, Icon, useToasts, Wallet } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
+import { KycL2Modal } from '../modal/kycL2Modal';
 
 type Props = {
 	theme: Theme;
@@ -529,6 +532,7 @@ export const Header = () => {
 							</li>
 						))}
 					</Networks>
+					<KycL2Modal showModal setShowModal={setShowMenu} />
 				</MenuWrapper>
 			)}
 		</StyledHeader>

@@ -1,28 +1,29 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
-import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
+import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 import {
-	Icon,
-	NetworkTokenModal,
-	SwapButton,
-	TextField,
 	Fees,
+	Icon,
+	IconType,
+	KycL2Modal,
+	NetworkTokenModal,
 	NotificationsModal,
-	IconType
+	SwapButton,
+	TextField
 } from '../components';
+import type { Fee } from '../helpers';
 import {
 	AmountEnum,
+	beautifyNumbers,
 	BINANCE_FEE,
 	DestinationEnum,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
-	beautifyNumbers,
-	useStore,
-	NETWORK_TO_ID
+	NETWORK_TO_ID,
+	useStore
 } from '../helpers';
-import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
 
 const Wrapper = styled.main`
@@ -361,6 +362,7 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
+			<KycL2Modal />
 		</Wrapper>
 	);
 };
