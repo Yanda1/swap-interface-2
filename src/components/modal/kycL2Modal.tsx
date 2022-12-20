@@ -37,52 +37,8 @@ const Wrapper = styled.div(() => {
 			display: block;
 			background: ${theme.button.disabled};
 		}
-
-		::-webkit-scrollbar-track-piece:end {
-			background: transparent;
-			margin-bottom: 15px;
-		}
-
-		::-webkit-scrollbar-track-piece:start {
-			background: transparent;
-			margin-top: 15px;
-		}
 	`;
 });
-
-// const Form = styled.form`
-// 	display: flex;
-// 	width: 100%;
-// 	justify-content: center;
-// 	align-items: center;
-// 	flex-direction: column;
-// 	overflow-y: scroll;
-//
-// 	& > input {
-// 		margin-bottom: ${spacing[14]};
-// 	}
-// `;
-
-// const Input = styled.input(({ borderColor }: any) => {
-// 	const {
-// 		state: { theme }
-// 	} = useStore();
-//
-// 	return css`
-// 		outline: none;
-// 		border: 1px solid ${theme.border.default};
-// 		width: ${pxToRem(200)};
-// 		padding: ${spacing[16]};
-// 		background-color: ${theme.background.secondary};
-// 		border-radius: ${pxToRem(4)};
-// 		margin-bottom: ${spacing[20]};
-// 		color: ${theme.font.default};
-//
-// 		&:focus {
-// 			border: 1px solid ${borderColor > 2 ? `${theme.button.success}` : `${theme.button.error}`};
-// 		}
-// 	`;
-// });
 
 const LabelInput = styled.label(() => {
 	const {
@@ -137,30 +93,54 @@ export const KycL2Modal = () => {
 		placeOfBirth: string;
 		netYearlyIncome: string;
 		email: string;
-		politicallyExposed: string;
 		mailingAddress: string;
 		prevailingSourceOfSuchIncome: string;
 		gender: string;
-		citizenships: string;
+		citizenship: string;
 		taxResidency: string;
+		politicallyExposedPerson: string;
+		countryOfClientConductsActivity: string;
+		workAndBusinessActivity: string[];
+		sourceOfFundsIntendedForTransaction: string[];
+		sourceOfFundsIntendedForTransactionOther: string;
+		natureOfPrevailingSourceOfIncomeOther: string;
+		fundsIrregularForBusiness: string[];
+		fundsIrregularForBusinessOther: string;
+		personAgainstWhomAppliedCzOrInternationalSanctions: string;
+		criminalOffense: string;
+		natureOfPrevailingSourceOfIncome: string[];
+		declare: string[];
+		declareOther: string;
+		file: any;
 	}>({
 		placeOfBirth: '',
-		netYearlyIncome: '',
-		email: '',
-		politicallyExposed: '',
-		mailingAddress: '',
-		prevailingSourceOfSuchIncome: '',
+		citizenship: '',
 		gender: '',
-		citizenships: '',
-		taxResidency: ''
+		email: '',
+		netYearlyIncome: '',
+		prevailingSourceOfSuchIncome: '',
+		mailingAddress: '',
+		taxResidency: '',
+		politicallyExposedPerson: '',
+		countryOfClientConductsActivity: '',
+		workAndBusinessActivity: [],
+		sourceOfFundsIntendedForTransaction: [],
+		sourceOfFundsIntendedForTransactionOther: '',
+		natureOfPrevailingSourceOfIncomeOther: '',
+		fundsIrregularForBusiness: [],
+		fundsIrregularForBusinessOther: '',
+		personAgainstWhomAppliedCzOrInternationalSanctions: '',
+		criminalOffense: '',
+		natureOfPrevailingSourceOfIncome: [],
+		declare: [],
+		declareOther: '',
+		file: null
 	});
-	const [file, setFile] = useState<any>(null);
+	// const [file, setFile] = useState<any>(null);
 	const [fileUrl, setFileUrl] = useState<any>(null);
 	const fileReader = new FileReader();
 	const fileInput = useRef<HTMLInputElement>();
-	const [selectWorkAndBusinessActivity, setSelectWorkAndBusinessActivity] = useState<string[]>([]);
-	const [workAndBusinessActivity, setWorkAndBusinessActivity] = useState<string[]>([]);
-	const [workAndBusinessActivityList, setWorkAndBusinessActivityList] = useState<string[]>([
+	const [workAndBusinessActivityList] = useState<string[]>([
 		'None of the hereinafter mentioned',
 		'Arms Transaction',
 		'Pawnshop activity',
@@ -179,7 +159,7 @@ export const KycL2Modal = () => {
 		'Erotic industry',
 		'Non-profit organizations, foundations or churches'
 	]);
-	const [sourceOfFundsIntendedForTransactionList, setSourceOfFundsIntendedForTransactionList] =
+	const [sourceOfFundsIntendedForTransactionList] =
 		useState<string[]>([
 			'Employment or business',
 			'Sale of real estate',
@@ -188,8 +168,7 @@ export const KycL2Modal = () => {
 			'Lease of real estate',
 			'Other'
 		]);
-
-	const [fundsIrregularForBussines, setFundsIrregularForBussines] = useState<string[]>([
+	const [fundsIrregularForBussinesList] = useState<string[]>([
 		'None',
 		'Employment or business',
 		'Sale of real estate',
@@ -198,13 +177,22 @@ export const KycL2Modal = () => {
 		'Lease of real estate',
 		'Other'
 	]);
+	const [natureOfPrevailingSourceOfIncomeList] = useState<string[]>([
+		'Employee',
+		'Other'
+	]);
+	const [declareList] = useState<string[]>([
+		'I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country',
+		'I am a national of another state or country, specifically:',
+		'I am registered to a permanent or other type of residency in another state or country, specifically:'
+	]);
 
 	fileReader.onloadend = () => {
 		setFileUrl(fileReader.result);
 	};
-	const [next, setNext] = useState(0);
+	const [page, setPage] = useState(0);
 	const handleNext = () => {
-		setNext((prev: number) => prev + 1);
+		setPage((prev: number) => prev + 1);
 	};
 
 	const handleSubmit = (event: any) => {
@@ -213,28 +201,65 @@ export const KycL2Modal = () => {
 	};
 
 	const handleChangeInput = (event: any) => {
-		console.log(event);
-		// @ts-ignore
+
 		setInput({ ...input, [event.target.name]: event.target.value });
 	};
 
-	const handleChangeCheckBoxActivity = (e: any) => {
-		console.log(e);
+	const handleChangeSourceOfFundsIntendedForTransaction = (event: any) => {
+		const { value, checked } = event.target;
+			if (checked && !input.sourceOfFundsIntendedForTransaction.includes(value)) {
+				setInput({ ...input, sourceOfFundsIntendedForTransaction: [...input.sourceOfFundsIntendedForTransaction, value] });
+			} else if (!checked && input.sourceOfFundsIntendedForTransaction.includes(value)) {
+				const filteredArray: string[] = input.sourceOfFundsIntendedForTransaction.filter((item) => item !== value);
+				setInput({ ...input, sourceOfFundsIntendedForTransaction: [...filteredArray] });
+			}
+	};
 
-		if (e.target.checked && !workAndBusinessActivity.includes(e.target.value)) {
-			setWorkAndBusinessActivity([...workAndBusinessActivity, e.target.value]);
-		} else if (!e.target.checked && workAndBusinessActivity.includes(e.target.value)) {
-			const filteredArray = workAndBusinessActivity.filter((item) => item !== e.target.value);
-			setWorkAndBusinessActivity(filteredArray);
+	const handleChangefundsIrregularForBussines = (event: any) => {
+		const { value, checked } = event.target;
+		if (checked && !input.fundsIrregularForBusiness.includes(value)) {
+			setInput({ ...input, fundsIrregularForBusiness: [...input.fundsIrregularForBusiness, value] });
+
+		} else if (!checked && input.fundsIrregularForBusiness.includes(value)) {
+			const filteredArray: string[] = input.fundsIrregularForBusiness.filter((item) => item !== value);
+			setInput({ ...input, fundsIrregularForBusiness: [...filteredArray] });
+		}
+	};
+	const handleChangefDeclare = (event: any) => {
+		const { value, checked } = event.target;
+		if (checked && !input.declare.includes(value)) {
+			setInput({ ...input, declare: [...input.declare, value] });
+		}
+		if (!checked && input.declare.includes(value)) {
+			const filteredArray: string[] = input.declare.filter((item) => item !== value);
+			setInput({ ...input, declare: [...filteredArray] });
+		}
+	};
+
+	const handleChangeWorkAndBusinessActivity = (event: any) => {
+		const { value, checked } = event.target;
+		if (checked && !input.workAndBusinessActivity.includes(value)) {
+			setInput({ ...input, workAndBusinessActivity: [...input.workAndBusinessActivity, value] });
+		} else if (!checked && input.workAndBusinessActivity.includes(value)) {
+			const filteredArray: string[] = input.workAndBusinessActivity.filter((item) => item !== value);
+			setInput({ ...input, workAndBusinessActivity: [...filteredArray] });
+		}
+	};
+
+	const handleChangeNatureOfPrevailingSourceOfIncome = (event: any) => {
+		const { value, checked } = event.target;
+		if (checked && !input.natureOfPrevailingSourceOfIncome.includes(value)) {
+			setInput({ ...input, natureOfPrevailingSourceOfIncome: [...input.natureOfPrevailingSourceOfIncome, value] });
+		} else if (!checked && input.natureOfPrevailingSourceOfIncome.includes(value)) {
+			const filteredArray: string[] = input.natureOfPrevailingSourceOfIncome.filter((item) => item !== value);
+			setInput({ ...input, natureOfPrevailingSourceOfIncome: [...filteredArray] });
 		}
 	};
 
 	const handleChangeFileInput = () => {
-		// @ts-ignore
-		console.log(fileInput.current.files[0]);
-		// @ts-ignore
-		const file = fileInput.current.files[0];
-		setFile(file);
+		const file: any = fileInput?.current?.files && fileInput?.current?.files[0];
+		// setFile(file);
+		setInput({...input, file});
 		fileReader.readAsDataURL(file);
 	};
 
@@ -244,10 +269,10 @@ export const KycL2Modal = () => {
 			isOpen={showModal}
 			handleClose={() => setShowModal(false)}
 			hasBackButton
-			handleBack={() => (next > 0 ? setNext((prev) => prev - 1) : null)}>
+			handleBack={() => (page > 0 ? setPage((prev) => prev - 1) : null)}>
 			<Wrapper>
-				<h2 style={{ fontStyle: 'italic' }}>KYC Form</h2>
-				{next === 0 && (
+				<h2 style={{ fontStyle: 'italic' }}>KYC form for Natural Person</h2>
+				{page === 0 && (
 					<>
 						<div
 							style={{
@@ -266,6 +291,7 @@ export const KycL2Modal = () => {
 										size="small"
 										align="left"
 										name="placeOfBirth"
+										required={true}
 									/>
 								</div>
 								<div style={{ marginBottom: '10px' }}>
@@ -290,18 +316,6 @@ export const KycL2Modal = () => {
 										align="left"
 										required={true}
 										name="gender"
-									/>
-								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<TextField
-										value={input.taxResidency}
-										placeholder="Tax residency"
-										type="text"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										required={true}
-										name="taxResidency"
 									/>
 								</div>
 							</div>
@@ -332,40 +346,68 @@ export const KycL2Modal = () => {
 								</div>
 								<div style={{ marginBottom: '10px' }}>
 									<TextField
-										value={input.citizenships}
+										value={input.citizenship}
 										placeholder="Citizenship(s)"
 										type="text"
 										onChange={handleChangeInput}
 										size="small"
 										align="left"
 										required={true}
-										name="citizenships"
-									/>
-								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<TextField
-										value={input.prevailingSourceOfSuchIncome}
-										placeholder="Prevailing source of such income"
-										type="text"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										required={false}
-										name="prevailingSourceOfSuchIncome"
+										name="citizenship"
 									/>
 								</div>
 							</div>
 						</div>
 					</>
 				)}
-				{next === 1 && (
+				{page === 1 && (
 					<>
+						<div style={{ marginBottom: '10px', width: '100%' }}>
+							<TextField
+								value={input.prevailingSourceOfSuchIncome}
+								placeholder="Prevailing source of such income (employment/business, real estate, trading, etc.)"
+								type="text"
+								onChange={handleChangeInput}
+								size="small"
+								align="left"
+								name="prevailingSourceOfSuchIncome"
+								required={true}
+							/>
+						</div>
+						<div style={{ marginBottom: '10px', width: '100%' }}>
+							<TextField
+								value={input.taxResidency}
+								placeholder="Tax residency"
+								type="text"
+								onChange={handleChangeInput}
+								size="small"
+								align="left"
+								required={true}
+								name="taxResidency"
+							/>
+						</div>
+						<div style={{ marginBottom: '10px', width: '100%' }}>
+							<TextField
+								value={input.countryOfClientConductsActivity}
+								placeholder="Country in which the Client conducts his work / business activity"
+								type="text"
+								onChange={handleChangeInput}
+								size="small"
+								align="left"
+								required={true}
+								name="countryOfClientConductsActivity"
+							/>
+						</div>
+					</>
+				)}
+				{page === 2 && (
 						<div
 							style={{
 								display: 'flex',
 								flexWrap: 'wrap',
 								flexDirection: 'column',
-								alignItems: 'stretch'
+								alignItems: 'stretch',
+								marginBottom: '15px'
 							}}>
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								The Client conducts his work / business activity in these areas:
@@ -373,6 +415,7 @@ export const KycL2Modal = () => {
 							{workAndBusinessActivityList.map((activity: string, index: number) => {
 								return (
 									<div
+										key={index}
 										style={{
 											display: 'flex',
 											justifyContent: 'flex-start',
@@ -383,9 +426,10 @@ export const KycL2Modal = () => {
 											value={activity}
 											name={activity}
 											id={`workAndBusinessActivityList-checkbox-${index}`}
-											onClick={handleChangeCheckBoxActivity}
-											// SAVE CHECKED IF WAS CHEKED BEFORE CLOSED MODAL
-											checked={workAndBusinessActivity.includes(`${activity}`)}
+											onChange={handleChangeWorkAndBusinessActivity}
+											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+											checked={input.workAndBusinessActivity.includes(`${activity}`)}
+											required={true}
 										/>
 										<label htmlFor={`workAndBusinessActivityList-checkbox-${index}`}>
 											{activity}
@@ -399,7 +443,9 @@ export const KycL2Modal = () => {
 							</p>
 							{sourceOfFundsIntendedForTransactionList.map((activity: string, index: number) => {
 								return (
-									<div
+
+										<div
+										key={index}
 										style={{
 											display: 'flex',
 											justifyContent: 'flex-start',
@@ -410,6 +456,10 @@ export const KycL2Modal = () => {
 											value={activity}
 											name={activity}
 											id={`sourceOfFundsIntendedForTransactionList-checkbox-${index}`}
+											onChange={handleChangeSourceOfFundsIntendedForTransaction}
+											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+											checked={input.sourceOfFundsIntendedForTransaction.includes(`${activity}`)}
+											required={true}
 										/>
 										<label htmlFor={`sourceOfFundsIntendedForTransactionList-checkbox-${index}`}>
 											{activity}
@@ -417,18 +467,70 @@ export const KycL2Modal = () => {
 									</div>
 								);
 							})}
+							{input.sourceOfFundsIntendedForTransaction.includes('Other') ? (
+								<TextField
+									value={input.sourceOfFundsIntendedForTransactionOther}
+									type="text"
+									placeholder="Specify..."
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="sourceOfFundsIntendedForTransactionOther"
+								/>
+							) : null}
+
+							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+							Nature of prevailing source of income
+							</p>
+							{natureOfPrevailingSourceOfIncomeList.map((activity: string, index: number) => {
+								return (
+								<div
+								key={index}
+								style={{
+								display: 'flex',
+								justifyContent: 'flex-start',
+								marginBottom: '8px'
+							}}>
+								<input
+								type="checkbox"
+								value={activity}
+								name={activity}
+								id={`natureOfPrevailingSourceOfIncomeList-checkbox-${index}`}
+								onChange={handleChangeNatureOfPrevailingSourceOfIncome}
+								// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+								checked={input.natureOfPrevailingSourceOfIncome.includes(`${activity}`)}
+								required={true}
+								/>
+								<label htmlFor={`natureOfPrevailingSourceOfIncomeList-checkbox-${index}`}>
+							{activity}
+								</label>
+								</div>
+								);
+							})}
+							{input.natureOfPrevailingSourceOfIncome.includes('Other') ? (
+								<TextField
+								value={input.natureOfPrevailingSourceOfIncomeOther}
+								type="text"
+								placeholder="Food industry, hospitality, transportation, consultancy, agriculture, IT, science, etc."
+								onChange={handleChangeInput}
+								size="small"
+								align="left"
+								name="natureOfPrevailingSourceOfIncomeOther"
+								/>
+								) : null
+							}
 						</div>
-					</>
 				)}
-				{next === 2 && (
+				{page === 3 && (
 					<>
-						<div>
+						<div style={{marginBottom: '15px'}}>
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								State, which of the stated incomes of funds intended for business is irregular:
 							</p>
-							{fundsIrregularForBussines.map((activity: string, index: number) => {
+							{fundsIrregularForBussinesList.map((activity: string, index: number) => {
 								return (
 									<div
+										key={index}
 										style={{
 											display: 'flex',
 											justifyContent: 'flex-start',
@@ -438,16 +540,113 @@ export const KycL2Modal = () => {
 											type="checkbox"
 											value={activity}
 											name={activity}
-											id={`custom-checkbox-${index}`}
+											id={`fundsIrregularForBussinesList-checkbox-${index}`}
+											onChange={handleChangefundsIrregularForBussines}
+											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+											checked={input.fundsIrregularForBusiness.includes(`${activity}`)}
+											required={true}
 										/>
-										<label htmlFor={`custom-checkbox-${index}`}>{activity}</label>
+										<label htmlFor={`fundsIrregularForBussinesList-checkbox-${index}`}>{activity}</label>
 									</div>
 								);
 							})}
+							{input.fundsIrregularForBusiness.includes('Other') ? (
+								<TextField
+									value={input.fundsIrregularForBusinessOther}
+									type="text"
+									placeholder="Specify..."
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="fundsIrregularForBusinessOther"
+								/>
+							) : null
+							}
+							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+								I declare that:
+							</p>
+							{declareList.map((activity: string, index: number) => {
+								return (
+									<div
+										key={index}
+										style={{
+											display: 'flex',
+											justifyContent: 'flex-start',
+											marginBottom: '8px'
+										}}>
+										<input
+											type="checkbox"
+											value={activity}
+											name={activity}
+											id={`declareList-checkbox-${index}`}
+											onChange={handleChangefDeclare}
+											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+											checked={input.declare.includes(`${activity}`)}
+											required={true}
+										/>
+										<label htmlFor={`declareList-checkbox-${index}`}>{activity}</label>
+									</div>
+								);
+							})}
+							{input.declare.includes('I am a national of another state or country, specifically:') ? (
+								<TextField
+									value={input.declareOther}
+									type="text"
+									placeholder="Specify..."
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="declareOther"
+								/>
+							) : null
+							}
+							{input.declare.includes('I am registered to a permanent or other type of residency in another state or country, specifically:') ? (
+								<TextField
+									value={input.declareOther}
+									type="text"
+									placeholder="Specify..."
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="declareOther"
+								/>
+							) : null
+							}
 						</div>
 					</>
 				)}
-				{next === 3 && (
+				{page === 4 && (
+					<div style={{display: 'flex', flexDirection: 'column',  marginBottom: '25px', alignItems: 'center'}}>
+							<p style={{marginBottom: '25px'}}>Have you ever been convicted or prosecuted for a criminal offense, in particular an offense against property or economic offense committed not only in relation with work or business activities (without regards to presumption of innocence)?</p>
+							<div style={{display: 'flex', justifyContent: 'space-evenly', width: '100%'}}>
+								<label htmlFor='criminalOffenseTrue'> Yes
+								<input id="criminalOffenseTrue" type="radio" value='Yes' checked={input.criminalOffense === 'Yes'} onChange={handleChangeInput} name="criminalOffense"/>
+								</label>
+								<label htmlFor='criminalOffenseFalse'> No
+								<input id="criminalOffenseFalse" type="radio" value='No' checked={input.criminalOffense === 'No'} onChange={handleChangeInput} name="criminalOffense"/>
+								</label>
+							</div>
+							<p style={{marginBottom: '25px'}}>Person against whom are applied CZ/international sanctions?</p>
+							<div style={{display: 'flex', justifyContent: 'space-evenly', width: '100%'}}>
+								<label htmlFor="personAgainstWhomAppliedCzOrInternationalSanctionsTrue">Yes
+									<input id="personAgainstWhomAppliedCzOrInternationalSanctionsTrue" type="radio" value='Yes' checked={input.personAgainstWhomAppliedCzOrInternationalSanctions === 'Yes'} onChange={handleChangeInput} name="personAgainstWhomAppliedCzOrInternationalSanctions"/>
+								</label>
+								<label htmlFor="personAgainstWhomAppliedCzOrInternationalSanctionsFalse">No
+									<input id="personAgainstWhomAppliedCzOrInternationalSanctionsFalse" type="radio" value='No' checked={input.personAgainstWhomAppliedCzOrInternationalSanctions === 'No'} onChange={handleChangeInput} name="personAgainstWhomAppliedCzOrInternationalSanctions"/>
+								</label>
+							</div>
+						<p style={{marginBottom: '25px'}}>Politically exposed person?</p>
+						<div style={{display: 'flex', justifyContent: 'space-evenly', width: '100%'}}>
+							<label htmlFor="politicallyExposedPersonTrue">Yes
+								<input id="politicallyExposedPersonTrue" type="radio" value='Yes' checked={input.politicallyExposedPerson === 'Yes'} onChange={handleChangeInput} name="politicallyExposedPerson"/>
+							</label>
+							<label htmlFor="politicallyExposedPersonFalse">No
+								<input id="politicallyExposedPersonFalse" type="radio" value='No' checked={input.politicallyExposedPerson === 'No'} onChange={handleChangeInput} name="politicallyExposedPerson"/>
+							</label>
+						</div>
+					</div>
+				)}
+				{page === 5 && (
 					<>
 						<LabelInput htmlFor="file-input">
 							<FileInput
@@ -455,80 +654,49 @@ export const KycL2Modal = () => {
 								type="file"
 								ref={fileInput as any}
 								onChange={handleChangeFileInput}
-								required></FileInput>
+								required={true}></FileInput>
 							Upload file
 						</LabelInput>
 						<PreviewImg src={fileUrl ? fileUrl : null}></PreviewImg>
-						<FileNameText>{file ? file.name : null} </FileNameText>
+						<FileNameText>{input.file ? input.file.name : null} </FileNameText>
 					</>
 				)}
-				{next === 4 && (
-					<label>
-						Pick your favorite flavor:
-						<br />
-						<select>
-							<option value="grapefruit">Grapefruit</option>
-							<option value="lime">Lime</option>
-							<option selected value="coconut">
-								Coconut
-							</option>
-							<option value="mango">Mango</option>
-						</select>
-					</label>
-				)}
-				{next === 5 && (
-					<div>
-						Thank you for your information! <br /> Please wait for the results!
-						<p>Politically exposed person?</p>
-						<div style={{ display: 'flex', marginBottom: '20px' }}>
-							<TextField
-								onChange={handleChangeInput}
-								value="true"
-								name="politicallyExposed"
-								type="radio"
-								id="radioForCitizenShipYes"
-							/>
-							<label htmlFor="radioForCitizenShipYes">Yes</label>
-							<TextField
-								onChange={handleChangeInput}
-								value="false"
-								name="politicallyExposed"
-								type="radio"
-								id="radioForCitizenShipNo"
-							/>
-							<label htmlFor="radioForCitizenShipNo">No</label>
-						</div>
+
+				{page === 6 && (
+					<div style={{display: 'flex',marginBottom: '25px', flexDirection: 'column',
+						alignItems: 'center'}}>
+						<p>Thank you for your information!</p>
+						<p>Please wait for the results!</p>
 					</div>
 				)}
-				{next <= 5 && (
-					<Button
-						variant="secondary"
-						onClick={handleNext}
-						disabled={
-							false
-							// input.placeOfBirth.length < 3 ||
-							// input.netYearlyIncome.length < 3 ||
-							// input.email.length < 3 ||
-							// !file
-						}>
-						Next
-					</Button>
+				{page <= 5 && (
+					<Button variant="secondary" onClick={handleNext}>Next</Button>
 				)}
-				{next > 5 && (
-					<Button
-						variant="secondary"
-						// @ts-ignore
-						onClick={handleSubmit}
-						disabled={
-							false
-							// input.placeOfBirth.length < 3 ||
-							// input.netYearlyIncome.length < 3 ||
-							// input.email.length < 3 ||
-							// !file
-						}>
-						Submit
-					</Button>
-				)}
+			{page > 5 && (
+				<Button
+					variant="secondary"
+					// @ts-ignore
+					onClick={handleSubmit}
+					disabled={
+						!input.placeOfBirth ||
+						!input.citizenship ||
+						!input.gender ||
+						!input.email ||
+						!input.netYearlyIncome ||
+						!input.prevailingSourceOfSuchIncome ||
+						!input.mailingAddress ||
+						!input.taxResidency ||
+						!input.politicallyExposedPerson ||
+						!input.countryOfClientConductsActivity ||
+						!input.workAndBusinessActivity.length ||
+						!input.sourceOfFundsIntendedForTransaction.length ||
+						!input.fundsIrregularForBusiness.length ||
+						!input.personAgainstWhomAppliedCzOrInternationalSanctions ||
+						!input.file
+					}>
+					Submit
+				</Button>
+			)}
 			</Wrapper>
 		</Portal>
 	);

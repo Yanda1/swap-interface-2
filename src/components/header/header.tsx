@@ -532,7 +532,7 @@ export const Header = () => {
 							</li>
 						))}
 					</Networks>
-					<KycL2Modal showModal setShowModal={setShowMenu} />
+					<KycL2Modal  />
 				</MenuWrapper>
 			)}
 		</StyledHeader>
