@@ -6,7 +6,6 @@ import {
 	Fees,
 	Icon,
 	IconType,
-	KycL2Modal,
 	NetworkTokenModal,
 	NotificationsModal,
 	SwapButton,
@@ -362,7 +361,6 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
-			<KycL2Modal />
 		</Wrapper>
 	);
 };

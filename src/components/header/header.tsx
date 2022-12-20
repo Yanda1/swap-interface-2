@@ -532,7 +532,7 @@ export const Header = () => {
 							</li>
 						))}
 					</Networks>
-					<KycL2Modal  />
+					<KycL2Modal showKycL2 />
 				</MenuWrapper>
 			)}
 		</StyledHeader>
