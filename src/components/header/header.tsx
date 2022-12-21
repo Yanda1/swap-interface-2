@@ -28,6 +28,7 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	KycEnum,
+	KycL2StatusEnum,
 	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
@@ -41,10 +42,9 @@ import {
 	VerificationEnum
 } from '../../helpers';
 import type { IconType } from '../../components';
-import { Button, Icon, useToasts, Wallet } from '../../components';
+import { Button, Icon, KycL2Modal, useToasts, Wallet } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
-import { KycL2Modal } from '../modal/kycL2Modal';
 
 type Props = {
 	theme: Theme;
@@ -156,7 +156,8 @@ export const Header = () => {
 			sourceNetwork,
 			account: userAccount,
 			isNetworkConnected,
-			theme
+			theme,
+			kycL2Status
 		},
 		dispatch
 	} = useStore();
@@ -167,6 +168,7 @@ export const Header = () => {
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showNetworksList, setShowNetworksList] = useState(false);
+	const [showKycL2, setShowKycL2] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
@@ -273,23 +275,36 @@ export const Header = () => {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
+				console.log(res);
 				if (res.data.errorData === noKycStatusMessage) {
 					await getBinanceToken();
 				}
-				const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
+				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
+				const { status: kycL2Status } = res?.data?.L2;
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
 				});
-				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
+				dispatch({
+					type: KycL2StatusEnum.STATUS,
+					payload: kycL2Status
+				});
+				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS && kycL2Status === 'PASS' });
 				// TODO: move this part to context?
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					addToast('Your KYC process has been rejected - please start again!', 'warning');
+				} else if (kycL2Status === 'REJECT') {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
+					addToast('Your KYC L2 process has been rejected - please start again!', 'warning');
 				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				} else if (kycL2Status === 'INITIAL') {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
+				} else if (kycL2Status === 'PENDING') {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
 				}
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
@@ -357,6 +372,12 @@ export const Header = () => {
 		if (chainId && account) {
 			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
+			} else if (buttonStatus === button.PASS_KYC_L2) {
+				// TODO: add GET request to base to get status of KYC review show modal window
+				setShowKycL2(true);
+				console.log('GET REQUEST TO UPDATE REVIEW STATUS OF KYC L2');
+			} else if (buttonStatus === button.CHECK_KYC_L2) {
+				void checkStatus();
 			} else if (buttonStatus === button.LOGIN) {
 				await setTokensInStorageAndContext();
 			} else {
@@ -369,6 +390,10 @@ export const Header = () => {
 		setShowMenu(false);
 		setShowNetworksList(false);
 	});
+
+	const updateShowKycL2 = (value: boolean) => {
+		setShowKycL2(value);
+	};
 
 	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
@@ -398,6 +423,10 @@ export const Header = () => {
 			dispatch({
 				type: KycEnum.STATUS,
 				payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
+			});
+			dispatch({
+				type: KycL2StatusEnum.STATUS,
+				payload: JSON.parse(localStorageAuth).isKyced ? 'PASSED' : 'INITIAL'
 			});
 		}
 	}, []);
@@ -441,7 +470,7 @@ export const Header = () => {
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, accessToken, account, userAccount]);
+	}, [kycStatus, kycL2Status, accessToken, account, userAccount]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -532,9 +561,9 @@ export const Header = () => {
 							</li>
 						))}
 					</Networks>
-					<KycL2Modal showKycL2 />
 				</MenuWrapper>
 			)}
+			{showKycL2 ? <KycL2Modal showKycL2 updateShowKycL2={updateShowKycL2} /> : null}
 		</StyledHeader>
 	);
 };

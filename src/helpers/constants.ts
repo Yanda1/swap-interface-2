@@ -24,7 +24,7 @@ export const BINANCE_SCRIPT =
 export const BINANCE_PRICE_TICKER = 'https://www.binance.com/api/v3/ticker/price';
 export const BINANCE_EXCHANGE_INFO = 'https://api.binance.com/api/v3/exchangeInfo';
 
-export const BASE_URL = 'https://auth-app-aq3rv.ondigitalocean.app/';
+export const BASE_URL = 'https://auth-app-test-kutbe.ondigitalocean.app/';
 // https://auth-app-aq3rv.ondigitalocean.app/account/withdraw/details?id=7ef91f76c79b4793b417e32fbffd73b8
 export const MOONBEAM_URL = 'https://rpc.api.moonbeam.network';
 export const ETHEREUM_URL = 'https://mainnet.infura.io/v3';

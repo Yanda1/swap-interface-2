@@ -84,10 +84,11 @@ const FileNameText = styled.p`
 
 type Props = {
 	showKycL2: boolean;
-	// setShowModal: (prev: boolean) => void;
+	updateShowKycL2?: any;
 };
-export const KycL2Modal = ({ showKycL2 = true }: Props) => {
-	const [showModal, setShowModal] = useState(true);
+export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
+	const [showModal, setShowModal] = useState(showKycL2);
+	console.log(showModal);
 	const [input, setInput] = useState<{
 		placeOfBirth: string;
 		netYearlyIncome: string;
@@ -112,29 +113,50 @@ export const KycL2Modal = ({ showKycL2 = true }: Props) => {
 		declareOther: string;
 		file: any;
 	}>({
-		placeOfBirth: '',
 		citizenship: '',
-		gender: '',
-		email: '',
-		netYearlyIncome: '',
-		prevailingSourceOfIncome: '',
-		mailingAddress: '',
-		taxResidency: '',
-		politicallyExposedPerson: '',
 		countryOfClientConductsActivity: '',
-		workAndBusinessActivity: [],
-		sourceOfFundsIntendedForTransaction: [],
-		sourceOfFundsIntendedForTransactionOther: '',
-		natureOfPrevailingSourceOfIncome: [],
-		natureOfPrevailingSourceOfIncomeOther: '',
-		fundsIrregularForBusiness: [],
-		fundsIrregularForBusinessOther: '',
-		personAgainstWhomAppliedCzOrInternationalSanctions: '',
 		criminalOffense: '',
 		declare: [],
 		declareOther: '',
-		file: null
+		email: '',
+		file: null,
+		fundsIrregularForBusiness: [],
+		fundsIrregularForBusinessOther: '',
+		gender: '',
+		mailingAddress: '',
+		natureOfPrevailingSourceOfIncome: [],
+		natureOfPrevailingSourceOfIncomeOther: '',
+		netYearlyIncome: '',
+		personAgainstWhomAppliedCzOrInternationalSanctions: '',
+		placeOfBirth: '',
+		politicallyExposedPerson: '',
+		prevailingSourceOfIncome: '',
+		sourceOfFundsIntendedForTransaction: [],
+		sourceOfFundsIntendedForTransactionOther: '',
+		taxResidency: '',
+		workAndBusinessActivity: []
 	});
+	const { citizenship } = input;
+	const isDisabled =
+		citizenship === '' ||
+		input.countryOfClientConductsActivity === '' ||
+		input.criminalOffense === '' ||
+		!input.declare.length ||
+		input.email === '' ||
+		input.file === '' ||
+		!input.fundsIrregularForBusiness.length ||
+		input.gender === '' ||
+		input.mailingAddress === '' ||
+		!input.natureOfPrevailingSourceOfIncome.length ||
+		input.netYearlyIncome === '' ||
+		input.personAgainstWhomAppliedCzOrInternationalSanctions === '' ||
+		input.placeOfBirth === '' ||
+		input.politicallyExposedPerson === '' ||
+		input.prevailingSourceOfIncome === '' ||
+		!input.sourceOfFundsIntendedForTransaction.length ||
+		input.taxResidency === '' ||
+		!input.workAndBusinessActivity.length;
+
 	// const [file, setFile] = useState<any>(null);
 	const [fileUrl, setFileUrl] = useState<any>(null);
 	const fileReader = new FileReader();
@@ -191,7 +213,8 @@ export const KycL2Modal = ({ showKycL2 = true }: Props) => {
 	};
 	const handleSubmit = (event: any) => {
 		event.preventDefault();
-		setShowModal(!showModal);
+		// send POST if 200 chanhe button status to check kys if 401 bad request add toast like please pass kyc again
+		updateShowKycL2(false);
 	};
 	const handleChangeInput = (event: any) => {
 		setInput({ ...input, [event.target.name]: event.target.value });
@@ -220,15 +243,20 @@ export const KycL2Modal = ({ showKycL2 = true }: Props) => {
 		fileReader.readAsDataURL(file);
 	};
 
-	return showKycL2 ? (
+	const handleOnClose = () => {
+		setShowModal(false);
+		updateShowKycL2(false);
+	};
+
+	return showModal ? (
 		<Portal
 			size="large"
 			isOpen={showModal}
-			handleClose={() => setShowModal(false)}
+			handleClose={handleOnClose}
 			hasBackButton
 			handleBack={() => (page > 0 ? setPage((prev: number) => prev - 1) : null)}>
 			<Wrapper>
-				<h2 style={{ fontStyle: 'italic' }}>KYC form for Natural Person</h2>
+				<h2 style={{ fontStyle: 'italic' }}>KYC L2 form for Natural Person</h2>
 				{page === 0 && (
 					<>
 						<div
@@ -610,7 +638,6 @@ export const KycL2Modal = ({ showKycL2 = true }: Props) => {
 								/>
 							</label>
 							<label htmlFor="criminalOffenseFalse">
-								{' '}
 								No
 								<input
 									id="criminalOffenseFalse"
@@ -704,7 +731,7 @@ export const KycL2Modal = ({ showKycL2 = true }: Props) => {
 						<p>Please wait for the results!</p>
 					</div>
 				)}
-				{page <= 5 && input.email.length < 2 && (
+				{page <= 5 && (
 					<Button variant="secondary" onClick={handleNext}>
 						Next
 					</Button>
@@ -714,24 +741,8 @@ export const KycL2Modal = ({ showKycL2 = true }: Props) => {
 						variant="secondary"
 						// @ts-ignore
 						onClick={handleSubmit}
-						disabled={
-							!input.placeOfBirth ||
-							!input.citizenship ||
-							!input.gender ||
-							!input.email ||
-							!input.netYearlyIncome ||
-							!input.prevailingSourceOfIncome ||
-							!input.mailingAddress ||
-							!input.taxResidency ||
-							!input.politicallyExposedPerson ||
-							!input.countryOfClientConductsActivity ||
-							!input.workAndBusinessActivity.length ||
-							!input.sourceOfFundsIntendedForTransaction.length ||
-							!input.fundsIrregularForBusiness.length ||
-							!input.personAgainstWhomAppliedCzOrInternationalSanctions ||
-							!input.file
-						}>
-						Submit
+						disabled={isDisabled}>
+						{isDisabled ? 'Please fill in all the fields of the form' : 'Submit'}
 					</Button>
 				)}
 			</Wrapper>

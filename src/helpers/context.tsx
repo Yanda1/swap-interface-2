@@ -47,6 +47,10 @@ export enum KycStatusEnum {
 	REJECT = 'REJECT'
 }
 
+export enum KycL2StatusEnum {
+	STATUS = 'SET_KYCL2_STATUS'
+}
+
 export enum BasicStatusEnum {
 	INITIAL = 'INITIAL',
 	PROCESS = 'PROCESS',
@@ -84,6 +88,11 @@ type VerificationAction = {
 type KycAction = {
 	type: KycEnum;
 	payload: KycStatusEnum;
+};
+
+type KycL2Action = {
+	type: KycL2StatusEnum;
+	payload: string;
 };
 
 type ButtonAction = {
@@ -125,6 +134,7 @@ type Action =
 	| VerificationAction
 	| ButtonAction
 	| KycAction
+	| KycL2Action
 	| ThemeAction
 	| SourceAction
 	| DestinationAction
@@ -137,6 +147,7 @@ type State = {
 	account: string;
 	isNetworkConnected: boolean;
 	kycStatus: KycStatusEnum;
+	kycL2Status: string;
 	accessToken: string;
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
@@ -183,6 +194,7 @@ const initialState: State = {
 	accessToken: '',
 	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
+	kycL2Status: '',
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
@@ -216,6 +228,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, refreshToken: action.payload as string };
 		case KycEnum.STATUS:
 			return { ...state, kycStatus: action.payload };
+		case KycL2StatusEnum.STATUS:
+			return { ...state, kycL2Status: action.payload };
 		case ButtonEnum.BUTTON:
 			return { ...state, buttonStatus: action.payload };
 		case ThemeEnum.THEME:
@@ -250,7 +264,7 @@ const authReducer = (state: State, action: Action): State => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [state, dispatch] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
-	const { account, isNetworkConnected, kycStatus, isUserVerified } = state;
+	const { account, isNetworkConnected, kycStatus, isUserVerified, kycL2Status } = state;
 
 	useEffect(() => {
 		if (!account) {
@@ -271,14 +285,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
 		// Add variable KYC l2 status should be kycL2Status === KycL2StatusEnum.PASS
-		if (kycStatus === KycStatusEnum.PASS && isNetworkConnected && account) {
+		if (
+			kycStatus === KycStatusEnum.PASS &&
+			isNetworkConnected &&
+			account &&
+			kycL2Status === 'PASS'
+		) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		}
 
-		if (kycStatus !== KycStatusEnum.PASS) {
+		if (kycStatus !== KycStatusEnum.PASS && kycL2Status !== 'PASS') {
 			dispatch({ type: VerificationEnum.USER, payload: false });
 		}
-	}, [account, isNetworkConnected, kycStatus, isUserVerified]);
+	}, [account, isNetworkConnected, kycStatus, kycL2Status, isUserVerified]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
