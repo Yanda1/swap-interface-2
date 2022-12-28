@@ -67,22 +67,6 @@ const FileInput = styled.input`
 	z-index: -100;
 `;
 
-// const PreviewImg = styled.img(() => {
-// 	const {
-// 		state: { theme }
-// 	} = useStore();
-//
-// 	return css`
-// 		width: ${pxToRem(150)};
-// 		height: ${pxToRem(100)};
-// 		// border: 2px dashed ${theme.border.secondary};
-// 	`;
-// });
-
-// const FileNameText = styled.p`
-// 	margin-bottom: ${spacing[10]};
-// `;
-
 type Props = {
 	showKycL2: boolean;
 	updateShowKycL2?: any;
@@ -121,7 +105,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		email: '',
 		file: {
 			poaDoc1: null,
-			posOfDoc1: null
+			posofDoc1: null
 		},
 		irregularSourceOfFunds: [],
 		irregularSourceOfFundsOther: '',
@@ -139,10 +123,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		taxResidency: '',
 		workArea: []
 	});
-
-	// const [file, setFile] = useState<any>(null);
-	// const [fileUrl, setFileUrl] = useState<any>(null);
-	// const fileReader = new FileReader();
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
 	const [workAreaList] = useState<string[]>([
@@ -189,9 +169,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	]);
 	const [page, setPage] = useState<number>(0);
 	const api = useAxios();
-	const {
-		state: { accessToken }
-	} = useStore();
 
 	const isDisabled =
 		input.citizenship === '' ||
@@ -213,42 +190,103 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		input.taxResidency === '' ||
 		!input.workArea.length;
 
-	// fileReader.onloadend = () => {
-	// 	setFileUrl(fileReader.result);
-	// };
 	const handleNext = () => {
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = async (event: any) => {
-		const index = input.irregularSourceOfFunds.indexOf('Other');
-		if (index) {
+		event.preventDefault();
+		const indexIrregularSourceOfFunds = input.irregularSourceOfFunds.indexOf('Other');
+		if (indexIrregularSourceOfFunds >= 0) {
 			const copy = [...input.irregularSourceOfFunds];
-			copy[index] = input.irregularSourceOfFundsOther;
-			console.log(copy);
+			copy[indexIrregularSourceOfFunds] = input.irregularSourceOfFundsOther;
 			setInput({ ...input, irregularSourceOfFunds: copy });
 		}
-		event.preventDefault();
-		// send POST if 200 change add toast and modal (Successful submit) to check kys if 401 bad request add toast like please pass kyc again
-		updateShowKycL2(false);
-		const bodyFormData = new FormData();
-		bodyFormData.append('poaDoc1', JSON.stringify(input.file.poaDoc1));
 
-		const options: any = {
-			method: 'Post',
-			url: `${BASE_URL}kyc/l2-data`,
-			headers: {
-				'Content-Type': 'multipart/form-data',
-				'Auth-Token': accessToken
-			}
-		};
-		const res = await api.post(`${BASE_URL}kyc/l2-data`, bodyFormData, options).then(
-			(response) => {
-				console.log(response, res);
-			},
-			(error) => {
-				console.log(error, res);
-			}
+		const indexSourceOfIncomeNature = input.sourceOfIncomeNature.indexOf('Other');
+		if (indexSourceOfIncomeNature >= 0) {
+			const copy = [...input.sourceOfIncomeNature];
+			copy[indexSourceOfIncomeNature] = input.sourceOfIncomeNatureOther;
+			console.log(copy);
+			setInput({ ...input, sourceOfIncomeNature: copy });
+		}
+
+		const indexSourceOfFunds = input.sourceOfFunds.indexOf('Other');
+		if (indexSourceOfFunds >= 0) {
+			const copy = [...input.sourceOfFunds];
+			copy[indexSourceOfFunds] = input.sourceOfFundsOther;
+			setInput({ ...input, sourceOfFunds: copy });
+		}
+
+		const indexDeclareFirst = input.declare.indexOf(
+			'I am a national of another state or country, specifically:'
 		);
+		if (indexDeclareFirst >= 0) {
+			const copy = [...input.declare];
+			copy[
+				indexDeclareFirst
+			] = `I am a national of another state or country, specifically: ${input.declareOther}`;
+			setInput({ ...input, declare: copy });
+		}
+		const indexDeclareSecond = input.declare.indexOf(
+			'I am registered to a permanent or other type of residency in another state or country, specifically:'
+		);
+		if (indexDeclareSecond >= 0) {
+			const copy = [...input.declare];
+			copy[
+				indexDeclareSecond
+			] = `I am registered to a permanent or other type of residency in another state or country, specifically: ${input.declareOther}`;
+			setInput({ ...input, declare: copy });
+		}
+		// send POST if 200 change add toast and modal (Successful submit) to check kys if 401 bad request add toast like please pass kyc again
+
+		// const form = {
+		// 	placeOfBirth: input.placeOfBirth,
+		// 	mailAddress: input.mailAddress,
+		// 	gender: input.gender,
+		// 	citizenship: input.citizenship,
+		// 	email: input.email,
+		// 	taxResidency: input.taxResidency,
+		// 	politicallPerson: input.politicallPerson,
+		// 	appliedSanctions: input.appliedSanctions,
+		// 	countryOfWork: input.countryOfWork,
+		// 	workArea: input.workArea,
+		// 	sourceOfIncomeNature: input.sourceOfIncomeNature,
+		// 	yearlyIncome: input.yearlyIncome,
+		// 	sourceOfIncome: input.sourceOfIncome,
+		// 	sourceOfFunds: input.sourceOfFunds,
+		// 	irregularSourceOfFunds: input.irregularSourceOfFunds,
+		// 	hasCriminalRecords: input.hasCriminalRecords,
+		// 	declare: input.declare,
+		// 	poaDoc1: input.file.poaDoc1,
+		// 	posofDoc1: input.file.posofDoc1
+		// };
+		const bodyFormData = new FormData();
+
+		bodyFormData.append('placeOfBirth', input.placeOfBirth);
+		bodyFormData.append('poaDoc1', input.file.poaDoc1);
+		bodyFormData.append('posofDoc1', input.file.posofDoc1);
+		bodyFormData.append('mailAddress', input.mailAddress);
+		bodyFormData.append('gender', input.gender);
+		bodyFormData.append('citizenship', input.citizenship);
+		bodyFormData.append('email', input.email);
+		bodyFormData.append('taxResidency', input.taxResidency);
+		bodyFormData.append('politicallPerson', input.politicallPerson);
+		bodyFormData.append('appliedSanctions', input.appliedSanctions);
+		bodyFormData.append('countryOfWork', input.countryOfWork);
+		bodyFormData.append('workArea', JSON.stringify(input.workArea));
+		bodyFormData.append('sourceOfIncomeNature', JSON.stringify(input.sourceOfIncomeNature));
+		bodyFormData.append('yearlyIncome', JSON.stringify(input.yearlyIncome));
+		bodyFormData.append('sourceOfIncome', input.sourceOfIncome);
+		bodyFormData.append('sourceOfFunds', JSON.stringify(input.sourceOfFunds));
+		bodyFormData.append('irregularSourceOfFunds', JSON.stringify(input.irregularSourceOfFunds));
+		bodyFormData.append('hasCriminalRecords', input.hasCriminalRecords);
+		bodyFormData.append('declare', JSON.stringify(input.declare));
+
+		const res = await api
+			.post(`${BASE_URL}kyc/l2-data`, bodyFormData)
+			.then((response) => console.log(response));
+		console.log(res);
+		updateShowKycL2(false);
 	};
 	const handleChangeInput = (event: any) => {
 		setInput({ ...input, [event.target.name]: event.target.value });
@@ -276,13 +314,10 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			fileInputAddress?.current?.files && fileInputAddress?.current?.files[0];
 		console.log(filePosoaDoc1);
 		const filePosofDoc1: any = fileInputDocs?.current?.files && fileInputDocs?.current?.files[0];
-		// setFile(file);
 		setInput({
 			...input,
-			file: { ...input.file, poaDoc1: filePosoaDoc1, posOfDoc1: filePosofDoc1 }
+			file: { ...input.file, poaDoc1: filePosoaDoc1, posofDoc1: filePosofDoc1 }
 		});
-		// fileReader.readAsDataURL(filePosoaDoc1);
-		// fileReader.readAsDataURL(filePosofDoc1);
 	};
 
 	const handleOnClose = () => {
@@ -763,7 +798,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								ref={fileInputDocs as any}
 								onChange={handleChangeFileInput}
 								required={true}></FileInput>
-							{input.file.posOfDoc1 ? input.file.posOfDoc1.name : 'Upload File'}
+							{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
 						</LabelInput>
 					</>
 				)}
@@ -797,3 +832,14 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		</Portal>
 	) : null;
 };
+//
+// const headers = {
+// 	'Content-Type': 'multipart/form-data'
+// };
+// console.log(formObj);
+//
+// const res = await api
+// 	.post(`${BASE_URL}kyc/l2-data`, formObj, { headers })
+// 	.then((r: any) => console.log(r))
+// 	.catch((error) => console.log(error));
+// console.log(res);

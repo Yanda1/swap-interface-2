@@ -561,7 +561,7 @@ export const Header = () => {
 					</Networks>
 				</MenuWrapper>
 			)}
-			{showModal && <KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />}
+			<KycL2Modal showKycL2={true} updateShowKycL2={updateShowKycL2} />
 		</StyledHeader>
 	);
 };
