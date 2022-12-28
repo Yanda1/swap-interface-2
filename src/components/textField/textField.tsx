@@ -101,7 +101,7 @@ type Props = {
 	placeholder?: string;
 	disabled?: boolean;
 	type?: TypeProps;
-	value: string | boolean;
+	value: string | boolean | number;
 	description?: string;
 	error?: boolean;
 	size?: SizeProps;
@@ -144,7 +144,6 @@ export const TextField = ({
 				align={align}
 				value={value}
 				type={type}
-				min="0"
 				size={size}
 				error={error}
 				onBlur={() => setIsActive(true)}

@@ -168,7 +168,7 @@ export const Header = () => {
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showNetworksList, setShowNetworksList] = useState(false);
-	const [showKycL2, setShowKycL2] = useState(false);
+	const [showModal, setShowModal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
@@ -275,7 +275,6 @@ export const Header = () => {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
-				console.log(res);
 				if (res.data.errorData === noKycStatusMessage) {
 					await getBinanceToken();
 				}
@@ -373,9 +372,8 @@ export const Header = () => {
 			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
 			} else if (buttonStatus === button.PASS_KYC_L2) {
-				// TODO: add GET request to base to get status of KYC review show modal window
-				setShowKycL2(true);
-				console.log('GET REQUEST TO UPDATE REVIEW STATUS OF KYC L2');
+				// add  request to base to get status of KYC review show modal window
+				setShowModal(!showModal);
 			} else if (buttonStatus === button.CHECK_KYC_L2) {
 				void checkStatus();
 			} else if (buttonStatus === button.LOGIN) {
@@ -392,7 +390,7 @@ export const Header = () => {
 	});
 
 	const updateShowKycL2 = (value: boolean) => {
-		setShowKycL2(value);
+		setShowModal(value);
 	};
 
 	useEffect(() => {
@@ -563,7 +561,7 @@ export const Header = () => {
 					</Networks>
 				</MenuWrapper>
 			)}
-			{showKycL2 ? <KycL2Modal showKycL2 updateShowKycL2={updateShowKycL2} /> : null}
+			{showModal && <KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />}
 		</StyledHeader>
 	);
 };
