@@ -1,23 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
-import { utils, BigNumber } from 'ethers';
-import _ from 'lodash';
-import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
-import { Contract } from '@ethersproject/contracts';
-import {
-	BINANCE_FEE,
-	BLOCK_CHUNK_SIZE,
-	BLOCK_CONTRACT_NUMBER,
-	CONTRACT_ADDRESSES,
-	LOCAL_STORAGE_HISTORY,
-	routes,
-	SERVICE_ADDRESS,
-	TransactionData,
-	useStore
-} from '../helpers';
-import type { LocalStorageHistory } from '../helpers';
+// import { utils, BigNumber } from 'ethers';
+import { BINANCE_FEE, routes, GRAPH_URLS, TransactionData, useStore } from '../helpers';
+import type { CostRequest, ChainIds } from '../helpers';
 import { useAxios } from './useAxios';
-import { useLocalStorage } from './useLocalStorage';
+import { createClient } from 'urql';
+import _ from 'lodash';
 
 export const useTransactions = () => {
 	const [loading, setLoading] = useState(true);
@@ -25,65 +13,51 @@ export const useTransactions = () => {
 	const [startFetchDetails, setStartFetchDetails] = useState(false);
 	const [data, setData] = useState<TransactionData[]>([]);
 	const [events, setEvents] = useState<any[]>([]);
-	const [lastBlock, setLastBlock] = useState(null);
 
-	const { chainId, library } = useEthers();
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
-	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
+	const { chainId } = useEthers();
 	const {
 		state: { account, isUserVerified }
 	} = useStore();
 	const api = useAxios();
-	// eslint-disable-next-line
-	const [storage, setStorage] = useLocalStorage<LocalStorageHistory>(LOCAL_STORAGE_HISTORY, {
-		[account]: {
-			lastBlock: null,
-			data: [] as TransactionData[]
-		}
-	});
-	const contract = new Contract(contractAddress, contractInterface, library);
 
 	const getAllTransactions = async () => {
-		if (account && lastBlock && isUserVerified) {
-			const costRequestFilter = contract.filters.CostRequest(account, SERVICE_ADDRESS);
-			let allEvents: any[] = [];
-
-			for (
-				let i = storage[account]?.lastBlock ?? BLOCK_CONTRACT_NUMBER;
-				i < lastBlock;
-				i += BLOCK_CHUNK_SIZE
-			) {
-				const endBlock = Math.min(lastBlock, i + BLOCK_CHUNK_SIZE - 1);
-
-				try {
-					const splitEvents = await contract.queryFilter(costRequestFilter, i, endBlock);
-					const dataEvents = splitEvents.filter((event) => event?.args?.data);
-					allEvents = [...allEvents, ...dataEvents];
-				} catch (e) {
-					console.log('error in costRequestFilter', e);
+		if (account && isUserVerified && chainId) {
+			const query = `
+				query {
+					costRequests(where: {customer: "${account}"}) {
+						id
+						customer
+						service
+						productId
+						validatorsList
+						data
+						blockNumber
+						blockTimestamp
+						transactionHash
+					}
 				}
-			}
-			setEvents(allEvents);
+			`;
 
-			if (allEvents.length === 0) {
-				storage[account] = {
-					...storage[account],
-					lastBlock: lastBlock ? lastBlock - BLOCK_CHUNK_SIZE : BLOCK_CONTRACT_NUMBER
-				};
-				setStorage({ ...storage });
-			}
+			const client = createClient({ url: GRAPH_URLS[chainId.toString() as ChainIds] });
+			// @ts-ignore
+			const graphQuery: any = await client.query(query).toPromise();
+			const graphData: CostRequest[] = graphQuery.data.costRequests.filter(
+				(item: CostRequest) => item.data
+			);
+
+			setEvents(graphData);
 			setLoading(false);
 		}
 	};
 
 	const getTransactionsHeaderData = () => {
 		const headerData: TransactionData[] = [];
-		events.map((transaction) => {
-			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
+		events.map((transaction: CostRequest) => {
+			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.data);
 			const dataset: TransactionData = {
-				blockNumber: transaction?.blockNumber,
+				blockNumber: +transaction?.blockNumber,
 				header: {
-					timestamp: undefined,
+					timestamp: +transaction?.blockTimestamp,
 					symbol: `${scoin}${fcoin}`,
 					scoin,
 					fcoin,
@@ -99,72 +73,85 @@ export const useTransactions = () => {
 
 		const uniqueData = _.uniqBy([...data, ...headerData], 'blockNumber');
 		setData(uniqueData);
-		storage[account] = { ...storage[account], data: uniqueData };
-		setStorage({ ...storage });
 		setStartFetchDetails(true);
 	};
 
-	const getTransactionsData = async (transaction: any) => {
+	const getTransactionsData = async (transaction: CostRequest) => {
 		let dataset = {} as TransactionData;
-		dataset.blockNumber = transaction?.blockNumber;
-		const { scoin, fcoin, samt, net } = JSON.parse(transaction?.args?.data);
+		dataset.blockNumber = +transaction?.blockNumber;
+		const { scoin, fcoin, samt, net } = JSON.parse(transaction?.data);
+		const actionQuery = `
+			query {
+				actions(where: {productId: "${transaction?.productId}"}) {
+					data
+				}
+			}
+		`;
 
-		const actionFilter = contract.filters.Action(account, SERVICE_ADDRESS, transaction.args[2]);
-		const actionRes = await contract.queryFilter(actionFilter, transaction?.blockNumber);
+		if (chainId) {
+			const client = createClient({ url: GRAPH_URLS[chainId.toString() as ChainIds] });
+			// @ts-ignore
+			const graphQuery: any = await client.query(actionQuery).toPromise();
+			const actionRes: { data: string }[] = graphQuery.data.actions;
 
-		if (actionRes.length === 0) {
-			dataset = {
-				...dataset,
-				content: 'none',
-				withdrawl: null
-			};
-		}
-		if (actionRes.length === 2) {
-			const { q: qty, p: price, ts: timestamp } = JSON.parse(actionRes[0]?.args?.data);
-			const { id } = JSON.parse(actionRes[1]?.args?.data);
+			if (actionRes.length === 0) {
+				dataset = {
+					...dataset,
+					content: 'none',
+					withdrawl: null
+				};
+			}
+			if (actionRes.length === 2) {
+				const { q: qty, p: price, ts: timestamp } = JSON.parse(actionRes[0]?.data);
+				const { id } = JSON.parse(actionRes[1]?.data);
 
-			try {
-				const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
-				const {
-					data: { amount, url, withdrawFee }
-				} = withdrawLink;
+				try {
+					const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
+					const {
+						data: { amount, url, withdrawFee }
+					} = withdrawLink;
 
-				dataset = { ...dataset, withdrawl: { amount, url, withdrawFee } };
-			} catch (e) {
-				console.log('error in withdrawLink', e);
+					dataset = { ...dataset, withdrawl: { amount, url, withdrawFee } };
+				} catch (e) {
+					console.log('error in withdrawLink', e);
+				}
+
+				const completeQuery = `
+					query {
+						completes(where: {productId: "${transaction?.productId}"}) {
+							success
+						}
+					}
+				`;
+
+				// @ts-ignore
+				const graphQuery: any = await client.query(completeQuery).toPromise();
+				const completeRes: { success: boolean }[] = graphQuery.data.completes;
+				const success = completeRes[0]?.success;
+
+				dataset = {
+					...dataset,
+					content: {
+						qty,
+						price,
+						timestamp,
+						cexFee: (qty * price * BINANCE_FEE).toString(),
+						withdrawFee: '',
+						success
+					}
+				};
 			}
 
-			const completeFilter = contract.filters.Complete(
-				account,
-				SERVICE_ADDRESS,
-				transaction.args[2]
-			);
-			const completeRes = await contract.queryFilter(completeFilter, transaction?.blockNumber);
-			const success = JSON.parse(completeRes[0]?.args?.success);
-
-			dataset = {
-				...dataset,
-				content: {
-					qty,
-					price,
-					timestamp,
-					cexFee: (qty * price * BINANCE_FEE).toString(),
-					withdrawFee: '',
-					success
-				}
-			};
-		}
-
-		try {
-			const block = await transaction.getBlock();
-			const gasFee = utils.formatEther(
-				BigNumber.from(block.baseFeePerGas['_hex']).mul(BigNumber.from(block.gasUsed['_hex']))
-			);
+			// const block = transaction.blockNumber;
+			// const gasFee = utils.formatEther(
+			// 	BigNumber.from(block.baseFeePerGas['_hex']).mul(BigNumber.from(block.gasUsed['_hex']))
+			// );
+			const gasFee = '10';
 			dataset = {
 				...dataset,
 				header: {
 					...dataset.header,
-					timestamp: block.timestamp,
+					timestamp: +transaction?.blockTimestamp,
 					symbol: `${scoin}${fcoin}`,
 					scoin,
 					fcoin,
@@ -175,41 +162,12 @@ export const useTransactions = () => {
 			};
 
 			return dataset;
-		} catch (e) {
-			console.log('error', e);
 		}
 	};
 
-	const resolvePromises = (fn: any, args: any) =>
-		new Promise((resolve) => {
-			fn(...args)
-				.then((res: TransactionData) => resolve(res))
-				.catch(() => resolve(resolvePromises(fn, args)));
-		});
-
-	useEffect(() => {
-		if (storage[account]?.data?.length > 0) {
-			setData(storage[account].data);
-			setLoading(false);
-			setContentLoading(false);
-		} else {
-			setData([]);
-			setLoading(true);
-			setContentLoading(true);
-		}
-	}, [account]);
-
-	useEffect(() => {
-		library
-			?.getBlockNumber()
-			// @ts-ignore
-			.then((res: number) => setLastBlock(res))
-			.catch((e) => console.log('e in lastBlock', e));
-	}, [library]);
-
 	useEffect(() => {
 		void getAllTransactions();
-	}, [account, isUserVerified, lastBlock]);
+	}, [account, isUserVerified]);
 
 	useEffect(() => {
 		if (events.length > 0) {
@@ -219,7 +177,7 @@ export const useTransactions = () => {
 
 	useEffect(() => {
 		if (events.length > 0) {
-			const all = events.map((event) => resolvePromises(getTransactionsData, [event]));
+			const all = events.map(async (event) => getTransactionsData(event));
 			Promise.all(all)
 				// @ts-ignore
 				.then((transactions: TransactionData[]) => {
@@ -238,11 +196,6 @@ export const useTransactions = () => {
 						}
 					});
 					setData(dataCopy);
-					storage[account] = {
-						lastBlock: lastBlock ? lastBlock - BLOCK_CHUNK_SIZE : BLOCK_CONTRACT_NUMBER,
-						data: dataCopy
-					};
-					setStorage({ ...storage });
 				})
 				.catch((e) => console.log('e in PromiseAll', e))
 				.finally(() => setContentLoading(false));

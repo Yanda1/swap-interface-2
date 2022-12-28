@@ -60,3 +60,15 @@ export type SelectProps = {
 	value: TransactionHeaderSortValue;
 	checked: boolean;
 };
+
+export type CostRequest = {
+	data: string;
+	id: string;
+	customer: string;
+	service: string;
+	productId: string;
+	validatorsList: string[];
+	blockNumber: string;
+	blockTimestamp: string;
+	transactionHash: string;
+};
