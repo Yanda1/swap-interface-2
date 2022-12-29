@@ -6,6 +6,7 @@ import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
 import { useAxios } from '../../hooks';
+import axios from 'axios';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -169,6 +170,9 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	]);
 	const [page, setPage] = useState<number>(0);
 	const api = useAxios();
+	const {
+		state: { accessToken }
+	} = useStore();
 
 	const isDisabled =
 		input.citizenship === '' ||
@@ -238,28 +242,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			setInput({ ...input, declare: copy });
 		}
 		// send POST if 200 change add toast and modal (Successful submit) to check kys if 401 bad request add toast like please pass kyc again
-
-		// const form = {
-		// 	placeOfBirth: input.placeOfBirth,
-		// 	mailAddress: input.mailAddress,
-		// 	gender: input.gender,
-		// 	citizenship: input.citizenship,
-		// 	email: input.email,
-		// 	taxResidency: input.taxResidency,
-		// 	politicallPerson: input.politicallPerson,
-		// 	appliedSanctions: input.appliedSanctions,
-		// 	countryOfWork: input.countryOfWork,
-		// 	workArea: input.workArea,
-		// 	sourceOfIncomeNature: input.sourceOfIncomeNature,
-		// 	yearlyIncome: input.yearlyIncome,
-		// 	sourceOfIncome: input.sourceOfIncome,
-		// 	sourceOfFunds: input.sourceOfFunds,
-		// 	irregularSourceOfFunds: input.irregularSourceOfFunds,
-		// 	hasCriminalRecords: input.hasCriminalRecords,
-		// 	declare: input.declare,
-		// 	poaDoc1: input.file.poaDoc1,
-		// 	posofDoc1: input.file.posofDoc1
-		// };
 		const bodyFormData = new FormData();
 
 		bodyFormData.append('placeOfBirth', input.placeOfBirth);
@@ -281,11 +263,29 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		bodyFormData.append('irregularSourceOfFunds', JSON.stringify(input.irregularSourceOfFunds));
 		bodyFormData.append('hasCriminalRecords', input.hasCriminalRecords);
 		bodyFormData.append('declare', JSON.stringify(input.declare));
+		console.log(bodyFormData);
 
-		const res = await api
-			.post(`${BASE_URL}kyc/l2-data`, bodyFormData)
-			.then((response) => console.log(response));
-		console.log(res);
+		axios({
+			method: 'POST',
+			url: `${BASE_URL}kyc/l2-data`,
+			data: bodyFormData,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				Authorization: 'Bearer ' + accessToken
+			}
+		})
+			.then(function (response) {
+				// handle success
+				console.log(response);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+			});
+		// const res = await api
+		// 	.post(`${BASE_URL}kyc/l2-data`, bodyFormData)
+		// 	.then((r: any) => console.log(r));
+		// console.log(res);
 		updateShowKycL2(false);
 	};
 	const handleChangeInput = (event: any) => {
