@@ -10,7 +10,6 @@ import _ from 'lodash';
 export const useTransactions = () => {
 	const [loading, setLoading] = useState(true);
 	const [contentLoading, setContentLoading] = useState(true);
-	const [startFetchDetails, setStartFetchDetails] = useState(false);
 	const [data, setData] = useState<TransactionData[]>([]);
 	const [events, setEvents] = useState<any[]>([]);
 
@@ -50,32 +49,6 @@ export const useTransactions = () => {
 		}
 	};
 
-	const getTransactionsHeaderData = () => {
-		const headerData: TransactionData[] = [];
-		events.map((transaction: CostRequest) => {
-			const { scoin, fcoin, samt, net } = JSON.parse(transaction?.data);
-			const dataset: TransactionData = {
-				blockNumber: +transaction?.blockNumber,
-				header: {
-					timestamp: +transaction?.blockTimestamp,
-					symbol: `${scoin}${fcoin}`,
-					scoin,
-					fcoin,
-					samt,
-					net
-				},
-				content: null,
-				withdrawl: null,
-				gasFee: ''
-			};
-			headerData.push(dataset);
-		});
-
-		const uniqueData = _.uniqBy([...data, ...headerData], 'blockNumber');
-		setData(uniqueData);
-		setStartFetchDetails(true);
-	};
-
 	const getTransactionsData = async (transaction: CostRequest) => {
 		let dataset = {} as TransactionData;
 		dataset.blockNumber = +transaction?.blockNumber;
@@ -102,8 +75,11 @@ export const useTransactions = () => {
 				};
 			}
 			if (actionRes.length === 2) {
-				const { q: qty, p: price, ts: timestamp } = JSON.parse(actionRes[0]?.data);
-				const { id } = JSON.parse(actionRes[1]?.data);
+				const allActionData = {
+					...JSON.parse(actionRes[0]?.data),
+					...JSON.parse(actionRes[1]?.data)
+				};
+				const { q: qty, p: price, ts: timestamp, id } = allActionData;
 
 				try {
 					const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
@@ -171,36 +147,17 @@ export const useTransactions = () => {
 
 	useEffect(() => {
 		if (events.length > 0) {
-			getTransactionsHeaderData();
-		}
-	}, [events]);
-
-	useEffect(() => {
-		if (events.length > 0) {
 			const all = events.map(async (event) => getTransactionsData(event));
 			Promise.all(all)
 				// @ts-ignore
 				.then((transactions: TransactionData[]) => {
-					const dataCopy = [...data];
-					transactions.map((transaction: TransactionData) => {
-						// TODO: solution if undefined - also for the lastBlock logic
-						const findTransactionInData = data.find(
-							(item) => item.blockNumber === transaction.blockNumber
-						);
-
-						if (findTransactionInData) {
-							const transactionIndexInData = dataCopy.indexOf(findTransactionInData);
-							dataCopy[transactionIndexInData] = transaction;
-						} else {
-							dataCopy.push(transaction);
-						}
-					});
-					setData(dataCopy);
+					const data = _.orderBy(transactions, (item: TransactionData) => item?.header.timestamp);
+					setData(data);
 				})
 				.catch((e) => console.log('e in PromiseAll', e))
 				.finally(() => setContentLoading(false));
 		}
-	}, [startFetchDetails]);
+	}, [events]);
 
 	return { loading, contentLoading, data };
 };
