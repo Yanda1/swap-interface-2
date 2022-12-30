@@ -309,6 +309,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 														{item.header?.fcoin}
 													</ContentItemText>
 												</ContentItem>
+												{ item.withdrawl ?
 												<ContentItem theme={theme}>
 													<ContentItemLink
 														theme={theme}
@@ -321,6 +322,13 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 														{item.header?.fcoin}
 													</ContentItemText>
 												</ContentItem>
+												:
+												<ContentItem theme={theme}>
+													<ContentItemText>
+														Withdrawal wallet and destination wallet on the same CEX, there is no transaction link.
+													</ContentItemText>
+												</ContentItem>
+												}
 												<ContentItem theme={theme}>
 													<ContentItemText
 														color={
