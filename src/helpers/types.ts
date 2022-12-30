@@ -25,6 +25,7 @@ export type TransactionData = {
 	};
 	content:
 		| {
+				action: number;
 				qty: string;
 				price: string;
 				timestamp: number;

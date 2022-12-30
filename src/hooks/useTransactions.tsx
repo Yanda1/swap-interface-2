@@ -79,7 +79,7 @@ export const useTransactions = () => {
 					...JSON.parse(actionRes[0]?.data),
 					...JSON.parse(actionRes[1]?.data)
 				};
-				const { q: qty, p: price, ts: timestamp, id } = allActionData;
+				const { a: action, q: qty, p: price, ts: timestamp, id } = allActionData;
 
 				try {
 					const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
@@ -108,6 +108,7 @@ export const useTransactions = () => {
 				dataset = {
 					...dataset,
 					content: {
+						action,
 						qty,
 						price,
 						timestamp,
