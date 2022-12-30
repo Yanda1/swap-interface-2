@@ -51,3 +51,12 @@ export const formatDate = (ts: number | undefined): string =>
 	ts
 		? format(utcToZonedTime(new Date(ts * 1000), timeZone as string), 'dd/MM/yyyy HH:mm:ss')
 		: 'n/a';
+
+export const findAndReplace = (array: string[], find: string, replace: string): string[] => {
+	var result = [...array];
+	if (result.includes(find)) {
+		const index = result.indexOf(find);
+		result[index] = replace;
+	}
+	return result;
+};

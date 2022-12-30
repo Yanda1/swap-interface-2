@@ -1,11 +1,11 @@
 import styled, { css } from 'styled-components';
 import { useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
-import { BASE_URL, useStore } from '../../helpers';
+import { BASE_URL, useStore, findAndReplace } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
-import { useAxios } from '../../hooks';
+// import { useAxios } from '../../hooks';
 import axios from 'axios';
 
 const Wrapper = styled.div(() => {
@@ -169,7 +169,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		'I am registered to a permanent or other type of residency in another state or country, specifically:'
 	]);
 	const [page, setPage] = useState<number>(0);
-	const api = useAxios();
+	// const api = useAxios();
 	const {
 		state: { accessToken }
 	} = useStore();
@@ -252,17 +252,22 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		bodyFormData.append('citizenship', input.citizenship);
 		bodyFormData.append('email', input.email);
 		bodyFormData.append('taxResidency', input.taxResidency);
-		bodyFormData.append('politicallPerson', input.politicallPerson);
-		bodyFormData.append('appliedSanctions', input.appliedSanctions);
+		bodyFormData.append('politicallPerson', input.politicallPerson === 'Yes' ? 'true' : 'false');
+		bodyFormData.append('appliedSanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
 		bodyFormData.append('countryOfWork', input.countryOfWork);
 		bodyFormData.append('workArea', JSON.stringify(input.workArea));
-		bodyFormData.append('sourceOfIncomeNature', JSON.stringify(input.sourceOfIncomeNature));
-		bodyFormData.append('yearlyIncome', JSON.stringify(input.yearlyIncome));
+		const sourceOfIncomeNature = findAndReplace(input.sourceOfIncomeNature, 'Other', input.sourceOfIncomeNatureOther);
+		bodyFormData.append('sourceOfIncomeNature', JSON.stringify(sourceOfIncomeNature));
+		const yearlyIncome = input.yearlyIncome ? Number(input.yearlyIncome).toFixed(4) : '0';
+		bodyFormData.append('yearlyIncome', yearlyIncome);
 		bodyFormData.append('sourceOfIncome', input.sourceOfIncome);
-		bodyFormData.append('sourceOfFunds', JSON.stringify(input.sourceOfFunds));
-		bodyFormData.append('irregularSourceOfFunds', JSON.stringify(input.irregularSourceOfFunds));
-		bodyFormData.append('hasCriminalRecords', input.hasCriminalRecords);
-		bodyFormData.append('declare', JSON.stringify(input.declare));
+		const sourceOfFunds = findAndReplace(input.sourceOfFunds, 'Other', input.sourceOfFundsOther);
+		bodyFormData.append('sourceOfFunds', JSON.stringify(sourceOfFunds));
+		const irregularSourceOfFunds = findAndReplace(input.irregularSourceOfFunds, 'Other', input.irregularSourceOfFundsOther);
+		bodyFormData.append('irregularSourceOfFunds', JSON.stringify(irregularSourceOfFunds));
+		bodyFormData.append('hasCriminalRecords', input.hasCriminalRecords === 'Yes' ? 'true' : 'false');
+		const declare = findAndReplace(input.declare, 'Other', input.declareOther);
+		bodyFormData.append('declare', JSON.stringify(declare));
 		console.log(bodyFormData);
 
 		axios({
