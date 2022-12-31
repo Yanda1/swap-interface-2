@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
-// import { utils, BigNumber } from 'ethers';
+import { utils } from 'ethers';
 import { BINANCE_FEE, routes, GRAPH_URLS, TransactionData, useStore } from '../helpers';
 import type { CostRequest, ChainIds } from '../helpers';
 import { useAxios } from './useAxios';
@@ -13,7 +13,7 @@ export const useTransactions = () => {
 	const [data, setData] = useState<TransactionData[]>([]);
 	const [events, setEvents] = useState<any[]>([]);
 
-	const { chainId } = useEthers();
+	const { chainId, library } = useEthers();
 	const {
 		state: { account, isUserVerified }
 	} = useStore();
@@ -66,6 +66,7 @@ export const useTransactions = () => {
 			// @ts-ignore
 			const graphQuery: any = await client.query(actionQuery).toPromise();
 			const actionRes: { data: string }[] = graphQuery.data.actions;
+			var gasFee: string = '0';
 
 			if (actionRes.length === 0) {
 				dataset = {
@@ -79,7 +80,7 @@ export const useTransactions = () => {
 					...JSON.parse(actionRes[0]?.data),
 					...JSON.parse(actionRes[1]?.data)
 				};
-				const { q: qty, p: price, ts: timestamp, id } = allActionData;
+				const { a: action, q: qty, p: price, ts: timestamp, id } = allActionData;
 
 				try {
 					const withdrawLink = await api.get(`${routes.transactionDetails}${id}`);
@@ -97,6 +98,9 @@ export const useTransactions = () => {
 						completes(where: {productId: "${transaction?.productId}"}) {
 							success
 						}
+						deposits(where: {productId: "${transaction?.productId}"}) {
+							transactionHash
+						}
 					}
 				`;
 
@@ -104,10 +108,16 @@ export const useTransactions = () => {
 				const graphQuery: any = await client.query(completeQuery).toPromise();
 				const completeRes: { success: boolean }[] = graphQuery.data.completes;
 				const success = completeRes[0]?.success;
+				const depositTxHash: { transactionHash: string }[] = graphQuery.data.deposits;
+				const depositReceipt = await library?.getTransactionReceipt(depositTxHash[0]?.transactionHash);
+				if(depositReceipt) {
+					gasFee = utils.formatEther(depositReceipt.effectiveGasPrice.mul(depositReceipt.gasUsed));
+				}
 
 				dataset = {
 					...dataset,
 					content: {
+						action,
 						qty,
 						price,
 						timestamp,
@@ -118,11 +128,6 @@ export const useTransactions = () => {
 				};
 			}
 
-			// const block = transaction.blockNumber;
-			// const gasFee = utils.formatEther(
-			// 	BigNumber.from(block.baseFeePerGas['_hex']).mul(BigNumber.from(block.gasUsed['_hex']))
-			// );
-			const gasFee = '10';
 			dataset = {
 				...dataset,
 				header: {
