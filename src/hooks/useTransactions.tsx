@@ -66,7 +66,7 @@ export const useTransactions = () => {
 			// @ts-ignore
 			const graphQuery: any = await client.query(actionQuery).toPromise();
 			const actionRes: { data: string }[] = graphQuery.data.actions;
-			var gasFee: string = '0';
+			let gasFee = '0';
 
 			if (actionRes.length === 0) {
 				dataset = {
@@ -109,8 +109,10 @@ export const useTransactions = () => {
 				const completeRes: { success: boolean }[] = graphQuery.data.completes;
 				const success = completeRes[0]?.success;
 				const depositTxHash: { transactionHash: string }[] = graphQuery.data.deposits;
-				const depositReceipt = await library?.getTransactionReceipt(depositTxHash[0]?.transactionHash);
-				if(depositReceipt) {
+				const depositReceipt = await library?.getTransactionReceipt(
+					depositTxHash[0]?.transactionHash
+				);
+				if (depositReceipt) {
 					gasFee = utils.formatEther(depositReceipt.effectiveGasPrice.mul(depositReceipt.gasUsed));
 				}
 
