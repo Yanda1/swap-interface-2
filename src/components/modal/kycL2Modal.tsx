@@ -1,12 +1,13 @@
 import styled, { css } from 'styled-components';
 import { useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
-import { BASE_URL, useStore, findAndReplace } from '../../helpers';
+import { BASE_URL, findAndReplace, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
 // import { useAxios } from '../../hooks';
 import axios from 'axios';
+import { useToasts } from '../toast/toast';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -73,6 +74,8 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
+	// @ts-ignore
+	const { addToast } = useToasts();
 	const [showModal, setShowModal] = useState(showKycL2);
 	const [input, setInput] = useState<{
 		placeOfBirth: string;
@@ -197,7 +200,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	const handleNext = () => {
 		setPage((prev: number) => prev + 1);
 	};
-	const handleSubmit = async (event: any) => {
+	const handleSubmit = (event: any) => {
 		event.preventDefault();
 		const indexIrregularSourceOfFunds = input.irregularSourceOfFunds.indexOf('Other');
 		if (indexIrregularSourceOfFunds >= 0) {
@@ -256,16 +259,27 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		bodyFormData.append('appliedSanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
 		bodyFormData.append('countryOfWork', input.countryOfWork);
 		bodyFormData.append('workArea', JSON.stringify(input.workArea));
-		const sourceOfIncomeNature = findAndReplace(input.sourceOfIncomeNature, 'Other', input.sourceOfIncomeNatureOther);
+		const sourceOfIncomeNature = findAndReplace(
+			input.sourceOfIncomeNature,
+			'Other',
+			input.sourceOfIncomeNatureOther
+		);
 		bodyFormData.append('sourceOfIncomeNature', JSON.stringify(sourceOfIncomeNature));
 		const yearlyIncome = input.yearlyIncome ? Number(input.yearlyIncome).toFixed(4) : '0';
 		bodyFormData.append('yearlyIncome', yearlyIncome);
 		bodyFormData.append('sourceOfIncome', input.sourceOfIncome);
 		const sourceOfFunds = findAndReplace(input.sourceOfFunds, 'Other', input.sourceOfFundsOther);
 		bodyFormData.append('sourceOfFunds', JSON.stringify(sourceOfFunds));
-		const irregularSourceOfFunds = findAndReplace(input.irregularSourceOfFunds, 'Other', input.irregularSourceOfFundsOther);
+		const irregularSourceOfFunds = findAndReplace(
+			input.irregularSourceOfFunds,
+			'Other',
+			input.irregularSourceOfFundsOther
+		);
 		bodyFormData.append('irregularSourceOfFunds', JSON.stringify(irregularSourceOfFunds));
-		bodyFormData.append('hasCriminalRecords', input.hasCriminalRecords === 'Yes' ? 'true' : 'false');
+		bodyFormData.append(
+			'hasCriminalRecords',
+			input.hasCriminalRecords === 'Yes' ? 'true' : 'false'
+		);
 		const declare = findAndReplace(input.declare, 'Other', input.declareOther);
 		bodyFormData.append('declare', JSON.stringify(declare));
 		console.log(bodyFormData);
@@ -282,6 +296,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			.then(function (response) {
 				// handle success
 				console.log(response);
+				if (response.status === 201) {
+					addToast(
+						'Your documents are under review, please wait for the results of the verification!',
+						'info'
+					);
+				}
 			})
 			.catch(function (response) {
 				// handle error

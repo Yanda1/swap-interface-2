@@ -45,6 +45,7 @@ import type { IconType } from '../../components';
 import { Button, Icon, KycL2Modal, useToasts, Wallet } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
+import { StatusKycL2Modal } from '../modal/statusKycL2Modal';
 
 type Props = {
 	theme: Theme;
@@ -169,6 +170,7 @@ export const Header = () => {
 	const [showMenu, setShowMenu] = useState(false);
 	const [showNetworksList, setShowNetworksList] = useState(false);
 	const [showModal, setShowModal] = useState(false);
+	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
@@ -280,6 +282,7 @@ export const Header = () => {
 				}
 				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
 				const { status: kycL2Status } = res?.data?.L2;
+				console.log(kycL2Status);
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
@@ -304,6 +307,7 @@ export const Header = () => {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				} else if (kycL2Status === 'PENDING') {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
+					setShowStatusKycL2Modal(!showStatusKycL2Modal);
 				}
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
@@ -391,6 +395,10 @@ export const Header = () => {
 
 	const updateShowKycL2 = (value: boolean) => {
 		setShowModal(value);
+	};
+
+	const updateStatusKycL2Modal = (value: boolean) => {
+		setShowStatusKycL2Modal(value);
 	};
 
 	useEffect(() => {
@@ -562,6 +570,10 @@ export const Header = () => {
 				</MenuWrapper>
 			)}
 			{showModal && <KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />}
+			<StatusKycL2Modal
+				showStatusKycL2Modal={showStatusKycL2Modal}
+				updateStatusKycL2Modal={updateStatusKycL2Modal}
+			/>
 		</StyledHeader>
 	);
 };

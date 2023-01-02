@@ -53,10 +53,11 @@ export const formatDate = (ts: number | undefined): string =>
 		: 'n/a';
 
 export const findAndReplace = (array: string[], find: string, replace: string): string[] => {
-	var result = [...array];
+	const result = [...array];
 	if (result.includes(find)) {
 		const index = result.indexOf(find);
 		result[index] = replace;
 	}
+
 	return result;
 };
