@@ -307,7 +307,7 @@ export const Header = () => {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				} else if (kycL2Status === 'PENDING') {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
-					setShowStatusKycL2Modal(!showStatusKycL2Modal);
+					setShowStatusKycL2Modal(true);
 				}
 			} catch (error: any) {
 				if (error?.response?.status === 401) {

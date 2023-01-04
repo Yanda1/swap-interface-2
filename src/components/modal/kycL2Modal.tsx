@@ -213,48 +213,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	};
 	const handleSubmit = (event: any) => {
 		event.preventDefault();
-		const indexIrregularSourceOfFunds = input.irregularSourceOfFunds.indexOf('Other');
-		if (indexIrregularSourceOfFunds >= 0) {
-			const copy = [...input.irregularSourceOfFunds];
-			copy[indexIrregularSourceOfFunds] = input.irregularSourceOfFundsOther;
-			setInput({ ...input, irregularSourceOfFunds: copy });
-		}
-
-		const indexSourceOfIncomeNature = input.sourceOfIncomeNature.indexOf('Other');
-		if (indexSourceOfIncomeNature >= 0) {
-			const copy = [...input.sourceOfIncomeNature];
-			copy[indexSourceOfIncomeNature] = input.sourceOfIncomeNatureOther;
-			console.log(copy);
-			setInput({ ...input, sourceOfIncomeNature: copy });
-		}
-
-		const indexSourceOfFunds = input.sourceOfFunds.indexOf('Other');
-		if (indexSourceOfFunds >= 0) {
-			const copy = [...input.sourceOfFunds];
-			copy[indexSourceOfFunds] = input.sourceOfFundsOther;
-			setInput({ ...input, sourceOfFunds: copy });
-		}
-
-		const indexDeclareFirst = input.declare.indexOf(
-			'I am a national of another state or country, specifically:'
-		);
-		if (indexDeclareFirst >= 0) {
-			const copy = [...input.declare];
-			copy[
-				indexDeclareFirst
-			] = `I am a national of another state or country, specifically: ${input.declareOther}`;
-			setInput({ ...input, declare: copy });
-		}
-		const indexDeclareSecond = input.declare.indexOf(
-			'I am registered to a permanent or other type of residency in another state or country, specifically:'
-		);
-		if (indexDeclareSecond >= 0) {
-			const copy = [...input.declare];
-			copy[
-				indexDeclareSecond
-			] = `I am registered to a permanent or other type of residency in another state or country, specifically: ${input.declareOther}`;
-			setInput({ ...input, declare: copy });
-		}
 		// send POST if 200 change add toast and modal (Successful submit) to check kys if 401 bad request add toast like please pass kyc again
 		const bodyFormData = new FormData();
 
@@ -293,6 +251,9 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		);
 		const declare = findAndReplace(input.declare, 'Other', input.declareOther);
 		bodyFormData.append('declare', JSON.stringify(declare));
+		// ADDED NEW KEYS TO FORM DATA
+		bodyFormData.append('permanentAndMailAddressSame', input.permanentAndMailAddressSame);
+		bodyFormData.append('mailAddress', input.mailAddress);
 		console.log(bodyFormData);
 
 		axios({
@@ -322,11 +283,9 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		updateShowKycL2(false);
 	};
 	const handleChangeInput = (event: any) => {
-		console.log(event.target.name);
 		setInput({ ...input, [event.target.name]: event.target.value });
 	};
 	const handleChangeMailInput = (event: any) => {
-		console.log(event.target.name);
 		setInput({
 			...input,
 			mailAddress: { ...input.mailAddress, [event.target.name]: event.target.value }
@@ -451,7 +410,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											onChange={handleDropDownInput}
 											value={input.gender}
 											id="label-select-gender"
-											style={{ marginTop: '15px', backgroundColor: '#1c2125', color: 'white' }}>
+											style={{
+												marginTop: '15px',
+												backgroundColor: '#1c2125',
+												color: 'white',
+												borderRadius: '6px'
+											}}>
 											<option value="Male">Male</option>
 											<option value="Female">Female</option>
 											<option value="Other">Other</option>
@@ -459,19 +423,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									</label>
 								</div>
 							</div>
-							{/* <div style={{ marginRight: '15px', marginBottom: '10px' }}> */}
-							{/* <div style={{ marginBottom: '10px' }}> */}
-							{/* 	<TextField */}
-							{/* 		value={input.mailAddress} */}
-							{/* 		placeholder="Mailing address" */}
-							{/* 		type="text" */}
-							{/* 		onChange={handleChangeInput} */}
-							{/* 		size="small" */}
-							{/* 		align="left" */}
-							{/* 		name="mailAddress" */}
-							{/* 		error={input.mailAddress.length < 2} */}
-							{/* 	/> */}
-							{/* </div> */}
 							{/* <div style={{ marginBottom: '10px' }}> */}
 							{/* 	<TextField */}
 							{/* 		value={input.citizenship} */}
