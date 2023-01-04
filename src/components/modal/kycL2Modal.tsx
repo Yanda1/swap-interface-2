@@ -411,6 +411,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											value={input.gender}
 											id="label-select-gender"
 											style={{
+												minHeight: '40px',
 												marginTop: '15px',
 												backgroundColor: '#1c2125',
 												color: 'white',
