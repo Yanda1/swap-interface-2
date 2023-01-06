@@ -86,10 +86,11 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		placeOfBirth: string;
 		yearlyIncome: number | null;
 		email: string;
+		residence: any;
 		mailAddress: any;
 		sourceOfIncome: string;
 		gender: string;
-		citizenship: string;
+		citizenship: string[];
 		taxResidency: string;
 		politicallPerson: string;
 		countryOfWork: string[];
@@ -107,7 +108,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		file: any;
 		permanentAndMailAddressSame: string;
 	}>({
-		citizenship: '',
+		citizenship: [],
 		countryOfWork: [],
 		hasCriminalRecords: '',
 		declare: [],
@@ -121,6 +122,13 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		irregularSourceOfFundsOther: '',
 		gender: 'Male',
 		permanentAndMailAddressSame: 'Yes',
+		residence: {
+			street: '',
+			streetNumber: '',
+			municipality: '',
+			zipCode: '',
+			stateOrCountry: ''
+		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
@@ -137,7 +145,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		sourceOfIncome: '',
 		sourceOfFunds: [],
 		sourceOfFundsOther: '',
-		taxResidency: '',
+		taxResidency: 'Afghanistan',
 		workArea: []
 	});
 	const fileInputAddress = useRef<HTMLInputElement>();
@@ -190,7 +198,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	} = useStore();
 
 	const isDisabled =
-		input.citizenship === '' ||
+		!input.citizenship.length ||
 		!input.countryOfWork.length ||
 		input.hasCriminalRecords === '' ||
 		!input.declare.length ||
@@ -207,8 +215,10 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		!input.sourceOfFunds.length ||
 		input.taxResidency === '' ||
 		!input.workArea.length;
-
+	const myRef = useRef();
 	const handleNext = () => {
+		// @ts-ignore
+		myRef.current.scrollTo(0, 0);
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = (event: any) => {
@@ -221,9 +231,9 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		bodyFormData.append('posofDoc1', input.file.posofDoc1);
 		bodyFormData.append('mailAddress', input.mailAddress);
 		bodyFormData.append('gender', JSON.stringify(input.gender));
-		bodyFormData.append('citizenship', input.citizenship);
+		bodyFormData.append('citizenship', JSON.stringify(input.citizenship));
 		bodyFormData.append('email', input.email);
-		bodyFormData.append('taxResidency', input.taxResidency);
+		bodyFormData.append('taxResidency', JSON.stringify(input.taxResidency));
 		bodyFormData.append('politicallPerson', input.politicallPerson === 'Yes' ? 'true' : 'false');
 		bodyFormData.append('appliedSanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
 		bodyFormData.append('countryOfWork', JSON.stringify(input.countryOfWork));
@@ -249,12 +259,8 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			'hasCriminalRecords',
 			input.hasCriminalRecords === 'Yes' ? 'true' : 'false'
 		);
-		const declare = findAndReplace(input.declare, 'Other', input.declareOther);
-		bodyFormData.append('declare', JSON.stringify(declare));
-		// ADDED NEW KEYS TO FORM DATA
-		bodyFormData.append('permanentAndMailAddressSame', input.permanentAndMailAddressSame);
+		bodyFormData.append('declare', JSON.stringify(`${input.declare}${input.declareOther}`));
 		bodyFormData.append('mailAddress', input.mailAddress);
-		console.log(bodyFormData);
 
 		axios({
 			method: 'POST',
@@ -291,6 +297,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			mailAddress: { ...input.mailAddress, [event.target.name]: event.target.value }
 		});
 	};
+	const handleChangeResidenceInput = (event: any) => {
+		setInput({
+			...input,
+			residence: { ...input.residence, [event.target.name]: event.target.value }
+		});
+	};
 	const handleChangeCheckBox = (event: any) => {
 		const { value, checked } = event.target;
 		const attributeValue: string = event.target.attributes['data-key'].value;
@@ -309,10 +321,8 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		}
 	};
 	const handleChangeFileInput = () => {
-		console.log(fileInputAddress);
 		const filePosoaDoc1: any =
 			fileInputAddress?.current?.files && fileInputAddress?.current?.files[0];
-		console.log(filePosoaDoc1);
 		const filePosofDoc1: any = fileInputDocs?.current?.files && fileInputDocs?.current?.files[0];
 		setInput({
 			...input,
@@ -321,8 +331,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	};
 
 	const handleDropDownInput = (event: any) => {
-		// @ts-ignore
-		setInput({ ...input, gender: [event.target.value] });
+		setInput({ ...input, [event.target.name]: event.target.value });
 	};
 
 	const handleOnClose = () => {
@@ -337,7 +346,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			handleClose={handleOnClose}
 			hasBackButton
 			handleBack={() => (page > 0 ? setPage((prev: number) => prev - 1) : null)}>
-			<Wrapper>
+			<Wrapper ref={myRef as any}>
 				<h2 style={{ fontStyle: 'italic' }}>KYC L2 form for Natural Person</h2>
 				{page === 0 && (
 					<>
@@ -407,6 +416,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
 										Gender
 										<Select
+											name="gender"
 											onChange={handleDropDownInput}
 											value={input.gender}
 											id="label-select-gender"
@@ -424,25 +434,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									</label>
 								</div>
 							</div>
-							{/* <div style={{ marginBottom: '10px' }}> */}
-							{/* 	<TextField */}
-							{/* 		value={input.citizenship} */}
-							{/* 		placeholder="Citizenship(s)" */}
-							{/* 		type="text" */}
-							{/* 		onChange={handleChangeInput} */}
-							{/* 		size="small" */}
-							{/* 		align="left" */}
-							{/* 		required */}
-							{/* 		name="citizenship" */}
-							{/* 	/> */}
-							{/* </div> */}
-							{/* </div> */}
 						</div>
 					</>
 				)}
 				{page === 1 && (
 					<>
-						<div style={{ marginBottom: '10px', width: '100%' }}>
+						<div style={{ margin: '10px 0', width: '100%' }}>
 							<label
 								htmlFor="label-sourceOfIncome"
 								style={{ marginBottom: '8px', display: 'inline-block' }}>
@@ -460,17 +457,31 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								required
 							/>
 						</div>
-						<div style={{ marginBottom: '10px', width: '100%' }}>
-							<TextField
-								value={input.taxResidency}
-								placeholder="Tax residency"
-								type="text"
-								onChange={handleChangeInput}
-								size="small"
-								align="left"
-								required
-								name="taxResidency"
-							/>
+						<div style={{ margin: '10px 0 30px', width: '100%' }}>
+							<label htmlFor="label-select-tax-residency" style={{ fontStyle: 'italic' }}>
+								Tax Residency
+								<Select
+									name="taxResidency"
+									onChange={handleDropDownInput}
+									value={input.taxResidency}
+									id="label-select-tax-residency"
+									style={{
+										maxHeight: '40px',
+										marginTop: '15px',
+										backgroundColor: '#1c2125',
+										color: 'white',
+										borderRadius: '6px'
+									}}>
+									{COUNTRIES.map((country: any) => {
+										return (
+											<option value={country.name} key={country.name}>
+												{country.name}
+											</option>
+										);
+									})}
+									;
+								</Select>
+							</label>
 						</div>
 						<div style={{ marginBottom: '10px', width: '100%' }}>
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
@@ -539,7 +550,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								</div>
 							);
 						})}
-
 						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 							Source of funds intended for Transaction:
 						</p>
@@ -620,6 +630,37 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 					</div>
 				)}
 				{page === 3 && (
+					<div style={{ marginBottom: '10px', width: '100%' }}>
+						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+							Citizenship(s)
+						</p>
+						{COUNTRIES.map((country: any, index: number) => {
+							return (
+								<div
+									key={index}
+									style={{
+										display: 'flex',
+										justifyContent: 'flex-start',
+										marginBottom: '8px'
+									}}>
+									<input
+										type="checkbox"
+										value={country.name}
+										name={country.name}
+										id={`citizenship-checkbox-${index}`}
+										onChange={handleChangeCheckBox}
+										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+										checked={input.citizenship.includes(`${country.name}`)}
+										required
+										data-key="citizenship"
+									/>
+									<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
+								</div>
+							);
+						})}
+					</div>
+				)}
+				{page === 4 && (
 					<>
 						<div style={{ marginBottom: '15px' }}>
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
@@ -718,7 +759,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						</div>
 					</>
 				)}
-				{page === 4 && (
+				{page === 5 && (
 					<div
 						style={{
 							display: 'flex',
@@ -810,7 +851,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						</div>
 					</div>
 				)}
-				{page === 5 && (
+				{page === 6 && (
 					<>
 						<p>
 							Copies of statements of account kept by an institution in the EEA (proof of address)
@@ -839,10 +880,96 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						</LabelInput>
 					</>
 				)}
-				{page === 6 && (
+				{page === 7 && (
+					<div
+						style={{
+							marginBottom: '12px',
+							display: 'flex',
+							flexDirection: 'column',
+							width: '50%'
+						}}>
+						<span style={{ textAlign: 'center', fontSize: '20px' }}>Residence</span>
+						<label
+							htmlFor="label-address-permanent-state-Or-Country"
+							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							State or Country
+						</label>
+						<TextField
+							id="label-address-permanent-state-Or-Country"
+							value={input.residence.stateOrCountry}
+							placeholder="State or Country"
+							type="text"
+							onChange={handleChangeResidenceInput}
+							size="small"
+							align="left"
+							name="stateOrCountry"
+						/>
+						<label
+							htmlFor="label-address-permanent-street"
+							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							Street
+						</label>
+						<TextField
+							id="label-address-permanent-street"
+							value={input.residence.street}
+							placeholder="Street"
+							type="text"
+							onChange={handleChangeResidenceInput}
+							size="small"
+							align="left"
+							name="street"
+						/>
+						<label
+							htmlFor="label-address-permanent-street-number"
+							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							Street number
+						</label>
+						<TextField
+							id="label-address-permanent-street-number"
+							value={input.residence.streetNumber}
+							placeholder="Street number"
+							type="text"
+							onChange={handleChangeResidenceInput}
+							size="small"
+							align="left"
+							name="streetNumber"
+						/>
+						<label
+							htmlFor="label-address-permanent-municipality"
+							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							Municipality
+						</label>
+						<TextField
+							id="label-address-permanent-municipality"
+							value={input.residence.municipality}
+							placeholder="Municipality"
+							type="text"
+							onChange={handleChangeResidenceInput}
+							size="small"
+							align="left"
+							name="municipality"
+						/>
+						<label
+							htmlFor="label-address-permanent-zipCode"
+							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							ZIP Code
+						</label>
+						<TextField
+							id="label-address-permanent-zipCode"
+							value={input.residence.zipCode}
+							placeholder="ZIP Code"
+							type="text"
+							onChange={handleChangeResidenceInput}
+							size="small"
+							align="left"
+							name="zipCode"
+						/>
+					</div>
+				)}
+				{page === 8 && (
 					<>
 						<p style={{ marginBottom: '25px' }}>
-							Is your permanent address the same as your mailing address?
+							Is your permanent (residence) address the same as your mailing address?
 						</p>
 						<div
 							style={{
@@ -882,6 +1009,21 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									flexDirection: 'column',
 									width: '50%'
 								}}>
+								<label
+									htmlFor="label-address-permanent-state-Or-Country"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									State or Country
+								</label>
+								<TextField
+									id="label-address-permanent-state-Or-Country"
+									value={input.mailAddress.stateOrCountry}
+									placeholder="State or Country"
+									type="text"
+									onChange={handleChangeMailInput}
+									size="small"
+									align="left"
+									name="stateOrCountry"
+								/>
 								<label
 									htmlFor="label-address-street"
 									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
@@ -946,12 +1088,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						)}
 					</>
 				)}
-				{page < 6 && (
+				{page < 8 && (
 					<Button variant="secondary" onClick={handleNext}>
 						Next
 					</Button>
 				)}
-				{page >= 6 && (
+				{page >= 8 && (
 					<Button
 						variant="secondary"
 						// @ts-ignore

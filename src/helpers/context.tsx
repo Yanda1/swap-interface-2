@@ -284,18 +284,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		if (account && !isUserVerified && isNetworkConnected) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
-		// Add variable KYC l2 status should be kycL2Status === KycL2StatusEnum.PASS
-		if (
+		if (kycStatus !== KycStatusEnum.PASS && kycL2Status !== 'PASSED') {
+			dispatch({ type: VerificationEnum.USER, payload: false });
+		} else if (
 			kycStatus === KycStatusEnum.PASS &&
 			isNetworkConnected &&
 			account &&
-			kycL2Status === 'PASS'
+			kycL2Status === 'PASSED'
 		) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
-		}
-
-		if (kycStatus !== KycStatusEnum.PASS && kycL2Status !== 'PASS') {
-			dispatch({ type: VerificationEnum.USER, payload: false });
 		}
 	}, [account, isNetworkConnected, kycStatus, kycL2Status, isUserVerified]);
 

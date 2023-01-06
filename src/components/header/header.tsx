@@ -282,7 +282,6 @@ export const Header = () => {
 				}
 				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
 				const { status: kycL2Status } = res?.data?.L2;
-				console.log(kycL2Status);
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
@@ -291,7 +290,7 @@ export const Header = () => {
 					type: KycL2StatusEnum.STATUS,
 					payload: kycL2Status
 				});
-				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS && kycL2Status === 'PASS' });
+				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS && kycL2Status === 'PASSED' });
 				// TODO: move this part to context?
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
@@ -350,7 +349,6 @@ export const Header = () => {
 				}
 			}
 			if (!onMobileDevice && metamaskMissing) {
-				console.log('HERE');
 				addToast(
 					'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
 				);
@@ -460,6 +458,10 @@ export const Header = () => {
 			dispatch({
 				type: KycEnum.STATUS,
 				payload: KycStatusEnum.INITIAL
+			});
+			dispatch({
+				type: KycL2StatusEnum.STATUS,
+				payload: 'INITIAL'
 			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
