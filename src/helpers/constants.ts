@@ -46,8 +46,6 @@ export const FEE_CURRENCY = 'USDT';
 export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
 export const SERVICE_ADDRESS = '0xeB56c1d19855cc0346f437028e6ad09C80128e02';
 
-export const BLOCK_CONTRACT_NUMBER = 2_075_594;
-export const BLOCK_CHUNK_SIZE = 7_500;
 export const WEI_TO_GLMR = 1 / 1_000_000_000_000_000_000;
 
 export const CONTRACT_ADDRESSES = {
@@ -64,6 +62,13 @@ export const CHAINS = {
 export const NETWORK_TO_ID = {
 	GLMR: '1284',
 	ETH: '1'
+};
+
+export type ChainIds = keyof typeof CHAINS;
+
+export const GRAPH_URLS = {
+	1: 'https://api.thegraph.com/subgraphs/name/yanda1/moonbeam-yanda', // TODO: needs to be replaced with the ETH_GRAP_URL
+	1284: 'https://api.thegraph.com/subgraphs/name/yanda1/moonbeam-yanda'
 };
 
 export const BLOCKS_AMOUNT = 30;

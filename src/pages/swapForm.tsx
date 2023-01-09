@@ -23,7 +23,7 @@ import {
 	NETWORK_TO_ID
 } from '../helpers';
 import type { Fee } from '../helpers';
-import { useFees } from '../hooks';
+import { useFees, useMedia } from '../hooks';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -161,7 +161,7 @@ export const SwapForm = () => {
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
 
-	// const { mobileWidth } = useMedia('xs');
+	const { mobileWidth } = useMedia('xs');
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -292,7 +292,7 @@ export const SwapForm = () => {
 				<Icon
 					size="small"
 					icon={isLightTheme(theme) ? 'swapperLight' : 'swapperDark'}
-					style={{ marginBottom: 18 }}
+					style={mobileWidth ? { marginBottom: 18 } : { alignSelf: 'flex-start', marginTop: 18 }}
 				/>
 				<Swap>
 					<SwapInput>
