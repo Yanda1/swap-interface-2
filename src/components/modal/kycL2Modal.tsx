@@ -8,6 +8,11 @@ import { Portal } from './portal';
 import axios from 'axios';
 import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
+import WORK_AREA_LIST from '../../data/workAreaList.json';
+import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
+import FUNDS_IRREGULAR_FOR_BUSSINES_LIST from '../../data/fundsIrregularForBussinesList.json';
+import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
+import DECLARE_LIST from '../../data/declareList.json';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -150,48 +155,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	});
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
-	const [workAreaList] = useState<string[]>([
-		'None of the hereinafter mentioned',
-		'Arms Transaction',
-		'Pawnshop activity',
-		'Used car business',
-		'Gambling and other similar games',
-		'Secondary waste treatment',
-		'Antiques and art shop',
-		'Construction with participation in public procurement',
-		'IT services with participation in public procurement',
-		'State administration in the field of decision-making on subsidies and public procurement',
-		'Business with a high volume of cash',
-		'Precious metals Transaction',
-		'Virtual currency trading',
-		'Intangible rights trading',
-		'Energy trading or emission allowances ',
-		'Erotic industry',
-		'Non-profit organizations, foundations or churches'
-	]);
-	const [sourceOfFundsList] = useState<string[]>([
-		'Employment or business',
-		'Sale of real estate',
-		'Heritage',
-		'Financial instruments and capital assets',
-		'Lease of real estate',
-		'Other'
-	]);
-	const [fundsIrregularForBussinesList] = useState<string[]>([
-		'None',
-		'Employment or business',
-		'Sale of real estate',
-		'Heritage',
-		'Financial instruments and capital assets',
-		'Lease of real estate',
-		'Other'
-	]);
-	const [sourceOfIncomeNatureList] = useState<string[]>(['Employee', 'Other']);
-	const [declareList] = useState<string[]>([
-		'I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country',
-		'I am a national of another state or country, specifically:',
-		'I am registered to a permanent or other type of residency in another state or country, specifically:'
-	]);
 	const [page, setPage] = useState<number>(0);
 	const {
 		state: { accessToken }
@@ -225,7 +188,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		event.preventDefault();
 		// send POST if 200 change add toast and modal (Successful submit) to check kys if 401 bad request add toast like please pass kyc again
 		const bodyFormData = new FormData();
-
 		bodyFormData.append('placeOfBirth', input.placeOfBirth);
 		bodyFormData.append('poaDoc1', input.file.poaDoc1);
 		bodyFormData.append('posofDoc1', input.file.posofDoc1);
@@ -526,7 +488,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 							The Client conducts his work / business activity in these areas:
 						</p>
-						{workAreaList.map((activity: string, index: number) => {
+						{WORK_AREA_LIST.map((activity: string, index: number) => {
 							return (
 								<div
 									key={index}
@@ -553,7 +515,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 							Source of funds intended for Transaction:
 						</p>
-						{sourceOfFundsList.map((activity: string, index: number) => {
+						{SOURCE_OF_FUNDS_LIST.map((activity: string, index: number) => {
 							return (
 								<div
 									key={index}
@@ -592,7 +554,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 							Nature of prevailing source of income
 						</p>
-						{sourceOfIncomeNatureList.map((activity: string, index: number) => {
+						{SOURCE_OF_INCOME_NATURE_LIST.map((activity: string, index: number) => {
 							return (
 								<div
 									key={index}
@@ -666,7 +628,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								State, which of the stated incomes of funds intended for business is irregular:
 							</p>
-							{fundsIrregularForBussinesList.map((activity: string, index: number) => {
+							{FUNDS_IRREGULAR_FOR_BUSSINES_LIST.map((activity: string, index: number) => {
 								return (
 									<div
 										key={index}
@@ -706,7 +668,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								I declare that:
 							</p>
-							{declareList.map((activity: string, index: number) => {
+							{DECLARE_LIST.map((activity: string, index: number) => {
 								return (
 									<div
 										key={index}
@@ -969,7 +931,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 				{page === 8 && (
 					<>
 						<p style={{ marginBottom: '25px' }}>
-							Is your permanent (residence) address the same as your mailing address?
+							Is your permanent (RESIDENCE) address the same as your mailing address?
 						</p>
 						<div
 							style={{
