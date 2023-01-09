@@ -10,7 +10,7 @@ import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
 import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
-import FUNDS_IRREGULAR_FOR_BUSSINES_LIST from '../../data/fundsIrregularForBussinesList.json';
+import FUNDS_IRREGULAR_FOR_BUSSINESS_LIST from '../../data/fundsIrregularForBussinesList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
 import DECLARE_LIST from '../../data/declareList.json';
 
@@ -628,7 +628,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								State, which of the stated incomes of funds intended for business is irregular:
 							</p>
-							{FUNDS_IRREGULAR_FOR_BUSSINES_LIST.map((activity: string, index: number) => {
+							{FUNDS_IRREGULAR_FOR_BUSSINESS_LIST.map((activity: string, index: number) => {
 								return (
 									<div
 										key={index}
