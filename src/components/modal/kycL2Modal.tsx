@@ -84,7 +84,7 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
-	const { addToast }: any = useToasts();
+	const { addToast }: any | null = useToasts();
 	const [showModal, setShowModal] = useState(showKycL2);
 	const [input, setInput] = useState<{
 		placeOfBirth: string;
@@ -177,9 +177,9 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		!input.sourceOfFunds.length ||
 		input.taxResidency === '' ||
 		!input.workArea.length;
-	const myRef: any = useRef();
+	const myRef = useRef<HTMLDivElement | null>(null);
 	const handleNext = () => {
-		myRef.current.scrollTo(0, 0);
+		myRef?.current?.scrollTo(0, 0);
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = (event: any) => {
