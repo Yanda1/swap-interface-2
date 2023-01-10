@@ -10,7 +10,7 @@ import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
 import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
-import FUNDS_IRREGULAR_FOR_BUSSINESS_LIST from '../../data/fundsIrregularForBussinesList.json';
+import FUNDS_IRREGULAR_FOR_BUSINESS_LIST from '../../data/fundsIrregularForBussinesList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
 import DECLARE_LIST from '../../data/declareList.json';
 
@@ -84,8 +84,7 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
-	// @ts-ignore
-	const { addToast } = useToasts();
+	const { addToast }: any = useToasts();
 	const [showModal, setShowModal] = useState(showKycL2);
 	const [input, setInput] = useState<{
 		placeOfBirth: string;
@@ -178,9 +177,8 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		!input.sourceOfFunds.length ||
 		input.taxResidency === '' ||
 		!input.workArea.length;
-	const myRef = useRef();
+	const myRef: any = useRef();
 	const handleNext = () => {
-		// @ts-ignore
 		myRef.current.scrollTo(0, 0);
 		setPage((prev: number) => prev + 1);
 	};
@@ -308,96 +306,94 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			handleClose={handleOnClose}
 			hasBackButton
 			handleBack={() => (page > 0 ? setPage((prev: number) => prev - 1) : null)}>
-			<Wrapper ref={myRef as any}>
+			<Wrapper ref={myRef}>
 				<h2 style={{ fontStyle: 'italic' }}>KYC L2 form for Natural Person</h2>
 				{page === 0 && (
-					<>
-						<div
-							style={{
-								marginBottom: '10px'
-							}}>
-							<div style={{ marginRight: '15px', marginBottom: '10px' }}>
-								<div style={{ marginBottom: '10px' }}>
-									<label
-										htmlFor="label-place-of-birth"
-										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
-										Place of birth
-									</label>
-									<TextField
-										id="label-place-of-birth"
-										value={input.placeOfBirth}
-										placeholder="Place of birth"
-										type="text"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="placeOfBirth"
-										required={true}
-										error={input.placeOfBirth.length < 2}
-									/>
-								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<label
-										htmlFor="label-net-yearly-income"
-										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
-										Net yearly income (Euro)
-									</label>
-									<TextField
-										id="label-net-yearly-income"
-										value={input.yearlyIncome !== null && input.yearlyIncome}
-										placeholder="Net yearly income"
-										type="number"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										required
-										name="yearlyIncome"
-										error={input.yearlyIncome === null}
-									/>
-								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<label
-										htmlFor="label-email"
-										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
-										Email
-									</label>
-									<TextField
-										id="label-email"
-										value={input.email}
-										placeholder="Email"
-										type="email"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										required
-										name="email"
-										error={input.email.length < 2}
-									/>
-								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
-										Gender
-										<Select
-											name="gender"
-											onChange={handleDropDownInput}
-											value={input.gender}
-											id="label-select-gender"
-											style={{
-												minHeight: '40px',
-												marginTop: '15px',
-												backgroundColor: '#1c2125',
-												color: 'white',
-												borderRadius: '6px'
-											}}>
-											<option value="Male">Male</option>
-											<option value="Female">Female</option>
-											<option value="Other">Other</option>
-										</Select>
-									</label>
-								</div>
+					<div
+						style={{
+							marginBottom: '10px'
+						}}>
+						<div style={{ marginRight: '15px', marginBottom: '10px' }}>
+							<div style={{ marginBottom: '10px' }}>
+								<label
+									htmlFor="label-place-of-birth"
+									style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+									Place of birth
+								</label>
+								<TextField
+									id="label-place-of-birth"
+									value={input.placeOfBirth}
+									placeholder="Place of birth"
+									type="text"
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="placeOfBirth"
+									required={true}
+									error={input.placeOfBirth.length < 2}
+								/>
+							</div>
+							<div style={{ marginBottom: '10px' }}>
+								<label
+									htmlFor="label-net-yearly-income"
+									style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+									Net yearly income (Euro)
+								</label>
+								<TextField
+									id="label-net-yearly-income"
+									value={input.yearlyIncome !== null && input.yearlyIncome}
+									placeholder="Net yearly income"
+									type="number"
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									required
+									name="yearlyIncome"
+									error={input.yearlyIncome === null}
+								/>
+							</div>
+							<div style={{ marginBottom: '10px' }}>
+								<label
+									htmlFor="label-email"
+									style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+									Email
+								</label>
+								<TextField
+									id="label-email"
+									value={input.email}
+									placeholder="Email"
+									type="email"
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									required
+									name="email"
+									error={input.email.length < 2}
+								/>
+							</div>
+							<div style={{ marginBottom: '10px' }}>
+								<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
+									Gender
+									<Select
+										name="gender"
+										onChange={handleDropDownInput}
+										value={input.gender}
+										id="label-select-gender"
+										style={{
+											minHeight: '40px',
+											marginTop: '15px',
+											backgroundColor: '#1c2125',
+											color: 'white',
+											borderRadius: '6px'
+										}}>
+										<option value="Male">Male</option>
+										<option value="Female">Female</option>
+										<option value="Other">Other</option>
+									</Select>
+								</label>
 							</div>
 						</div>
-					</>
+					</div>
 				)}
 				{page === 1 && (
 					<>
@@ -628,7 +624,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								State, which of the stated incomes of funds intended for business is irregular:
 							</p>
-							{FUNDS_IRREGULAR_FOR_BUSSINESS_LIST.map((activity: string, index: number) => {
+							{FUNDS_IRREGULAR_FOR_BUSINESS_LIST.map((activity: string, index: number) => {
 								return (
 									<div
 										key={index}
@@ -641,14 +637,14 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											type="checkbox"
 											value={activity}
 											name={activity}
-											id={`fundsIrregularForBussinesList-checkbox-${index}`}
+											id={`fundsIrregularForBusinessList-checkbox-${index}`}
 											onChange={handleChangeCheckBox}
 											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 											checked={input.irregularSourceOfFunds.includes(`${activity}`)}
 											required={true}
 											data-key="irregularSourceOfFunds"
 										/>
-										<label htmlFor={`fundsIrregularForBussinesList-checkbox-${index}`}>
+										<label htmlFor={`fundsIrregularForBusinessList-checkbox-${index}`}>
 											{activity}
 										</label>
 									</div>
