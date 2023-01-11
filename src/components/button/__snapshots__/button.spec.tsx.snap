@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Button should render a default button 1`] = `
+exports[`Button should match snapshot for values disabled: false, isLoading: false, variant: secondary and color: success 1`] = `
 .c0 {
   display: inline-block;
   -webkit-align-items: center;
@@ -11,16 +11,16 @@ exports[`Button should render a default button 1`] = `
   -webkit-justify-content: space-between;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  max-width: 28.125rem;
+  max-width: 10rem;
   width: 100%;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
-  font-size: 1rem;
-  min-height: 3.5625rem;
+  font-size: 0.875rem;
+  min-height: 2.1875rem;
   padding: 0.25rem 0.75rem;
   color: #FFF;
-  background-color: #00A8E8;
-  border: 1px solid transparent;
+  background-color: #18C108;
+  border: 1px solid #FFF;
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
@@ -28,8 +28,8 @@ exports[`Button should render a default button 1`] = `
 }
 
 .c0[disabled] {
-  border-color: #6D6D6D;
-  color: #FFF;
+  border-color: success;
+  color: #6D6D6D;
 }
 
 .c0:hover {
@@ -38,7 +38,7 @@ exports[`Button should render a default button 1`] = `
 
 .c0:focus-visible {
   outline-offset: 1px;
-  outline: 1px solid #00A8E8;
+  outline: 1px solid #FFF;
 }
 
 .c0:active {
@@ -48,13 +48,67 @@ exports[`Button should render a default button 1`] = `
 <button
   aria-label="button"
   class="c0"
-  color="default"
+  color="success"
 >
-  Primary default Button
+  Test Button
 </button>
 `;
 
-exports[`Button should render a primary disabled button 1`] = `
+exports[`Button should match snapshot for values disabled: false, isLoading: false, variant: secondary and color: warning 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 10rem;
+  width: 100%;
+  font-weight: 400;
+  cursor: pointer;
+  font-size: 0.875rem;
+  min-height: 2.1875rem;
+  padding: 0.25rem 0.75rem;
+  color: #FFF;
+  background-color: #FD862F;
+  border: 1px solid #FFF;
+  border-radius: 0.375rem;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: warning;
+  color: #6D6D6D;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+.c0:focus-visible {
+  outline-offset: 1px;
+  outline: 1px solid #FFF;
+}
+
+.c0:active {
+  outline: none;
+}
+
+<button
+  aria-label="button"
+  class="c0"
+  color="warning"
+>
+  Test Button
+</button>
+`;
+
+exports[`Button should match snapshot for values disabled: true, isLoading: false, variant: primary and color: default 1`] = `
 .c0 {
   display: inline-block;
   -webkit-align-items: center;
@@ -106,11 +160,67 @@ exports[`Button should render a primary disabled button 1`] = `
   color="default"
   disabled=""
 >
-  Primary disabled Button
+  Test Button
 </button>
 `;
 
-exports[`Button should render a pure button 1`] = `
+exports[`Button should match snapshot for values disabled: true, isLoading: false, variant: primary and color: transparent 1`] = `
+.c0 {
+  display: inline-block;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  max-width: 28.125rem;
+  width: 100%;
+  font-weight: 600;
+  cursor: not-allowed;
+  font-size: 1rem;
+  min-height: 3.5625rem;
+  padding: 0.25rem 0.75rem;
+  color: #00A8E8;
+  background-color: transparent;
+  border: 1px solid #00A8E8;
+  border-radius: 0.375rem;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  cursor: not-allowed;
+  outline: 1px solid transparent;
+}
+
+.c0[disabled] {
+  border-color: #6D6D6D;
+  color: #6D6D6D;
+}
+
+.c0:hover {
+  opacity: 0.8;
+}
+
+.c0:focus-visible {
+  outline-offset: 1px;
+  outline: 1px solid #00A8E8;
+}
+
+.c0:active {
+  outline: none;
+}
+
+<button
+  aria-label="button"
+  class="c0"
+  color="transparent"
+  disabled=""
+>
+  Test Button
+</button>
+`;
+
+exports[`Button should match snapshot for values disabled: true, isLoading: false, variant: pure and color: default 1`] = `
 .c0 {
   display: inline-block;
   -webkit-align-items: center;
@@ -124,7 +234,7 @@ exports[`Button should render a pure button 1`] = `
   max-width: 10rem;
   width: 100%;
   font-weight: 400;
-  cursor: pointer;
+  cursor: not-allowed;
   font-size: 0.875rem;
   min-height: 2.1875rem;
   padding: 0.25rem 0.75rem;
@@ -134,6 +244,7 @@ exports[`Button should render a pure button 1`] = `
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
+  cursor: not-allowed;
   outline: 1px solid transparent;
 }
 
@@ -159,12 +270,13 @@ exports[`Button should render a pure button 1`] = `
   aria-label="button"
   class="c0"
   color="default"
+  disabled=""
 >
-  Secondary pure Button
+  Test Button
 </button>
 `;
 
-exports[`Button should render a secondary default button 1`] = `
+exports[`Button should match snapshot for values disabled: true, isLoading: false, variant: secondary and color: warning 1`] = `
 .c0 {
   display: inline-block;
   -webkit-align-items: center;
@@ -178,186 +290,17 @@ exports[`Button should render a secondary default button 1`] = `
   max-width: 10rem;
   width: 100%;
   font-weight: 400;
-  cursor: pointer;
-  font-size: 0.875rem;
-  min-height: 2.1875rem;
-  padding: 0.25rem 0.75rem;
-  color: #00A8E8;
-  background-color: transparent;
-  border: 1px solid #00A8E8;
-  border-radius: 0.375rem;
-  -webkit-transition: all .2s ease-in-out;
-  transition: all .2s ease-in-out;
-  margin: 1px;
-  outline: 1px solid transparent;
-}
-
-.c0[disabled] {
-  border-color: default;
-  color: #6D6D6D;
-}
-
-.c0:hover {
-  box-shadow: 0 0 0 1px #00A8E8;
-}
-
-.c0:focus-visible {
-  outline-offset: 1px;
-  outline: 1px solid #FFF;
-}
-
-.c0:active {
-  outline: none;
-}
-
-<button
-  aria-label="button"
-  class="c0"
-  color="default"
->
-  Secondary default Button
-</button>
-`;
-
-exports[`Button should render a secondary error button 1`] = `
-.c0 {
-  display: inline-block;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  max-width: 10rem;
-  width: 100%;
-  font-weight: 400;
-  cursor: pointer;
+  cursor: not-allowed;
   font-size: 0.875rem;
   min-height: 2.1875rem;
   padding: 0.25rem 0.75rem;
   color: #FFF;
-  background-color: #DE3434;
+  background-color: #6D6D6D;
   border: 1px solid #FFF;
   border-radius: 0.375rem;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
-  outline: 1px solid transparent;
-}
-
-.c0[disabled] {
-  border-color: error;
-  color: #6D6D6D;
-}
-
-.c0:hover {
-  opacity: 0.8;
-}
-
-.c0:focus-visible {
-  outline-offset: 1px;
-  outline: 1px solid #FFF;
-}
-
-.c0:active {
-  outline: none;
-}
-
-<button
-  aria-label="button"
-  class="c0"
-  color="error"
->
-  Secondary error Button
-</button>
-`;
-
-exports[`Button should render a secondary icon button 1`] = `
-.c0 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  max-width: 10rem;
-  width: 100%;
-  font-weight: 400;
-  cursor: pointer;
-  font-size: 0.875rem;
-  min-height: 2.1875rem;
-  padding: 0.25rem 0.75rem;
-  color: #FFF;
-  background-color: #172631;
-  border: 1px solid #FFF;
-  border-radius: 0.375rem;
-  -webkit-transition: all .2s ease-in-out;
-  transition: all .2s ease-in-out;
-  outline: 1px solid transparent;
-}
-
-.c0[disabled] {
-  border-color: icon;
-  color: #6D6D6D;
-}
-
-.c0:hover {
-  opacity: 0.8;
-}
-
-.c0:focus-visible {
-  outline-offset: 1px;
-  outline: 1px solid #FFF;
-}
-
-.c0:active {
-  outline: none;
-}
-
-<button
-  aria-label="button"
-  class="c0"
-  color="default"
->
-  <img
-    alt="moonbeam"
-    src="moonbeam.svg"
-  />
-  Secondary icon Button
-</button>
-`;
-
-exports[`Button should render a secondary warning button 1`] = `
-.c0 {
-  display: inline-block;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: justify;
-  -webkit-justify-content: space-between;
-  -ms-flex-pack: justify;
-  justify-content: space-between;
-  max-width: 10rem;
-  width: 100%;
-  font-weight: 400;
-  cursor: pointer;
-  font-size: 0.875rem;
-  min-height: 2.1875rem;
-  padding: 0.25rem 0.75rem;
-  color: #FFF;
-  background-color: #FD862F;
-  border: 1px solid #FFF;
-  border-radius: 0.375rem;
-  -webkit-transition: all .2s ease-in-out;
-  transition: all .2s ease-in-out;
+  cursor: not-allowed;
   outline: 1px solid transparent;
 }
 
@@ -383,7 +326,8 @@ exports[`Button should render a secondary warning button 1`] = `
   aria-label="button"
   class="c0"
   color="warning"
+  disabled=""
 >
-  Secondary warning Button
+  Test Button
 </button>
 `;

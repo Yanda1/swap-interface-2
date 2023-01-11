@@ -1,0 +1,116 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Icon should match snapshot for values icon: eth, size: large and style: { marginLeft: 20, border: '1px solid red' } 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c0 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 2.5rem;
+}
+
+<div
+  class="c0"
+  data-testid="icon"
+  style="margin-left: 20px; border: 1px solid red;"
+>
+  <svg
+    theme="[object Object]"
+  >
+    eth.svg
+  </svg>
+</div>
+`;
+
+exports[`Icon should match snapshot for values icon: glmr, size: 20 and style: { padding: 12 } 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c0 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 1.25rem;
+}
+
+<div
+  class="c0"
+  data-testid="icon"
+  size="20"
+  style="padding: 12px;"
+>
+  <svg
+    theme="[object Object]"
+  >
+    glmr.svg
+  </svg>
+</div>
+`;
+
+exports[`Icon should match snapshot for values icon: moon, size: medium and style: { padding: 12 } 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c0 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 2rem;
+}
+
+<div
+  class="c0"
+  data-testid="icon"
+  style="padding: 12px;"
+>
+  <svg
+    theme="[object Object]"
+  >
+    moon.svg
+  </svg>
+</div>
+`;

@@ -1,25 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
+import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
 import {
-	mediaQuery,
-	spacing,
-	MAIN_MAX_WIDTH
-	// DEFAULT_OUTLINE,
-	// DEFAULT_OUTLINE_OFFSET
-} from '../styles';
-// import type { ThemeProps } from '../styles';
-import { ReactComponent as SwapperLight } from '../assets/swapper-light.svg';
-import { ReactComponent as SwapperDark } from '../assets/swapper-dark.svg';
-// import { ReactComponent as SettingsDark } from '../assets/settings-dark.svg';
-// import { ReactComponent as SettingsLight } from '../assets/settings-light.svg';
-import {
-	IconButton,
+	Icon,
 	NetworkTokenModal,
 	SwapButton,
 	TextField,
 	Fees,
-	// NotificationsModal
+	IconType
 } from '../components';
 import {
 	AmountEnum,
@@ -31,7 +20,6 @@ import {
 	beautifyNumbers,
 	useStore,
 	NETWORK_TO_ID
-	// useMedia
 } from '../helpers';
 import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
@@ -172,7 +160,7 @@ export const SwapForm = () => {
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
 
-	// const { isMobileWidth } = useMedia('xs');
+	// const { mobileWidth } = useMedia('xs');
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -236,15 +224,6 @@ export const SwapForm = () => {
 	const handleSwap = (): void => {
 		// @ts-ignore
 		swapButtonRef.current.onSubmit();
-		// dispatch({ type: SourceEnum.NETWORK, payload: 'ETH' });
-		// dispatch({ type: SourceEnum.TOKEN, payload: 'ETH' });
-		// dispatch({ type: DestinationEnum.ADDRESS, payload: '' });
-		// dispatch({ type: DestinationEnum.WALLET, payload: 'Select Wallet' });
-		// dispatch({ type: DestinationEnum.NETWORK, payload: 'Select Network' });
-		// dispatch({ type: DestinationEnum.TOKEN, payload: 'Select Token' });
-		// dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
-		// dispatch({ type: DestinationEnum.MEMO, payload: '' });
-		// dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 	};
 
 	return (
@@ -263,22 +242,21 @@ export const SwapForm = () => {
 				showModal={showNotificaitonsModal}
 				setShowModal={setShowNotificaitonsModal}
 			/>
-			{/* {!isMobileWidth && (
+			{/* {!mobileWidth && (
 				<Settings theme={theme}>
-					<button onClick={() => setShowNotificaitonsModal(!showNotificaitonsModal)}>
-						{isLightTheme(theme) ? (
-							<SettingsDark style={{ width: 22 }} />
-						) : (
-							<SettingsLight style={{ width: 22 }} />
-						)}
-					</button>
+					<Icon
+						size="small"
+						icon={isLightTheme(theme) ? 'settingsDark' : 'settingsLight'}
+						onClick={() => setShowNotificaitonsModal(!showNotificaitonsModal)}
+					/>
 				</Settings>
 			)} */}
 			<Trader>
 				<Swap>
 					<SwapInput>
-						<IconButton
-							icon={sourceToken as any}
+						<Icon
+							size="large"
+							icon={sourceToken.toLowerCase() as IconType}
 							onClick={() => setShowSourceModal(!showSourceModal)}
 						/>
 						<TextField
@@ -310,16 +288,21 @@ export const SwapForm = () => {
 						</Names>
 					</NamesWrapper>
 				</Swap>
-				{isLightTheme(theme) ? (
-					<SwapperLight style={{ margin: '18px 0' }} />
-				) : (
-					<SwapperDark style={{ margin: '18px 0' }} />
-				)}
+				<Icon
+					size="small"
+					icon={isLightTheme(theme) ? 'swapperLight' : 'swapperDark'}
+					style={{ marginBottom: 18 }}
+				/>
 				<Swap>
 					<SwapInput>
-						<IconButton
+						<Icon
+							size="large"
+							icon={
+								isTokenSelected(destinationToken)
+									? (destinationToken.toLowerCase() as IconType)
+									: 'questionMark'
+							}
 							onClick={() => setShowDestinationModal(!showDestinationModal)}
-							icon={destinationToken as any}
 						/>
 						<TextField
 							disabled
