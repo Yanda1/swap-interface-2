@@ -9,17 +9,17 @@ on:
       - master
 
 jobs:
-  TEST_ENV:
+  Tests:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout to the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up NodeJS environment
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: sets Timezone for iOS runner
         uses: szenius/set-timezone@v1.0
@@ -27,8 +27,18 @@ jobs:
           timezoneLinux: 'Europe/Berlin'
           timezoneMacos: 'Europe/Berlin'
 
+      - name: Cache node modules
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
       - name: Install package dependencies
         run: yarn install
 
-      - name: Execute test cases
-        run: yarn test
+      - name: Execute unit tests
+        run: yarn test:unit
+
+      - name: Execute dependency-cruiser tests
+        run: yarn test:dependencies

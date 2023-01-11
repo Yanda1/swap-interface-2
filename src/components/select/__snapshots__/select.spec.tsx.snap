@@ -1,6 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Select should match snapshot 1`] = `
+.c6 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c6 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 1.25rem;
+}
+
 .c0 {
   position: relative;
   font-size: 1rem;
@@ -71,7 +95,7 @@ exports[`Select should match snapshot 1`] = `
   margin: 0;
 }
 
-.c6 {
+.c7 {
   position: absolute;
   z-index: 100;
   top: 2.625rem;
@@ -90,15 +114,15 @@ exports[`Select should match snapshot 1`] = `
   transition: max-height 0.15s ease-out,border 0.2s ease-out,margin 0.2s eas-out 0.3s;
 }
 
-.c7 {
+.c8 {
   padding: 0.5rem 1.25rem;
   cursor: pointer;
   -webkit-transition: all .2s ease-in-out;
   transition: all .2s ease-in-out;
 }
 
-.c7:hover,
-.c7:focus {
+.c8:hover,
+.c8:focus {
   background: #494949;
   outline: none;
 }
@@ -187,41 +211,48 @@ exports[`Select should match snapshot 1`] = `
         Quote Asset
       </p>
     </div>
-    <svg
+    <div
+      class="c6"
+      data-testid="icon"
+      size="20"
       style="transform: rotate(0deg); transition: all .2s ease-in-out;"
     >
-      arrow-full-light.svg
-    </svg>
+      <svg
+        theme="[object Object]"
+      >
+        arrow-full-light.svg
+      </svg>
+    </div>
   </button>
   <ul
-    class="c6"
+    class="c7"
   >
     <li
-      class="c7"
+      class="c8"
       tabindex="1"
     >
       Sort by
     </li>
     <li
-      class="c7"
+      class="c8"
       tabindex="1"
     >
       Symbol
     </li>
     <li
-      class="c7"
+      class="c8"
       tabindex="1"
     >
       Date
     </li>
     <li
-      class="c7"
+      class="c8"
       tabindex="1"
     >
       Base Asset
     </li>
     <li
-      class="c7"
+      class="c8"
       tabindex="1"
     >
       Quote Asset

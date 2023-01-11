@@ -4,44 +4,42 @@ import { AuthProvider } from '../../helpers';
 import { Accordion } from '../../components';
 
 describe('Accordion', () => {
-	// it('should match snapshot', () => {
-	// 	const data = [
-	// 		{
-	// 			title: {
-	// 				symbol: 'GLMRBTC',
-	// 				date: '23/11/21 12:34',
-	// 				withdrawn: '123CELO (celo)',
-	// 				received: '456USDT (BTC)'
-	// 			},
-	// 			content: 'Lorem ipsum dolor sit amet'
-	// 		},
-	// 		{
-	// 			title: {
-	// 				symbol: 'ETHBTC',
-	// 				date: '03/04/22 9:12',
-	// 				withdrawn: '245.93EtH (ETH)',
-	// 				received: '123235445BTC (BTC)'
-	// 			},
-	// 			content: 'Lorem ipsum dolor sit amet'
-	// 		},
-	// 		{
-	// 			title: {
-	// 				symbol: 'BUSDUSDT',
-	// 				date: '01/05/18 12:34',
-	// 				withdrawn: '12BUSD (ETH)',
-	// 				received: '234.123USDT (ETH)'
-	// 			},
-	// 			content: 'Lorem ipsum dolor sit amet'
-	// 		}
-	// 	];
+	it('should match snapshot', () => {
+		const data = [
+			{
+				blockNumber: 1343324,
+				header: {
+					timestamp: undefined,
+					symbol: 'GLMRBTC',
+					scoin: 'BTC',
+					fcoin: 'GLMR',
+					samt: '32423',
+					net: 'test'
+				},
+				content: {
+					qty: '100',
+					price: '10',
+					timestamp: 28304732,
+					cexFee: '4',
+					withdrawFee: '2',
+					success: true
+				},
+				gasFee: '039328423342',
+				withdrawl: {
+					amount: '40',
+					withdrawFee: '7',
+					url: 'moonscan.io'
+				}
+			}
+		];
 
-	// 	const { getByTestId } = render(
-	// 		<AuthProvider>
-	// 			<Accordion data={data} />
-	// 		</AuthProvider>
-	// 	);
-	// 	expect(getByTestId('accordion')).toMatchSnapshot();
-	// });
+		const { getByTestId } = render(
+			<AuthProvider>
+				<Accordion data={data} contentLoading={false} />
+			</AuthProvider>
+		);
+		expect(getByTestId('accordion')).toMatchSnapshot();
+	});
 
 	it('Should return message if no data available', () => {
 		const { getByText } = render(

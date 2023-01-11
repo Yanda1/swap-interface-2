@@ -35,7 +35,7 @@ describe('Select', () => {
 		expect(getByTestId('select')).toMatchSnapshot();
 	});
 
-	it('should show options onClick', () => {
+	it('should show options onClick by opening', () => {
 		const data: SelectProps[] = [
 			{ name: 'Sort by', value: undefined, checked: true },
 			{ name: 'Symbol', value: 'symbol', checked: false },
