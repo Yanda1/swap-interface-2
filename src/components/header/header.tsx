@@ -1,46 +1,50 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
+import { Mainnet, MetamaskConnector, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
-import { Theme, ColorType, DEFAULT_TRANSIITON } from '../../styles';
 import {
+	ColorType,
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSIITON,
 	mediaQuery,
 	pxToRem,
 	spacing,
-	DEFAULT_BORDER_RADIUS,
+	Theme,
 	theme as defaultTheme
 } from '../../styles';
+import type { ApiAuthType } from '../../helpers';
 import {
+	BasicStatusEnum,
+	button,
 	ButtonEnum,
+	CHAINS,
+	DefaultSelectEnum,
+	DestinationEnum,
+	ETHEREUM_URL,
 	getAuthTokensFromNonce,
+	hexToRgbA,
 	INITIAL_STORAGE,
 	isLightTheme,
+	isNetworkSelected,
+	KycEnum,
+	KycL2StatusEnum,
+	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
 	makeBinanceKycCall,
-	ETHEREUM_URL,
+	MOONBEAM_URL,
+	routes,
+	SourceEnum,
 	ThemeEnum,
 	useStore,
-	VerificationEnum,
-	button,
-	KycStatusEnum,
-	KycEnum,
-	routes,
-	BasicStatusEnum,
-	DestinationEnum,
-	CHAINS,
-	hexToRgbA,
-	isNetworkSelected,
-	SourceEnum,
-	MOONBEAM_URL,
-	DefaultSelectEnum
+	VerificationEnum
 } from '../../helpers';
-import type { ApiAuthType } from '../../helpers';
-import { Button, useToasts, Wallet, Icon } from '../../components';
 import type { IconType } from '../../components';
+import { Button, Icon, KycL2Modal, useToasts, Wallet } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
+import { StatusKycL2Modal } from '../modal/statusKycL2Modal';
 
 type Props = {
 	theme: Theme;
@@ -152,7 +156,8 @@ export const Header = () => {
 			sourceNetwork,
 			account: userAccount,
 			isNetworkConnected,
-			theme
+			theme,
+			kycL2Status
 		},
 		dispatch
 	} = useStore();
@@ -163,6 +168,8 @@ export const Header = () => {
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showNetworksList, setShowNetworksList] = useState(false);
+	const [showModal, setShowModal] = useState(false);
+	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
@@ -273,20 +280,33 @@ export const Header = () => {
 				if (res.data.errorData === noKycStatusMessage) {
 					await getBinanceToken();
 				}
-				const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
+				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
+				const { status: kycL2Status } = res?.data?.L2;
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
 				});
-				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
+				dispatch({
+					type: KycL2StatusEnum.STATUS,
+					payload: kycL2Status
+				});
+				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS && kycL2Status === 'PASSED' });
 				// TODO: move this part to context?
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'error');
-				} else if ((basic === BasicStatusEnum.INITIAL || basic === BasicStatusEnum.PASS) && kyc === KycStatusEnum.PROCESS) {
+					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
+				} else if (kycL2Status === 'REJECT') {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
+					addToast('Your KYC L2 process has been rejected - please start again!', 'warning');
+				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				} else if (kycL2Status === 'INITIAL') {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
+				} else if (kycL2Status === 'PENDING') {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
+					setShowStatusKycL2Modal(true);
 				}
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
@@ -329,7 +349,6 @@ export const Header = () => {
 				}
 			}
 			if (!onMobileDevice && metamaskMissing) {
-				console.log('HERE');
 				addToast(
 					'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
 				);
@@ -354,6 +373,11 @@ export const Header = () => {
 		if (chainId && account) {
 			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
+			} else if (buttonStatus === button.PASS_KYC_L2) {
+				// add  request to base to get status of KYC review show modal window
+				setShowModal(!showModal);
+			} else if (buttonStatus === button.CHECK_KYC_L2) {
+				void checkStatus();
 			} else if (buttonStatus === button.LOGIN) {
 				await setTokensInStorageAndContext();
 			} else {
@@ -366,6 +390,14 @@ export const Header = () => {
 		setShowMenu(false);
 		setShowNetworksList(false);
 	});
+
+	const updateShowKycL2 = (value: boolean) => {
+		setShowModal(value);
+	};
+
+	const updateStatusKycL2Modal = (value: boolean) => {
+		setShowStatusKycL2Modal(value);
+	};
 
 	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
@@ -396,6 +428,10 @@ export const Header = () => {
 				type: KycEnum.STATUS,
 				payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
 			});
+			dispatch({
+				type: KycL2StatusEnum.STATUS,
+				payload: JSON.parse(localStorageAuth).isKyced ? 'PASSED' : 'INITIAL'
+			});
 		}
 	}, []);
 
@@ -423,6 +459,10 @@ export const Header = () => {
 				type: KycEnum.STATUS,
 				payload: KycStatusEnum.INITIAL
 			});
+			dispatch({
+				type: KycL2StatusEnum.STATUS,
+				payload: 'INITIAL'
+			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
 	}, [account, isUserVerified, isNetworkConnected]);
@@ -438,7 +478,7 @@ export const Header = () => {
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, accessToken, account, userAccount]);
+	}, [kycStatus, kycL2Status, accessToken, account, userAccount]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -531,6 +571,11 @@ export const Header = () => {
 					</Networks>
 				</MenuWrapper>
 			)}
+			{showModal && <KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />}
+			<StatusKycL2Modal
+				showStatusKycL2Modal={showStatusKycL2Modal}
+				updateStatusKycL2Modal={updateStatusKycL2Modal}
+			/>
 		</StyledHeader>
 	);
 };

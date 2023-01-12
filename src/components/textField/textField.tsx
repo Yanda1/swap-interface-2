@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import type { ThemeProps } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
-	HORIZONTAL_PADDING,
-	fontSize,
-	pxToRem,
-	spacing,
+	DEFAULT_OUTLINE_OFFSET,
 	DEFAULT_TRANSIITON,
-	DEFAULT_OUTLINE_OFFSET
+	fontSize,
+	HORIZONTAL_PADDING,
+	pxToRem,
+	spacing
 } from '../../styles';
-import type { ThemeProps } from '../../styles';
 import { useStore } from '../../helpers';
 import { Icon } from '../../components';
 
 export type AlignProps = 'left' | 'right' | 'center';
-export type TypeProps = 'text' | 'number' | 'search';
+export type TypeProps = 'text' | 'number' | 'search' | 'email' | 'radio' | 'checkbox';
 export type SizeProps = 'regular' | 'small';
 
 type StyledProps = {
@@ -101,12 +101,16 @@ type Props = {
 	placeholder?: string;
 	disabled?: boolean;
 	type?: TypeProps;
-	value: string;
+	value: string | boolean | number;
 	description?: string;
 	error?: boolean;
 	size?: SizeProps;
 	onChange?: (e?: any) => void;
 	align?: AlignProps;
+	required?: boolean;
+	name?: string;
+	id?: string;
+	checked?: boolean;
 };
 
 export const TextField = ({
@@ -118,7 +122,11 @@ export const TextField = ({
 	description,
 	error,
 	size = 'regular',
-	align = 'center'
+	align = 'center',
+	required = false,
+	name,
+	id,
+	checked = false
 }: Props) => {
 	const {
 		state: { theme }
@@ -136,11 +144,14 @@ export const TextField = ({
 				align={align}
 				value={value}
 				type={type}
-				min="0"
 				size={size}
 				error={error}
 				onBlur={() => setIsActive(true)}
 				onFocus={() => setIsActive(false)}
+				required={required}
+				name={name}
+				id={id}
+				checked={checked}
 			/>
 			{isTypeSearch && (
 				<Icon

@@ -1,27 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
-import { mediaQuery, spacing, MAIN_MAX_WIDTH } from '../styles';
+import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 import {
+	Fees,
 	Icon,
+	IconType,
 	NetworkTokenModal,
 	SwapButton,
-	TextField,
-	Fees,
-	IconType
+	TextField
 } from '../components';
+import type { Fee } from '../helpers';
 import {
 	AmountEnum,
+	beautifyNumbers,
 	BINANCE_FEE,
 	DestinationEnum,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
-	beautifyNumbers,
-	useStore,
-	NETWORK_TO_ID
+	NETWORK_TO_ID,
+	useStore
 } from '../helpers';
-import type { Fee } from '../helpers';
 import { useFees } from '../hooks';
 
 const Wrapper = styled.main`

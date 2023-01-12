@@ -182,7 +182,6 @@ exports[`SelectList should render a select list with 3 items 1`] = `
     >
       <input
         class="c4"
-        min="0"
         placeholder="Network Name"
         type="search"
         value=""
