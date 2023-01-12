@@ -37,10 +37,11 @@ export const useAxios = () => {
 
 			const newTokens = await axios.post(
 				`${BASE_URL}${routes.refresh}`,
-				{},
+				{
+					refresh: storage.refresh
+				},
 				{
 					headers: {
-						Authorization: `Bearer ${storage.refresh}`,
 						'Content-Type': 'application/json',
 						'Access-Control-Allow-Origin': '*'
 					}
