@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
 import { BASE_URL, findAndReplace, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
@@ -326,6 +326,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			setIsNatural(null);
 		}
 	};
+
+	useEffect(() => {
+		if (!isNatural && page === 5) {
+			console.log('Send information from FIRST PART');
+		}
+	}, [page, isNatural]);
 
 	return showModal ? (
 		<Portal
@@ -1144,7 +1150,538 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						)}
 					</>
 				)}
-				{isNatural === false && <div>Legal person Page! ;)</div>}
+				{isNatural === false && (
+					<div
+						style={{
+							display: 'flex',
+							width: '100%',
+							height: '100%',
+							flexDirection: 'column',
+							justifyContent: 'space-between',
+							alignItems: 'center'
+						}}>
+						{page === 0 && (
+							<div style={{ marginBottom: '14px', width: '50%' }}>
+								<Title>KYC L2 form for Legal Persons</Title>
+								<div style={{ marginBottom: '8px' }}>
+									<label
+										htmlFor="label-place-of-birth"
+										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+										Place of birth
+									</label>
+									<TextField
+										id="label-place-of-birth"
+										value={input.placeOfBirth}
+										placeholder="Place of birth"
+										type="text"
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="placeOfBirth"
+										required={true}
+										error={input.placeOfBirth.length < 2}
+									/>
+								</div>
+								<div style={{ marginBottom: '8px' }}>
+									<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
+										Gender
+										<Select
+											name="gender"
+											onChange={handleDropDownInput}
+											value={input.gender}
+											id="label-select-gender"
+											style={{
+												minHeight: '40px',
+												marginTop: '15px',
+												backgroundColor: '#1c2125',
+												color: 'white',
+												borderRadius: '6px'
+											}}>
+											<option value="Male">Male</option>
+											<option value="Female">Female</option>
+											<option value="Other">Other</option>
+										</Select>
+									</label>
+								</div>
+								<div style={{ marginBottom: '8px' }}>
+									<label
+										htmlFor="label-email"
+										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+										Email
+									</label>
+									<TextField
+										id="label-email"
+										value={input.email}
+										placeholder="Email"
+										type="email"
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										required
+										name="email"
+										error={input.email.length < 2}
+									/>
+								</div>
+							</div>
+						)}
+						{page === 1 && (
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column'
+								}}>
+								<div style={{ margin: '10px 0 50px', width: '100%' }}>
+									<label htmlFor="label-select-tax-residency" style={{ fontStyle: 'italic' }}>
+										Tax Residency
+										<Select
+											name="taxResidency"
+											onChange={handleDropDownInput}
+											value={input.taxResidency}
+											id="label-select-tax-residency"
+											style={{
+												maxHeight: '40px',
+												marginTop: '15px',
+												backgroundColor: '#1c2125',
+												color: 'white',
+												borderRadius: '6px'
+											}}>
+											{COUNTRIES.map((country: any) => {
+												return (
+													<option value={country.name} key={country.name}>
+														{country.name}
+													</option>
+												);
+											})}
+											;
+										</Select>
+									</label>
+								</div>
+								<div>
+									<p style={{ marginBottom: '20px', textAlign: 'center' }}>
+										Person against whom are applied CZ/international sanctions?
+									</p>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-evenly',
+											width: '100%',
+											marginBottom: '20px'
+										}}>
+										<label htmlFor="appliedSanctionsTrue">
+											Yes
+											<input
+												id="appliedSanctionsTrue"
+												type="radio"
+												value="Yes"
+												checked={input.appliedSanctions === 'Yes'}
+												onChange={handleChangeInput}
+												name="appliedSanctions"
+											/>
+										</label>
+										<label htmlFor="appliedSanctionsFalse">
+											No
+											<input
+												id="appliedSanctionsFalse"
+												type="radio"
+												value="No"
+												checked={input.appliedSanctions === 'No'}
+												onChange={handleChangeInput}
+												name="appliedSanctions"
+											/>
+										</label>
+									</div>
+									<p style={{ marginBottom: '20px', textAlign: 'center' }}>
+										Politically exposed person?
+									</p>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-evenly',
+											width: '100%',
+											marginBottom: '20px'
+										}}>
+										<label htmlFor="politicallPersonTrue">
+											Yes
+											<input
+												id="politicallPersonTrue"
+												type="radio"
+												value="Yes"
+												checked={input.politicallPerson === 'Yes'}
+												onChange={handleChangeInput}
+												name="politicallPerson"
+											/>
+										</label>
+										<label htmlFor="politicallPersonFalse">
+											No
+											<input
+												id="politicallPersonFalse"
+												type="radio"
+												value="No"
+												checked={input.politicallPerson === 'No'}
+												onChange={handleChangeInput}
+												name="politicallPerson"
+											/>
+										</label>
+									</div>
+								</div>
+							</div>
+						)}
+						{page === 2 && (
+							<div style={{ marginBottom: '10px', width: '100%' }}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Citizenship(s)
+								</p>
+								{COUNTRIES.map((country: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={country.name}
+												name={country.name}
+												id={`citizenship-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.citizenship.includes(`${country.name}`)}
+												required
+												data-key="citizenship"
+											/>
+											<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
+										</div>
+									);
+								})}
+							</div>
+						)}
+						{page === 3 && (
+							<div
+								style={{
+									marginBottom: '12px',
+									display: 'flex',
+									flexDirection: 'column',
+									width: '50%'
+								}}>
+								<span style={{ textAlign: 'center', fontSize: '20px' }}>
+									Permanent or other residence
+								</span>
+								<label
+									htmlFor="label-address-permanent-state-Or-Country"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									State or Country
+								</label>
+								<TextField
+									id="label-address-permanent-state-Or-Country"
+									value={input.residence.stateOrCountry}
+									placeholder="State or Country"
+									type="text"
+									onChange={handleChangeResidenceInput}
+									size="small"
+									align="left"
+									name="stateOrCountry"
+								/>
+								<label
+									htmlFor="label-address-permanent-street"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									Street
+								</label>
+								<TextField
+									id="label-address-permanent-street"
+									value={input.residence.street}
+									placeholder="Street"
+									type="text"
+									onChange={handleChangeResidenceInput}
+									size="small"
+									align="left"
+									name="street"
+								/>
+								<label
+									htmlFor="label-address-permanent-street-number"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									Street number
+								</label>
+								<TextField
+									id="label-address-permanent-street-number"
+									value={input.residence.streetNumber}
+									placeholder="Street number"
+									type="text"
+									onChange={handleChangeResidenceInput}
+									size="small"
+									align="left"
+									name="streetNumber"
+								/>
+								<label
+									htmlFor="label-address-permanent-municipality"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									Municipality
+								</label>
+								<TextField
+									id="label-address-permanent-municipality"
+									value={input.residence.municipality}
+									placeholder="Municipality"
+									type="text"
+									onChange={handleChangeResidenceInput}
+									size="small"
+									align="left"
+									name="municipality"
+								/>
+								<label
+									htmlFor="label-address-permanent-zipCode"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									ZIP Code
+								</label>
+								<TextField
+									id="label-address-permanent-zipCode"
+									value={input.residence.zipCode}
+									placeholder="ZIP Code"
+									type="text"
+									onChange={handleChangeResidenceInput}
+									size="small"
+									align="left"
+									name="zipCode"
+								/>
+							</div>
+						)}
+						{page === 4 && (
+							<>
+								<p style={{ marginBottom: '25px' }}>
+									Is your permanent (RESIDENCE) address the same as your mailing address?
+								</p>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'space-evenly',
+										width: '100%',
+										marginBottom: '20px'
+									}}>
+									<label htmlFor="label-mailing-permanent-address-true">
+										Yes
+										<input
+											id="label-mailing-permanent-address-true"
+											type="radio"
+											value="Yes"
+											checked={input.permanentAndMailAddressSame === 'Yes'}
+											onChange={handleChangeInput}
+											name="permanentAndMailAddressSame"
+										/>
+									</label>
+									<label htmlFor="label-mailing-permanent-address-false">
+										No
+										<input
+											id="label-mailing-permanent-address-false"
+											type="radio"
+											value="No"
+											checked={input.permanentAndMailAddressSame === 'No'}
+											onChange={handleChangeInput}
+											name="permanentAndMailAddressSame"
+										/>
+									</label>
+								</div>
+								{input.permanentAndMailAddressSame === 'No' && (
+									<div
+										style={{
+											marginBottom: '12px',
+											display: 'flex',
+											flexDirection: 'column',
+											width: '50%'
+										}}>
+										<label
+											htmlFor="label-address-permanent-state-Or-Country"
+											style={{
+												margin: '6px 0 8px 0',
+												display: 'inline-block',
+												fontStyle: 'italic'
+											}}>
+											State or Country
+										</label>
+										<TextField
+											id="label-address-permanent-state-Or-Country"
+											value={input.mailAddress.stateOrCountry}
+											placeholder="State or Country"
+											type="text"
+											onChange={handleChangeMailInput}
+											size="small"
+											align="left"
+											name="stateOrCountry"
+										/>
+										<label
+											htmlFor="label-address-street"
+											style={{
+												margin: '6px 0 8px 0',
+												display: 'inline-block',
+												fontStyle: 'italic'
+											}}>
+											Street
+										</label>
+										<TextField
+											id="label-address-street"
+											value={input.mailAddress.street}
+											placeholder="Street"
+											type="text"
+											onChange={handleChangeMailInput}
+											size="small"
+											align="left"
+											name="street"
+										/>
+										<label
+											htmlFor="label-address-street-number"
+											style={{
+												margin: '6px 0 8px 0',
+												display: 'inline-block',
+												fontStyle: 'italic'
+											}}>
+											Street number
+										</label>
+										<TextField
+											id="label-address-street-number"
+											value={input.mailAddress.streetNumber}
+											placeholder="Street number"
+											type="text"
+											onChange={handleChangeMailInput}
+											size="small"
+											align="left"
+											name="streetNumber"
+										/>
+										<label
+											htmlFor="label-address-municipality"
+											style={{
+												margin: '6px 0 8px 0',
+												display: 'inline-block',
+												fontStyle: 'italic'
+											}}>
+											Municipality
+										</label>
+										<TextField
+											id="label-address-municipality"
+											value={input.mailAddress.municipality}
+											placeholder="Municipality"
+											type="text"
+											onChange={handleChangeMailInput}
+											size="small"
+											align="left"
+											name="municipality"
+										/>
+										<label
+											htmlFor="label-address-zipCode"
+											style={{
+												margin: '6px 0 8px 0',
+												display: 'inline-block',
+												fontStyle: 'italic'
+											}}>
+											ZIP Code
+										</label>
+										<TextField
+											id="label-address-zipCode"
+											value={input.mailAddress.zipCode}
+											placeholder="ZIP Code"
+											type="text"
+											onChange={handleChangeMailInput}
+											size="small"
+											align="left"
+											name="zipCode"
+										/>
+									</div>
+								)}
+							</>
+						)}
+						{page === 5 && (
+							<div>
+								<p>Identification (ID card or passport)</p>
+								<label
+									htmlFor="label-address-zipCode"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Type
+								</label>
+								<TextField
+									id="label-address-zipCode"
+									value={input.mailAddress.zipCode}
+									placeholder="Type"
+									type="text"
+									onChange={handleChangeMailInput}
+									size="small"
+									align="left"
+									name="zipCode"
+								/>
+								<label
+									htmlFor="label-address-zipCode"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Number
+								</label>
+								<TextField
+									id="label-address-zipCode"
+									value={input.mailAddress.zipCode}
+									placeholder="Number"
+									type="text"
+									onChange={handleChangeMailInput}
+									size="small"
+									align="left"
+									name="zipCode"
+								/>
+								<label
+									htmlFor="label-address-zipCode"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Issued by
+								</label>
+								<TextField
+									id="label-address-zipCode"
+									value={input.mailAddress.zipCode}
+									placeholder="Issued by"
+									type="text"
+									onChange={handleChangeMailInput}
+									size="small"
+									align="left"
+									name="zipCode"
+								/>
+								<label
+									htmlFor="label-address-zipCode"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Valid thru
+								</label>
+								<TextField
+									id="label-address-zipCode"
+									value={input.mailAddress.zipCode}
+									placeholder="Valid thru"
+									type="text"
+									onChange={handleChangeMailInput}
+									size="small"
+									align="left"
+									name="zipCode"
+								/>
+							</div>
+						)}
+						{page < 8 && (
+							<div
+								style={{
+									margin: '0 auto',
+									width: '100%',
+									textAlign: 'center'
+								}}>
+								<Button variant="secondary" onClick={handleNext}>
+									Next
+								</Button>
+							</div>
+						)}
+					</div>
+				)}
 			</Wrapper>
 		</Portal>
 	) : null;
