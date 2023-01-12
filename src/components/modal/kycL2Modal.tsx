@@ -122,7 +122,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		},
 		irregularSourceOfFunds: [],
 		irregularSourceOfFundsOther: '',
-		gender: 'Male',
+		gender: 'Select gender',
 		permanentAndMailAddressSame: 'Yes',
 		residence: {
 			street: '',
@@ -147,7 +147,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		sourceOfIncome: '',
 		sourceOfFunds: [],
 		sourceOfFundsOther: '',
-		taxResidency: 'Afghanistan',
+		taxResidency: 'Select country',
 		workArea: []
 	});
 	const [isValid, setIsValid] = useState<boolean>(false);
@@ -293,13 +293,13 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			input.placeOfBirth.length > 3 &&
 			input.yearlyIncome !== null &&
 			input.email.length > 3 &&
-			input.gender.length
+			input.gender !== 'Select gender'
 		) {
 			setIsValid(true);
 		} else if (
 			page === 1 &&
 			input.sourceOfIncome.length > 3 &&
-			input.taxResidency.length &&
+			input.taxResidency !== 'Select country' &&
 			input.countryOfWork.length
 		) {
 			setIsValid(true);
@@ -419,6 +419,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											color: 'white',
 											borderRadius: '6px'
 										}}>
+										<option value="Male">Select gender</option>
 										<option value="Male">Male</option>
 										<option value="Female">Female</option>
 										<option value="Other">Other</option>
@@ -445,6 +446,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								size="small"
 								align="left"
 								name="sourceOfIncome"
+								error={input.sourceOfIncome.length < 2}
 							/>
 						</div>
 						<div style={{ margin: '10px 0 30px', width: '100%' }}>
