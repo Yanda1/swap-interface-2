@@ -1,11 +1,11 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
-import { BASE_URL, button, ButtonEnum, findAndReplace, useStore } from '../../helpers';
+import { BASE_URL, button, ButtonEnum, findAndReplace, useStore, routes } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
-import axios from 'axios';
+import { useAxios } from '../../hooks';
 import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
@@ -160,9 +160,10 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 
 	const { addToast }: any | null = useToasts();
 	const {
-		state: { accessToken },
 		dispatch
 	} = useStore();
+
+	const api = useAxios();
 
 	const handleNext = () => {
 		myRef?.current?.scrollTo(0, 0);
@@ -171,49 +172,42 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 	const handleSubmit = (event: any) => {
 		event.preventDefault();
 		const bodyFormData = new FormData();
-		bodyFormData.append('placeOfBirth', input.placeOfBirth);
-		bodyFormData.append('poaDoc1', input.file.poaDoc1);
-		bodyFormData.append('posofDoc1', input.file.posofDoc1);
-		bodyFormData.append('mailAddress', input.mailAddress);
-		bodyFormData.append('gender', JSON.stringify(input.gender));
-		bodyFormData.append('citizenship', JSON.stringify(input.citizenship));
+		bodyFormData.append('place_of_birth', input.placeOfBirth);
+		bodyFormData.append('residence', JSON.stringify(input.residence));
+		if (input.mailAddress) {
+			bodyFormData.append('mail_address', JSON.stringify(input.mailAddress));
+		}
+		bodyFormData.append('gender', input.gender);
+		bodyFormData.append('citizenship', input.citizenship.join(', '));
+		bodyFormData.append('poa_doc_1', input.file.poaDoc1);
+		bodyFormData.append('posof_doc_1', input.file.posofDoc1);
 		bodyFormData.append('email', input.email);
-		bodyFormData.append('taxResidency', JSON.stringify(input.taxResidency));
-		bodyFormData.append('politicallPerson', input.politicallPerson === 'Yes' ? 'true' : 'false');
-		bodyFormData.append('appliedSanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
-		bodyFormData.append('countryOfWork', JSON.stringify(input.countryOfWork));
-		bodyFormData.append('workArea', JSON.stringify(input.workArea));
-		const sourceOfIncomeNature = findAndReplace(
-			input.sourceOfIncomeNature,
-			'Other',
-			input.sourceOfIncomeNatureOther
-		);
-		bodyFormData.append('sourceOfIncomeNature', JSON.stringify(sourceOfIncomeNature));
+		bodyFormData.append('tax_residency', input.taxResidency);
+		bodyFormData.append('politicall_person', input.politicallPerson === 'Yes' ? 'true' : 'false');
+		bodyFormData.append('applied_sanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
+		bodyFormData.append('country_of_work', input.countryOfWork.join(', '));
+		bodyFormData.append('work_area', input.workArea.join(', '));
+		const sourceOfIncomeNature = findAndReplace(input.sourceOfIncomeNature, 'Other', input.sourceOfIncomeNatureOther);
+		bodyFormData.append('source_of_income_nature', sourceOfIncomeNature.join(', '));
 		const yearlyIncome = input.yearlyIncome ? Number(input.yearlyIncome).toFixed(4) : '0';
-		bodyFormData.append('yearlyIncome', yearlyIncome);
-		bodyFormData.append('sourceOfIncome', input.sourceOfIncome);
+		bodyFormData.append('yearly_income', yearlyIncome);
+		bodyFormData.append('source_of_income', input.sourceOfIncome);
 		const sourceOfFunds = findAndReplace(input.sourceOfFunds, 'Other', input.sourceOfFundsOther);
-		bodyFormData.append('sourceOfFunds', JSON.stringify(sourceOfFunds));
-		const irregularSourceOfFunds = findAndReplace(
-			input.irregularSourceOfFunds,
-			'Other',
-			input.irregularSourceOfFundsOther
-		);
-		bodyFormData.append('irregularSourceOfFunds', JSON.stringify(irregularSourceOfFunds));
+		bodyFormData.append('source_of_funds', sourceOfFunds.join(', '));
+		const irregularSourceOfFunds = findAndReplace(input.irregularSourceOfFunds, 'Other', input.irregularSourceOfFundsOther);
+		bodyFormData.append('irregular_source_of_funds', irregularSourceOfFunds.join(', '));
 		bodyFormData.append(
-			'hasCriminalRecords',
+			'has_criminal_records',
 			input.hasCriminalRecords === 'Yes' ? 'true' : 'false'
 		);
-		bodyFormData.append('declare', JSON.stringify(`${input.declare}${input.declareOther}`));
-		bodyFormData.append('mailAddress', input.mailAddress);
+		bodyFormData.append('declare', `${input.declare}${input.declareOther}`);
 
-		axios({
-			method: 'POST',
-			url: `${BASE_URL}kyc/l2-data`,
+		api.request({
+			method: 'PUT',
+			url: `${BASE_URL}${routes.kycL2NaturalForm}`,
 			data: bodyFormData,
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
-				Authorization: 'Bearer ' + accessToken
 			}
 		})
 			.then(function (response) {
