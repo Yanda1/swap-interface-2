@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
-import { BASE_URL, findAndReplace, useStore } from '../../helpers';
+import { BASE_URL, button, ButtonEnum, findAndReplace, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
@@ -84,8 +84,6 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
-	const { addToast }: any | null = useToasts();
-	const [showModal, setShowModal] = useState(showKycL2);
 	const [input, setInput] = useState<{
 		placeOfBirth: string;
 		yearlyIncome: number | null;
@@ -124,7 +122,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		},
 		irregularSourceOfFunds: [],
 		irregularSourceOfFundsOther: '',
-		gender: 'Male',
+		gender: 'Select gender',
 		permanentAndMailAddressSame: 'Yes',
 		residence: {
 			street: '',
@@ -149,42 +147,29 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		sourceOfIncome: '',
 		sourceOfFunds: [],
 		sourceOfFundsOther: '',
-		taxResidency: 'Afghanistan',
+		taxResidency: 'Select country',
 		workArea: []
 	});
+	const [isValid, setIsValid] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(0);
+	const [showModal, setShowModal] = useState<boolean>(showKycL2);
+
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
-	const [page, setPage] = useState<number>(0);
+	const myRef = useRef<HTMLDivElement | null>(null);
+
+	const { addToast }: any | null = useToasts();
 	const {
-		state: { accessToken }
+		state: { accessToken },
+		dispatch
 	} = useStore();
 
-	const isDisabled =
-		!input.citizenship.length ||
-		!input.countryOfWork.length ||
-		input.hasCriminalRecords === '' ||
-		!input.declare.length ||
-		input.email === '' ||
-		input.file === '' ||
-		!input.irregularSourceOfFunds.length ||
-		input.mailAddress === '' ||
-		!input.sourceOfIncomeNature.length ||
-		input.yearlyIncome === null ||
-		input.appliedSanctions === '' ||
-		input.placeOfBirth === '' ||
-		input.politicallPerson === '' ||
-		input.sourceOfIncome === '' ||
-		!input.sourceOfFunds.length ||
-		input.taxResidency === '' ||
-		!input.workArea.length;
-	const myRef = useRef<HTMLDivElement | null>(null);
 	const handleNext = () => {
 		myRef?.current?.scrollTo(0, 0);
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = (event: any) => {
 		event.preventDefault();
-		// send POST if 200 change add toast and modal (Successful submit) to check kys if 401 bad request add toast like please pass kyc again
 		const bodyFormData = new FormData();
 		bodyFormData.append('placeOfBirth', input.placeOfBirth);
 		bodyFormData.append('poaDoc1', input.file.poaDoc1);
@@ -233,8 +218,10 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		})
 			.then(function (response) {
 				// handle success
+				// Status 200 OK
 				console.log(response);
-				if (response.status === 201) {
+				if (response.status === 200) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
 					addToast(
 						'Your documents are under review, please wait for the results of the verification!',
 						'info'
@@ -299,6 +286,66 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		updateShowKycL2(false);
 	};
 
+	useEffect(() => {
+		setIsValid(false);
+		if (
+			page === 0 &&
+			input.placeOfBirth.length > 3 &&
+			input.yearlyIncome !== null &&
+			input.email.length > 3 &&
+			input.gender !== 'Select gender'
+		) {
+			setIsValid(true);
+		} else if (
+			page === 1 &&
+			input.sourceOfIncome.length > 3 &&
+			input.taxResidency !== 'Select country' &&
+			input.countryOfWork.length
+		) {
+			setIsValid(true);
+		} else if (
+			page === 2 &&
+			input.workArea.length &&
+			input.sourceOfFunds.length &&
+			input.sourceOfIncomeNature.length
+		) {
+			setIsValid(true);
+		} else if (page === 3 && input.citizenship.length) {
+			setIsValid(true);
+		} else if (page === 4 && input.irregularSourceOfFunds.length && input.declare.length) {
+			setIsValid(true);
+		} else if (
+			page === 5 &&
+			input.hasCriminalRecords.length &&
+			input.appliedSanctions.length &&
+			input.politicallPerson.length
+		) {
+			setIsValid(true);
+		} else if (page === 6 && input.file.poaDoc1 && input.file.posofDoc1) {
+			setIsValid(true);
+		} else if (
+			page === 7 &&
+			input.residence.street.length > 3 &&
+			input.residence.streetNumber.length &&
+			input.residence.stateOrCountry.length &&
+			input.residence.municipality.length &&
+			input.residence.zipCode.length
+		) {
+			setIsValid(true);
+		} else if (page === 8 && input.permanentAndMailAddressSame === 'Yes') {
+			setIsValid(true);
+		} else if (
+			page === 8 &&
+			input.mailAddress.street.length > 3 &&
+			input.mailAddress.streetNumber.length &&
+			input.mailAddress.stateOrCountry.length &&
+			input.mailAddress.municipality.length &&
+			input.mailAddress.zipCode.length
+		) {
+			setIsValid(true);
+		}
+	}, [page, input]);
+
 	return showModal ? (
 		<Portal
 			size="large"
@@ -329,7 +376,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									size="small"
 									align="left"
 									name="placeOfBirth"
-									required={true}
 									error={input.placeOfBirth.length < 2}
 								/>
 							</div>
@@ -347,7 +393,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									onChange={handleChangeInput}
 									size="small"
 									align="left"
-									required
 									name="yearlyIncome"
 									error={input.yearlyIncome === null}
 								/>
@@ -362,13 +407,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									id="label-email"
 									value={input.email}
 									placeholder="Email"
-									type="email"
+									type="text"
 									onChange={handleChangeInput}
 									size="small"
 									align="left"
-									required
 									name="email"
-									error={input.email.length < 2}
+									error={input.email.length < 2 || input.email.indexOf('@') === -1}
 								/>
 							</div>
 							<div style={{ marginBottom: '10px' }}>
@@ -386,6 +430,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											color: 'white',
 											borderRadius: '6px'
 										}}>
+										<option value="Select gender">Select gender</option>
 										<option value="Male">Male</option>
 										<option value="Female">Female</option>
 										<option value="Other">Other</option>
@@ -412,7 +457,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								size="small"
 								align="left"
 								name="sourceOfIncome"
-								required
+								error={input.sourceOfIncome.length < 2}
 							/>
 						</div>
 						<div style={{ margin: '10px 0 30px', width: '100%' }}>
@@ -445,7 +490,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								Country in which the Client conducts his work / business activity
 							</p>
-							{COUNTRIES.map((country: any, index: number) => {
+							{COUNTRIES.slice(1).map((country: any, index: number) => {
 								return (
 									<div
 										key={index}
@@ -462,7 +507,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											onChange={handleChangeCheckBox}
 											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 											checked={input.countryOfWork.includes(`${country.name}`)}
-											required
 											data-key="countryOfWork"
 										/>
 										<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
@@ -501,7 +545,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 										onChange={handleChangeCheckBox}
 										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 										checked={input.workArea.includes(`${activity}`)}
-										required
 										data-key="workArea"
 									/>
 									<label htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
@@ -528,7 +571,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 										onChange={handleChangeCheckBox}
 										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 										checked={input.sourceOfFunds.includes(`${activity}`)}
-										required={true}
 										data-key="sourceOfFunds"
 									/>
 									<label htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
@@ -544,11 +586,12 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								size="small"
 								align="left"
 								name="sourceOfFundsOther"
+								error={input.sourceOfFundsOther.length < 2}
 							/>
 						) : null}
 
 						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-							Nature of prevailing source of income
+							Nature of prevailing source of income:
 						</p>
 						{SOURCE_OF_INCOME_NATURE_LIST.map((activity: string, index: number) => {
 							return (
@@ -567,7 +610,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 										onChange={handleChangeCheckBox}
 										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 										checked={input.sourceOfIncomeNature.includes(`${activity}`)}
-										required={true}
 										data-key="sourceOfIncomeNature"
 									/>
 									<label htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>{activity}</label>
@@ -583,6 +625,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								size="small"
 								align="left"
 								name="sourceOfIncomeNatureOther"
+								error={input.sourceOfIncomeNatureOther.length < 2}
 							/>
 						) : null}
 					</div>
@@ -592,7 +635,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 							Citizenship(s)
 						</p>
-						{COUNTRIES.map((country: any, index: number) => {
+						{COUNTRIES.slice(1).map((country: any, index: number) => {
 							return (
 								<div
 									key={index}
@@ -609,7 +652,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 										onChange={handleChangeCheckBox}
 										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 										checked={input.citizenship.includes(`${country.name}`)}
-										required
 										data-key="citizenship"
 									/>
 									<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
@@ -641,7 +683,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											onChange={handleChangeCheckBox}
 											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 											checked={input.irregularSourceOfFunds.includes(`${activity}`)}
-											required={true}
 											data-key="irregularSourceOfFunds"
 										/>
 										<label htmlFor={`fundsIrregularForBusinessList-checkbox-${index}`}>
@@ -681,7 +722,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											onChange={handleChangeCheckBox}
 											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 											checked={input.declare.includes(`${activity}`)}
-											required={true}
 											data-key="declare"
 										/>
 										<label htmlFor={`declareList-checkbox-${index}`}>{activity}</label>
@@ -819,8 +859,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								id="file-input-address"
 								type="file"
 								ref={fileInputAddress as any}
-								onChange={handleChangeFileInput}
-								required={true}></FileInput>
+								onChange={handleChangeFileInput}></FileInput>
 							{input.file.poaDoc1 ? input.file.poaDoc1.name : 'Upload File'}
 						</LabelInput>
 						<p>
@@ -832,8 +871,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								id="file-input-proof"
 								type="file"
 								ref={fileInputDocs as any}
-								onChange={handleChangeFileInput}
-								required={true}></FileInput>
+								onChange={handleChangeFileInput}></FileInput>
 							{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
 						</LabelInput>
 					</>
@@ -1047,17 +1085,17 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 					</>
 				)}
 				{page < 8 && (
-					<Button variant="secondary" onClick={handleNext}>
-						Next
+					<Button variant="secondary" onClick={handleNext} disabled={!isValid}>
+						{isValid ? 'Next' : 'Please fill up all fields'}
 					</Button>
 				)}
 				{page >= 8 && (
 					<Button
+						disabled={!isValid}
 						variant="secondary"
 						// @ts-ignore
-						onClick={handleSubmit}
-						disabled={isDisabled}>
-						{isDisabled ? 'Please fill in all the fields of the form' : 'Submit'}
+						onClick={handleSubmit}>
+						Submit
 					</Button>
 				)}
 			</Wrapper>
