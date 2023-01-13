@@ -332,6 +332,17 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			input.residence.zipCode.length
 		) {
 			setIsValid(true);
+		} else if (page === 8 && input.permanentAndMailAddressSame === 'Yes') {
+			setIsValid(true);
+		} else if (
+			page === 8 &&
+			input.mailAddress.street.length > 3 &&
+			input.mailAddress.streetNumber.length &&
+			input.mailAddress.stateOrCountry.length &&
+			input.mailAddress.municipality.length &&
+			input.mailAddress.zipCode.length
+		) {
+			setIsValid(true);
 		}
 	}, [page, input]);
 
@@ -419,7 +430,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											color: 'white',
 											borderRadius: '6px'
 										}}>
-										<option value="Male">Select gender</option>
+										<option value="Select gender">Select gender</option>
 										<option value="Male">Male</option>
 										<option value="Female">Female</option>
 										<option value="Other">Other</option>
@@ -479,7 +490,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								Country in which the Client conducts his work / business activity
 							</p>
-							{COUNTRIES.map((country: any, index: number) => {
+							{COUNTRIES.slice(1).map((country: any, index: number) => {
 								return (
 									<div
 										key={index}
@@ -575,6 +586,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								size="small"
 								align="left"
 								name="sourceOfFundsOther"
+								error={input.sourceOfFundsOther.length < 2}
 							/>
 						) : null}
 
@@ -613,6 +625,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 								size="small"
 								align="left"
 								name="sourceOfIncomeNatureOther"
+								error={input.sourceOfIncomeNatureOther.length < 2}
 							/>
 						) : null}
 					</div>
@@ -622,7 +635,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 							Citizenship(s)
 						</p>
-						{COUNTRIES.map((country: any, index: number) => {
+						{COUNTRIES.slice(1).map((country: any, index: number) => {
 							return (
 								<div
 									key={index}
@@ -1078,6 +1091,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 				)}
 				{page >= 8 && (
 					<Button
+						disabled={!isValid}
 						variant="secondary"
 						// @ts-ignore
 						onClick={handleSubmit}>
