@@ -10,9 +10,12 @@ import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
 import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
+import SOURCE_OF_FUNDS_LIST_COMPANY from '../../data/sourceOfFundsListCompany.json';
 import FUNDS_IRREGULAR_FOR_BUSINESS_LIST from '../../data/fundsIrregularForBussinesList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
+import PREVAILLING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfIncomeCompany.json';
 import DECLARE_LIST from '../../data/declareList.json';
+import REPRESENT_PERSON from '../../data/representClient.json';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -122,7 +125,14 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		declare: string[];
 		declareOther: string;
 		file: any;
+		registeredOffice: any;
 		permanentAndMailAddressSame: string;
+		identification: any;
+		companyName: string;
+		companyIdentificationNumber: string;
+		representPerson: string[];
+		legalEntity: string;
+		typeOfCriminal: string;
 	}>({
 		citizenship: [],
 		countryOfWork: [],
@@ -161,6 +171,25 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		sourceOfIncome: '',
 		sourceOfFunds: [],
 		sourceOfFundsOther: '',
+		identification: {
+			type: '',
+			number: '',
+			issuedBy: '',
+			validThru: ''
+		},
+		registeredOffice: {
+			street: '',
+			streetNumber: '',
+			municipality: '',
+			state: '',
+			country: '',
+			pc: ''
+		},
+		representPerson: [],
+		companyName: '',
+		companyIdentificationNumber: '',
+		legalEntity: '',
+		typeOfCriminal: '',
 		taxResidency: 'Afghanistan',
 		workArea: []
 	});
@@ -281,6 +310,18 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		setInput({
 			...input,
 			residence: { ...input.residence, [event.target.name]: event.target.value }
+		});
+	};
+	const handleChangeIdentificationInput = (event: any) => {
+		setInput({
+			...input,
+			identification: { ...input.identification, [event.target.name]: event.target.value }
+		});
+	};
+	const handleChangeRegisteredOfficeInput = (event: any) => {
+		setInput({
+			...input,
+			registeredOffice: { ...input.registeredOffice, [event.target.name]: event.target.value }
 		});
 	};
 	const handleChangeCheckBox = (event: any) => {
@@ -611,7 +652,6 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 										name="sourceOfFundsOther"
 									/>
 								) : null}
-
 								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 									Nature of prevailing source of income
 								</p>
@@ -1591,7 +1631,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 							<div>
 								<p>Identification (ID card or passport)</p>
 								<label
-									htmlFor="label-address-zipCode"
+									htmlFor="label-identification-type"
 									style={{
 										margin: '6px 0 8px 0',
 										display: 'inline-block',
@@ -1600,17 +1640,17 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									Type
 								</label>
 								<TextField
-									id="label-address-zipCode"
-									value={input.mailAddress.zipCode}
+									id="label-identification-type"
+									value={input.identification.type}
 									placeholder="Type"
 									type="text"
-									onChange={handleChangeMailInput}
+									onChange={handleChangeIdentificationInput}
 									size="small"
 									align="left"
-									name="zipCode"
+									name="type"
 								/>
 								<label
-									htmlFor="label-address-zipCode"
+									htmlFor="label-identification-number"
 									style={{
 										margin: '6px 0 8px 0',
 										display: 'inline-block',
@@ -1619,17 +1659,17 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									Number
 								</label>
 								<TextField
-									id="label-address-zipCode"
-									value={input.mailAddress.zipCode}
+									id="label-identification-number"
+									value={input.identification.number}
 									placeholder="Number"
 									type="text"
-									onChange={handleChangeMailInput}
+									onChange={handleChangeIdentificationInput}
 									size="small"
 									align="left"
-									name="zipCode"
+									name="number"
 								/>
 								<label
-									htmlFor="label-address-zipCode"
+									htmlFor="label-identification-issuedBy"
 									style={{
 										margin: '6px 0 8px 0',
 										display: 'inline-block',
@@ -1638,17 +1678,17 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									Issued by
 								</label>
 								<TextField
-									id="label-address-zipCode"
-									value={input.mailAddress.zipCode}
+									id="label-identification-issuedBy"
+									value={input.identification.issuedBy}
 									placeholder="Issued by"
 									type="text"
-									onChange={handleChangeMailInput}
+									onChange={handleChangeIdentificationInput}
 									size="small"
 									align="left"
-									name="zipCode"
+									name="issuedBy"
 								/>
 								<label
-									htmlFor="label-address-zipCode"
+									htmlFor="label-identification-validThru"
 									style={{
 										margin: '6px 0 8px 0',
 										display: 'inline-block',
@@ -1657,18 +1697,471 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									Valid thru
 								</label>
 								<TextField
-									id="label-address-zipCode"
-									value={input.mailAddress.zipCode}
+									id="label-identification-validThru"
+									value={input.identification.validThru}
 									placeholder="Valid thru"
 									type="text"
-									onChange={handleChangeMailInput}
+									onChange={handleChangeIdentificationInput}
 									size="small"
 									align="left"
-									name="zipCode"
+									name="validThru"
+									error={input.identification.validThru < 2}
 								/>
 							</div>
 						)}
-						{page < 8 && (
+						{page === 6 && (
+							<div style={{ marginBottom: '14px', width: '100%' }}>
+								<div style={{ marginBottom: '10px' }}>
+									<label
+										htmlFor="label-companyName"
+										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+										Business company / name
+									</label>
+									<TextField
+										id="label-companyName"
+										value={input.companyName}
+										placeholder="Business company / name"
+										type="text"
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="companyName"
+										error={input.companyName.length < 2}
+									/>
+								</div>
+								<div style={{ marginBottom: '10px' }}>
+									<label
+										htmlFor="label-identification-number"
+										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+										Business identification number
+									</label>
+									<TextField
+										id="label-identification-number"
+										value={input.companyIdentificationNumber}
+										placeholder="Business identification number"
+										type="text"
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="companyIdentificationNumber"
+										error={input.companyIdentificationNumber.length < 2}
+									/>
+								</div>
+							</div>
+						)}
+						{page === 7 && (
+							<div style={{ marginBottom: '10px' }}>
+								<h3>Registered office</h3>
+								<label
+									htmlFor="label-registeredOffice-street"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Street
+								</label>
+								<TextField
+									id="label-registeredOffice-street"
+									value={input.registeredOffice.street}
+									placeholder="Street"
+									type="text"
+									onChange={handleChangeRegisteredOfficeInput}
+									size="small"
+									align="left"
+									name="street"
+									error={input.registeredOffice.street < 2}
+								/>
+								<label
+									htmlFor="label-registeredOffice-streetNumber"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Street number
+								</label>
+								<TextField
+									id="label-registeredOffice-streetNumber"
+									value={input.registeredOffice.streetNumber}
+									placeholder="Street number"
+									type="text"
+									onChange={handleChangeRegisteredOfficeInput}
+									size="small"
+									align="left"
+									name="streetNumber"
+								/>
+								<label
+									htmlFor="label-registeredOffice-municipality"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Municipality
+								</label>
+								<TextField
+									id="label-registeredOffice-municipality"
+									value={input.registeredOffice.municipality}
+									placeholder="Municipality"
+									type="text"
+									onChange={handleChangeRegisteredOfficeInput}
+									size="small"
+									align="left"
+									name="municipality"
+									error={input.registeredOffice.municipality < 2}
+								/>
+								<label
+									htmlFor="label-registeredOffice-state"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									State
+								</label>
+								<TextField
+									id="label-registeredOffice-state"
+									value={input.registeredOffice.state}
+									placeholder="State"
+									type="text"
+									onChange={handleChangeRegisteredOfficeInput}
+									size="small"
+									align="left"
+									name="state"
+									error={input.registeredOffice.state < 2}
+								/>
+								<label
+									htmlFor="label-registeredOffice-country"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									Country
+								</label>
+								<TextField
+									id="label-registeredOffice-country"
+									value={input.registeredOffice.country}
+									placeholder="Country"
+									type="text"
+									onChange={handleChangeRegisteredOfficeInput}
+									size="small"
+									align="left"
+									name="country"
+									error={input.registeredOffice.country < 2}
+								/>
+								<label
+									htmlFor="label-registeredOffice-pc"
+									style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block',
+										fontStyle: 'italic'
+									}}>
+									PC
+								</label>
+								<TextField
+									id="label-registeredOffice-pc"
+									value={input.registeredOffice.pc}
+									placeholder="PC"
+									type="text"
+									onChange={handleChangeRegisteredOfficeInput}
+									size="small"
+									align="left"
+									name="pc"
+									error={input.registeredOffice.pc < 2}
+								/>
+							</div>
+						)}
+						{page === 8 && (
+							<div style={{ marginBottom: '10px', width: '100%' }}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									The client is represented (person acting on behalf of the client in each
+									Transaction)
+								</p>
+								{REPRESENT_PERSON.map((activity: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`representPerson-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.representPerson.includes(`${activity}`)}
+												required
+												data-key="representPerson"
+											/>
+											<label htmlFor={`representPerson-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+								<div style={{ marginBottom: '10px', width: '100%' }}>
+									<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+										State or country, in which the client conducts his business activity
+									</p>
+									{COUNTRIES.map((country: any, index: number) => {
+										return (
+											<div
+												key={index}
+												style={{
+													display: 'flex',
+													justifyContent: 'flex-start',
+													marginBottom: '8px'
+												}}>
+												<input
+													type="checkbox"
+													value={country.name}
+													name={country.name}
+													id={`countryOfWork-checkbox-${index}`}
+													onChange={handleChangeCheckBox}
+													// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+													checked={input.countryOfWork.includes(`${country.name}`)}
+													required
+													data-key="countryOfWork"
+												/>
+												<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
+											</div>
+										);
+									})}
+								</div>
+							</div>
+						)}
+						{page === 9 && (
+							// ADD KEY FOR THIS PART IN INPUT OBJ
+							<div style={{ marginBottom: '10px', width: '100%' }}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									State or country, in which a branch, organized unit or establishment of the client
+									operates
+								</p>
+								{COUNTRIES.map((country: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={country.name}
+												name={country.name}
+												id={`countryOfWork-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.countryOfWork.includes(`${country.name}`)}
+												required
+												data-key="countryOfWork"
+											/>
+											<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
+										</div>
+									);
+								})}
+							</div>
+						)}
+						{page === 10 && (
+							<div
+								style={{
+									display: 'flex',
+									flexWrap: 'wrap',
+									flexDirection: 'column',
+									alignItems: 'stretch',
+									marginBottom: '15px'
+								}}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									The Client conducts his work / business activity in these areas:
+								</p>
+								{WORK_AREA_LIST.map((activity: string, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`workAreaList-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.workArea.includes(`${activity}`)}
+												required
+												data-key="workArea"
+											/>
+											<label htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+							</div>
+						)}
+						{page === 11 && (
+							<div
+								style={{
+									marginBottom: '15px',
+									width: '100%'
+								}}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Nature of prevailing source of income
+								</p>
+								{PREVAILLING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`sourceOfIncomeNatureList-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.sourceOfIncomeNature.includes(`${activity}`)}
+												required={true}
+												data-key="sourceOfIncomeNature"
+											/>
+											<label htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>
+												{activity}
+											</label>
+										</div>
+									);
+								})}
+								{input.sourceOfIncomeNature.includes('Other') ? (
+									<TextField
+										value={input.sourceOfIncomeNatureOther}
+										type="text"
+										placeholder="Specify..."
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="sourceOfIncomeNatureOther"
+									/>
+								) : null}
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Source of funds intended for Transaction:
+								</p>
+								{SOURCE_OF_FUNDS_LIST_COMPANY.map((activity: string, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`sourceOfFundsList-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.sourceOfFunds.includes(`${activity}`)}
+												required={true}
+												data-key="sourceOfFunds"
+											/>
+											<label htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+								{input.sourceOfFunds.includes('Other') ? (
+									<TextField
+										value={input.sourceOfFundsOther}
+										type="text"
+										placeholder="Specify..."
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="sourceOfFundsOther"
+									/>
+								) : null}
+							</div>
+						)}
+						{page === 12 && (
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column',
+									marginBottom: '25px',
+									alignItems: 'center'
+								}}>
+								<p style={{ marginBottom: '25px' }}>
+									Have you as a legal entity (or the member of your statutory body or your
+									supervisory body or your ultimate beneficial owner ) ever been convicted for a
+									criminal offense, in particular an offense against property or economic offense
+									committed not only in relation with work or business activities (without regards
+									to presumption of innocence)?
+								</p>
+								<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
+									<label htmlFor="legalEntityTrue">
+										{' '}
+										Yes
+										<input
+											id="legalEntityTrue"
+											type="radio"
+											value="Yes"
+											checked={input.legalEntity === 'Yes'}
+											onChange={handleChangeInput}
+											name="legalEntity"
+										/>
+									</label>
+									<label htmlFor="legalEntityFalse">
+										No
+										<input
+											id="legalEntityFalse"
+											type="radio"
+											value="No"
+											checked={input.legalEntity === 'No'}
+											onChange={handleChangeInput}
+											name="legalEntity"
+										/>
+									</label>
+								</div>
+								<p style={{ marginBottom: '25px' }}>
+									These are mainly criminal offenses in the areas of taxes, corruption, public
+									procurement, and subsidy fraud.
+								</p>
+								<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
+									<label htmlFor="typeOfCriminalTrue">
+										Yes
+										<input
+											id="typeOfCriminalTrue"
+											type="radio"
+											value="Yes"
+											checked={input.typeOfCriminal === 'Yes'}
+											onChange={handleChangeInput}
+											name="typeOfCriminal"
+										/>
+									</label>
+									<label htmlFor="typeOfCriminalFalse">
+										No
+										<input
+											id="typeOfCriminalFalse"
+											type="radio"
+											value="No"
+											checked={input.typeOfCriminal === 'No'}
+											onChange={handleChangeInput}
+											name="typeOfCriminal"
+										/>
+									</label>
+								</div>
+							</div>
+						)}
+						{page < 20 && (
 							<div
 								style={{
 									margin: '0 auto',
