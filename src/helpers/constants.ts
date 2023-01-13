@@ -29,12 +29,13 @@ export const MOONBEAM_URL = 'https://rpc.api.moonbeam.network';
 export const ETHEREUM_URL = 'https://mainnet.infura.io/v3';
 
 export const routes = {
-	getNonce: 'nonce?address=',
+	getNonce: 'auth?address=',
 	auth: 'auth',
 	kycToken: 'kyc/token',
 	kycStatus: 'kyc/status',
 	refresh: 'auth/refresh',
-	transactionDetails: 'account/withdraw/details?id='
+	transactionDetails: 'account/withdraw/details?id=',
+	kycL2NaturalForm: 'kyc/l2-natural'
 };
 
 export const PROTOCOL_FEE = 0.002;
