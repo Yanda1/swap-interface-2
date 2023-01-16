@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
-import { BASE_URL, findAndReplace, useStore } from '../../helpers';
+import { BASE_URL, findAndReplace, makeId, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
@@ -92,6 +92,19 @@ const Select = styled.select`
 	width: 100%;
 	height: 100%;
 `;
+
+const UboContainer = styled.div(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		width: 45%;
+		margin: ${spacing[12]};
+		border: 1px solid ${theme.border.default};
+		-webkit-box-shadow: 7px -7px 15px 0px rgba(0, 0, 0, 0.75);
+	}`;
+});
 
 type Props = {
 	showKycL2: boolean;
@@ -373,6 +386,51 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 			console.log('Send information from FIRST PART');
 		}
 	}, [page, isNatural]);
+
+	const [uboList, setUboList] = useState([
+		{
+			id: '0',
+			companyName: 'Apple',
+			idNumber: '1',
+			placeOfBirth: 'Ukraine',
+			state: 'Kiev',
+			country: 'Ukraine',
+			pc: 'PC'
+		},
+		{
+			id: '1',
+			companyName: 'Ferrari',
+			idNumber: '2',
+			placeOfBirth: 'Italy',
+			state: 'Rome',
+			country: 'Italy',
+			pc: 'PC'
+		},
+		{
+			id: '2',
+			companyName: 'FaceBook',
+			idNumber: '3',
+			placeOfBirth: 'The United State',
+			state: 'Washington DC.',
+			country: 'USA',
+			pc: 'PC'
+		}
+	]);
+
+	const handleAddUbo = () => {
+		setUboList([
+			{
+				id: makeId(20),
+				companyName: '',
+				idNumber: '',
+				placeOfBirth: '',
+				state: '',
+				country: '',
+				pc: ''
+			},
+			...uboList
+		]);
+	};
 
 	return showModal ? (
 		<Portal
@@ -2097,7 +2155,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									display: 'flex',
 									flexDirection: 'column',
 									marginBottom: '25px',
-									alignItems: 'center'
+									alignItems: 'flex-start'
 								}}>
 								<p style={{ marginBottom: '25px' }}>
 									Have you as a legal entity (or the member of your statutory body or your
@@ -2106,7 +2164,13 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									committed not only in relation with work or business activities (without regards
 									to presumption of innocence)?
 								</p>
-								<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'space-evenly',
+										width: '100%',
+										marginBottom: '10px'
+									}}>
 									<label htmlFor="legalEntityTrue">
 										{' '}
 										Yes
@@ -2135,7 +2199,13 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 									These are mainly criminal offenses in the areas of taxes, corruption, public
 									procurement, and subsidy fraud.
 								</p>
-								<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'space-evenly',
+										width: '100%',
+										marginBottom: '10px'
+									}}>
 									<label htmlFor="typeOfCriminalTrue">
 										Yes
 										<input
@@ -2158,6 +2228,192 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 											name="typeOfCriminal"
 										/>
 									</label>
+								</div>
+								<p style={{ marginBottom: '25px' }}>The representative of the client is a:</p>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'space-evenly',
+										width: '100%',
+										marginBottom: '10px'
+									}}>
+									<label htmlFor="legalEntityTrue">
+										Natural Person
+										<input
+											id="legalEntityTrue"
+											type="radio"
+											value="Natural Person"
+											checked={input.legalEntity === 'Natural Person'}
+											onChange={handleChangeInput}
+											name="legalEntity"
+										/>
+									</label>
+									<label htmlFor="legalEntityFalse">
+										Legal entity
+										<input
+											id="legalEntityFalse"
+											type="radio"
+											value="Legal entity"
+											checked={input.legalEntity === 'Legal entity'}
+											onChange={handleChangeInput}
+											name="legalEntity"
+										/>
+									</label>
+								</div>
+								<p style={{ color: 'red' }}>
+									End of the SECOND part (submit with files to /kyc/l2-business-data)
+								</p>
+							</div>
+						)}
+						{page === 13 && (
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column',
+									alignItems: 'center',
+									width: '100%'
+								}}>
+								<h3>Information on Ultimate Beneficial Owner(s)</h3>
+								<div style={{ marginBottom: '20px' }}>
+									<Button variant="secondary" onClick={handleAddUbo}>
+										Add UBO
+									</Button>
+								</div>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
+										width: '100%',
+										flexWrap: 'wrap'
+									}}>
+									{uboList.map((company: any) => {
+										return (
+											<UboContainer>
+												<div key={company.id} style={{ padding: '6px' }}>
+													<label
+														htmlFor={`label-ubo-company-name-${company.id}`}
+														style={{
+															margin: '6px 0 8px 0',
+															display: 'inline-block',
+															fontStyle: 'italic'
+														}}>
+														Name and surname / business company /name
+													</label>
+													<TextField
+														id={`label-ubo-company-name-${company.id}`}
+														value={company.companyName}
+														placeholder="Name and surname / business company /name"
+														type="text"
+														onChange={handleChangeRegisteredOfficeInput}
+														size="small"
+														align="left"
+														name="street"
+														error={company.companyName.length < 2}
+													/>
+													<label
+														htmlFor={`label-ubo-id-number-${company.id}`}
+														style={{
+															margin: '6px 0 8px 0',
+															display: 'inline-block',
+															fontStyle: 'italic'
+														}}>
+														Birth identification number / identification number
+													</label>
+													<TextField
+														id={`label-ubo-id-number-${company.id}`}
+														value={company.idNumber}
+														placeholder="Birth identification number / identification number"
+														type="text"
+														onChange={handleChangeRegisteredOfficeInput}
+														size="small"
+														align="left"
+														name="streetNumber"
+													/>
+													<label
+														htmlFor={`label-ubo-place-of-birth-${company.id}`}
+														style={{
+															margin: '6px 0 8px 0',
+															display: 'inline-block',
+															fontStyle: 'italic'
+														}}>
+														Place of Birth
+													</label>
+													<TextField
+														id={`label-ubo-place-of-birth-${company.id}`}
+														value={company.placeOfBirth}
+														placeholder="Place of Birth"
+														type="text"
+														onChange={handleChangeRegisteredOfficeInput}
+														size="small"
+														align="left"
+														name="municipality"
+														error={input.registeredOffice.municipality < 2}
+													/>
+													<label
+														htmlFor={`label-ubo-state-${company.id}`}
+														style={{
+															margin: '6px 0 8px 0',
+															display: 'inline-block',
+															fontStyle: 'italic'
+														}}>
+														State
+													</label>
+													<TextField
+														id={`label-ubo-state-${company.id}`}
+														value={company.state}
+														placeholder="State"
+														type="text"
+														onChange={handleChangeRegisteredOfficeInput}
+														size="small"
+														align="left"
+														name="state"
+														error={input.registeredOffice.state < 2}
+													/>
+													<label
+														htmlFor="label-registeredOffice-country"
+														style={{
+															margin: '6px 0 8px 0',
+															display: 'inline-block',
+															fontStyle: 'italic'
+														}}>
+														Country
+													</label>
+													<TextField
+														id={`label-ubo-country-${company.id}`}
+														value={company.country}
+														placeholder="Country"
+														type="text"
+														onChange={handleChangeRegisteredOfficeInput}
+														size="small"
+														align="left"
+														name="country"
+														error={input.registeredOffice.country < 2}
+													/>
+													<label
+														htmlFor={`label-ubo-pc-${company.id}`}
+														style={{
+															margin: '6px 0 8px 0',
+															display: 'inline-block',
+															fontStyle: 'italic'
+														}}>
+														PC
+													</label>
+													<TextField
+														id={`label-ubo-pc-${company.id}`}
+														value={company.pc}
+														placeholder="PC"
+														type="text"
+														onChange={handleChangeRegisteredOfficeInput}
+														size="small"
+														align="left"
+														name="pc"
+														error={input.registeredOffice.pc < 2}
+													/>
+												</div>
+											</UboContainer>
+										);
+									})}
 								</div>
 							</div>
 						)}
