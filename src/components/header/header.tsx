@@ -487,6 +487,20 @@ export const Header = () => {
 				style={{ marginRight: 'auto' }}
 				size={isMobile ? 'medium' : 112}
 			/>
+			{!isMobile && isNetworkSelected(sourceNetwork) && (
+				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
+					{sourceNetwork ? sourceNetwork : null}
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon
+						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+						size={16}
+						style={{
+							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
+							transition: DEFAULT_TRANSIITON
+						}}
+					/>
+				</NetworkWrapper>
+			)}
 			{!isMobile && (
 				<Button
 					variant="pure"
