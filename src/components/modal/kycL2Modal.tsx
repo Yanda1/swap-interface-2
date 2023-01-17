@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
-import { BASE_URL, findAndReplace, makeId, useStore } from '../../helpers';
+import { BASE_URL, findAndReplace, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
@@ -16,6 +16,7 @@ import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.js
 import PREVAILLING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfIncomeCompany.json';
 import DECLARE_LIST from '../../data/declareList.json';
 import REPRESENT_PERSON from '../../data/representClient.json';
+import { UboModal } from './uboModal';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -99,8 +100,13 @@ const UboContainer = styled.div(() => {
 	} = useStore();
 
 	return css`
-		width: 45%;
-		margin: ${spacing[12]};
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: column;
+		align-items: center;
+		width: 40%;
+		margin: ${spacing[10]};
+		padding: ${spacing[10]};
 		border: 1px solid ${theme.border.default};
 		-webkit-box-shadow: 7px -7px 15px 0px rgba(0, 0, 0, 0.75);
 	}`;
@@ -110,10 +116,13 @@ type Props = {
 	showKycL2: boolean;
 	updateShowKycL2?: any;
 };
-export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
+export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
+	const [showModal, setShowModal] = useState<boolean>(showKycL2);
+	useEffect(() => {
+		setShowModal(showKycL2);
+	}, [showKycL2]);
 	const [isNatural, setIsNatural] = useState<boolean | null>(null);
 	const { addToast }: any | null = useToasts();
-	const [showModal, setShowModal] = useState(showKycL2);
 	const [input, setInput] = useState<{
 		placeOfBirth: string;
 		yearlyIncome: number | null;
@@ -146,6 +155,7 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		representPerson: string[];
 		legalEntity: string;
 		typeOfCriminal: string;
+		ubo: any;
 	}>({
 		citizenship: [],
 		countryOfWork: [],
@@ -204,7 +214,8 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		legalEntity: '',
 		typeOfCriminal: '',
 		taxResidency: 'Afghanistan',
-		workArea: []
+		workArea: [],
+		ubo: []
 	});
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
@@ -387,52 +398,19 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 		}
 	}, [page, isNatural]);
 
-	const [uboList, setUboList] = useState([
-		{
-			id: '0',
-			companyName: 'Apple',
-			idNumber: '1',
-			placeOfBirth: 'Ukraine',
-			state: 'Kiev',
-			country: 'Ukraine',
-			pc: 'PC'
-		},
-		{
-			id: '1',
-			companyName: 'Ferrari',
-			idNumber: '2',
-			placeOfBirth: 'Italy',
-			state: 'Rome',
-			country: 'Italy',
-			pc: 'PC'
-		},
-		{
-			id: '2',
-			companyName: 'FaceBook',
-			idNumber: '3',
-			placeOfBirth: 'The United State',
-			state: 'Washington DC.',
-			country: 'USA',
-			pc: 'PC'
-		}
-	]);
+	const [addUbo, setAddUbo] = useState(false);
 
 	const handleAddUbo = () => {
-		setUboList([
-			{
-				id: makeId(20),
-				companyName: '',
-				idNumber: '',
-				placeOfBirth: '',
-				state: '',
-				country: '',
-				pc: ''
-			},
-			...uboList
-		]);
+		setAddUbo(true);
 	};
 
-	return showModal ? (
+	const updateUboModalShow = (showModal: boolean, uboClient: any) => {
+		console.log(showModal, uboClient);
+		setInput({ ...input, ubo: [...input.ubo, uboClient] });
+		setAddUbo(showModal);
+	};
+
+	return (
 		<Portal
 			size="large"
 			isOpen={showModal}
@@ -2287,130 +2265,13 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 										width: '100%',
 										flexWrap: 'wrap'
 									}}>
-									{uboList.map((company: any) => {
+									<UboModal addUbo={addUbo} updateUboModalShow={updateUboModalShow} />
+									{input.ubo.map((client: any) => {
 										return (
 											<UboContainer>
-												<div key={company.id} style={{ padding: '6px' }}>
-													<label
-														htmlFor={`label-ubo-company-name-${company.id}`}
-														style={{
-															margin: '6px 0 8px 0',
-															display: 'inline-block',
-															fontStyle: 'italic'
-														}}>
-														Name and surname / business company /name
-													</label>
-													<TextField
-														id={`label-ubo-company-name-${company.id}`}
-														value={company.companyName}
-														placeholder="Name and surname / business company /name"
-														type="text"
-														onChange={handleChangeRegisteredOfficeInput}
-														size="small"
-														align="left"
-														name="street"
-														error={company.companyName.length < 2}
-													/>
-													<label
-														htmlFor={`label-ubo-id-number-${company.id}`}
-														style={{
-															margin: '6px 0 8px 0',
-															display: 'inline-block',
-															fontStyle: 'italic'
-														}}>
-														Birth identification number / identification number
-													</label>
-													<TextField
-														id={`label-ubo-id-number-${company.id}`}
-														value={company.idNumber}
-														placeholder="Birth identification number / identification number"
-														type="text"
-														onChange={handleChangeRegisteredOfficeInput}
-														size="small"
-														align="left"
-														name="streetNumber"
-													/>
-													<label
-														htmlFor={`label-ubo-place-of-birth-${company.id}`}
-														style={{
-															margin: '6px 0 8px 0',
-															display: 'inline-block',
-															fontStyle: 'italic'
-														}}>
-														Place of Birth
-													</label>
-													<TextField
-														id={`label-ubo-place-of-birth-${company.id}`}
-														value={company.placeOfBirth}
-														placeholder="Place of Birth"
-														type="text"
-														onChange={handleChangeRegisteredOfficeInput}
-														size="small"
-														align="left"
-														name="municipality"
-														error={input.registeredOffice.municipality < 2}
-													/>
-													<label
-														htmlFor={`label-ubo-state-${company.id}`}
-														style={{
-															margin: '6px 0 8px 0',
-															display: 'inline-block',
-															fontStyle: 'italic'
-														}}>
-														State
-													</label>
-													<TextField
-														id={`label-ubo-state-${company.id}`}
-														value={company.state}
-														placeholder="State"
-														type="text"
-														onChange={handleChangeRegisteredOfficeInput}
-														size="small"
-														align="left"
-														name="state"
-														error={input.registeredOffice.state < 2}
-													/>
-													<label
-														htmlFor="label-registeredOffice-country"
-														style={{
-															margin: '6px 0 8px 0',
-															display: 'inline-block',
-															fontStyle: 'italic'
-														}}>
-														Country
-													</label>
-													<TextField
-														id={`label-ubo-country-${company.id}`}
-														value={company.country}
-														placeholder="Country"
-														type="text"
-														onChange={handleChangeRegisteredOfficeInput}
-														size="small"
-														align="left"
-														name="country"
-														error={input.registeredOffice.country < 2}
-													/>
-													<label
-														htmlFor={`label-ubo-pc-${company.id}`}
-														style={{
-															margin: '6px 0 8px 0',
-															display: 'inline-block',
-															fontStyle: 'italic'
-														}}>
-														PC
-													</label>
-													<TextField
-														id={`label-ubo-pc-${company.id}`}
-														value={company.pc}
-														placeholder="PC"
-														type="text"
-														onChange={handleChangeRegisteredOfficeInput}
-														size="small"
-														align="left"
-														name="pc"
-														error={input.registeredOffice.pc < 2}
-													/>
-												</div>
+												<p>{client.companyName}</p>
+												<p>{client.idNumber}</p>
+												<p>{client.placeOfBirth}</p>
 											</UboContainer>
 										);
 									})}
@@ -2433,5 +2294,5 @@ export const KycL2Modal = ({ showKycL2, updateShowKycL2 }: Props) => {
 				)}
 			</Wrapper>
 		</Portal>
-	) : null;
+	);
 };
