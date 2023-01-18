@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { pxToRem, spacing } from '../../styles';
-import { BASE_URL, findAndReplace, useStore } from '../../helpers';
+import { BASE_URL, findAndReplace, makeId, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
@@ -103,13 +103,37 @@ const UboContainer = styled.div(() => {
 		display: flex;
 		flex-wrap: wrap;
 		flex-direction: column;
-		align-items: center;
 		width: 40%;
 		margin: ${spacing[10]};
 		padding: ${spacing[10]};
 		border: 1px solid ${theme.border.default};
 		-webkit-box-shadow: 7px -7px 15px 0px rgba(0, 0, 0, 0.75);
 	}`;
+});
+
+const UboContainerText = styled.p`
+	font-style: italic;
+	margin: ${spacing[6]} 0;
+`;
+
+const DeleteUboBtn = styled.button(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		margin: ${spacing[8]} 0;
+		color: ${theme.button.default};
+		background-color: transparent;
+		border: none;
+		padding: 0 16px;
+		cursor: pointer;
+		transition: all 0.3s ease-in-out;
+
+		&:hover {
+			transform: scale(1.1);
+		}
+	`;
 });
 
 type Props = {
@@ -405,9 +429,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	};
 
 	const updateUboModalShow = (showModal: boolean, uboClient: any) => {
-		console.log(showModal, uboClient);
+		uboClient.id = makeId(20);
 		setInput({ ...input, ubo: [...input.ubo, uboClient] });
 		setAddUbo(showModal);
+	};
+	const handleDeleteUbo = (id: any) => {
+		setInput({ ...input, ubo: [...input.ubo.filter((item: any) => item.id !== id)] });
 	};
 
 	return (
@@ -566,7 +593,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											value={input.taxResidency}
 											id="label-select-tax-residency"
 											style={{
-												maxHeight: '40px',
+												minHeight: '40px',
 												marginTop: '15px',
 												backgroundColor: '#1c2125',
 												color: 'white',
@@ -2267,13 +2294,59 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									}}>
 									<UboModal addUbo={addUbo} updateUboModalShow={updateUboModalShow} />
 									{input.ubo.map((client: any) => {
-										return (
-											<UboContainer>
-												<p>{client.companyName}</p>
-												<p>{client.idNumber}</p>
-												<p>{client.placeOfBirth}</p>
-											</UboContainer>
-										);
+										if (client) {
+											return (
+												<UboContainer key={client.id}>
+													<>
+														<div
+															style={{
+																display: 'flex',
+																width: '100%',
+																flexDirection: 'column',
+																alignItems: 'flex-start'
+															}}>
+															<UboContainerText>
+																Company name: {client.companyName}
+															</UboContainerText>
+															<UboContainerText>Id Number: {client.idNumber}</UboContainerText>
+															<UboContainerText>
+																Place of birth: {client.placeOfBirth}
+															</UboContainerText>
+															<UboContainerText>Gender: {client.gender}</UboContainerText>
+															<UboContainerText>Citizenship: {client.citizenship}</UboContainerText>
+															<UboContainerText>
+																Tax residency: {client.taxResidency}
+															</UboContainerText>
+														</div>
+														<div
+															style={{
+																width: '100%',
+																display: 'flex',
+																flexDirection: 'column',
+																alignItems: 'flex-start'
+															}}>
+															<UboContainerText>Street: {client.residence.street}</UboContainerText>
+															<UboContainerText>
+																Street number: {client.residence.streetNumber}
+															</UboContainerText>
+															<UboContainerText>
+																municipality: {client.residence.municipality}
+															</UboContainerText>
+															<UboContainerText>
+																Zip code: {client.residence.zipCode}
+															</UboContainerText>
+															<UboContainerText>
+																State or Country: {client.residence.stateOrCountry}
+															</UboContainerText>
+														</div>
+														@ts-ignore
+														<DeleteUboBtn onClick={() => handleDeleteUbo(client.id)}>
+															Delete UBO
+														</DeleteUboBtn>
+													</>
+												</UboContainer>
+											);
+										}
 									})}
 								</div>
 							</div>
