@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import { pxToRem, spacing } from '../../styles';
+import { fontSize, pxToRem, spacing } from '../../styles';
 import { BASE_URL, findAndReplace, makeId, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
@@ -17,6 +17,8 @@ import PREVAILLING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfI
 import DECLARE_LIST from '../../data/declareList.json';
 import REPRESENT_PERSON from '../../data/representClient.json';
 import { UboModal } from './uboModal';
+import { ShareHoldersModal } from './shareholdersModal';
+import { SupervisoryBoardMembers } from './supervisoryBoardMembers';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -94,7 +96,7 @@ const Select = styled.select`
 	height: 100%;
 `;
 
-const UboContainer = styled.div(() => {
+const Container = styled.div(() => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -103,6 +105,8 @@ const UboContainer = styled.div(() => {
 		display: flex;
 		flex-wrap: wrap;
 		flex-direction: column;
+		align-items: flex-end;
+		justify-content: center;
 		width: 40%;
 		margin: ${spacing[10]};
 		padding: ${spacing[10]};
@@ -111,8 +115,7 @@ const UboContainer = styled.div(() => {
 	}`;
 });
 
-const UboContainerText = styled.p`
-	font-style: italic;
+const ContainerText = styled.p`
 	margin: ${spacing[6]} 0;
 `;
 
@@ -122,16 +125,21 @@ const DeleteUboBtn = styled.button(() => {
 	} = useStore();
 
 	return css`
-		margin: ${spacing[8]} 0;
-		color: ${theme.button.default};
-		background-color: transparent;
-		border: none;
-		padding: 0 16px;
 		cursor: pointer;
-		transition: all 0.3s ease-in-out;
+		margin: ${spacing[6]} 0;
+		background-color: ${theme.button.transparent};
+		border: 1px solid ${theme.button.error};
+		border-radius: 2px;
+		color: white;
+		padding: ${spacing[8]} ${spacing[18]};
+		text-align: center;
+		text-decoration: none;
+		font-size: ${fontSize[14]};
+		-webkit-transition-duration: 0.4s; /* Safari */
+		transition-duration: 0.3s;
 
 		&:hover {
-			transform: scale(1.1);
+			background-color: ${theme.button.error};
 		}
 	`;
 });
@@ -180,6 +188,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		legalEntity: string;
 		typeOfCriminal: string;
 		ubo: any;
+		shareHolders: any;
+		supervisors: any;
+		countryOfOperates: any;
+		representativeTypeOfClient: string;
 	}>({
 		citizenship: [],
 		countryOfWork: [],
@@ -195,6 +207,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		irregularSourceOfFundsOther: '',
 		gender: 'Male',
 		permanentAndMailAddressSame: 'Yes',
+		countryOfOperates: [],
+		representativeTypeOfClient: '',
 		residence: {
 			street: '',
 			streetNumber: '',
@@ -239,7 +253,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		typeOfCriminal: '',
 		taxResidency: 'Afghanistan',
 		workArea: [],
-		ubo: []
+		ubo: [],
+		shareHolders: [],
+		supervisors: []
 	});
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
@@ -423,18 +439,45 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	}, [page, isNatural]);
 
 	const [addUbo, setAddUbo] = useState(false);
+	const [addShareHolder, setAddShareHolder] = useState(false);
+	const [addSupervisor, setAddSupervisor] = useState(false);
 
 	const handleAddUbo = () => {
 		setAddUbo(true);
 	};
-
+	const handleAddShareHolder = () => {
+		setAddShareHolder(true);
+	};
+	const handleAddSupervisor = () => {
+		setAddSupervisor(true);
+	};
 	const updateUboModalShow = (showModal: boolean, uboClient: any) => {
-		uboClient.id = makeId(20);
-		setInput({ ...input, ubo: [...input.ubo, uboClient] });
+		if (uboClient) {
+			uboClient.id = makeId(20);
+			setInput({ ...input, ubo: [...input.ubo, uboClient] });
+		}
 		setAddUbo(showModal);
+	};
+	const updateShareHoldersModalShow = (showModal: boolean, uboClient: any) => {
+		if (uboClient) {
+			uboClient.id = makeId(20);
+			setInput({ ...input, shareHolders: [...input.shareHolders, uboClient] });
+		}
+		setAddShareHolder(showModal);
+	};
+	const updateSupervisorModalShow = (showModal: boolean, uboClient: any) => {
+		if (uboClient) {
+			uboClient.id = makeId(20);
+			setInput({ ...input, supervisors: [...input.supervisors, uboClient] });
+		}
+		setAddSupervisor(showModal);
 	};
 	const handleDeleteUbo = (id: any) => {
 		setInput({ ...input, ubo: [...input.ubo.filter((item: any) => item.id !== id)] });
+	};
+
+	const handleDeleteShareHolder = (id: any) => {
+		setInput({ ...input, shareHolders: [...input.ubo.filter((item: any) => item.id !== id)] });
 	};
 
 	return (
@@ -1466,7 +1509,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									marginBottom: '12px',
 									display: 'flex',
 									flexDirection: 'column',
-									width: '50%'
+									width: '100%'
 								}}>
 								<span style={{ textAlign: 'center', fontSize: '20px' }}>
 									Permanent or other residence
@@ -1589,7 +1632,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											marginBottom: '12px',
 											display: 'flex',
 											flexDirection: 'column',
-											width: '50%'
+											width: '100%'
 										}}>
 										<label
 											htmlFor="label-address-permanent-state-Or-Country"
@@ -2017,14 +2060,14 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												type="checkbox"
 												value={country.name}
 												name={country.name}
-												id={`countryOfWork-checkbox-${index}`}
+												id={`countryOfOperates-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
 												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-												checked={input.countryOfWork.includes(`${country.name}`)}
+												checked={input.countryOfOperates.includes(`${country.name}`)}
 												required
-												data-key="countryOfWork"
+												data-key="countryOfOperates"
 											/>
-											<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
+											<label htmlFor={`countryOfOperates-checkbox-${index}`}>{country.name}</label>
 										</div>
 									);
 								})}
@@ -2242,26 +2285,26 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										width: '100%',
 										marginBottom: '10px'
 									}}>
-									<label htmlFor="legalEntityTrue">
+									<label htmlFor="representativeTypeOfClientTrue">
 										Natural Person
 										<input
-											id="legalEntityTrue"
+											id="representativeTypeOfClientTrue"
 											type="radio"
 											value="Natural Person"
-											checked={input.legalEntity === 'Natural Person'}
+											checked={input.representativeTypeOfClient === 'Natural Person'}
 											onChange={handleChangeInput}
-											name="legalEntity"
+											name="representativeTypeOfClient"
 										/>
 									</label>
-									<label htmlFor="legalEntityFalse">
+									<label htmlFor="representativeTypeOfClientFalse">
 										Legal entity
 										<input
-											id="legalEntityFalse"
+											id="representativeTypeOfClientFalse"
 											type="radio"
 											value="Legal entity"
-											checked={input.legalEntity === 'Legal entity'}
+											checked={input.representativeTypeOfClient === 'Legal entity'}
 											onChange={handleChangeInput}
-											name="legalEntity"
+											name="representativeTypeOfClient"
 										/>
 									</label>
 								</div>
@@ -2296,7 +2339,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									{input.ubo.map((client: any) => {
 										if (client) {
 											return (
-												<UboContainer key={client.id}>
+												<Container key={client.id}>
 													<>
 														<div
 															style={{
@@ -2305,18 +2348,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 																flexDirection: 'column',
 																alignItems: 'flex-start'
 															}}>
-															<UboContainerText>
-																Company name: {client.companyName}
-															</UboContainerText>
-															<UboContainerText>Id Number: {client.idNumber}</UboContainerText>
-															<UboContainerText>
-																Place of birth: {client.placeOfBirth}
-															</UboContainerText>
-															<UboContainerText>Gender: {client.gender}</UboContainerText>
-															<UboContainerText>Citizenship: {client.citizenship}</UboContainerText>
-															<UboContainerText>
-																Tax residency: {client.taxResidency}
-															</UboContainerText>
+															<ContainerText>Company name: {client.companyName}</ContainerText>
+															<ContainerText>Id Number: {client.idNumber}</ContainerText>
+															<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
+															<ContainerText>Gender: {client.gender}</ContainerText>
+															<ContainerText>Citizenship: {client.citizenship}</ContainerText>
+															<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
 														</div>
 														<div
 															style={{
@@ -2325,26 +2362,163 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 																flexDirection: 'column',
 																alignItems: 'flex-start'
 															}}>
-															<UboContainerText>Street: {client.residence.street}</UboContainerText>
-															<UboContainerText>
+															<ContainerText>Street: {client.residence.street}</ContainerText>
+															<ContainerText>
 																Street number: {client.residence.streetNumber}
-															</UboContainerText>
-															<UboContainerText>
+															</ContainerText>
+															<ContainerText>
 																municipality: {client.residence.municipality}
-															</UboContainerText>
-															<UboContainerText>
-																Zip code: {client.residence.zipCode}
-															</UboContainerText>
-															<UboContainerText>
+															</ContainerText>
+															<ContainerText>Zip code: {client.residence.zipCode}</ContainerText>
+															<ContainerText>
 																State or Country: {client.residence.stateOrCountry}
-															</UboContainerText>
+															</ContainerText>
 														</div>
-														@ts-ignore
 														<DeleteUboBtn onClick={() => handleDeleteUbo(client.id)}>
-															Delete UBO
+															Delete
 														</DeleteUboBtn>
 													</>
-												</UboContainer>
+												</Container>
+											);
+										}
+									})}
+								</div>
+							</div>
+						)}
+						{page === 14 && (
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column',
+									alignItems: 'center',
+									width: '100%'
+								}}>
+								<h3 style={{ textAlign: 'center' }}>
+									Information on majority shareholders or person in control of client (more than
+									25%)
+								</h3>
+								<div style={{ marginBottom: '20px' }}>
+									<Button variant="secondary" onClick={handleAddShareHolder}>
+										Add shareholder
+									</Button>
+								</div>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
+										width: '100%',
+										flexWrap: 'wrap'
+									}}>
+									<ShareHoldersModal
+										addShareHolder={addShareHolder}
+										updateShareHoldersModalShow={updateShareHoldersModalShow}
+									/>
+									{input.shareHolders.map((client: any) => {
+										if (client) {
+											return (
+												<Container key={client.id}>
+													<>
+														<div
+															style={{
+																display: 'flex',
+																width: '100%',
+																flexDirection: 'column',
+																alignItems: 'flex-start'
+															}}>
+															<ContainerText>Company name: {client.companyName}</ContainerText>
+															<ContainerText>Id Number: {client.idNumber}</ContainerText>
+															<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
+															<ContainerText>Gender: {client.gender}</ContainerText>
+															<ContainerText>Citizenship: {client.citizenship}</ContainerText>
+															<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
+														</div>
+														<div
+															style={{
+																width: '100%',
+																display: 'flex',
+																flexDirection: 'column',
+																alignItems: 'flex-start'
+															}}>
+															<ContainerText>Street: {client.residence.street}</ContainerText>
+															<ContainerText>
+																Street number: {client.residence.streetNumber}
+															</ContainerText>
+															<ContainerText>
+																municipality: {client.residence.municipality}
+															</ContainerText>
+															<ContainerText>Zip code: {client.residence.zipCode}</ContainerText>
+															<ContainerText>
+																State or Country: {client.residence.stateOrCountry}
+															</ContainerText>
+														</div>
+														<DeleteUboBtn onClick={() => handleDeleteShareHolder(client.id)}>
+															Delete
+														</DeleteUboBtn>
+													</>
+												</Container>
+											);
+										}
+									})}
+								</div>
+							</div>
+						)}
+						{page === 15 && (
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column',
+									alignItems: 'center',
+									width: '100%'
+								}}>
+								<h3 style={{ textAlign: 'center' }}>
+									Information on members of the supervisory board
+									<br />
+									(If it a client with a supervisory board or other supervisory body)
+								</h3>
+								<div style={{ marginBottom: '20px' }}>
+									<Button variant="secondary" onClick={handleAddSupervisor}>
+										Add member
+									</Button>
+								</div>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
+										width: '100%',
+										flexWrap: 'wrap'
+									}}>
+									<SupervisoryBoardMembers
+										addSupervisor={addSupervisor}
+										updateSupervisorModalShow={updateSupervisorModalShow}
+									/>
+									{input.supervisors.map((client: any) => {
+										if (client) {
+											return (
+												<Container key={client.id}>
+													<>
+														<div
+															style={{
+																display: 'flex',
+																width: '100%',
+																flexDirection: 'column',
+																alignItems: 'flex-start',
+																marginBottom: '8px'
+															}}>
+															<ContainerText>Full Name: {client.fullName}</ContainerText>
+															<ContainerText>Date of birth: {client.dateOfBirth}</ContainerText>
+															<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
+															<ContainerText>Gender: {client.gender}</ContainerText>
+															<ContainerText>
+																Citizenship(s): {client.citizenship.join(', ')}
+															</ContainerText>
+														</div>
+														<DeleteUboBtn onClick={() => handleDeleteShareHolder(client.id)}>
+															Delete
+														</DeleteUboBtn>
+													</>
+												</Container>
 											);
 										}
 									})}

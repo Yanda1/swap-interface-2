@@ -111,6 +111,7 @@ type Props = {
 	name?: string;
 	id?: string;
 	checked?: boolean;
+	maxLength?: any;
 };
 
 export const TextField = ({
@@ -126,7 +127,8 @@ export const TextField = ({
 	required = false,
 	name,
 	id,
-	checked = false
+	checked = false,
+	maxLength
 }: Props) => {
 	const {
 		state: { theme }
@@ -152,6 +154,7 @@ export const TextField = ({
 				name={name}
 				id={id}
 				checked={checked}
+				maxLength={maxLength}
 			/>
 			{isTypeSearch && (
 				<Icon
