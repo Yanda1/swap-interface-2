@@ -12,6 +12,7 @@ import WORK_AREA_LIST from '../../data/workAreaList.json';
 import SOURCE_OF_FUNDS_LIST_COMPANY from '../../data/sourceOfFundsListCompany.json';
 import PREVAILLING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfIncomeCompany.json';
 import REPRESENT_PERSON from '../../data/representClient.json';
+import NET_YEARLY_INCOME_LIST_COMPANY from '../../data/netYearlyCompanyIncome.json';
 import { UboModal } from './uboModal';
 import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryBoardMembers } from './supervisoryBoardMembers';
@@ -154,7 +155,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		fullName: string;
 		dateOfBirth: string;
 		placeOfBirth: string;
-		yearlyIncome: number | null;
+		yearlyIncome: string[];
 		email: string;
 		residence: any;
 		mailAddress: any;
@@ -193,6 +194,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		fullName: '',
 		dateOfBirth: '',
 		citizenship: [],
+		yearlyIncome: [],
 		countryOfWork: [],
 		hasCriminalRecords: '',
 		declare: [],
@@ -232,7 +234,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		},
 		sourceOfIncomeNature: [],
 		sourceOfIncomeNatureOther: '',
-		yearlyIncome: null,
 		appliedSanctions: '',
 		placeOfBirth: '',
 		politicallPerson: '',
@@ -304,7 +305,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		} else if (
 			page === 6 &&
 			input.companyName.length > 2 &&
-			input.companyIdentificationNumber.length > 2
+			input.companyIdentificationNumber.length > 2 &&
+			input.yearlyIncome.length
 		) {
 			setIsDisabled(false);
 		} else if (page === 7 && !Object.values(input.registeredOffice).includes('')) {
@@ -1148,6 +1150,35 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									name="companyIdentificationNumber"
 									error={input.companyIdentificationNumber.length < 2}
 								/>
+							</div>
+							<div style={{ marginBottom: '10px', width: '100%' }}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Net yearly income / yearly turnover
+								</p>
+								{NET_YEARLY_INCOME_LIST_COMPANY.map((activity: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`yearlyIncome-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.yearlyIncome.includes(`${activity}`)}
+												required
+												data-key="yearlyIncome"
+											/>
+											<label htmlFor={`yearlyIncome-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
 							</div>
 						</div>
 					)}
