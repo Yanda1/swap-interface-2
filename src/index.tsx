@@ -26,6 +26,5 @@ root.render(
 				</ToastProvider>
 			</AuthProvider>
 		</DAppProvider>
-		//{' '}
 	</StrictMode>
 );
