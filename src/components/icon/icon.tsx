@@ -63,15 +63,15 @@ import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import { ReactComponent as SettingsDark } from '../../assets/settings-dark.svg';
 import { ReactComponent as SettingsLight } from '../../assets/settings-light.svg';
 
+import type { ThemeProps } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
 	DEFAULT_OUTLINE,
 	DEFAULT_OUTLINE_OFFSET,
-	DEFAULT_TRANSIITON,
+	DEFAULT_TRANSITION,
 	pxToRem,
 	spacing
 } from '../../styles';
-import type { ThemeProps } from '../../styles';
 import { useStore } from '../../helpers';
 
 const Icons = {
@@ -169,7 +169,7 @@ const StyledIcon = styled.div`
 	justify-content: center;
 	align-items: center;
 	cursor: ${(props: StyleProps) => (props.onClick ? 'pointer' : 'unset')};
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 
 	${(props: StyleProps) =>
 		props.onClick && props.size === 'large'
@@ -181,7 +181,7 @@ const StyledIcon = styled.div`
 					align-items: center;
 					justify-content: center;
 					background: ${`linear-gradient(to left, ${props.theme.background.secondary}, ${props.theme.background.secondary})`};
-					transition: ${DEFAULT_TRANSIITON};
+					transition: ${DEFAULT_TRANSITION};
 
 					& svg {
 						font-size: ${spacing[32]};
@@ -207,7 +207,6 @@ const StyledIcon = styled.div`
 					}
 			  `
 			: null}
-
 	& > * {
 		width: 1em;
 		height: 1em;

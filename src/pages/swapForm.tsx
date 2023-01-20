@@ -3,13 +3,15 @@ import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 import {
+	Button,
 	Fees,
 	Icon,
 	IconType,
 	NetworkTokenModal,
 	NotificationsModal,
 	SwapButton,
-	TextField
+	TextField,
+	useToasts
 } from '../components';
 import type { Fee } from '../helpers';
 import {
@@ -20,10 +22,13 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
+	KycL2BusinessStatusEnum,
 	NETWORK_TO_ID,
+	routes,
 	useStore
 } from '../helpers';
-import { useFees } from '../hooks';
+import { useAxios, useFees } from '../hooks';
+import { KycL2LegalModal } from '../components/modal/kycL2LegalModal';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -133,6 +138,12 @@ const ExchangeRate = styled.div(
 `
 );
 
+const KYCL2Wrapper = styled.div`
+	margin-top: ${spacing[26]};
+	width: 100%;
+	text-align: center;
+`;
+
 type Limit = { message: string; value: string; error: boolean };
 
 export const SwapForm = () => {
@@ -147,7 +158,8 @@ export const SwapForm = () => {
 			destinationAmount,
 			destinationMemo,
 			isUserVerified,
-			amount
+			amount,
+			account
 		},
 		dispatch
 	} = useStore();
@@ -156,10 +168,34 @@ export const SwapForm = () => {
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
 	const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
+	const [showKycL2, setShowKycL2] = useState(false);
+	const [loadKycL2Modal, setLoadKycL2Modal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+	// @ts-ignore
+	const { addToast } = useToasts();
+	const api = useAxios();
+	const fetchData = async () => {
+		setLoadKycL2Modal(true);
+		try {
+			const res = await api.get(routes.kycStatus);
+			const l2Data = res?.data?.L2;
+			if (isUserVerified && l2Data.statusBusiness === KycL2BusinessStatusEnum.INITIAL) {
+				setLoadKycL2Modal(false);
+				setShowKycL2(true);
+			}
+		} catch (e: any) {
+			console.log(e);
+			setLoadKycL2Modal(false);
+			addToast('Something went wrong please try again or later!', 'warning');
+		}
+	};
+
+	const updateShowKycL2 = (value: boolean) => {
+		setShowKycL2(value);
+	};
 
 	// const { mobileWidth } = useMedia('xs');
 
@@ -361,6 +397,14 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
+			<KYCL2Wrapper>
+				{isUserVerified && account && KycL2BusinessStatusEnum.INITIAL ? (
+					<Button isLoading={loadKycL2Modal} variant="pure" onClick={fetchData} color="default">
+						Pass KYC Legal Person
+					</Button>
+				) : null}
+				<KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={updateShowKycL2} />
+			</KYCL2Wrapper>
 		</Wrapper>
 	);
 };

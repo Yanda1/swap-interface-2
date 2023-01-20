@@ -47,8 +47,32 @@ export enum KycStatusEnum {
 	REJECT = 'REJECT'
 }
 
-export enum KycL2StatusEnum {
+export enum KycL2Enum {
 	STATUS = 'SET_KYCL2_STATUS'
+}
+
+export enum KycL2StatusEnum {
+	PENDING = 'PENDING',
+	INITIAL = 'INITIAL',
+	REVIEW = 'REVIEW',
+	REFUSED = 'REFUSED',
+	PASSED = 'PASSED',
+	DISABLE = 'DISABLE',
+	REJECT = 'REJECT'
+}
+
+export enum KycL2BusinessEnum {
+	STATUS = 'SET_KYCL2_Business_STATUS'
+}
+
+export enum KycL2BusinessStatusEnum {
+	PENDING = 'PENDING',
+	INITIAL = 'INITIAL',
+	REVIEW = 'REVIEW',
+	REFUSED = 'REFUSED',
+	PASSED = 'PASSED',
+	DISABLE = 'DISABLE',
+	REJECT = 'REJECT'
 }
 
 export enum BasicStatusEnum {
@@ -91,8 +115,13 @@ type KycAction = {
 };
 
 type KycL2Action = {
-	type: KycL2StatusEnum;
-	payload: string;
+	type: KycL2Enum;
+	payload: KycL2StatusEnum;
+};
+
+type KycL2BusinessAction = {
+	type: KycL2BusinessEnum;
+	payload: KycL2BusinessStatusEnum;
 };
 
 type ButtonAction = {
@@ -135,6 +164,7 @@ type Action =
 	| ButtonAction
 	| KycAction
 	| KycL2Action
+	| KycL2BusinessAction
 	| ThemeAction
 	| SourceAction
 	| DestinationAction
@@ -147,7 +177,8 @@ type State = {
 	account: string;
 	isNetworkConnected: boolean;
 	kycStatus: KycStatusEnum;
-	kycL2Status: string;
+	kycL2Status: KycL2StatusEnum;
+	kycL2Business: KycL2BusinessStatusEnum;
 	accessToken: string;
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
@@ -194,7 +225,8 @@ const initialState: State = {
 	accessToken: '',
 	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
-	kycL2Status: '',
+	kycL2Status: KycL2StatusEnum.INITIAL,
+	kycL2Business: KycL2BusinessStatusEnum.INITIAL,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
@@ -228,7 +260,7 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, refreshToken: action.payload as string };
 		case KycEnum.STATUS:
 			return { ...state, kycStatus: action.payload };
-		case KycL2StatusEnum.STATUS:
+		case KycL2Enum.STATUS:
 			return { ...state, kycL2Status: action.payload };
 		case ButtonEnum.BUTTON:
 			return { ...state, buttonStatus: action.payload };
@@ -284,13 +316,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		if (account && !isUserVerified && isNetworkConnected) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
-		if (kycStatus !== KycStatusEnum.PASS && kycL2Status !== 'PASSED') {
+		if (kycStatus !== KycStatusEnum.PASS && kycL2Status !== KycL2StatusEnum.PASSED) {
 			dispatch({ type: VerificationEnum.USER, payload: false });
 		} else if (
 			kycStatus === KycStatusEnum.PASS &&
 			isNetworkConnected &&
 			account &&
-			kycL2Status === 'PASSED'
+			kycL2Status === KycL2StatusEnum.PASSED
 		) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		}

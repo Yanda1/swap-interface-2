@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import type { Theme } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSIITON,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_TRANSITION,
 	fontSize,
 	mediaQuery,
 	pxToRem,
-	spacing,
-	DEFAULT_OUTLINE,
-	DEFAULT_OUTLINE_OFFSET
+	spacing
 } from '../../styles';
-import type { Theme } from '../../styles';
-import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
 import type { SelectProps } from '../../helpers';
+import { isLightTheme, TransactionHeaderSortValue, useStore } from '../../helpers';
 import { useClickOutside } from '../../hooks';
 import { Icon } from '../../components';
 
@@ -41,7 +41,7 @@ const SelectButton = styled.button`
 	padding: ${spacing[14]} ${spacing[20]};
 	justify-content: space-between;
 	align-items: center;
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 
 	${mediaQuery('s')} {
 		width: 100%;
@@ -101,7 +101,7 @@ const List = styled.ul`
 const ListItem = styled.li`
 	padding: ${spacing[8]} ${spacing[20]};
 	cursor: pointer;
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 
 	&:hover,
 	&:focus {
@@ -165,7 +165,7 @@ export const Select = ({ data, checkedValue }: Props) => {
 				<Icon
 					size={20}
 					icon={lightTheme ? 'arrowFullDark' : 'arrowFullLight'}
-					style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: DEFAULT_TRANSIITON }}
+					style={{ transform: `rotate(${isOpen ? 180 : 0}deg)`, transition: DEFAULT_TRANSITION }}
 				/>
 			</SelectButton>
 			{/* @ts-ignore */}

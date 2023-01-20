@@ -56,6 +56,9 @@ export const SupervisoryBoardMembers = ({
 }: Props) => {
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
+	// TODO: uncomment addToast
+	// @ts-ignore
+	// const { addToast } = useToasts();
 	const [client, setClient] = useState<any>({
 		fullName: '',
 		dateOfBirth: '',
@@ -147,8 +150,13 @@ export const SupervisoryBoardMembers = ({
 		updateSupervisorModalShow(false);
 	};
 	const handleSubmit = () => {
+		// TODO: send axios request to backEnd and waiting for response
+		// handle success
 		updateSupervisorModalShow(false, client);
 		setClient(emptyClient);
+		// handle error
+		// updateSupervisorModalShow(false);
+		// addToast('Error text', 'error');
 	};
 	const handleBack = () => {
 		updateSupervisorModalShow(false);

@@ -56,6 +56,9 @@ export const ShareHoldersModal = ({
 }: Props) => {
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
+	// TODO: uncomment addToast
+	// @ts-ignore
+	// const { addToast } = useToasts();
 	const [client, setClient] = useState<any>({
 		companyName: '',
 		idNumber: '',
@@ -155,7 +158,7 @@ export const ShareHoldersModal = ({
 	const handleChangeClientInput = (event: any) => {
 		setClient({
 			...client,
-			[event.target.name]: event.target.value.trim()
+			[event.target.name]: event.target.value
 		});
 	};
 	const handleDropDownInput = (event: any) => {
@@ -182,7 +185,7 @@ export const ShareHoldersModal = ({
 	const handleChangeShareHolderInfoInput = (event: any) => {
 		setClient({
 			...client,
-			shareHolderInfo: { ...client.shareHolderInfo, [event.target.name]: event.target.value.trim() }
+			shareHolderInfo: { ...client.shareHolderInfo, [event.target.name]: event.target.value }
 		});
 	};
 	const handleChangeCheckBox = (event: any) => {
@@ -208,8 +211,13 @@ export const ShareHoldersModal = ({
 	};
 
 	const handleSubmit = () => {
+		// TODO: send axios request to backEnd and waiting for response
+		// handle success
 		updateShareHoldersModalShow(false, client);
 		setClient(emptyClient);
+		// handle error
+		// updateSupervisorModalShow(false);
+		// addToast('Error text', 'error');
 	};
 
 	const handleBack = () => {

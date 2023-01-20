@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 import {
 	ColorType,
 	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSIITON,
+	DEFAULT_TRANSITION,
 	mediaQuery,
 	pxToRem,
 	spacing,
@@ -28,6 +28,7 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	KycEnum,
+	KycL2Enum,
 	KycL2StatusEnum,
 	KycStatusEnum,
 	loadBinanceKycScript,
@@ -287,24 +288,27 @@ export const Header = () => {
 					payload: kyc
 				});
 				dispatch({
-					type: KycL2StatusEnum.STATUS,
+					type: KycL2Enum.STATUS,
 					payload: kycL2Status
 				});
-				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS && kycL2Status === 'PASSED' });
+				setStorage({
+					...storage,
+					isKyced: kyc === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED
+				});
 				// TODO: move this part to context?
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
 					addToast('Your KYC process has been rejected - please start again!', 'warning');
-				} else if (kycL2Status === 'REJECT') {
+				} else if (kycL2Status === KycL2StatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 					addToast('Your KYC L2 process has been rejected - please start again!', 'warning');
 				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-				} else if (kycL2Status === 'INITIAL') {
+				} else if (kycL2Status === KycL2StatusEnum.INITIAL) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
-				} else if (kycL2Status === 'PENDING') {
+				} else if (kycL2Status === KycL2StatusEnum.PENDING) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
 					setShowStatusKycL2Modal(true);
 				}
@@ -429,8 +433,10 @@ export const Header = () => {
 				payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
 			});
 			dispatch({
-				type: KycL2StatusEnum.STATUS,
-				payload: JSON.parse(localStorageAuth).isKyced ? 'PASSED' : 'INITIAL'
+				type: KycL2Enum.STATUS,
+				payload: JSON.parse(localStorageAuth).isKyced
+					? KycL2StatusEnum.PASSED
+					: KycL2StatusEnum.INITIAL
 			});
 		}
 	}, []);
@@ -460,8 +466,8 @@ export const Header = () => {
 				payload: KycStatusEnum.INITIAL
 			});
 			dispatch({
-				type: KycL2StatusEnum.STATUS,
-				payload: 'INITIAL'
+				type: KycL2Enum.STATUS,
+				payload: KycL2StatusEnum.INITIAL
 			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
@@ -496,7 +502,7 @@ export const Header = () => {
 						size={16}
 						style={{
 							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
-							transition: DEFAULT_TRANSIITON
+							transition: DEFAULT_TRANSITION
 						}}
 					/>
 				</NetworkWrapper>
@@ -529,7 +535,7 @@ export const Header = () => {
 						size={16}
 						style={{
 							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
-							transition: DEFAULT_TRANSIITON
+							transition: DEFAULT_TRANSITION
 						}}
 					/>
 				</NetworkWrapper>
