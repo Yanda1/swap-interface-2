@@ -12,11 +12,11 @@ import SOURCE_OF_FUNDS_LIST_COMPANY from '../../data/sourceOfFundsListCompany.js
 import PREVAILLING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfIncomeCompany.json';
 import REPRESENT_PERSON from '../../data/representClient.json';
 import NET_YEARLY_INCOME_LIST_COMPANY from '../../data/netYearlyCompanyIncome.json';
-import WORK_AREA_LIST from '../../data/workAreaList.json';
 import { UboModal } from './uboModal';
 import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryBoardMembers } from './supervisoryBoardMembers';
 import { useMedia } from '../../hooks';
+import WORK_AREA_LIST from '../../data/workAreaList.json';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -63,7 +63,7 @@ const Title = styled.h2`
 	font-style: italic;
 `;
 
-const ContentTitle = styled.p`
+export const ContentTitle = styled.p`
 	margin-bottom: ${pxToRem(26)};
 	font-size: ${fontSize[18]};
 	font-style: italic;
@@ -160,7 +160,7 @@ const DeleteUboBtn = styled.button(() => {
 	`;
 });
 
-const WrapContainer = styled.div(() => {
+export const WrapContainer = styled.div(() => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -999,69 +999,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									);
 								})}
 							</div>
-							<ContentTitle>
-								State or country, in which the client conducts his business activity
-							</ContentTitle>
-							<WrapContainer>
-								{COUNTRIES.map((country: any, index: number) => {
-									return (
-										<div
-											key={index}
-											style={{
-												display: 'flex',
-												justifyContent: 'flex-start',
-												marginBottom: '8px'
-											}}>
-											<input
-												type="checkbox"
-												value={country.name}
-												name={country.name}
-												id={`countryOfWork-checkbox-${index}`}
-												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-												checked={input.countryOfWork.includes(`${country.name}`)}
-												required
-												data-key="countryOfWork"
-											/>
-											<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
-										</div>
-									);
-								})}
-							</WrapContainer>
-						</>
-					)}
-					{page === 7 && (
-						<>
-							<ContentTitle>
-								State or country, in which a branch, organized unit or establishment of the client
-								operates
-							</ContentTitle>
-							<WrapContainer style={{ height: '50%' }}>
-								{COUNTRIES.map((country: any, index: number) => {
-									return (
-										<div
-											key={index}
-											style={{
-												display: 'flex',
-												justifyContent: 'flex-start',
-												marginBottom: '8px'
-											}}>
-											<input
-												type="checkbox"
-												value={country.name}
-												name={country.name}
-												id={`countryOfOperates-checkbox-${index}`}
-												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-												checked={input.countryOfOperates.includes(`${country.name}`)}
-												required
-												data-key="countryOfOperates"
-											/>
-											<label htmlFor={`countryOfOperates-checkbox-${index}`}>{country.name}</label>
-										</div>
-									);
-								})}
-							</WrapContainer>
 							<ContentTitle style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								The Client conducts his work / business activity in these areas:
 							</ContentTitle>
@@ -1093,13 +1030,14 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</WrapContainer>
 						</>
 					)}
-					{page === 10 && (
-						<div style={{ marginBottom: '14px', width: '100%' }}>
-							<div style={{ marginBottom: '10px', width: '100%' }}>
-								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-									Net yearly income / yearly turnover
-								</p>
-								{NET_YEARLY_INCOME_LIST_COMPANY.map((activity: any, index: number) => {
+					{page === 7 && (
+						<>
+							<ContentTitle>
+								State or country, in which a branch, organized unit or establishment of the client
+								operates
+							</ContentTitle>
+							<WrapContainer>
+								{COUNTRIES.map((country: any, index: number) => {
 									return (
 										<div
 											key={index}
@@ -1110,21 +1048,21 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											}}>
 											<input
 												type="checkbox"
-												value={activity}
-												name={activity}
-												id={`yearlyIncome-checkbox-${index}`}
+												value={country.name}
+												name={country.name}
+												id={`countryOfOperates-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
 												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-												checked={input.yearlyIncome.includes(`${activity}`)}
+												checked={input.countryOfOperates.includes(`${country.name}`)}
 												required
-												data-key="yearlyIncome"
+												data-key="countryOfOperates"
 											/>
-											<label htmlFor={`yearlyIncome-checkbox-${index}`}>{activity}</label>
+											<label htmlFor={`countryOfOperates-checkbox-${index}`}>{country.name}</label>
 										</div>
 									);
 								})}
-							</div>
-						</div>
+							</WrapContainer>
+						</>
 					)}
 					{page === 8 && (
 						<>
@@ -1161,6 +1099,35 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					)}
 					{page === 9 && (
 						<>
+							<WrapContainer>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Net yearly income / yearly turnover
+								</p>
+								{NET_YEARLY_INCOME_LIST_COMPANY.map((activity: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`yearlyIncome-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.yearlyIncome.includes(`${activity}`)}
+												required
+												data-key="yearlyIncome"
+											/>
+											<label htmlFor={`yearlyIncome-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+							</WrapContainer>
 							<WrapContainer>
 								<ContentTitle>Nature of prevailing source of income</ContentTitle>
 								{PREVAILLING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
@@ -1203,35 +1170,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									</div>
 								) : null}
 							</WrapContainer>
-							<WrapContainer>
-								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-									Net yearly income / yearly turnover
-								</p>
-								{NET_YEARLY_INCOME_LIST_COMPANY.map((activity: any, index: number) => {
-									return (
-										<div
-											key={index}
-											style={{
-												display: 'flex',
-												justifyContent: 'flex-start',
-												marginBottom: '8px'
-											}}>
-											<input
-												type="checkbox"
-												value={activity}
-												name={activity}
-												id={`yearlyIncome-checkbox-${index}`}
-												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-												checked={input.yearlyIncome.includes(`${activity}`)}
-												required
-												data-key="yearlyIncome"
-											/>
-											<label htmlFor={`yearlyIncome-checkbox-${index}`}>{activity}</label>
-										</div>
-									);
-								})}
-							</WrapContainer>
 						</>
 					)}
 					{page === 10 && (
@@ -1263,17 +1201,28 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									</div>
 								);
 							})}
+							{input.sourceOfFunds.includes('Other') ? (
+								<TextField
+									value={input.sourceOfFundsOther}
+									type="text"
+									placeholder="Specify..."
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="sourceOfFundsOther"
+								/>
+							) : null}
 						</WrapContainer>
 					)}
 					{page === 11 && (
 						<>
-							<p style={{ marginBottom: '25px' }}>
+							<ContentTitle>
 								Have you as a legal entity (or the member of your statutory body or your supervisory
 								body or your ultimate beneficial owner ) ever been convicted for a criminal offense,
 								in particular an offense against property or economic offense committed not only in
 								relation with work or business activities (without regards to presumption of
 								innocence)?
-							</p>
+							</ContentTitle>
 							<div
 								style={{
 									display: 'flex',
@@ -1308,10 +1257,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					)}
 					{page === 12 && (
 						<>
-							<p style={{ marginBottom: '25px' }}>
+							<ContentTitle>
 								These are mainly criminal offenses in the areas of taxes, corruption, public
 								procurement, and subsidy fraud.
-							</p>
+							</ContentTitle>
 							<div
 								style={{
 									display: 'flex',
@@ -1486,11 +1435,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								alignItems: 'center',
 								width: '100%'
 							}}>
-							<h3 style={{ textAlign: 'center' }}>
-								Information on members of the supervisory board
-								<br />
-								(If it a client with a supervisory board or other supervisory body)
-							</h3>
+							<ContentTitle>
+								Information on members of the supervisory board (If it a client with a supervisory
+								board or other supervisory body)
+							</ContentTitle>
 							<div style={{ marginBottom: '20px' }}>
 								<Button variant="secondary" onClick={handleAddSupervisor}>
 									Add member
@@ -1534,8 +1482,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						</WrapContainer>
 					)}
 					{page === 17 && (
-						<>
-							<p>Copy of an account statement kept by an institution in the EEA</p>
+						<WrapContainer>
+							<ContentTitle>
+								Copy of an account statement kept by an institution in the EEA
+							</ContentTitle>
 							<LabelInput htmlFor="file-input-refPoasDoc1">
 								<FileInput
 									id="file-input-refPoasDoc1"
@@ -1544,10 +1494,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									onChange={handleChangeFileInput}></FileInput>
 								{input.file.poaDoc1 ? input.file.poaDoc1.name : 'Upload File'}
 							</LabelInput>
-							<p>
+							<ContentTitle>
 								Documents proving information on the source of funds (for instance: payslip, tax
 								return etc.)
-							</p>
+							</ContentTitle>
 							<LabelInput htmlFor="file-input-refPosofDoc1">
 								<FileInput
 									id="file-input-refPosofDoc1"
@@ -1556,10 +1506,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									onChange={handleChangeFileInput}></FileInput>
 								{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
 							</LabelInput>
-							<p>
+							<ContentTitle>
 								Natural person Representative: Copy of personal identification or passport of the
 								representatives
-							</p>
+							</ContentTitle>
 							<LabelInput htmlFor="file-input-refRepresentativesId">
 								<FileInput
 									id="file-input-refRepresentativesId"
@@ -1568,11 +1518,11 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									onChange={handleChangeFileInput}></FileInput>
 								{input.file.representativesId ? input.file.representativesId.name : 'Upload File'}
 							</LabelInput>
-							<p>
+							<ContentTitle>
 								Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or
 								other comparable foreign evidence) or other valid documents proving the existence of
 								legal entity (Articles of Associations, Deed of Foundation etc.).
-							</p>
+							</ContentTitle>
 							<LabelInput htmlFor="file-input-refPorDoc1">
 								<FileInput
 									id="file-input-refPorDoc1"
@@ -1581,7 +1531,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									onChange={handleChangeFileInput}></FileInput>
 								{input.file.porDoc1 ? input.file.porDoc1.name : 'Upload File'}
 							</LabelInput>
-							<p>Court decision on appointment of legal guardian (if relevant).</p>
+							<ContentTitle>
+								Court decision on appointment of legal guardian (if relevant).
+							</ContentTitle>
 							<LabelInput htmlFor="file-input-refPogDoc1">
 								<FileInput
 									id="file-input-refPogDoc1"
@@ -1590,7 +1542,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									onChange={handleChangeFileInput}></FileInput>
 								{input.file.pogDoc1 ? input.file.pogDoc1.name : 'Upload File'}
 							</LabelInput>
-						</>
+						</WrapContainer>
 					)}
 					{page < 17 && (
 						<div

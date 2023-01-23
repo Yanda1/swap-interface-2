@@ -3,41 +3,17 @@ import { Portal } from './portal';
 import { TextField } from '../textField/textField';
 import { useEffect, useState } from 'react';
 import { Button } from '../button/button';
-import { useStore } from '../../helpers';
-import { pxToRem } from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
+import { ContentTitle, WrapContainer } from './kycL2LegalModal';
+import { spacing } from '../../styles';
 
 const Wrapper = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
-
 	return css`
 		display: flex;
-		justify-content: center;
-		align-items: center;
 		width: 100%;
-		flex-wrap: wrap;
-		overflow-y: auto;
-
-		::-webkit-scrollbar {
-			display: block;
-			width: 1px;
-			background-color: ${theme.background.tertiary};
-		}
-
-		::-webkit-scrollbar-thumb {
-			display: block;
-			background-color: ${theme.button.default};
-			border-radius: ${pxToRem(4)};
-			border-right: none;
-			border-left: none;
-		}
-
-		::-webkit-scrollbar-track-piece {
-			display: block;
-			background: ${theme.button.disabled};
-		}
+		flex-direction: column;
+		align-items: center;
+		padding: ${spacing[10]} ${spacing[20]};
 	`;
 });
 
@@ -239,8 +215,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			handleBack={handleBack}
 			hasBackButton>
 			<Wrapper>
-				<h3 style={{ margin: '0' }}>Information on Ultimate Beneficial Owner(s) (optional)</h3>
-				<div style={{ padding: '6px' }}>
+				<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
+				<WrapContainer>
 					<label
 						htmlFor="label-ubo-company-name"
 						style={{
@@ -878,7 +854,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										name={country.name}
 										id={`citizenship-checkbox-${index}`}
 										onChange={handleChangeCheckBox}
-										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 										checked={client.citizenship.includes(`${country.name}`)}
 										required
 										data-key="citizenship"
@@ -888,7 +863,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							);
 						})}
 					</div>
-				</div>
+				</WrapContainer>
 				<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
 					Submit
 				</Button>
