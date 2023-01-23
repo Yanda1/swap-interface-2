@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import { fontSize, pxToRem, spacing } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { BASE_URL, findAndReplace, makeId, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
@@ -8,14 +8,15 @@ import { Portal } from './portal';
 import axios from 'axios';
 import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
-import WORK_AREA_LIST from '../../data/workAreaList.json';
 import SOURCE_OF_FUNDS_LIST_COMPANY from '../../data/sourceOfFundsListCompany.json';
 import PREVAILLING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfIncomeCompany.json';
 import REPRESENT_PERSON from '../../data/representClient.json';
 import NET_YEARLY_INCOME_LIST_COMPANY from '../../data/netYearlyCompanyIncome.json';
+import WORK_AREA_LIST from '../../data/workAreaList.json';
 import { UboModal } from './uboModal';
 import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryBoardMembers } from './supervisoryBoardMembers';
+import { useMedia } from '../../hooks';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -26,28 +27,28 @@ const Wrapper = styled.div(() => {
 		display: flex;
 		width: 100%;
 		flex-direction: column;
-		overflow-y: auto;
+		//overflow-y: auto;
 		align-items: center;
 		padding: ${spacing[10]} ${spacing[20]};
 
-		::-webkit-scrollbar {
-			display: block;
-			width: 1px;
-			background-color: ${theme.background.tertiary};
-		}
-
-		::-webkit-scrollbar-thumb {
-			display: block;
-			background-color: ${theme.button.default};
-			border-radius: ${pxToRem(4)};
-			border-right: none;
-			border-left: none;
-		}
-
-		::-webkit-scrollbar-track-piece {
-			display: block;
-			background: ${theme.button.disabled};
-		}
+		// ::-webkit-scrollbar {
+		// 	display: block;
+		// 	width: 1px;
+		// 	background-color: ${theme.background.tertiary};
+		// }
+		//
+		// ::-webkit-scrollbar-thumb {
+		// 	display: block;
+		// 	background-color: ${theme.button.default};
+		// 	border-radius: ${pxToRem(4)};
+		// 	border-right: none;
+		// 	border-left: none;
+		// }
+		//
+		// ::-webkit-scrollbar-track-piece {
+		// 	display: block;
+		// 	background: ${theme.button.disabled};
+		// }
 	`;
 });
 
@@ -59,6 +60,12 @@ const Wrapper = styled.div(() => {
 
 const Title = styled.h2`
 	text-align: center;
+	font-style: italic;
+`;
+
+const ContentTitle = styled.p`
+	margin-bottom: ${pxToRem(26)};
+	font-size: ${fontSize[18]};
 	font-style: italic;
 `;
 
@@ -88,10 +95,22 @@ const FileInput = styled.input`
 	z-index: -100;
 `;
 
-const Select = styled.select`
-	width: 100%;
-	height: 100%;
-`;
+const Select = styled.select(() => {
+	const {
+		state: { theme }
+	} = useStore();
+	const { mobileWidth: isMobile } = useMedia('s');
+
+	return css`
+		width: ${isMobile ? '100%' : '50%'};
+		height: 100%;
+		max-height: 50px;
+		margin-top: ${pxToRem(15)};
+		color: ${theme.font.default};
+		background-color: ${theme.background.secondary};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+	`;
+});
 
 const Container = styled.div(() => {
 	const {
@@ -137,6 +156,37 @@ const DeleteUboBtn = styled.button(() => {
 
 		&:hover {
 			background-color: ${theme.button.error};
+		}
+	`;
+});
+
+const WrapContainer = styled.div(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		width: 100%;
+		overflow-y: auto;
+		margin-bottom: ${spacing[10]};
+
+		::-webkit-scrollbar {
+			display: block;
+			width: 1px;
+			background-color: ${theme.background.tertiary};
+		}
+
+		::-webkit-scrollbar-thumb {
+			display: block;
+			background-color: ${theme.button.default};
+			border-radius: ${pxToRem(4)};
+			border-right: none;
+			border-left: none;
+		}
+
+		::-webkit-scrollbar-track-piece {
+			display: block;
+			background: ${theme.button.disabled};
 		}
 	`;
 });
@@ -270,83 +320,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		state: { accessToken }
 	} = useStore();
 
-	const [isDisabled, setIsDisabled] = useState<boolean>(true);
-	useEffect(() => {
-		setIsDisabled(true);
-		if (
-			page === 0 &&
-			input.placeOfBirth.length > 2 &&
-			input.gender &&
-			input.email.length > 2 &&
-			input.email.includes('@') &&
-			input.dateOfBirth
-		) {
-			setIsDisabled(false);
-		} else if (
-			page === 1 &&
-			input.taxResidency &&
-			input.politicallPerson &&
-			input.appliedSanctions
-		) {
-			setIsDisabled(false);
-		} else if (page === 2 && input.citizenship.length) {
-			setIsDisabled(false);
-		} else if (page === 3 && !Object.values(input.residence).includes('')) {
-			setIsDisabled(false);
-		} else if (
-			(page === 4 && input.permanentAndMailAddressSame === 'Yes') ||
-			(page === 4 &&
-				input.permanentAndMailAddressSame === 'No' &&
-				!Object.values(input.mailAddress).includes(''))
-		) {
-			setIsDisabled(false);
-		} else if (page === 5 && !Object.values(input.identification).includes('')) {
-			setIsDisabled(false);
-		} else if (
-			page === 6 &&
-			input.companyName.length > 2 &&
-			input.companyIdentificationNumber.length > 2 &&
-			input.yearlyIncome.length
-		) {
-			setIsDisabled(false);
-		} else if (page === 7 && !Object.values(input.registeredOffice).includes('')) {
-			setIsDisabled(false);
-		} else if (page === 8 && input.representPerson && input.countryOfWork.length) {
-			setIsDisabled(false);
-		} else if (page === 9 && input.countryOfOperates.length) {
-			setIsDisabled(false);
-		} else if (page === 10 && input.workArea.length) {
-			setIsDisabled(false);
-		} else if (page === 11 && input.sourceOfFunds.length && input.sourceOfIncomeNature.length) {
-			setIsDisabled(false);
-		} else if (
-			page === 12 &&
-			input.legalEntity &&
-			input.typeOfCriminal &&
-			input.representativeTypeOfClient
-		) {
-			setIsDisabled(false);
-		} else if (
-			page === 16 &&
-			input.file.poaDoc1 &&
-			input.file.posofDoc1 &&
-			input.file.porDoc1 &&
-			input.file.representativesId
-		) {
-			setIsDisabled(false);
-		} else if (page === 13 || page === 14 || page === 15) {
-			setIsDisabled(false);
-		} else if (
-			page === 16 &&
-			input.file.poaDoc1 &&
-			input.file.porDoc1 &&
-			input.file.representativesId &&
-			input.file.posofDoc1
-		) {
-			setIsDisabled(false);
-		}
-	}, [input, page]);
-
 	useEffect(() => {
 		if (page === 6) {
 			// TODO: send first part :)
@@ -440,18 +413,18 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			mailAddress: { ...input.mailAddress, [event.target.name]: event.target.value }
 		});
 	};
-	const handleChangeResidenceInput = (event: any) => {
-		setInput({
-			...input,
-			residence: { ...input.residence, [event.target.name]: event.target.value }
-		});
-	};
-	const handleChangeIdentificationInput = (event: any) => {
-		setInput({
-			...input,
-			identification: { ...input.identification, [event.target.name]: event.target.value }
-		});
-	};
+	// const handleChangeResidenceInput = (event: any) => {
+	// 	setInput({
+	// 		...input,
+	// 		residence: { ...input.residence, [event.target.name]: event.target.value }
+	// 	});
+	// };
+	// const handleChangeIdentificationInput = (event: any) => {
+	// 	setInput({
+	// 		...input,
+	// 		identification: { ...input.identification, [event.target.name]: event.target.value }
+	// 	});
+	// };
 	const handleChangeRegisteredOfficeInput = (event: any) => {
 		setInput({
 			...input,
@@ -500,9 +473,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		setInput({ ...input, [event.target.name]: event.target.value });
 	};
 
-	const handleChangeDate = (event: any) => {
-		setInput({ ...input, dateOfBirth: event.target.value });
-	};
+	// const handleChangeDate = (event: any) => {
+	// 	setInput({ ...input, dateOfBirth: event.target.value });
+	// };
 
 	const handleOnClose = () => {
 		setShowModal(false);
@@ -575,546 +548,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						alignItems: 'center'
 					}}>
 					{page === 0 && (
-						<div style={{ marginBottom: '14px', width: '50%' }}>
+						<WrapContainer>
 							<Title>KYC L2 form for Legal Persons</Title>
-							<div style={{ marginBottom: '8px' }}>
-								<label
-									htmlFor="label-fullName"
-									style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
-									Full name
-								</label>
-								<TextField
-									id="label-fullName"
-									value={input.fullName}
-									placeholder="Full name"
-									type="text"
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="fullName"
-									error={input.fullName.length < 2}
-								/>
-								<label
-									htmlFor="label-place-of-birth"
-									style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
-									Place of birth
-								</label>
-								<TextField
-									id="label-place-of-birth"
-									value={input.placeOfBirth}
-									placeholder="Place of birth"
-									type="text"
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="placeOfBirth"
-									required={true}
-									error={input.placeOfBirth.length < 2}
-								/>
-							</div>
-							<div style={{ marginBottom: '8px' }}>
-								<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
-									Gender
-									<Select
-										name="gender"
-										onChange={handleDropDownInput}
-										value={input.gender}
-										id="label-select-gender"
-										style={{
-											minHeight: '40px',
-											marginTop: '15px',
-											backgroundColor: '#1c2125',
-											color: 'white',
-											borderRadius: '6px'
-										}}>
-										<option value="Male">Male</option>
-										<option value="Female">Female</option>
-										<option value="Other">Other</option>
-									</Select>
-								</label>
-							</div>
-							<div style={{ marginBottom: '8px' }}>
-								<label
-									htmlFor="label-email"
-									style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
-									Email
-								</label>
-								<TextField
-									id="label-email"
-									value={input.email}
-									placeholder="Email"
-									type="email"
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									required
-									name="email"
-									error={input.email.length < 2}
-								/>
-							</div>
-							<div
-								style={{
-									margin: '26px 16px 10px 0',
-									display: 'flex',
-									justifyContent: 'space-between'
-								}}>
-								<label htmlFor="label-supervisory-date">Date of birth</label>
-								<input
-									type="date"
-									id="label-supervisory-date"
-									min="1900-01-01"
-									onChange={(e: any) => handleChangeDate(e)}
-								/>
-							</div>
-						</div>
-					)}
-					{page === 1 && (
-						<div
-							style={{
-								display: 'flex',
-								flexDirection: 'column'
-							}}>
-							<div style={{ margin: '10px 0 50px', width: '100%' }}>
-								<label htmlFor="label-select-tax-residency" style={{ fontStyle: 'italic' }}>
-									Tax Residency
-									<Select
-										name="taxResidency"
-										onChange={handleDropDownInput}
-										value={input.taxResidency}
-										id="label-select-tax-residency"
-										style={{
-											maxHeight: '40px',
-											marginTop: '15px',
-											backgroundColor: '#1c2125',
-											color: 'white',
-											borderRadius: '6px'
-										}}>
-										{COUNTRIES.map((country: any) => {
-											return (
-												<option value={country.name} key={country.name}>
-													{country.name}
-												</option>
-											);
-										})}
-										;
-									</Select>
-								</label>
-							</div>
-							<div>
-								<p style={{ marginBottom: '20px', textAlign: 'center' }}>
-									Person against whom are applied CZ/international sanctions?
-								</p>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'space-evenly',
-										width: '100%',
-										marginBottom: '20px'
-									}}>
-									<label htmlFor="appliedSanctionsTrue">
-										Yes
-										<input
-											id="appliedSanctionsTrue"
-											type="radio"
-											value="Yes"
-											checked={input.appliedSanctions === 'Yes'}
-											onChange={handleChangeInput}
-											name="appliedSanctions"
-										/>
-									</label>
-									<label htmlFor="appliedSanctionsFalse">
-										No
-										<input
-											id="appliedSanctionsFalse"
-											type="radio"
-											value="No"
-											checked={input.appliedSanctions === 'No'}
-											onChange={handleChangeInput}
-											name="appliedSanctions"
-										/>
-									</label>
-								</div>
-								<p style={{ marginBottom: '20px', textAlign: 'center' }}>
-									Politically exposed person?
-								</p>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'space-evenly',
-										width: '100%',
-										marginBottom: '20px'
-									}}>
-									<label htmlFor="politicallPersonTrue">
-										Yes
-										<input
-											id="politicallPersonTrue"
-											type="radio"
-											value="Yes"
-											checked={input.politicallPerson === 'Yes'}
-											onChange={handleChangeInput}
-											name="politicallPerson"
-										/>
-									</label>
-									<label htmlFor="politicallPersonFalse">
-										No
-										<input
-											id="politicallPersonFalse"
-											type="radio"
-											value="No"
-											checked={input.politicallPerson === 'No'}
-											onChange={handleChangeInput}
-											name="politicallPerson"
-										/>
-									</label>
-								</div>
-							</div>
-						</div>
-					)}
-					{page === 2 && (
-						<div style={{ marginBottom: '10px', width: '100%' }}>
-							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-								Citizenship(s)
-							</p>
-							{COUNTRIES.map((country: any, index: number) => {
-								return (
-									<div
-										key={index}
-										style={{
-											display: 'flex',
-											justifyContent: 'flex-start',
-											marginBottom: '8px'
-										}}>
-										<input
-											type="checkbox"
-											value={country.name}
-											name={country.name}
-											id={`citizenship-checkbox-${index}`}
-											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-											checked={input.citizenship.includes(`${country.name}`)}
-											required
-											data-key="citizenship"
-										/>
-										<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
-									</div>
-								);
-							})}
-						</div>
-					)}
-					{page === 3 && (
-						<div
-							style={{
-								marginBottom: '12px',
-								display: 'flex',
-								flexDirection: 'column',
-								width: '100%'
-							}}>
-							<span style={{ textAlign: 'center', fontSize: '20px' }}>
-								Permanent or other residence
-							</span>
-							<label
-								htmlFor="label-address-permanent-state-Or-Country"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								State or Country
-							</label>
-							<TextField
-								id="label-address-permanent-state-Or-Country"
-								value={input.residence.stateOrCountry}
-								placeholder="State or Country"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="stateOrCountry"
-							/>
-							<label
-								htmlFor="label-address-permanent-street"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								Street
-							</label>
-							<TextField
-								id="label-address-permanent-street"
-								value={input.residence.street}
-								placeholder="Street"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="street"
-							/>
-							<label
-								htmlFor="label-address-permanent-street-number"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								Street number
-							</label>
-							<TextField
-								id="label-address-permanent-street-number"
-								value={input.residence.streetNumber}
-								placeholder="Street number"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="streetNumber"
-							/>
-							<label
-								htmlFor="label-address-permanent-municipality"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								Municipality
-							</label>
-							<TextField
-								id="label-address-permanent-municipality"
-								value={input.residence.municipality}
-								placeholder="Municipality"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="municipality"
-							/>
-							<label
-								htmlFor="label-address-permanent-zipCode"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								ZIP Code
-							</label>
-							<TextField
-								id="label-address-permanent-zipCode"
-								value={input.residence.zipCode}
-								placeholder="ZIP Code"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="zipCode"
-							/>
-						</div>
-					)}
-					{page === 4 && (
-						<>
-							<p style={{ marginBottom: '25px' }}>
-								Is your permanent (RESIDENCE) address the same as your mailing address?
-							</p>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'space-evenly',
-									width: '100%',
-									marginBottom: '20px'
-								}}>
-								<label htmlFor="label-mailing-permanent-address-true">
-									Yes
-									<input
-										id="label-mailing-permanent-address-true"
-										type="radio"
-										value="Yes"
-										checked={input.permanentAndMailAddressSame === 'Yes'}
-										onChange={handleChangeInput}
-										name="permanentAndMailAddressSame"
-									/>
-								</label>
-								<label htmlFor="label-mailing-permanent-address-false">
-									No
-									<input
-										id="label-mailing-permanent-address-false"
-										type="radio"
-										value="No"
-										checked={input.permanentAndMailAddressSame === 'No'}
-										onChange={handleChangeInput}
-										name="permanentAndMailAddressSame"
-									/>
-								</label>
-							</div>
-							{input.permanentAndMailAddressSame === 'No' && (
-								<div
-									style={{
-										marginBottom: '12px',
-										display: 'flex',
-										flexDirection: 'column',
-										width: '100%'
-									}}>
-									<label
-										htmlFor="label-address-permanent-state-Or-Country"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
-										}}>
-										State or Country
-									</label>
-									<TextField
-										id="label-address-permanent-state-Or-Country"
-										value={input.mailAddress.stateOrCountry}
-										placeholder="State or Country"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="stateOrCountry"
-									/>
-									<label
-										htmlFor="label-address-street"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
-										}}>
-										Street
-									</label>
-									<TextField
-										id="label-address-street"
-										value={input.mailAddress.street}
-										placeholder="Street"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="street"
-									/>
-									<label
-										htmlFor="label-address-street-number"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
-										}}>
-										Street number
-									</label>
-									<TextField
-										id="label-address-street-number"
-										value={input.mailAddress.streetNumber}
-										placeholder="Street number"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="streetNumber"
-									/>
-									<label
-										htmlFor="label-address-municipality"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
-										}}>
-										Municipality
-									</label>
-									<TextField
-										id="label-address-municipality"
-										value={input.mailAddress.municipality}
-										placeholder="Municipality"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="municipality"
-									/>
-									<label
-										htmlFor="label-address-zipCode"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
-										}}>
-										ZIP Code
-									</label>
-									<TextField
-										id="label-address-zipCode"
-										value={input.mailAddress.zipCode}
-										placeholder="ZIP Code"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="zipCode"
-									/>
-								</div>
-							)}
-						</>
-					)}
-					{page === 5 && (
-						<div>
-							<p>Identification (ID card or passport)</p>
-							<label
-								htmlFor="label-identification-type"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Type
-							</label>
-							<TextField
-								id="label-identification-type"
-								value={input.identification.type}
-								placeholder="Type"
-								type="text"
-								onChange={handleChangeIdentificationInput}
-								size="small"
-								align="left"
-								name="type"
-							/>
-							<label
-								htmlFor="label-identification-number"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Number
-							</label>
-							<TextField
-								id="label-identification-number"
-								value={input.identification.number}
-								placeholder="Number"
-								type="text"
-								onChange={handleChangeIdentificationInput}
-								size="small"
-								align="left"
-								name="number"
-							/>
-							<label
-								htmlFor="label-identification-issuedBy"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Issued by
-							</label>
-							<TextField
-								id="label-identification-issuedBy"
-								value={input.identification.issuedBy}
-								placeholder="Issued by"
-								type="text"
-								onChange={handleChangeIdentificationInput}
-								size="small"
-								align="left"
-								name="issuedBy"
-							/>
-							<label
-								htmlFor="label-identification-validThru"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Valid thru
-							</label>
-							<TextField
-								id="label-identification-validThru"
-								value={input.identification.validThru}
-								placeholder="Valid thru"
-								type="text"
-								onChange={handleChangeIdentificationInput}
-								size="small"
-								align="left"
-								name="validThru"
-								error={input.identification.validThru < 2}
-							/>
-						</div>
-					)}
-					{page === 6 && (
-						<div style={{ marginBottom: '14px', width: '100%' }}>
 							<div style={{ marginBottom: '10px' }}>
 								<label
 									htmlFor="label-companyName"
@@ -1151,6 +586,515 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									error={input.companyIdentificationNumber.length < 2}
 								/>
 							</div>
+						</WrapContainer>
+					)}
+					{page === 1 && (
+						<WrapContainer>
+							<h3>Registered office</h3>
+							<div style={{ display: 'flex' }}>
+								<div style={{ width: '50%', marginRight: '20px' }}>
+									<label
+										htmlFor="label-registeredOffice-street"
+										style={{
+											margin: '6px 0 8px 0',
+											display: 'inline-block',
+											fontStyle: 'italic'
+										}}>
+										Street
+									</label>
+									<TextField
+										id="label-registeredOffice-street"
+										value={input.registeredOffice.street}
+										placeholder="Street"
+										type="text"
+										onChange={handleChangeRegisteredOfficeInput}
+										size="small"
+										align="left"
+										name="street"
+										error={input.registeredOffice.street < 2}
+									/>
+									<label
+										htmlFor="label-registeredOffice-streetNumber"
+										style={{
+											margin: '6px 0 8px 0',
+											display: 'inline-block',
+											fontStyle: 'italic'
+										}}>
+										Str number
+									</label>
+									<TextField
+										id="label-registeredOffice-streetNumber"
+										value={input.registeredOffice.streetNumber}
+										placeholder="Street number"
+										type="text"
+										onChange={handleChangeRegisteredOfficeInput}
+										size="small"
+										align="left"
+										name="streetNumber"
+									/>
+									<label
+										htmlFor="label-registeredOffice-municipality"
+										style={{
+											margin: '6px 0 8px 0',
+											display: 'inline-block',
+											fontStyle: 'italic'
+										}}>
+										Municipality
+									</label>
+									<TextField
+										id="label-registeredOffice-municipality"
+										value={input.registeredOffice.municipality}
+										placeholder="Municipality"
+										type="text"
+										onChange={handleChangeRegisteredOfficeInput}
+										size="small"
+										align="left"
+										name="municipality"
+										error={input.registeredOffice.municipality < 2}
+									/>
+								</div>
+								<div style={{ width: '50%' }}>
+									<label
+										htmlFor="label-registeredOffice-state"
+										style={{
+											margin: '6px 0 8px 0',
+											display: 'inline-block',
+											fontStyle: 'italic'
+										}}>
+										State
+									</label>
+									<TextField
+										id="label-registeredOffice-state"
+										value={input.registeredOffice.state}
+										placeholder="State"
+										type="text"
+										onChange={handleChangeRegisteredOfficeInput}
+										size="small"
+										align="left"
+										name="state"
+										error={input.registeredOffice.state < 2}
+									/>
+									<label
+										htmlFor="label-registeredOffice-country"
+										style={{
+											margin: '6px 0 8px 0',
+											display: 'inline-block',
+											fontStyle: 'italic'
+										}}>
+										Country
+									</label>
+									<TextField
+										id="label-registeredOffice-country"
+										value={input.registeredOffice.country}
+										placeholder="Country"
+										type="text"
+										onChange={handleChangeRegisteredOfficeInput}
+										size="small"
+										align="left"
+										name="country"
+										error={input.registeredOffice.country < 2}
+									/>
+									<label
+										htmlFor="label-registeredOffice-pc"
+										style={{
+											margin: '6px 0 8px 0',
+											display: 'inline-block',
+											fontStyle: 'italic'
+										}}>
+										PC
+									</label>
+									<TextField
+										id="label-registeredOffice-pc"
+										value={input.registeredOffice.pc}
+										placeholder="PC"
+										type="text"
+										onChange={handleChangeRegisteredOfficeInput}
+										size="small"
+										align="left"
+										name="pc"
+										error={input.registeredOffice.pc < 2}
+									/>
+								</div>
+							</div>
+						</WrapContainer>
+					)}
+					{page === 2 && (
+						<WrapContainer>
+							<ContentTitle>
+								Is your mailing address the same as your registered office address?
+							</ContentTitle>
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'space-evenly',
+									width: '100%',
+									marginBottom: '10px'
+								}}>
+								<label htmlFor="label-mailing-permanent-address-true">
+									<input
+										id="label-mailing-permanent-address-true"
+										type="radio"
+										value="Yes"
+										checked={input.permanentAndMailAddressSame === 'Yes'}
+										onChange={handleChangeInput}
+										name="permanentAndMailAddressSame"
+									/>
+									Yes
+								</label>
+								<label htmlFor="label-mailing-permanent-address-false">
+									<input
+										id="label-mailing-permanent-address-false"
+										type="radio"
+										value="No"
+										checked={input.permanentAndMailAddressSame === 'No'}
+										onChange={handleChangeInput}
+										name="permanentAndMailAddressSame"
+									/>
+									No
+								</label>
+							</div>
+							{input.permanentAndMailAddressSame === 'No' && (
+								<>
+									<div
+										style={{
+											width: '100%',
+											marginBottom: '12px',
+											display: 'flex',
+											alignItems: 'baseline'
+										}}>
+										<div style={{ width: '50%', marginRight: '20px' }}>
+											<label
+												htmlFor="label-address-permanent-state-Or-Country"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block',
+													fontStyle: 'italic'
+												}}>
+												State or Country
+											</label>
+											<TextField
+												id="label-address-permanent-state-Or-Country"
+												value={input.mailAddress.stateOrCountry}
+												placeholder="State or Country"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="stateOrCountry"
+											/>
+											<label
+												htmlFor="label-address-street"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block',
+													fontStyle: 'italic'
+												}}>
+												Street
+											</label>
+											<TextField
+												id="label-address-street"
+												value={input.mailAddress.street}
+												placeholder="Street"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="street"
+											/>
+										</div>
+										<div style={{ width: '50%' }}>
+											<label
+												htmlFor="label-address-street-number"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block',
+													fontStyle: 'italic'
+												}}>
+												Str number
+											</label>
+											<TextField
+												id="label-address-street-number"
+												value={input.mailAddress.streetNumber}
+												placeholder="Street number"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="streetNumber"
+											/>
+											<label
+												htmlFor="label-address-municipality"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block',
+													fontStyle: 'italic'
+												}}>
+												Municipality
+											</label>
+											<TextField
+												id="label-address-municipality"
+												value={input.mailAddress.municipality}
+												placeholder="Municipality"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="municipality"
+											/>
+										</div>
+									</div>
+									<label
+										htmlFor="label-address-zipCode"
+										style={{
+											margin: '6px 0 8px 0',
+											display: 'inline-block',
+											fontStyle: 'italic'
+										}}>
+										ZIP Code
+									</label>
+									<TextField
+										id="label-address-zipCode"
+										value={input.mailAddress.zipCode}
+										placeholder="ZIP Code"
+										type="text"
+										onChange={handleChangeMailInput}
+										size="small"
+										align="left"
+										name="zipCode"
+									/>
+								</>
+							)}
+						</WrapContainer>
+					)}
+					{page === 3 && (
+						<div style={{ margin: '20px 0 30px', width: '100%', textAlign: 'center' }}>
+							<ContentTitle>Tax Residency</ContentTitle>
+							<Select name="taxResidency" onChange={handleDropDownInput} value={input.taxResidency}>
+								{COUNTRIES.map((country: any) => {
+									return (
+										<option value={country.name} key={country.name}>
+											{country.name}
+										</option>
+									);
+								})}
+							</Select>
+						</div>
+					)}
+					{page === 4 && (
+						<div
+							style={{
+								height: '100%',
+								width: '100%',
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center'
+							}}>
+							<ContentTitle>Politically exposed person?</ContentTitle>
+							<div
+								style={{
+									display: 'flex',
+									width: '100%',
+									justifyContent: 'space-evenly',
+									marginTop: '20px'
+								}}>
+								<div>
+									<label htmlFor="politicallPersonTrue">
+										<input
+											id="politicallPersonTrue"
+											type="radio"
+											value="Yes"
+											checked={input.politicallPerson === 'Yes'}
+											onChange={handleChangeInput}
+											name="politicallPerson"
+										/>
+										Yes
+									</label>
+								</div>
+								<div>
+									<label htmlFor="politicallPersonFalse">
+										<input
+											id="politicallPersonFalse"
+											type="radio"
+											value="No"
+											checked={input.politicallPerson === 'No'}
+											onChange={handleChangeInput}
+											name="politicallPerson"
+										/>
+										No
+									</label>
+								</div>
+							</div>
+						</div>
+					)}
+					{page === 5 && (
+						<div
+							style={{
+								height: '100%',
+								width: '100%',
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center'
+							}}>
+							<ContentTitle>
+								Person against whom are applied CZ/international sanctions?
+							</ContentTitle>
+							<div
+								style={{
+									display: 'flex',
+									width: '100%',
+									justifyContent: 'space-evenly',
+									marginTop: '20px'
+								}}>
+								<label htmlFor="appliedSanctionsTrue">
+									<input
+										id="appliedSanctionsTrue"
+										type="radio"
+										value="Yes"
+										checked={input.appliedSanctions === 'Yes'}
+										onChange={handleChangeInput}
+										name="appliedSanctions"
+									/>
+									Yes
+								</label>
+								<label htmlFor="appliedSanctionsFalse">
+									<input
+										id="appliedSanctionsFalse"
+										type="radio"
+										value="No"
+										checked={input.appliedSanctions === 'No'}
+										onChange={handleChangeInput}
+										name="appliedSanctions"
+									/>
+									No
+								</label>
+							</div>
+						</div>
+					)}
+					{page === 6 && (
+						<>
+							<div style={{ width: '100%' }}>
+								<ContentTitle>The client is represented</ContentTitle>
+								{REPRESENT_PERSON.map((activity: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`representPerson-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.representPerson.includes(`${activity}`)}
+												required
+												data-key="representPerson"
+											/>
+											<label htmlFor={`representPerson-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+							</div>
+							<ContentTitle>
+								State or country, in which the client conducts his business activity
+							</ContentTitle>
+							<WrapContainer>
+								{COUNTRIES.map((country: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={country.name}
+												name={country.name}
+												id={`countryOfWork-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.countryOfWork.includes(`${country.name}`)}
+												required
+												data-key="countryOfWork"
+											/>
+											<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
+										</div>
+									);
+								})}
+							</WrapContainer>
+						</>
+					)}
+					{page === 7 && (
+						<>
+							<ContentTitle>
+								State or country, in which a branch, organized unit or establishment of the client
+								operates
+							</ContentTitle>
+							<WrapContainer style={{ height: '50%' }}>
+								{COUNTRIES.map((country: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={country.name}
+												name={country.name}
+												id={`countryOfOperates-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.countryOfOperates.includes(`${country.name}`)}
+												required
+												data-key="countryOfOperates"
+											/>
+											<label htmlFor={`countryOfOperates-checkbox-${index}`}>{country.name}</label>
+										</div>
+									);
+								})}
+							</WrapContainer>
+							<ContentTitle style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+								The Client conducts his work / business activity in these areas:
+							</ContentTitle>
+							<WrapContainer style={{ height: '50%' }}>
+								{WORK_AREA_LIST.map((activity: string, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`workAreaList-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.workArea.includes(`${activity}`)}
+												required
+												data-key="workArea"
+											/>
+											<label htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+							</WrapContainer>
+						</>
+					)}
+					{page === 10 && (
+						<div style={{ marginBottom: '14px', width: '100%' }}>
 							<div style={{ marginBottom: '10px', width: '100%' }}>
 								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 									Net yearly income / yearly turnover
@@ -1182,164 +1126,12 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</div>
 						</div>
 					)}
-					{page === 7 && (
-						<div style={{ marginBottom: '10px' }}>
-							<h3>Registered office</h3>
-							<label
-								htmlFor="label-registeredOffice-street"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Street
-							</label>
-							<TextField
-								id="label-registeredOffice-street"
-								value={input.registeredOffice.street}
-								placeholder="Street"
-								type="text"
-								onChange={handleChangeRegisteredOfficeInput}
-								size="small"
-								align="left"
-								name="street"
-								error={input.registeredOffice.street < 2}
-							/>
-							<label
-								htmlFor="label-registeredOffice-streetNumber"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Street number
-							</label>
-							<TextField
-								id="label-registeredOffice-streetNumber"
-								value={input.registeredOffice.streetNumber}
-								placeholder="Street number"
-								type="text"
-								onChange={handleChangeRegisteredOfficeInput}
-								size="small"
-								align="left"
-								name="streetNumber"
-							/>
-							<label
-								htmlFor="label-registeredOffice-municipality"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Municipality
-							</label>
-							<TextField
-								id="label-registeredOffice-municipality"
-								value={input.registeredOffice.municipality}
-								placeholder="Municipality"
-								type="text"
-								onChange={handleChangeRegisteredOfficeInput}
-								size="small"
-								align="left"
-								name="municipality"
-								error={input.registeredOffice.municipality < 2}
-							/>
-							<label
-								htmlFor="label-registeredOffice-state"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								State
-							</label>
-							<TextField
-								id="label-registeredOffice-state"
-								value={input.registeredOffice.state}
-								placeholder="State"
-								type="text"
-								onChange={handleChangeRegisteredOfficeInput}
-								size="small"
-								align="left"
-								name="state"
-								error={input.registeredOffice.state < 2}
-							/>
-							<label
-								htmlFor="label-registeredOffice-country"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								Country
-							</label>
-							<TextField
-								id="label-registeredOffice-country"
-								value={input.registeredOffice.country}
-								placeholder="Country"
-								type="text"
-								onChange={handleChangeRegisteredOfficeInput}
-								size="small"
-								align="left"
-								name="country"
-								error={input.registeredOffice.country < 2}
-							/>
-							<label
-								htmlFor="label-registeredOffice-pc"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
-								}}>
-								PC
-							</label>
-							<TextField
-								id="label-registeredOffice-pc"
-								value={input.registeredOffice.pc}
-								placeholder="PC"
-								type="text"
-								onChange={handleChangeRegisteredOfficeInput}
-								size="small"
-								align="left"
-								name="pc"
-								error={input.registeredOffice.pc < 2}
-							/>
-						</div>
-					)}
 					{page === 8 && (
-						<div style={{ marginBottom: '10px', width: '100%' }}>
-							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-								The client is represented (person acting on behalf of the client in each
-								Transaction)
-							</p>
-							{REPRESENT_PERSON.map((activity: any, index: number) => {
-								return (
-									<div
-										key={index}
-										style={{
-											display: 'flex',
-											justifyContent: 'flex-start',
-											marginBottom: '8px'
-										}}>
-										<input
-											type="checkbox"
-											value={activity}
-											name={activity}
-											id={`representPerson-checkbox-${index}`}
-											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-											checked={input.representPerson.includes(`${activity}`)}
-											required
-											data-key="representPerson"
-										/>
-										<label htmlFor={`representPerson-checkbox-${index}`}>{activity}</label>
-									</div>
-								);
-							})}
-							<div style={{ marginBottom: '10px', width: '100%' }}>
-								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-									State or country, in which the client conducts his business activity
-								</p>
+						<>
+							<ContentTitle>
+								State or country, in which the client conducts his business activity
+							</ContentTitle>
+							<WrapContainer>
 								{COUNTRIES.map((country: any, index: number) => {
 									return (
 										<div
@@ -1364,124 +1156,86 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										</div>
 									);
 								})}
-							</div>
-						</div>
+							</WrapContainer>
+						</>
 					)}
 					{page === 9 && (
-						// ADD KEY FOR THIS PART IN INPUT OBJ
-						<div style={{ marginBottom: '10px', width: '100%' }}>
-							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-								State or country, in which a branch, organized unit or establishment of the client
-								operates
-							</p>
-							{COUNTRIES.map((country: any, index: number) => {
-								return (
-									<div
-										key={index}
-										style={{
-											display: 'flex',
-											justifyContent: 'flex-start',
-											marginBottom: '8px'
-										}}>
-										<input
-											type="checkbox"
-											value={country.name}
-											name={country.name}
-											id={`countryOfOperates-checkbox-${index}`}
-											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-											checked={input.countryOfOperates.includes(`${country.name}`)}
-											required
-											data-key="countryOfOperates"
+						<>
+							<WrapContainer>
+								<ContentTitle>Nature of prevailing source of income</ContentTitle>
+								{PREVAILLING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`sourceOfIncomeNatureList-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.sourceOfIncomeNature.includes(`${activity}`)}
+												required={true}
+												data-key="sourceOfIncomeNature"
+											/>
+											<label htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>
+												{activity}
+											</label>
+										</div>
+									);
+								})}
+								{input.sourceOfIncomeNature.includes('Other') ? (
+									<div style={{ marginTop: '16px' }}>
+										<TextField
+											value={input.sourceOfIncomeNatureOther}
+											type="text"
+											placeholder="Specify..."
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="sourceOfIncomeNatureOther"
 										/>
-										<label htmlFor={`countryOfOperates-checkbox-${index}`}>{country.name}</label>
 									</div>
-								);
-							})}
-						</div>
+								) : null}
+							</WrapContainer>
+							<WrapContainer>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Net yearly income / yearly turnover
+								</p>
+								{NET_YEARLY_INCOME_LIST_COMPANY.map((activity: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`yearlyIncome-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+												checked={input.yearlyIncome.includes(`${activity}`)}
+												required
+												data-key="yearlyIncome"
+											/>
+											<label htmlFor={`yearlyIncome-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+							</WrapContainer>
+						</>
 					)}
 					{page === 10 && (
-						<div
-							style={{
-								display: 'flex',
-								flexWrap: 'wrap',
-								flexDirection: 'column',
-								alignItems: 'stretch',
-								marginBottom: '15px'
-							}}>
-							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-								The Client conducts his work / business activity in these areas:
-							</p>
-							{WORK_AREA_LIST.map((activity: string, index: number) => {
-								return (
-									<div
-										key={index}
-										style={{
-											display: 'flex',
-											justifyContent: 'flex-start',
-											marginBottom: '8px'
-										}}>
-										<input
-											type="checkbox"
-											value={activity}
-											name={activity}
-											id={`workAreaList-checkbox-${index}`}
-											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-											checked={input.workArea.includes(`${activity}`)}
-											required
-											data-key="workArea"
-										/>
-										<label htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
-									</div>
-								);
-							})}
-						</div>
-					)}
-					{page === 11 && (
-						<div
-							style={{
-								marginBottom: '15px',
-								width: '100%'
-							}}>
-							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-								Nature of prevailing source of income
-							</p>
-							{PREVAILLING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
-								return (
-									<div
-										key={index}
-										style={{
-											display: 'flex',
-											justifyContent: 'flex-start',
-											marginBottom: '8px'
-										}}>
-										<input
-											type="checkbox"
-											value={activity}
-											name={activity}
-											id={`sourceOfIncomeNatureList-checkbox-${index}`}
-											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-											checked={input.sourceOfIncomeNature.includes(`${activity}`)}
-											required={true}
-											data-key="sourceOfIncomeNature"
-										/>
-										<label htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>{activity}</label>
-									</div>
-								);
-							})}
-							{input.sourceOfIncomeNature.includes('Other') ? (
-								<TextField
-									value={input.sourceOfIncomeNatureOther}
-									type="text"
-									placeholder="Specify..."
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="sourceOfIncomeNatureOther"
-								/>
-							) : null}
+						<WrapContainer>
 							<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
 								Source of funds intended for Transaction:
 							</p>
@@ -1509,27 +1263,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									</div>
 								);
 							})}
-							{input.sourceOfFunds.includes('Other') ? (
-								<TextField
-									value={input.sourceOfFundsOther}
-									type="text"
-									placeholder="Specify..."
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="sourceOfFundsOther"
-								/>
-							) : null}
-						</div>
+						</WrapContainer>
 					)}
-					{page === 12 && (
-						<div
-							style={{
-								display: 'flex',
-								flexDirection: 'column',
-								marginBottom: '25px',
-								alignItems: 'flex-start'
-							}}>
+					{page === 11 && (
+						<>
 							<p style={{ marginBottom: '25px' }}>
 								Have you as a legal entity (or the member of your statutory body or your supervisory
 								body or your ultimate beneficial owner ) ever been convicted for a criminal offense,
@@ -1545,8 +1282,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									marginBottom: '10px'
 								}}>
 								<label htmlFor="legalEntityTrue">
-									{' '}
-									Yes
 									<input
 										id="legalEntityTrue"
 										type="radio"
@@ -1555,9 +1290,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										onChange={handleChangeInput}
 										name="legalEntity"
 									/>
+									YES
 								</label>
 								<label htmlFor="legalEntityFalse">
-									No
 									<input
 										id="legalEntityFalse"
 										type="radio"
@@ -1566,8 +1301,13 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										onChange={handleChangeInput}
 										name="legalEntity"
 									/>
+									NO
 								</label>
 							</div>
+						</>
+					)}
+					{page === 12 && (
+						<>
 							<p style={{ marginBottom: '25px' }}>
 								These are mainly criminal offenses in the areas of taxes, corruption, public
 								procurement, and subsidy fraud.
@@ -1580,7 +1320,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									marginBottom: '10px'
 								}}>
 								<label htmlFor="typeOfCriminalTrue">
-									Yes
 									<input
 										id="typeOfCriminalTrue"
 										type="radio"
@@ -1589,9 +1328,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										onChange={handleChangeInput}
 										name="typeOfCriminal"
 									/>
+									YES
 								</label>
 								<label htmlFor="typeOfCriminalFalse">
-									No
 									<input
 										id="typeOfCriminalFalse"
 										type="radio"
@@ -1600,9 +1339,16 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										onChange={handleChangeInput}
 										name="typeOfCriminal"
 									/>
+									NO
 								</label>
 							</div>
-							<p style={{ marginBottom: '25px' }}>The representative of the client is a:</p>
+						</>
+					)}
+					{page === 13 && (
+						<>
+							<ContentTitle style={{ marginBottom: '25px' }}>
+								The representative of the client is a:
+							</ContentTitle>
 							<div
 								style={{
 									display: 'flex',
@@ -1611,7 +1357,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									marginBottom: '10px'
 								}}>
 								<label htmlFor="representativeTypeOfClientTrue">
-									Natural Person
 									<input
 										id="representativeTypeOfClientTrue"
 										type="radio"
@@ -1620,9 +1365,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										onChange={handleChangeInput}
 										name="representativeTypeOfClient"
 									/>
+									Natural Person
 								</label>
 								<label htmlFor="representativeTypeOfClientFalse">
-									Legal entity
 									<input
 										id="representativeTypeOfClientFalse"
 										type="radio"
@@ -1631,35 +1376,26 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										onChange={handleChangeInput}
 										name="representativeTypeOfClient"
 									/>
+									Legal entity
 								</label>
 							</div>
-							<p style={{ color: 'red' }}>
-								End of the SECOND part (submit with files to /kyc/l2-business-data)
-							</p>
-						</div>
+						</>
 					)}
-					{page === 13 && (
-						<div
+					{page === 14 && (
+						<WrapContainer
 							style={{
 								display: 'flex',
 								flexDirection: 'column',
 								alignItems: 'center',
 								width: '100%'
 							}}>
-							<h3>Information on Ultimate Beneficial Owner(s)</h3>
-							<div style={{ marginBottom: '20px' }}>
+							<ContentTitle>Information on Ultimate Beneficial Owner(s)</ContentTitle>
+							<div style={{ marginBottom: '10px' }}>
 								<Button variant="secondary" onClick={handleAddUbo}>
 									Add UBO
 								</Button>
 							</div>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'center',
-									alignItems: 'center',
-									width: '100%',
-									flexWrap: 'wrap'
-								}}>
+							<WrapContainer style={{ display: 'flex', flexWrap: 'wrap' }}>
 								<UboModal addUbo={addUbo} updateUboModalShow={updateUboModalShow} />
 								{input.ubo.map((client: any) => {
 									if (client) {
@@ -1680,25 +1416,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 														<ContainerText>Citizenship: {client.citizenship}</ContainerText>
 														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
 													</div>
-													<div
-														style={{
-															width: '100%',
-															display: 'flex',
-															flexDirection: 'column',
-															alignItems: 'flex-start'
-														}}>
-														<ContainerText>Street: {client.residence.street}</ContainerText>
-														<ContainerText>
-															Street number: {client.residence.streetNumber}
-														</ContainerText>
-														<ContainerText>
-															municipality: {client.residence.municipality}
-														</ContainerText>
-														<ContainerText>Zip code: {client.residence.zipCode}</ContainerText>
-														<ContainerText>
-															State or Country: {client.residence.stateOrCountry}
-														</ContainerText>
-													</div>
 													<DeleteUboBtn onClick={() => handleDeleteUbo(client.id)}>
 														Delete
 													</DeleteUboBtn>
@@ -1707,33 +1424,26 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										);
 									}
 								})}
-							</div>
-						</div>
+							</WrapContainer>
+						</WrapContainer>
 					)}
-					{page === 14 && (
-						<div
+					{page === 15 && (
+						<WrapContainer
 							style={{
 								display: 'flex',
 								flexDirection: 'column',
 								alignItems: 'center',
 								width: '100%'
 							}}>
-							<h3 style={{ textAlign: 'center' }}>
-								Information on majority shareholders or person in control of client (more than 25%)
-							</h3>
-							<div style={{ marginBottom: '20px' }}>
+							<ContentTitle>
+								Information on majority shareholders or person in control of client ({'>'}25%)
+							</ContentTitle>
+							<div style={{ marginBottom: '10px' }}>
 								<Button variant="secondary" onClick={handleAddShareHolder}>
 									Add shareholder
 								</Button>
 							</div>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'center',
-									alignItems: 'center',
-									width: '100%',
-									flexWrap: 'wrap'
-								}}>
+							<WrapContainer style={{ display: 'flex', flexWrap: 'wrap' }}>
 								<ShareHoldersModal
 									addShareHolder={addShareHolder}
 									updateShareHoldersModalShow={updateShareHoldersModalShow}
@@ -1757,25 +1467,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 														<ContainerText>Citizenship: {client.citizenship}</ContainerText>
 														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
 													</div>
-													<div
-														style={{
-															width: '100%',
-															display: 'flex',
-															flexDirection: 'column',
-															alignItems: 'flex-start'
-														}}>
-														<ContainerText>Street: {client.residence.street}</ContainerText>
-														<ContainerText>
-															Street number: {client.residence.streetNumber}
-														</ContainerText>
-														<ContainerText>
-															municipality: {client.residence.municipality}
-														</ContainerText>
-														<ContainerText>Zip code: {client.residence.zipCode}</ContainerText>
-														<ContainerText>
-															State or Country: {client.residence.stateOrCountry}
-														</ContainerText>
-													</div>
 													<DeleteUboBtn onClick={() => handleDeleteShareHolder(client.id)}>
 														Delete
 													</DeleteUboBtn>
@@ -1784,11 +1475,11 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										);
 									}
 								})}
-							</div>
-						</div>
+							</WrapContainer>
+						</WrapContainer>
 					)}
-					{page === 15 && (
-						<div
+					{page === 16 && (
+						<WrapContainer
 							style={{
 								display: 'flex',
 								flexDirection: 'column',
@@ -1805,14 +1496,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									Add member
 								</Button>
 							</div>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'center',
-									alignItems: 'center',
-									width: '100%',
-									flexWrap: 'wrap'
-								}}>
+							<WrapContainer style={{ display: 'flex', flexWrap: 'wrap' }}>
 								<SupervisoryBoardMembers
 									addSupervisor={addSupervisor}
 									updateSupervisorModalShow={updateSupervisorModalShow}
@@ -1846,10 +1530,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										);
 									}
 								})}
-							</div>
-						</div>
+							</WrapContainer>
+						</WrapContainer>
 					)}
-					{page === 16 && (
+					{page === 17 && (
 						<>
 							<p>Copy of an account statement kept by an institution in the EEA</p>
 							<LabelInput htmlFor="file-input-refPoasDoc1">
@@ -1908,19 +1592,19 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</LabelInput>
 						</>
 					)}
-					{page < 16 && (
+					{page < 17 && (
 						<div
 							style={{
 								margin: '0 auto',
 								width: '100%',
 								textAlign: 'center'
 							}}>
-							<Button variant="secondary" onClick={handleNext} disabled={isDisabled}>
+							<Button variant="secondary" onClick={handleNext}>
 								Next
 							</Button>
 						</div>
 					)}
-					{page >= 16 && (
+					{page >= 17 && (
 						<div
 							style={{
 								margin: '0 auto',
@@ -1928,7 +1612,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								textAlign: 'center'
 							}}>
 							<Button
-								disabled={isDisabled}
 								variant="secondary"
 								// @ts-ignore
 								onClick={handleSubmit}>
