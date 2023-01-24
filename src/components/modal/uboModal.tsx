@@ -184,7 +184,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			setClient({ ...client, [attributeValue]: [...filteredArray] });
 		}
 	};
-
 	const handleClose = () => {
 		updateUboModalShow(false);
 	};
