@@ -3,41 +3,18 @@ import { Portal } from './portal';
 import { TextField } from '../textField/textField';
 import { useEffect, useState } from 'react';
 import { Button } from '../button/button';
-import { useStore } from '../../helpers';
-import { pxToRem } from '../../styles';
+import { spacing } from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
+import { useToasts } from '../toast/toast';
+import { ContentTitle, WrapContainer } from './kycL2LegalModal';
 
 const Wrapper = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
-
 	return css`
 		display: flex;
-		justify-content: center;
-		align-items: center;
 		width: 100%;
-		flex-wrap: wrap;
-		overflow-y: auto;
-
-		::-webkit-scrollbar {
-			display: block;
-			width: 1px;
-			background-color: ${theme.background.tertiary};
-		}
-
-		::-webkit-scrollbar-thumb {
-			display: block;
-			background-color: ${theme.button.default};
-			border-radius: ${pxToRem(4)};
-			border-right: none;
-			border-left: none;
-		}
-
-		::-webkit-scrollbar-track-piece {
-			display: block;
-			background: ${theme.button.disabled};
-		}
+		flex-direction: column;
+		align-items: center;
+		padding: ${spacing[10]} ${spacing[20]};
 	`;
 });
 
@@ -237,11 +214,10 @@ export const ShareHoldersModal = ({
 			handleBack={handleBack}
 			hasBackButton>
 			<Wrapper>
-				<h3 style={{ margin: '0' }}>
+				<ContentTitle>
 					Information on majority shareholders or person in control of client (more than 25%)
-					(optional)
-				</h3>
-				<div style={{ padding: '6px' }}>
+				</ContentTitle>
+				<WrapContainer style={{ paddingRight: '10px' }}>
 					<label
 						htmlFor="label-shareholder-company-name"
 						style={{
@@ -887,7 +863,7 @@ export const ShareHoldersModal = ({
 							);
 						})}
 					</div>
-				</div>
+				</WrapContainer>
 				<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
 					{isValid ? 'Submit' : 'Please fill up all fields'}
 				</Button>
