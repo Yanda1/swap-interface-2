@@ -56,9 +56,8 @@ export const ShareHoldersModal = ({
 }: Props) => {
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
-	// TODO: uncomment addToast
 	// @ts-ignore
-	// const { addToast } = useToasts();
+	const { addToast } = useToasts();
 	const [client, setClient] = useState<any>({
 		fullName: '',
 		idNumber: '',
@@ -211,11 +210,13 @@ export const ShareHoldersModal = ({
 	};
 
 	const handleSubmit = () => {
-		// TODO: send axios request to backEnd and waiting for response
-		// handle success
+		// TODO: send axios request to backEnd and wait for response
+		// IF REQUEST STATUS === 201 and SUCCESS DO THIS
+		console.log('ShareHolder client', client);
 		updateShareHoldersModalShow(false, client);
 		setClient(emptyClient);
-		// handle error
+		addToast('UBO was added!', 'info');
+		// IF REQUEST STATUS GOT ERROR DO CATCH BLOCK AND THIS
 		// updateSupervisorModalShow(false);
 		// addToast('Error text', 'error');
 	};

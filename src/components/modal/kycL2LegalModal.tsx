@@ -5,7 +5,6 @@ import { BASE_URL, findAndReplace, makeId, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
-import axios from 'axios';
 import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import SOURCE_OF_FUNDS_LIST_COMPANY from '../../data/sourceOfFundsListCompany.json';
@@ -17,6 +16,7 @@ import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryBoardMembers } from './supervisoryBoardMembers';
 import { useMedia } from '../../hooks';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
+import axios from 'axios';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -167,6 +167,7 @@ type Props = {
 };
 export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) => {
 	const [showModal, setShowModal] = useState<boolean>(showKycL2);
+	const [isValid, setIsValid] = useState(false);
 	useEffect(() => {
 		setShowModal(showKycL2);
 	}, [showKycL2]);
@@ -251,14 +252,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		state: { accessToken }
 	} = useStore();
 
-	useEffect(() => {
-		if (page === 6) {
-			// TODO: send first part :)
-			const bodyFormData = new FormData();
-			console.log(bodyFormData);
-		}
-	}, [page]);
-
 	const myRef = useRef<HTMLDivElement | null>(null);
 	const refPoaDoc1 = useRef<HTMLInputElement>();
 	const refPosofDoc1 = useRef<HTMLInputElement>();
@@ -270,53 +263,16 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = (event: any) => {
+		// after user click on submit send axios with this bodyFormData server
 		event.preventDefault();
 		const bodyFormData = new FormData();
 		bodyFormData.append('poaDoc1', input.file.poaDoc1);
 		bodyFormData.append('posofDoc1', input.file.posofDoc1);
-		bodyFormData.append('mailAddress', input.mailAddress);
-		bodyFormData.append('taxResidency', JSON.stringify(input.taxResidency));
-		bodyFormData.append('politicallPerson', input.politicallPerson === 'Yes' ? 'true' : 'false');
-		bodyFormData.append('appliedSanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
-		bodyFormData.append('countryOfWork', JSON.stringify(input.countryOfWork));
-		bodyFormData.append('workArea', JSON.stringify(input.workArea));
-		const sourceOfIncomeNature = findAndReplace(
-			input.sourceOfIncomeNature,
-			'Other',
-			input.sourceOfIncomeNatureOther
-		);
-		bodyFormData.append('sourceOfIncomeNature', JSON.stringify(sourceOfIncomeNature));
-		const yearlyIncome = input.yearlyIncome ? Number(input.yearlyIncome).toFixed(4) : '0';
-		bodyFormData.append('yearlyIncome', yearlyIncome);
-		const sourceOfFunds = findAndReplace(input.sourceOfFunds, 'Other', input.sourceOfFundsOther);
-		bodyFormData.append('sourceOfFunds', JSON.stringify(sourceOfFunds));
-		bodyFormData.append('mailAddress', input.mailAddress);
-
-		axios({
-			method: 'POST',
-			url: `${BASE_URL}kyc/l2-data`,
-			data: bodyFormData,
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-				Authorization: 'Bearer ' + accessToken
-			}
-		})
-			.then(function (response) {
-				// handle success
-				console.log(response);
-				if (response.status === 201) {
-					addToast(
-						'Your documents are under review, please wait for the results of the verification!',
-						'info'
-					);
-				}
-			})
-			.catch(function (response) {
-				// handle error
-				console.log(response);
-				setShowModal(false);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
-			});
+		bodyFormData.append('porDoc1', input.file.porDoc1);
+		bodyFormData.append('representativesId', input.file.representativesId);
+		// TODO: pogDoc1 below NOT REQUIRED COULD BE NULL !!! ;)
+		bodyFormData.append('pogDoc1', input.file.pogDoc1);
+		console.log('bodyFormData on submit', bodyFormData);
 		updateShowKycL2(false);
 	};
 	const handleChangeInput = (event: any) => {
@@ -428,6 +384,126 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	const handleDeleteShareHolder = (id: any) => {
 		setInput({ ...input, shareHolders: [...input.ubo.filter((item: any) => item.id !== id)] });
 	};
+
+	useEffect(() => {
+		// if page == 14 send first part of form on page
+		if (page === 14) {
+			// TODO: send first part (axios request)
+			const bodyFormData = new FormData();
+			bodyFormData.append('companyName', input.companyName);
+			bodyFormData.append('companyIdentificationNumber', input.companyIdentificationNumber);
+			bodyFormData.append('registeredOffice', input.registeredOffice);
+			bodyFormData.append('mailAddress', input.mailAddress);
+			bodyFormData.append('taxResidency', input.taxResidency);
+			bodyFormData.append('politicallPerson', input.politicallPerson);
+			bodyFormData.append('appliedSanctions', input.appliedSanctions);
+			bodyFormData.append('representPerson', JSON.stringify(input.representPerson));
+			bodyFormData.append('workArea', JSON.stringify(input.workArea));
+			bodyFormData.append('countryOfOperates', JSON.stringify(input.countryOfOperates));
+			bodyFormData.append('countryOfWork', JSON.stringify(input.countryOfWork));
+			bodyFormData.append('yearlyIncome', JSON.stringify(input.yearlyIncome));
+			const sourceOfIncomeNature = findAndReplace(
+				input.sourceOfIncomeNature,
+				'Other',
+				input.sourceOfIncomeNatureOther
+			);
+			bodyFormData.append('sourceOfIncomeNature', JSON.stringify(sourceOfIncomeNature));
+			const sourceOfFunds = findAndReplace(input.sourceOfFunds, 'Other', input.sourceOfFundsOther);
+			bodyFormData.append('sourceOfFunds', JSON.stringify(sourceOfFunds));
+			bodyFormData.append(
+				'legalEntity',
+				JSON.stringify(input.legalEntity === 'Yes' ? 'true' : 'false')
+			);
+			bodyFormData.append(
+				'typeOfCriminal',
+				JSON.stringify(input.typeOfCriminal === 'Yes' ? 'true' : 'false')
+			);
+			bodyFormData.append(
+				'representativeTypeOfClient',
+				JSON.stringify(input.representativeTypeOfClient)
+			);
+
+			axios({
+				method: 'POST',
+				url: `${BASE_URL}kyc/l2-business-data`,
+				data: bodyFormData,
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					Authorization: 'Bearer ' + accessToken
+				}
+			})
+				.then(function (response) {
+					// handle success
+					console.log(response);
+				})
+				.catch(function (response) {
+					// handle error
+					console.log(response);
+					addToast('Something went wrong, please fill the form and try again!', 'error');
+				});
+		}
+	}, [page]);
+
+	useEffect(() => {
+		setIsValid(false);
+		if (
+			page === 0 &&
+			input.companyName.trim().length > 1 &&
+			input.companyIdentificationNumber.trim().length > 1
+		) {
+			setIsValid(true);
+		} else if (page === 1 && !Object.values(input.registeredOffice).includes('')) {
+			setIsValid(true);
+		} else if (
+			(page === 2 && input.permanentAndMailAddressSame === 'Yes') ||
+			(page === 2 &&
+				input.permanentAndMailAddressSame === 'No' &&
+				!Object.values(input.mailAddress).includes(''))
+		) {
+			setIsValid(true);
+		} else if (page === 3 && input.taxResidency) {
+			setIsValid(true);
+		} else if (page === 4 && input.politicallPerson) {
+			setIsValid(true);
+		} else if (page === 5 && input.appliedSanctions) {
+			setIsValid(true);
+		} else if (page === 6 && input.representPerson.length && input.workArea.length) {
+			setIsValid(true);
+		} else if (page === 7 && input.countryOfOperates.length) {
+			setIsValid(true);
+		} else if (page === 8 && input.countryOfWork.length) {
+			setIsValid(true);
+		} else if (
+			(page === 9 &&
+				input.yearlyIncome.length &&
+				input.sourceOfIncomeNature.length &&
+				!input.sourceOfIncomeNature.includes('Other')) ||
+			(page === 9 &&
+				input.yearlyIncome.length &&
+				input.sourceOfIncomeNature.includes('Other') &&
+				input.sourceOfIncomeNatureOther)
+		) {
+			setIsValid(true);
+		} else if (page === 10 && input.sourceOfFunds.length) {
+			setIsValid(true);
+		} else if (page === 11 && input.legalEntity) {
+			setIsValid(true);
+		} else if (page === 12 && input.typeOfCriminal) {
+			setIsValid(true);
+		} else if (page === 13 && input.representativeTypeOfClient) {
+			setIsValid(true);
+		} else if (page === 14 || page === 15 || page === 16) {
+			setIsValid(true);
+		} else if (
+			page === 17 &&
+			input.file.poaDoc1 &&
+			input.file.posofDoc1 &&
+			input.file.porDoc1 &&
+			input.file.representativesId
+		) {
+			setIsValid(true);
+		}
+	}, [page, input]);
 
 	return (
 		<Portal
@@ -872,7 +948,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					{page === 6 && (
 						<>
 							<div style={{ width: '100%' }}>
-								<ContentTitle>The client is represented</ContentTitle>
+								<ContentTitle>
+									The client is represented (person acting on behalf of the client in each
+									Transaction)
+								</ContentTitle>
 								{REPRESENT_PERSON.map((activity: any, index: number) => {
 									return (
 										<div
@@ -896,7 +975,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									);
 								})}
 							</div>
-							<ContentTitle style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+							<ContentTitle>
 								The Client conducts his work / business activity in these areas:
 							</ContentTitle>
 							<WrapContainer style={{ height: '50%' }}>
@@ -1433,7 +1512,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								width: '100%',
 								textAlign: 'center'
 							}}>
-							<Button variant="secondary" onClick={handleNext}>
+							<Button variant="secondary" onClick={handleNext} disabled={!isValid}>
 								Next
 							</Button>
 						</div>
@@ -1446,6 +1525,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								textAlign: 'center'
 							}}>
 							<Button
+								disabled={!isValid}
 								variant="secondary"
 								// @ts-ignore
 								onClick={handleSubmit}>
