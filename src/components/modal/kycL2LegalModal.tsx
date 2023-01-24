@@ -9,7 +9,7 @@ import axios from 'axios';
 import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import SOURCE_OF_FUNDS_LIST_COMPANY from '../../data/sourceOfFundsListCompany.json';
-import PREVAILLING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfIncomeCompany.json';
+import PREVAILING_SOURCE_OF_INCOME_COMPANY from '../../data/prevailingSourceOfIncomeCompany.json';
 import REPRESENT_PERSON from '../../data/representClient.json';
 import NET_YEARLY_INCOME_LIST_COMPANY from '../../data/netYearlyCompanyIncome.json';
 import { UboModal } from './uboModal';
@@ -19,44 +19,14 @@ import { useMedia } from '../../hooks';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
 
 const Wrapper = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
-
 	return css`
 		display: flex;
 		width: 100%;
 		flex-direction: column;
-		//overflow-y: auto;
 		align-items: center;
 		padding: ${spacing[10]} ${spacing[20]};
-
-		// ::-webkit-scrollbar {
-		// 	display: block;
-		// 	width: 1px;
-		// 	background-color: ${theme.background.tertiary};
-		// }
-		//
-		// ::-webkit-scrollbar-thumb {
-		// 	display: block;
-		// 	background-color: ${theme.button.default};
-		// 	border-radius: ${pxToRem(4)};
-		// 	border-right: none;
-		// 	border-left: none;
-		// }
-		//
-		// ::-webkit-scrollbar-track-piece {
-		// 	display: block;
-		// 	background: ${theme.button.disabled};
-		// }
 	`;
 });
-
-// const TypeContainer = styled.div`
-// 	width: 100%;
-// 	display: flex;
-// 	justify-content: space-around;
-// `;
 
 const Title = styled.h2`
 	text-align: center;
@@ -151,7 +121,7 @@ const DeleteUboBtn = styled.button(() => {
 		text-align: center;
 		text-decoration: none;
 		font-size: ${fontSize[14]};
-		-webkit-transition-duration: 0.4s; /* Safari */
+		-webkit-transition-duration: 0.4s; /* for Safari */
 		transition-duration: 0.3s;
 
 		&:hover {
@@ -202,54 +172,36 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	}, [showKycL2]);
 	const { addToast }: any | null = useToasts();
 	const [input, setInput] = useState<{
-		fullName: string;
-		dateOfBirth: string;
-		placeOfBirth: string;
-		yearlyIncome: string[];
-		email: string;
-		residence: any;
-		mailAddress: any;
-		sourceOfIncome: string;
-		gender: string;
-		citizenship: string[];
-		taxResidency: string;
-		politicallPerson: string;
+		appliedSanctions: string;
+		companyIdentificationNumber: string;
+		companyName: string;
+		countryOfOperates: any;
 		countryOfWork: string[];
-		workArea: string[];
+		file: any;
+		legalEntity: string;
+		mailAddress: any;
+		permanentAndMailAddressSame: string;
+		politicallPerson: string;
+		registeredOffice: any;
+		representPerson: string[];
+		representativeTypeOfClient: string;
+		shareHolders: any;
 		sourceOfFunds: string[];
 		sourceOfFundsOther: string;
-		sourceOfIncomeNatureOther: string;
-		irregularSourceOfFunds: string[];
-		irregularSourceOfFundsOther: string;
-		appliedSanctions: string;
-		hasCriminalRecords: string;
 		sourceOfIncomeNature: string[];
-		declare: string[];
-		declareOther: string;
-		file: any;
-		registeredOffice: any;
-		permanentAndMailAddressSame: string;
-		identification: any;
-		companyName: string;
-		companyIdentificationNumber: string;
-		representPerson: string[];
-		legalEntity: string;
+		sourceOfIncomeNatureOther: string;
+		supervisors: any;
+		taxResidency: string;
 		typeOfCriminal: string;
 		ubo: any;
-		shareHolders: any;
-		supervisors: any;
-		countryOfOperates: any;
-		representativeTypeOfClient: string;
+		workArea: string[];
+		yearlyIncome: string[];
 	}>({
-		fullName: '',
-		dateOfBirth: '',
-		citizenship: [],
-		yearlyIncome: [],
+		appliedSanctions: '',
+		companyIdentificationNumber: '',
+		companyName: '',
+		countryOfOperates: [],
 		countryOfWork: [],
-		hasCriminalRecords: '',
-		declare: [],
-		declareOther: '',
-		email: '',
 		file: {
 			// Copy of an account statement kept by an institution in the EEA
 			poaDoc1: null,
@@ -262,19 +214,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			// Court decision on appointment of legal guardian (if relevant).
 			pogDoc1: null
 		},
-		irregularSourceOfFunds: [],
-		irregularSourceOfFundsOther: '',
-		gender: 'Male',
-		permanentAndMailAddressSame: 'Yes',
-		countryOfOperates: [],
-		representativeTypeOfClient: '',
-		residence: {
-			street: '',
-			streetNumber: '',
-			municipality: '',
-			zipCode: '',
-			stateOrCountry: ''
-		},
+		legalEntity: '',
 		mailAddress: {
 			street: '',
 			streetNumber: '',
@@ -282,20 +222,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			zipCode: '',
 			stateOrCountry: ''
 		},
-		sourceOfIncomeNature: [],
-		sourceOfIncomeNatureOther: '',
-		appliedSanctions: '',
-		placeOfBirth: '',
+		permanentAndMailAddressSame: 'Yes',
 		politicallPerson: '',
-		sourceOfIncome: '',
-		sourceOfFunds: [],
-		sourceOfFundsOther: '',
-		identification: {
-			type: '',
-			number: '',
-			issuedBy: '',
-			validThru: ''
-		},
 		registeredOffice: {
 			street: '',
 			streetNumber: '',
@@ -305,15 +233,18 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			pc: ''
 		},
 		representPerson: [],
-		companyName: '',
-		companyIdentificationNumber: '',
-		legalEntity: '',
-		typeOfCriminal: '',
-		taxResidency: 'Afghanistan',
-		workArea: [],
-		ubo: [],
+		representativeTypeOfClient: '',
 		shareHolders: [],
-		supervisors: []
+		sourceOfFunds: [],
+		sourceOfFundsOther: '',
+		sourceOfIncomeNature: [],
+		sourceOfIncomeNatureOther: '',
+		supervisors: [],
+		taxResidency: 'Afghanistan',
+		typeOfCriminal: '',
+		ubo: [],
+		workArea: [],
+		yearlyIncome: []
 	});
 	const [page, setPage] = useState<number>(0);
 	const {
@@ -324,7 +255,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		if (page === 6) {
 			// TODO: send first part :)
 			const bodyFormData = new FormData();
-			bodyFormData.append('placeOfBirth', input.placeOfBirth);
+			console.log(bodyFormData);
 		}
 	}, [page]);
 
@@ -341,13 +272,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	const handleSubmit = (event: any) => {
 		event.preventDefault();
 		const bodyFormData = new FormData();
-		bodyFormData.append('placeOfBirth', input.placeOfBirth);
 		bodyFormData.append('poaDoc1', input.file.poaDoc1);
 		bodyFormData.append('posofDoc1', input.file.posofDoc1);
 		bodyFormData.append('mailAddress', input.mailAddress);
-		bodyFormData.append('gender', JSON.stringify(input.gender));
-		bodyFormData.append('citizenship', JSON.stringify(input.citizenship));
-		bodyFormData.append('email', input.email);
 		bodyFormData.append('taxResidency', JSON.stringify(input.taxResidency));
 		bodyFormData.append('politicallPerson', input.politicallPerson === 'Yes' ? 'true' : 'false');
 		bodyFormData.append('appliedSanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
@@ -361,20 +288,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		bodyFormData.append('sourceOfIncomeNature', JSON.stringify(sourceOfIncomeNature));
 		const yearlyIncome = input.yearlyIncome ? Number(input.yearlyIncome).toFixed(4) : '0';
 		bodyFormData.append('yearlyIncome', yearlyIncome);
-		bodyFormData.append('sourceOfIncome', input.sourceOfIncome);
 		const sourceOfFunds = findAndReplace(input.sourceOfFunds, 'Other', input.sourceOfFundsOther);
 		bodyFormData.append('sourceOfFunds', JSON.stringify(sourceOfFunds));
-		const irregularSourceOfFunds = findAndReplace(
-			input.irregularSourceOfFunds,
-			'Other',
-			input.irregularSourceOfFundsOther
-		);
-		bodyFormData.append('irregularSourceOfFunds', JSON.stringify(irregularSourceOfFunds));
-		bodyFormData.append(
-			'hasCriminalRecords',
-			input.hasCriminalRecords === 'Yes' ? 'true' : 'false'
-		);
-		bodyFormData.append('declare', JSON.stringify(`${input.declare}${input.declareOther}`));
 		bodyFormData.append('mailAddress', input.mailAddress);
 
 		axios({
@@ -413,18 +328,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			mailAddress: { ...input.mailAddress, [event.target.name]: event.target.value }
 		});
 	};
-	// const handleChangeResidenceInput = (event: any) => {
-	// 	setInput({
-	// 		...input,
-	// 		residence: { ...input.residence, [event.target.name]: event.target.value }
-	// 	});
-	// };
-	// const handleChangeIdentificationInput = (event: any) => {
-	// 	setInput({
-	// 		...input,
-	// 		identification: { ...input.identification, [event.target.name]: event.target.value }
-	// 	});
-	// };
 	const handleChangeRegisteredOfficeInput = (event: any) => {
 		setInput({
 			...input,
@@ -472,10 +375,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	const handleDropDownInput = (event: any) => {
 		setInput({ ...input, [event.target.name]: event.target.value });
 	};
-
-	// const handleChangeDate = (event: any) => {
-	// 	setInput({ ...input, dateOfBirth: event.target.value });
-	// };
 
 	const handleOnClose = () => {
 		setShowModal(false);
@@ -989,9 +888,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												name={activity}
 												id={`representPerson-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 												checked={input.representPerson.includes(`${activity}`)}
-												required
 												data-key="representPerson"
 											/>
 											<label htmlFor={`representPerson-checkbox-${index}`}>{activity}</label>
@@ -1018,9 +915,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												name={activity}
 												id={`workAreaList-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 												checked={input.workArea.includes(`${activity}`)}
-												required
 												data-key="workArea"
 											/>
 											<label htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
@@ -1052,9 +947,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												name={country.name}
 												id={`countryOfOperates-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 												checked={input.countryOfOperates.includes(`${country.name}`)}
-												required
 												data-key="countryOfOperates"
 											/>
 											<label htmlFor={`countryOfOperates-checkbox-${index}`}>{country.name}</label>
@@ -1085,9 +978,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												name={country.name}
 												id={`countryOfWork-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 												checked={input.countryOfWork.includes(`${country.name}`)}
-												required
 												data-key="countryOfWork"
 											/>
 											<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
@@ -1118,9 +1009,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												name={activity}
 												id={`yearlyIncome-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 												checked={input.yearlyIncome.includes(`${activity}`)}
-												required
 												data-key="yearlyIncome"
 											/>
 											<label htmlFor={`yearlyIncome-checkbox-${index}`}>{activity}</label>
@@ -1130,7 +1019,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</WrapContainer>
 							<WrapContainer>
 								<ContentTitle>Nature of prevailing source of income</ContentTitle>
-								{PREVAILLING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
+								{PREVAILING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
 									return (
 										<div
 											key={index}
@@ -1145,9 +1034,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												name={activity}
 												id={`sourceOfIncomeNatureList-checkbox-${index}`}
 												onChange={handleChangeCheckBox}
-												// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 												checked={input.sourceOfIncomeNature.includes(`${activity}`)}
-												required={true}
 												data-key="sourceOfIncomeNature"
 											/>
 											<label htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>
@@ -1192,9 +1079,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											name={activity}
 											id={`sourceOfFundsList-checkbox-${index}`}
 											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 											checked={input.sourceOfFunds.includes(`${activity}`)}
-											required={true}
 											data-key="sourceOfFunds"
 										/>
 										<label htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
@@ -1358,10 +1243,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 															flexDirection: 'column',
 															alignItems: 'flex-start'
 														}}>
-														<ContainerText>Company name: {client.companyName}</ContainerText>
+														<ContainerText>Name: {client.fullName}</ContainerText>
 														<ContainerText>Id Number: {client.idNumber}</ContainerText>
 														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
-														<ContainerText>Gender: {client.gender}</ContainerText>
 														<ContainerText>Citizenship: {client.citizenship}</ContainerText>
 														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
 													</div>
@@ -1409,10 +1293,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 															flexDirection: 'column',
 															alignItems: 'flex-start'
 														}}>
-														<ContainerText>Company name: {client.companyName}</ContainerText>
+														<ContainerText>Name: {client.fullName}</ContainerText>
 														<ContainerText>Id Number: {client.idNumber}</ContainerText>
 														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
-														<ContainerText>Gender: {client.gender}</ContainerText>
 														<ContainerText>Citizenship: {client.citizenship}</ContainerText>
 														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
 													</div>
@@ -1462,10 +1345,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 															alignItems: 'flex-start',
 															marginBottom: '8px'
 														}}>
-														<ContainerText>Full Name: {client.fullName}</ContainerText>
+														<ContainerText>Name: {client.fullName}</ContainerText>
 														<ContainerText>Date of birth: {client.dateOfBirth}</ContainerText>
 														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
-														<ContainerText>Gender: {client.gender}</ContainerText>
 														<ContainerText>
 															Citizenship(s): {client.citizenship.join(', ')}
 														</ContainerText>

@@ -33,7 +33,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	// @ts-ignore
 	// const { addToast } = useToasts();
 	const [client, setClient] = useState<any>({
-		companyName: '',
+		fullName: '',
 		idNumber: '',
 		placeOfBirth: '',
 		gender: 'Male',
@@ -74,7 +74,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	});
 
 	const [emptyClient] = useState({
-		companyName: '',
+		fullName: '',
 		idNumber: '',
 		placeOfBirth: '',
 		gender: 'Male',
@@ -216,7 +216,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			hasBackButton>
 			<Wrapper>
 				<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
-				<WrapContainer>
+				<WrapContainer style={{ paddingRight: '10px' }}>
 					<label
 						htmlFor="label-ubo-company-name"
 						style={{
@@ -228,14 +228,14 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 					</label>
 					<TextField
 						id="label-ubo-company-name"
-						value={client.companyName}
+						value={client.fullName}
 						placeholder="Name and surname / business company /name"
 						type="text"
 						onChange={handleChangeClientInput}
 						size="small"
 						align="left"
-						name="companyName"
-						error={client.companyName.length < 2}
+						name="fullName"
+						error={client.fullName.length < 2}
 					/>
 					<label
 						htmlFor="label-ubo-id-number"

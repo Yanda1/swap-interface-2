@@ -60,7 +60,7 @@ export const ShareHoldersModal = ({
 	// @ts-ignore
 	// const { addToast } = useToasts();
 	const [client, setClient] = useState<any>({
-		companyName: '',
+		fullName: '',
 		idNumber: '',
 		placeOfBirth: '',
 		gender: 'Male',
@@ -101,7 +101,7 @@ export const ShareHoldersModal = ({
 		}
 	});
 	const [emptyClient] = useState({
-		companyName: '',
+		fullName: '',
 		idNumber: '',
 		placeOfBirth: '',
 		gender: 'Male',
@@ -252,14 +252,14 @@ export const ShareHoldersModal = ({
 					</label>
 					<TextField
 						id="label-shareholders-company-name"
-						value={client.companyName}
+						value={client.fullName}
 						placeholder="Name and surname / business company /name"
 						type="text"
 						onChange={handleChangeClientInput}
 						size="small"
 						align="left"
-						name="companyName"
-						error={client.companyName.length < 2}
+						name="fullName"
+						error={client.fullName.length < 2}
 					/>
 					<label
 						htmlFor="label-shareholders-id-number"
