@@ -400,7 +400,7 @@ export const SwapForm = () => {
 			<KYCL2Wrapper>
 				{isUserVerified && account && KycL2BusinessStatusEnum.INITIAL ? (
 					<Button isLoading={loadKycL2Modal} variant="pure" onClick={fetchData} color="default">
-						Pass KYC Legal Person
+						KYC as Legal Person
 					</Button>
 				) : null}
 				<KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={updateShowKycL2} />

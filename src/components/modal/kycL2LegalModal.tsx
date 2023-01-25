@@ -168,6 +168,7 @@ type Props = {
 export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) => {
 	const [showModal, setShowModal] = useState<boolean>(showKycL2);
 	const [isValid, setIsValid] = useState(false);
+	const [isFirstPartSent, setIsFirstPartSent] = useState(false);
 	useEffect(() => {
 		setShowModal(showKycL2);
 	}, [showKycL2]);
@@ -241,7 +242,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		sourceOfIncomeNature: [],
 		sourceOfIncomeNatureOther: '',
 		supervisors: [],
-		taxResidency: 'Afghanistan',
+		taxResidency: 'Select country',
 		typeOfCriminal: '',
 		ubo: [],
 		workArea: [],
@@ -386,8 +387,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	};
 
 	useEffect(() => {
-		// if page == 14 send first part of form on page
-		if (page === 14) {
+		// if page == 14 and !isFirstPartSent (first part was never sent) so sent first part of form
+		if (page === 14 && !isFirstPartSent) {
 			// TODO: send first part (axios request)
 			const bodyFormData = new FormData();
 			bodyFormData.append('companyName', input.companyName);
@@ -435,6 +436,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				.then(function (response) {
 					// handle success
 					console.log(response);
+					setIsFirstPartSent(true);
 				})
 				.catch(function (response) {
 					// handle error
@@ -461,7 +463,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				!Object.values(input.mailAddress).includes(''))
 		) {
 			setIsValid(true);
-		} else if (page === 3 && input.taxResidency) {
+		} else if (page === 3 && input.taxResidency !== 'Select country') {
 			setIsValid(true);
 		} else if (page === 4 && input.politicallPerson) {
 			setIsValid(true);
@@ -845,6 +847,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						<div style={{ margin: '20px 0 30px', width: '100%', textAlign: 'center' }}>
 							<ContentTitle>Tax Residency</ContentTitle>
 							<Select name="taxResidency" onChange={handleDropDownInput} value={input.taxResidency}>
+								<option value="Select country">Select country</option>
 								{COUNTRIES.map((country: any) => {
 									return (
 										<option value={country.name} key={country.name}>

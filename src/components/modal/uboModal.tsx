@@ -39,9 +39,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 		fullName: '',
 		idNumber: '',
 		placeOfBirth: '',
-		gender: 'Male',
+		gender: 'Select gender',
 		citizenship: '',
-		taxResidency: 'Afghanistan',
+		taxResidency: 'Select country',
 		permanentAndMailAddressSame: '',
 		residence: {
 			street: '',
@@ -80,9 +80,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 		fullName: '',
 		idNumber: '',
 		placeOfBirth: '',
-		gender: 'Male',
+		gender: 'Select gender',
 		citizenship: '',
-		taxResidency: 'Afghanistan',
+		taxResidency: 'Select country',
 		permanentAndMailAddressSame: '',
 		appliedSanctions: '',
 		residence: {
@@ -120,13 +120,15 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 
 	useEffect(() => {
 		setIsValid(false);
-		const { residence, identification, citizenship } = client;
+		const { residence, identification, citizenship, taxResidency, gender } = client;
 		const result = Object.values(client);
 		if (
 			!result.includes('') &&
 			!Object.values(residence).includes('') &&
 			!Object.values(identification).includes('') &&
-			citizenship.length > 0
+			citizenship.length > 0 &&
+			taxResidency !== 'Select country' &&
+			gender !== 'Select gender'
 		) {
 			setIsValid(true);
 		}
@@ -265,8 +267,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 					<label
 						htmlFor="label-ubo-place-of-birth"
 						style={{
-							margin: '6px 0 8px 0',
-							display: 'inline-block',
+							margin: '12px 0 8px 0',
+							display: 'block',
 							fontStyle: 'italic'
 						}}>
 						Place of Birth
@@ -282,7 +284,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						name="placeOfBirth"
 						error={client.placeOfBirth.length < 2}
 					/>
-					<div style={{ marginBottom: '10px' }}>
+					<div style={{ margin: '10px 0' }}>
 						<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
 							Gender
 							<Select
@@ -297,6 +299,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									color: 'white',
 									borderRadius: '6px'
 								}}>
+								<option value="Select gender">Select gender</option>
 								<option value="Male">Male</option>
 								<option value="Female">Female</option>
 								<option value="Other">Other</option>
@@ -318,6 +321,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									color: 'white',
 									borderRadius: '6px'
 								}}>
+								<option value="Select country">Select country</option>
 								{COUNTRIES.map((country: any) => {
 									return (
 										<option value={country.name} key={country.name}>

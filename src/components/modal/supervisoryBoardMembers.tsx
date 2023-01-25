@@ -39,7 +39,7 @@ export const SupervisoryBoardMembers = ({
 		fullName: '',
 		dateOfBirth: '',
 		placeOfBirth: '',
-		gender: 'Male',
+		gender: 'Select gender',
 		residence: {
 			street: '',
 			streetNumber: '',
@@ -55,7 +55,7 @@ export const SupervisoryBoardMembers = ({
 		fullName: '',
 		dateOfBirth: '',
 		placeOfBirth: '',
-		gender: 'Male',
+		gender: 'Select gender',
 		residence: {
 			street: '',
 			streetNumber: '',
@@ -69,8 +69,15 @@ export const SupervisoryBoardMembers = ({
 
 	useEffect(() => {
 		setIsValid(false);
-		const { fullName, dateOfBirth, placeOfBirth, residence, citizenship, appliedSanctions } =
-			client;
+		const {
+			fullName,
+			dateOfBirth,
+			placeOfBirth,
+			residence,
+			citizenship,
+			appliedSanctions,
+			gender
+		} = client;
 		if (
 			fullName.length &&
 			dateOfBirth.length &&
@@ -81,7 +88,8 @@ export const SupervisoryBoardMembers = ({
 			residence.zipCode.length &&
 			residence.stateOrCountry.length &&
 			citizenship.length &&
-			appliedSanctions.length
+			appliedSanctions.length &&
+			gender !== 'Select gender'
 		) {
 			setIsValid(true);
 		}
@@ -211,6 +219,7 @@ export const SupervisoryBoardMembers = ({
 									color: 'white',
 									borderRadius: '6px'
 								}}>
+								<option value="Select gender">Select gender</option>
 								<option value="Male">Male</option>
 								<option value="Female">Female</option>
 								<option value="Other">Other</option>
