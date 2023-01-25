@@ -1,45 +1,47 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Mainnet, Moonbeam, useEthers, MetamaskConnector } from '@usedapp/core';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Mainnet, MetamaskConnector, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
-import { Theme, ColorType, DEFAULT_TRANSIITON } from '../../styles';
 import {
+	ColorType,
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSIITON,
 	mediaQuery,
 	pxToRem,
 	spacing,
-	DEFAULT_BORDER_RADIUS,
+	Theme,
 	theme as defaultTheme
 } from '../../styles';
+import type { ApiAuthType } from '../../helpers';
 import {
+	BasicStatusEnum,
+	button,
 	ButtonEnum,
+	CHAINS,
+	DefaultSelectEnum,
+	DestinationEnum,
+	ETHEREUM_URL,
 	getAuthTokensFromNonce,
+	hexToRgbA,
 	INITIAL_STORAGE,
 	isLightTheme,
+	isNetworkSelected,
+	KycEnum,
+	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
 	makeBinanceKycCall,
-	ETHEREUM_URL,
+	MOONBEAM_URL,
+	routes,
+	SourceEnum,
 	ThemeEnum,
 	useStore,
-	VerificationEnum,
-	button,
-	KycStatusEnum,
-	KycEnum,
-	routes,
-	BasicStatusEnum,
-	DestinationEnum,
-	CHAINS,
-	hexToRgbA,
-	isNetworkSelected,
-	SourceEnum,
-	MOONBEAM_URL,
-	DefaultSelectEnum
+	VerificationEnum
 } from '../../helpers';
-import type { ApiAuthType } from '../../helpers';
-import { Button, useToasts, Wallet, Icon } from '../../components';
 import type { IconType } from '../../components';
+import { Button, Icon, useToasts, Wallet } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
 
@@ -447,6 +449,20 @@ export const Header = () => {
 				style={{ marginRight: 'auto' }}
 				size={isMobile ? 'medium' : 112}
 			/>
+			{!isMobile && isNetworkSelected(sourceNetwork) && (
+				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
+					{sourceNetwork ? sourceNetwork : null}
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon
+						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+						size={16}
+						style={{
+							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
+							transition: DEFAULT_TRANSIITON
+						}}
+					/>
+				</NetworkWrapper>
+			)}
 			{!isMobile && (
 				<Button
 					variant="pure"
@@ -510,7 +526,10 @@ export const Header = () => {
 			)}
 			{showNetworksList && (
 				<MenuWrapper theme={theme}>
-					<Networks theme={theme} ref={domNode}>
+					<Networks
+						theme={theme}
+						ref={domNode}
+						style={{ width: `${isMobile ? '100%' : '50%'}`, right: `${!isMobile && '25%'}` }}>
 						{Object.values(CHAINS).map((chain) => (
 							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
 								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
