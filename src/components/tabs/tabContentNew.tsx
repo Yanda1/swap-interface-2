@@ -153,15 +153,23 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
+				{swap.costRequestCounter <= 0 ? 'Starting process':null }
 				{swap.costRequestCounter ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Request Validation ({swap.costRequestCounter}/2)
+							Swap Validation
 						</ContentItemTitle>
 						<ContentItemText>
 							{swap.costRequestCounter < 2
-								? 'Your Swap request is under validation. Please wait until full confirmation.'
-								: 'Your Swap request successfully validated.'}
+								? '...in progress'
+								: 'Successfully validated'}
+								<br/>
+								<br/>
+						</ContentItemText>
+						<ContentItemText>
+							{swap.depositBlock <= 0
+								? 'Wait for Metamask to confirm the deposit'
+								: null}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
@@ -169,16 +177,16 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
 							{!swap?.action.length
-								? `Deposit confirmation (${
+								? `Deposit confirmation (block ${
 										currentBlockNumber - swap.depositBlock
 								  }/${BLOCKS_AMOUNT})`
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
 							{currentBlockNumber - swap.depositBlock < BLOCKS_AMOUNT
-								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
+								? 'Your deposit is being processed'
 								: currentBlockNumber - swap.depositBlock >= BLOCKS_AMOUNT && !swap.action.length
-								? 'Your deposit is received and should be confirmed soon.'
+								? 'Your deposit will be confirmed soon'
 								: null}
 						</ContentItemText>
 					</ContentItem>
@@ -186,40 +194,39 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
-							Conversion {swap.sourceToken} {orders.s.replace(swap.sourceToken, '')}
+							Swap successfully executed
 						</ContentItemTitle>
-						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
-						<ContentItemText>Pair: {orders.s}</ContentItemText>
-						<ContentItemText>Quantity: {orders.q}</ContentItemText>
-						<ContentItemText>Price: {orders.p}</ContentItemText>
+						<ContentItemText>Market: {swap.sourceToken}-{orders.s.replace(swap.sourceToken, '')}</ContentItemText>
+						<ContentItemText>Exchange rate: {orders.p}</ContentItemText>
 						<ContentItemText>Time: {formatDate(orders.ts)}</ContentItemText>
 					</ContentItem>
 				) : null}
 				{withdrawal && !withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemLink theme={theme}>Withdrawal in process</ContentItemLink>
-						<ContentItemText>
-							Your funds is almost there, we are waiting for their landing into your wallet.
-						</ContentItemText>
+						<ContentItemLink theme={theme}>Sending {orders.s.replace(swap.sourceToken, '')} to your wallet</ContentItemLink>
 					</ContentItem>
 				) : withdrawal?.t === 1 && withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemTitle>Withdrawal confirmed</ContentItemTitle>
+						<ContentItemTitle>
+							The {orders.s.replace(swap.sourceToken, '')} you requested were successfully swapped and are now available in the designated destination address
+						</ContentItemTitle>
 					</ContentItem>
 				) : withdrawal?.t === 0 && withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemLink theme={theme} onClick={() => window.open(withdrawLink.url)}>
-							Withdrawal confirmed
+							The {orders.s.replace(swap.sourceToken, '')} swap completed, funds available in destination address 
+							<br/>
+							Auditing in progress, please wait
 						</ContentItemLink>
 					</ContentItem>
 				) : null}
 				{swap.complete ? (
 					<ContentItem theme={theme} color={theme.button.default}>
-						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
+						<ContentItemText color={theme.button.default}>Swap successfully executed</ContentItemText>
 					</ContentItem>
 				) : !swap.complete && swap.complete !== null ? (
 					<ContentItem theme={theme} color={theme.font.default}>
-						<ContentItemText>No valid operations spotted!</ContentItemText>
+						<ContentItemText>Invalid operations spotted. Please write us at info@cryptoyou.io</ContentItemText>
 					</ContentItem>
 				) : null}
 				{swap.complete === null ? (
