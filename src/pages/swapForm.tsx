@@ -321,7 +321,7 @@ export const SwapForm = () => {
 			</Trader>
 			<ExchangeRate color={theme.font.default}>
 				{!isTokenSelected(destinationToken)
-					? 'Please select token to see price'
+					? ''
 					: `1 ${sourceToken} = ${beautifyNumbers({
 							n: getPrice(sourceToken, destinationToken)
 					  })} ${destinationToken}`}

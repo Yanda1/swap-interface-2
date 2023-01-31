@@ -1,4 +1,4 @@
-import { BLOCKS_AMOUNT, formatDate, makeId, routes, useStore } from '../../helpers';
+import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import styled, { css } from 'styled-components';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -157,18 +157,19 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 				{swap.costRequestCounter ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Validation
+							Request validation
 						</ContentItemTitle>
+						<br/>
 						<ContentItemText>
 							{swap.costRequestCounter < 2
 								? '...in progress'
-								: 'Successfully validated'}
+								: 'Done'}
 								<br/>
 								<br/>
 						</ContentItemText>
 						<ContentItemText>
 							{swap.depositBlock <= 0
-								? 'Wait for Metamask to confirm the deposit'
+								? 'Wait for Metamask to open (this can take some time), then confirm the transation'
 								: null}
 						</ContentItemText>
 					</ContentItem>
@@ -177,16 +178,15 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
 							{!swap?.action.length
-								? `Deposit confirmation (block ${
-										currentBlockNumber - swap.depositBlock
-								  }/${BLOCKS_AMOUNT})`
-								: 'Deposit confirmed'}
+								? 'Initiating swap'
+								: 'Swap initiated'}
 						</ContentItemTitle>
+						<br/>
 						<ContentItemText>
 							{currentBlockNumber - swap.depositBlock < BLOCKS_AMOUNT
-								? 'Your deposit is being processed'
+								? 'Your request is being processed. Please wait'
 								: currentBlockNumber - swap.depositBlock >= BLOCKS_AMOUNT && !swap.action.length
-								? 'Your deposit will be confirmed soon'
+								? 'Your request will be confirmed soon'
 								: null}
 						</ContentItemText>
 					</ContentItem>
@@ -194,11 +194,15 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
-							Swap successfully executed
+							Conversion approved 
 						</ContentItemTitle>
 						<ContentItemText>Market: {swap.sourceToken}-{orders.s.replace(swap.sourceToken, '')}</ContentItemText>
 						<ContentItemText>Exchange rate: {orders.p}</ContentItemText>
-						<ContentItemText>Time: {formatDate(orders.ts)}</ContentItemText>
+						
+						<br />
+						<ContentItemTitle>
+							Finalising the transaction now
+						</ContentItemTitle>
 					</ContentItem>
 				) : null}
 				{withdrawal && !withdrawLink ? (
@@ -208,7 +212,7 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 				) : withdrawal?.t === 1 && withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
-							The {orders.s.replace(swap.sourceToken, '')} you requested were successfully swapped and are now available in the designated destination address
+							The {orders.s.replace(swap.sourceToken, '')} are on their way to the destination address. Please wait
 						</ContentItemTitle>
 					</ContentItem>
 				) : withdrawal?.t === 0 && withdrawLink ? (

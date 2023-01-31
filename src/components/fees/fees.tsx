@@ -90,8 +90,12 @@ export const Fees = () => {
 	return (
 		<details>
 			<Summary color={theme.font.default} theme={theme}>
-				<Detail value={allFees} />{' '}
-				{percentage && `(${beautifyNumbers({ n: percentage, digits: 2 })}%)`}
+				{'Fee: '}
+				{percentage && `${beautifyNumbers({ n: percentage, digits: 2 })}%`}
+				<small>
+					{' ≈ '}
+					<Detail value={allFees} />{' '}
+				</small>
 			</Summary>
 			<Details theme={theme}>
 				<Detail value={networkFee} />
