@@ -72,7 +72,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const message = !isDisabled
 		? 'Swap'
 		: !isTokenSelected(destinationToken)
-		? 'Please select Network and Token'
+		? 'Select Network and Token'
 		: +amount < +minAmount
 		? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
 		: +amount > +maxAmount

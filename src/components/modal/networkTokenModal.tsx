@@ -168,7 +168,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 						/>
 					</SelectWrapper>
 					<Button disabled={isDisabled} onClick={handleSubmit} color="transparent">
-						{isDisabled ? 'Please select Network and Token' : 'Select'}
+						{isDisabled ? 'Select Network and Token' : 'Select'}
 					</Button>
 				</Wrapper>
 			)}
@@ -212,7 +212,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 				)}
 				{!showsNetworkList && (
 					<Button color="transparent" onClick={handleSubmit} disabled={isDisabled}>
-						{isDisabled ? 'Please select Token' : 'Select'}
+						{isDisabled ? 'Select Token' : 'Select'}
 					</Button>
 				)}
 			</Wrapper>
