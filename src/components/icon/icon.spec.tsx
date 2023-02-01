@@ -20,13 +20,13 @@ describe('Icon', () => {
 		expect(getByTestId('icon')).toMatchSnapshot();
 	});
 
-	it('should return null if icon is not defined', () => {
-		const { container } = render(
+	it('should return default icon if icon is not defined', () => {
+		const { getByTestId } = render(
 			<AuthProvider>
 				<Icon icon={undefined} />
 			</AuthProvider>
 		);
 
-		expect(container).toBeEmptyDOMElement();
+		expect(getByTestId('icon')).toMatchSnapshot();
 	});
 });
