@@ -1,8 +1,9 @@
 import './styles/fonts/font.css';
 import styled, { createGlobalStyle } from 'styled-components';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import type { Theme } from './styles';
 import {
+	DEFAULT_TRANSITION,
 	fontFamily,
 	fontSize,
 	fontStyle,
@@ -10,8 +11,7 @@ import {
 	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
-	viewport,
-	DEFAULT_TRANSIITON
+	viewport
 } from './styles';
 import { Header } from './components';
 import { SwapForm, TransactionHistory } from './pages';
@@ -44,7 +44,7 @@ export const GlobalStyles = createGlobalStyle`
 		padding: 0 ${pxToRem(20)} ${pxToRem(40)};
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
-		transition: ${DEFAULT_TRANSIITON};
+		transition: ${DEFAULT_TRANSITION};
 		background: ${(props: Props) =>
 			`linear-gradient(to bottom, ${props.theme.background.default}, ${props.theme.background.default})`};
 

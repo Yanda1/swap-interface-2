@@ -1,7 +1,14 @@
 import { BLOCKS_AMOUNT, formatDate, makeId, routes, useStore } from '../../helpers';
 import styled, { css } from 'styled-components';
-import { DEFAULT_BORDER_RADIUS, Theme } from '../../styles';
-import { DEFAULT_TRANSIITON, fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import {
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSITION,
+	fontSize,
+	mediaQuery,
+	pxToRem,
+	spacing,
+	Theme
+} from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 import { useAxios } from '../../hooks';
 import { useEffect, useState } from 'react';
@@ -95,7 +102,7 @@ export const ContentItemLink = styled.div`
 	line-height: ${fontSize[16]};
 	text-decoration: underline;
 	cursor: pointer;
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 
 	&:hover {
 		color: ${(props: StyleProps) => props.theme.button.default};

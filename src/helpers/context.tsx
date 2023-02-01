@@ -58,6 +58,17 @@ export enum KycL2StatusEnum {
 	REJECTED = 9
 }
 
+export enum KycL2BusinessEnum {
+	STATUS = 'SET_KYCL2_Business_STATUS'
+}
+
+export enum KycL2BusinessStatusEnum {
+	INITIAL = 0,
+	PENDING = 1,
+	PASSED = 2,
+	REJECTED = 9
+}
+
 export enum BasicStatusEnum {
 	INITIAL = 'INITIAL',
 	PROCESS = 'PROCESS',
@@ -99,7 +110,12 @@ type KycAction = {
 
 type KycL2Action = {
 	type: KycL2Enum;
-	payload: number;
+	payload: KycL2StatusEnum;
+};
+
+type KycL2BusinessAction = {
+	type: KycL2BusinessEnum;
+	payload: KycL2BusinessStatusEnum;
 };
 
 type ButtonAction = {
@@ -142,6 +158,7 @@ type Action =
 	| ButtonAction
 	| KycAction
 	| KycL2Action
+	| KycL2BusinessAction
 	| ThemeAction
 	| SourceAction
 	| DestinationAction
@@ -154,7 +171,8 @@ type State = {
 	account: string;
 	isNetworkConnected: boolean;
 	kycStatus: KycStatusEnum;
-	kycL2Status: number;
+	kycL2Status: KycL2StatusEnum;
+	kycL2Business: KycL2BusinessStatusEnum;
 	accessToken: string;
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
@@ -202,6 +220,7 @@ const initialState: State = {
 	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
 	kycL2Status: KycL2StatusEnum.INITIAL,
+	kycL2Business: KycL2BusinessStatusEnum.INITIAL,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,

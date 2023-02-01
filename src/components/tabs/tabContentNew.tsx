@@ -2,7 +2,7 @@ import { BLOCKS_AMOUNT, formatDate, makeId, routes, useStore } from '../../helpe
 import styled, { css } from 'styled-components';
 import {
 	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSIITON,
+	DEFAULT_TRANSITION,
 	fontSize,
 	mediaQuery,
 	pxToRem,
@@ -103,7 +103,7 @@ export const ContentItemLink = styled.div`
 	line-height: ${fontSize[16]};
 	text-decoration: underline;
 	cursor: pointer;
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 
 	&:hover {
 		color: ${(props: StyleProps) => props.theme.button.default};
