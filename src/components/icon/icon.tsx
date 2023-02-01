@@ -69,10 +69,38 @@ import { ReactComponent as SettingsLight } from '../../assets/settings-light.svg
 import { ReactComponent as BlackCircle } from '../../assets/black-circle.svg';
 
 // import { ReactComponent as AVAXAPT } from '../../assets/AVAXAPT.svg';
+import { ReactComponent as ADX } from '../../assets/adx.svg';
+import { ReactComponent as ANKR } from '../../assets/ankr.svg';
+import { ReactComponent as ARPA } from '../../assets/arpa.svg';
+import { ReactComponent as ATA } from '../../assets/ata.svg';
 import { ReactComponent as AR } from '../../assets/AR.svg';
 import { ReactComponent as ARDR } from '../../assets/ARDR.svg';
 import { ReactComponent as ATOM } from '../../assets/ATOM.svg';
-import { ReactComponent as BAND } from '../../assets/BAND.svg';
+import { ReactComponent as AUTO } from '../../assets/auto.svg';
+import { ReactComponent as AXS } from '../../assets/axs.svg';
+import { ReactComponent as BAKE } from '../../assets/bake.svg';
+import { ReactComponent as BAL } from '../../assets/bal.svg';
+import { ReactComponent as BAT } from '../../assets/bat.svg';
+import { ReactComponent as BETA } from '../../assets/beta.svg';
+import { ReactComponent as BIDR } from '../../assets/bidr.svg';
+import { ReactComponent as BLZ } from '../../assets/blz.svg';
+import { ReactComponent as BNX } from '../../assets/bnx.svg';
+import { ReactComponent as BURGER } from '../../assets/burger.svg';
+import { ReactComponent as C98 } from '../../assets/c98.svg';
+import { ReactComponent as CAKE } from '../../assets/cake.svg';
+import { ReactComponent as BAND } from '../../assets/band.svg';
+import { ReactComponent as CHR } from '../../assets/chr.svg';
+import { ReactComponent as COTI } from '../../assets/coti.svg';
+import { ReactComponent as COMP } from '../../assets/comp.svg';
+import { ReactComponent as CHESS } from '../../assets/chess.svg';
+import { ReactComponent as COCOS } from '../../assets/cocos.svg';
+import { ReactComponent as DAR } from '../../assets/dar.svg';
+import { ReactComponent as DEGO } from '../../assets/dego.svg';
+import { ReactComponent as DEXE } from '../../assets/dexe.svg';
+import { ReactComponent as DODO } from '../../assets/dodo.svg';
+import { ReactComponent as DREP } from '../../assets/drep.svg';
+import { ReactComponent as DUSK } from '../../assets/dusk.svg';
+import { ReactComponent as EPX } from '../../assets/epx.svg';
 import { ReactComponent as BEAM } from '../../assets/BEAM.svg';
 import { ReactComponent as CELO } from '../../assets/CELO.svg';
 import { ReactComponent as CTXC } from '../../assets/CTXC.svg';
@@ -146,7 +174,35 @@ import { useStore } from '../../helpers';
 
 const Icons = {
 	'1inch': INCH,
+	adx: ADX,
+	ankr: ANKR,
+	arpa: ARPA,
+	ata: ATA,
 	ada: ADA,
+	auto: AUTO,
+	axs: AXS,
+	bake: BAKE,
+	bal: BAL,
+	bat: BAT,
+	beta: BETA,
+	bidr: BIDR,
+	blz: BLZ,
+	bnx: BNX,
+	burger: BURGER,
+	c98: C98,
+	cake: CAKE,
+	chr: CHR,
+	coti: COTI,
+	comp: COMP,
+	chess: CHESS,
+	cocos: COCOS,
+	dar: DAR,
+	dego: DEGO,
+	dexe: DEXE,
+	dodo: DODO,
+	drep: DREP,
+	dusk: DUSK,
+	epx: EPX,
 	hbar: HBAR,
 	aion: AION,
 	arbitrum: ARBITRUM,
