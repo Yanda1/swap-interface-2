@@ -66,6 +66,7 @@ import { ReactComponent as SwapperLight } from '../../assets/swapper-light.svg';
 import { ReactComponent as SwapperDark } from '../../assets/swapper-dark.svg';
 import { ReactComponent as SettingsDark } from '../../assets/settings-dark.svg';
 import { ReactComponent as SettingsLight } from '../../assets/settings-light.svg';
+import { ReactComponent as BlackCircle } from '../../assets/black-circle.svg';
 
 // import { ReactComponent as AVAXAPT } from '../../assets/AVAXAPT.svg';
 import { ReactComponent as AR } from '../../assets/AR.svg';
@@ -188,6 +189,7 @@ const Icons = {
 	avax: AVAX,
 	xrp: XRP,
 	xtz: XTZ,
+	defaultIcon: BlackCircle,
 	info: INFO,
 	warning: WARNING,
 	success: SUCCESS,
@@ -358,7 +360,7 @@ export const Icon = ({ icon, size, onClick, style = {} }: Props) => {
 		state: { theme }
 	} = useStore();
 
-	const Icon = icon ? Icons[icon] : undefined;
+	const Icon = icon && Icons.hasOwnProperty(icon) ? Icons[icon] : Icons['defaultIcon'];
 
 	return Icon ? (
 		<StyledIcon onClick={onClick} size={size} theme={theme} style={style} data-testid="icon">

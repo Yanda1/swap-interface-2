@@ -114,3 +114,40 @@ exports[`Icon should match snapshot for values icon: moon, size: medium and styl
   </svg>
 </div>
 `;
+
+exports[`Icon should return default icon if icon is not defined 1`] = `
+.c0 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c0 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 2rem;
+}
+
+<div
+  class="c0"
+  data-testid="icon"
+>
+  <svg
+    theme="[object Object]"
+  >
+    black-circle.svg
+  </svg>
+</div>
+`;
