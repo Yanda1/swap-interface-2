@@ -88,7 +88,7 @@ import { ReactComponent as BNX } from '../../assets/bnx.svg';
 import { ReactComponent as BURGER } from '../../assets/burger.svg';
 import { ReactComponent as C98 } from '../../assets/c98.svg';
 import { ReactComponent as CAKE } from '../../assets/cake.svg';
-import { ReactComponent as BAND } from '../../assets/band.svg';
+import { ReactComponent as BAND } from '../../assets/BAND.svg';
 import { ReactComponent as CHR } from '../../assets/chr.svg';
 import { ReactComponent as COTI } from '../../assets/coti.svg';
 import { ReactComponent as COMP } from '../../assets/comp.svg';
@@ -104,11 +104,11 @@ import { ReactComponent as EPX } from '../../assets/epx.svg';
 import { ReactComponent as BEAM } from '../../assets/BEAM.svg';
 import { ReactComponent as CELO } from '../../assets/CELO.svg';
 import { ReactComponent as CTXC } from '../../assets/CTXC.svg';
-import { ReactComponent as DASH } from '../../assets/DASH.svg';
+import { ReactComponent as DASH } from '../../assets/dash.svg';
 import { ReactComponent as ELF } from '../../assets/ELF.svg';
-import { ReactComponent as EGLD } from '../../assets/EGLD.svg';
+import { ReactComponent as EGLD } from '../../assets/egld.svg';
 import { ReactComponent as EOS } from '../../assets/EOS.svg';
-import { ReactComponent as ETC } from '../../assets/ETC.svg';
+import { ReactComponent as ETC } from '../../assets/etc.svg';
 import { ReactComponent as FET } from '../../assets/FET.svg';
 import { ReactComponent as FIL } from '../../assets/FIL.svg';
 import { ReactComponent as FLOW } from '../../assets/FLOW.svg';
@@ -121,7 +121,7 @@ import { ReactComponent as IOTX } from '../../assets/IOTX.svg';
 import { ReactComponent as IRIS } from '../../assets/IRIS.svg';
 import { ReactComponent as JOE } from '../../assets/JOE.svg';
 import { ReactComponent as KAVA } from '../../assets/KAVA.svg';
-import { ReactComponent as KDA2 } from '../../assets/KDA.svg';
+import { ReactComponent as KDA2 } from '../../assets/kda.svg';
 import { ReactComponent as KLAY } from '../../assets/KLAY.svg';
 import { ReactComponent as KSM } from '../../assets/KSM.svg';
 import { ReactComponent as LSK } from '../../assets/LSK.svg';
@@ -134,10 +134,10 @@ import { ReactComponent as MOB } from '../../assets/MOB.svg';
 import { ReactComponent as MOVR } from '../../assets/MOVR.svg';
 import { ReactComponent as NEAR } from '../../assets/NEAR.svg';
 import { ReactComponent as NEBL } from '../../assets/NEBL.svg';
-import { ReactComponent as NEO } from '../../assets/NEO.svg';
-import { ReactComponent as NEO3 } from '../../assets/NEO.svg';
+import { ReactComponent as NEO } from '../../assets/neo.svg';
+import { ReactComponent as NEO3 } from '../../assets/neo.svg';
 import { ReactComponent as APT } from '../../assets/APT.svg';
-import { ReactComponent as HBAR } from '../../assets/HBAR.svg';
+import { ReactComponent as HBAR } from '../../assets/hbar.svg';
 import { ReactComponent as ONE } from '../../assets/ONE.svg';
 import { ReactComponent as OSMO } from '../../assets/OSMO.svg';
 import { ReactComponent as QTUM } from '../../assets/QTUM.svg';
@@ -160,6 +160,115 @@ import { ReactComponent as XMR } from '../../assets/XMR.svg';
 import { ReactComponent as ZEC } from '../../assets/ZEC.svg';
 import { ReactComponent as ZEN } from '../../assets/ZEN.svg';
 import { ReactComponent as ZIL } from '../../assets/ZIL.svg';
+import { ReactComponent as AKRO } from '../../assets/akro.svg';
+import { ReactComponent as BICO } from '../../assets/bico.svg';
+import { ReactComponent as CRV } from '../../assets/crv.svg';
+import { ReactComponent as CVP } from '../../assets/cvp.svg';
+import { ReactComponent as CVX } from '../../assets/cvx.svg';
+import { ReactComponent as DYDX } from '../../assets/dydx.svg';
+import { ReactComponent as DENT } from '../../assets/dent.svg';
+import { ReactComponent as ENJ } from '../../assets/enj.svg';
+import { ReactComponent as ENS } from '../../assets/ens.svg';
+import { ReactComponent as FIDA } from '../../assets/fida.svg';
+import { ReactComponent as FIS } from '../../assets/fis.svg';
+import { ReactComponent as FOR } from '../../assets/for.svg';
+import { ReactComponent as FORTH } from '../../assets/forth.svg';
+import { ReactComponent as FXS } from '../../assets/fxs.svg';
+import { ReactComponent as GAL } from '../../assets/gal.svg';
+import { ReactComponent as GALA } from '../../assets/gala.svg';
+import { ReactComponent as GMT } from '../../assets/gmt.svg';
+import { ReactComponent as GRT } from '../../assets/grt.svg';
+import { ReactComponent as GTC } from '../../assets/gtc.svg';
+import { ReactComponent as HFT } from '../../assets/hft.svg';
+import { ReactComponent as HIGH } from '../../assets/high.svg';
+import { ReactComponent as HOT } from '../../assets/hot.svg';
+import { ReactComponent as HOOK } from '../../assets/hook.svg';
+import { ReactComponent as ILV } from '../../assets/ilv.svg';
+import { ReactComponent as IMX } from '../../assets/imx.svg';
+import { ReactComponent as JASMY } from '../../assets/jasmy.svg';
+import { ReactComponent as KDA } from '../../assets/kda.svg';
+import { ReactComponent as KEY } from '../../assets/key.svg';
+import { ReactComponent as KNC } from '../../assets/knc.svg';
+import { ReactComponent as LAZIO } from '../../assets/lazio.svg';
+import { ReactComponent as LEVER } from '../../assets/lever.svg';
+import { ReactComponent as LINA } from '../../assets/lina.svg';
+import { ReactComponent as LDO } from '../../assets/ldo.svg';
+import { ReactComponent as LIT } from '../../assets/lit.svg';
+import { ReactComponent as LOKA } from '../../assets/loka.svg';
+import { ReactComponent as LPT } from '../../assets/lpt.svg';
+import { ReactComponent as LRC } from '../../assets/lrc.svg';
+import { ReactComponent as MASK } from '../../assets/mask.svg';
+import { ReactComponent as MBOX } from '../../assets/mbox.svg';
+import { ReactComponent as MDT } from '../../assets/mdt.svg';
+import { ReactComponent as MFT } from '../../assets/mft.svg';
+import { ReactComponent as MKR } from '../../assets/mkr.svg';
+import { ReactComponent as MTL } from '../../assets/mtl.svg';
+import { ReactComponent as NEXO } from '../../assets/nexo.svg';
+import { ReactComponent as NKN } from '../../assets/nkn.svg';
+import { ReactComponent as NMR } from '../../assets/nmr.svg';
+import { ReactComponent as OCEAN } from '../../assets/ocean.svg';
+import { ReactComponent as OG } from '../../assets/og.svg';
+import { ReactComponent as OGN } from '../../assets/ogn.svg';
+import { ReactComponent as OM } from '../../assets/om.svg';
+import { ReactComponent as OMG } from '../../assets/omg.svg';
+import { ReactComponent as ONT } from '../../assets/ont.svg';
+import { ReactComponent as OOKI } from '../../assets/ooki.svg';
+import { ReactComponent as PAXG } from '../../assets/paxg.svg';
+import { ReactComponent as PEOPLE } from '../../assets/people.svg';
+import { ReactComponent as PERL } from '../../assets/perl.svg';
+import { ReactComponent as PERP } from '../../assets/perp.svg';
+import { ReactComponent as PHA } from '../../assets/pha.svg';
+import { ReactComponent as PHB } from '../../assets/phb.svg';
+import { ReactComponent as PLA } from '../../assets/pla.svg';
+import { ReactComponent as PNT } from '../../assets/pnt.svg';
+import { ReactComponent as PSG } from '../../assets/psg.svg';
+import { ReactComponent as POWR } from '../../assets/powr.svg';
+import { ReactComponent as PYR } from '../../assets/pyr.svg';
+import { ReactComponent as SANTOS } from '../../assets/santos.svg';
+import { ReactComponent as SFP } from '../../assets/sfp.svg';
+import { ReactComponent as SLP } from '../../assets/slp.svg';
+import { ReactComponent as SNX } from '../../assets/snx.svg';
+import { ReactComponent as SXP } from '../../assets/sxp.svg';
+import { ReactComponent as STORJ } from '../../assets/storj.svg';
+import { ReactComponent as RAD } from '../../assets/rad.svg';
+import { ReactComponent as RAY } from '../../assets/ray.svg';
+import { ReactComponent as RARE } from '../../assets/rare.svg';
+import { ReactComponent as REN } from '../../assets/ren.svg';
+import { ReactComponent as REQ } from '../../assets/req.svg';
+import { ReactComponent as RIF } from '../../assets/rif.svg';
+import { ReactComponent as RLC } from '../../assets/rlc.svg';
+import { ReactComponent as RNDR } from '../../assets/rndr.svg';
+import { ReactComponent as RSR } from '../../assets/rsr.svg';
+import { ReactComponent as TKO } from '../../assets/tko.svg';
+import { ReactComponent as TWT } from '../../assets/twt.svg';
+import { ReactComponent as TLM } from '../../assets/tlm.svg';
+import { ReactComponent as TRB } from '../../assets/trb.svg';
+import { ReactComponent as TROY } from '../../assets/troy.svg';
+import { ReactComponent as UNFI } from '../../assets/unfi.svg';
+import { ReactComponent as VIDT } from '../../assets/vidt.svg';
+import { ReactComponent as VGX } from '../../assets/vgx.svg';
+import { ReactComponent as VOXEL } from '../../assets/voxel.svg';
+import { ReactComponent as WIN } from '../../assets/win.svg';
+import { ReactComponent as WNXM } from '../../assets/wnxm.svg';
+import { ReactComponent as WOO } from '../../assets/woo.svg';
+import { ReactComponent as XVS } from '../../assets/xvs.svg';
+import { ReactComponent as YFI } from '../../assets/yfi.svg';
+import { ReactComponent as YFII } from '../../assets/yfii.svg';
+import { ReactComponent as YGG } from '../../assets/ygg.svg';
+import { ReactComponent as OP } from '../../assets/op.svg';
+import { ReactComponent as AMB } from '../../assets/amb.svg';
+import { ReactComponent as ARK } from '../../assets/ark.svg';
+import { ReactComponent as UFT } from '../../assets/uft.svg';
+import { ReactComponent as DOCK } from '../../assets/dock.svg';
+import { ReactComponent as MIR } from '../../assets/mir.svg';
+import { ReactComponent as PROS } from '../../assets/pros.svg';
+import { ReactComponent as SNM } from '../../assets/snm.svg';
+import { ReactComponent as TORN } from '../../assets/torn.svg';
+import { ReactComponent as VIB } from '../../assets/vib.svg';
+import { ReactComponent as HNT } from '../../assets/hnt.svg';
+import { ReactComponent as ANC } from '../../assets/anc.svg';
+import { ReactComponent as USTC } from '../../assets/ustc.svg';
+import { ReactComponent as SRM } from '../../assets/srm.svg';
 
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -223,7 +332,6 @@ const Icons = {
 	ftt: FTT,
 	gmx: GMX,
 	link: LINK,
-	mana: MANA,
 	optimism: OPTIMISM,
 	qnt: QNT,
 	sand: SAND,
@@ -271,6 +379,116 @@ const Icons = {
 	settingsLight: SettingsLight,
 
 	// avaxapt: AVAXAPT,
+	akro: AKRO,
+	bico: BICO,
+	crv: CRV,
+	cvp: CVP,
+	cvx: CVX,
+	dydx: DYDX,
+	dent: DENT,
+	enj: ENJ,
+	ens: ENS,
+	fida: FIDA,
+	fis: FIS,
+	for: FOR,
+	forth: FORTH,
+	fxs: FXS,
+	gal: GAL,
+	gala: GALA,
+	gmt: GMT,
+	grt: GRT,
+	gtc: GTC,
+	hft: HFT,
+	high: HIGH,
+	hot: HOT,
+	hook: HOOK,
+	ilv: ILV,
+	imx: IMX,
+	jasmy: JASMY,
+	kda: KDA,
+	key: KEY,
+	knc: KNC,
+	lazio: LAZIO,
+	lever: LEVER,
+	lina: LINA,
+	ldo: LDO,
+	lit: LIT,
+	loka: LOKA,
+	lpt: LPT,
+	lrc: LRC,
+	mana: MANA,
+	mask: MASK,
+	mbox: MBOX,
+	mdt: MDT,
+	mft: MFT,
+	mkr: MKR,
+	mtl: MTL,
+	nexo: NEXO,
+	nkn: NKN,
+	nmr: NMR,
+	ocean: OCEAN,
+	og: OG,
+	ogn: OGN,
+	om: OM,
+	omg: OMG,
+	ont: ONT,
+	ooki: OOKI,
+	paxg: PAXG,
+	people: PEOPLE,
+	perl: PERL,
+	perp: PERP,
+	pha: PHA,
+	phb: PHB,
+	pla: PLA,
+	pnt: PNT,
+	psg: PSG,
+	powr: POWR,
+	pyr: PYR,
+	santos: SANTOS,
+	sfp: SFP,
+	slp: SLP,
+	snx: SNX,
+	sxp: SXP,
+	storj: STORJ,
+	rad: RAD,
+	ray: RAY,
+	rare: RARE,
+	ren: REN,
+	req: REQ,
+	rif: RIF,
+	rlc: RLC,
+	rndr: RNDR,
+	rsr: RSR,
+	tko: TKO,
+	twt: TWT,
+	tlm: TLM,
+	trb: TRB,
+	troy: TROY,
+	unfi: UNFI,
+	vidt: VIDT,
+	vgx: VGX,
+	voxel: VOXEL,
+	win: WIN,
+	wnxm: WNXM,
+	woo: WOO,
+	xvs: XVS,
+	yfi: YFI,
+	yfii: YFII,
+	ygg: YGG,
+	op: OP,
+	amb: AMB,
+	ark: ARK,
+	uft: UFT,
+	dock: DOCK,
+	mir: MIR,
+	pros: PROS,
+	snm: SNM,
+	torn: TORN,
+	vib: VIB,
+	hnt: HNT,
+	anc: ANC,
+	ustc: USTC,
+	srm: SRM,
 	ar: AR,
 	apt: APT,
 	ardr: ARDR,
