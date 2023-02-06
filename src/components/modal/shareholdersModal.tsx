@@ -7,6 +7,8 @@ import { spacing } from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
+import { useAxios } from '../../hooks';
+import { BASE_URL } from '../../helpers';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -120,7 +122,7 @@ export const ShareHoldersModal = ({
 
 	useEffect(() => {
 		setIsValid(false);
-		const { residence, identification, citizenship, gender, taxResidency } = client;
+		const { residence, identification, citizenship, gender, taxResidency, shareHolderInfo } = client;
 		const result = Object.values(client);
 		if (
 			!result.includes('') &&
@@ -130,7 +132,11 @@ export const ShareHoldersModal = ({
 			gender !== 'Select gender' &&
 			taxResidency !== 'Select country'
 		) {
-			setIsValid(true);
+			if (client.shareHolderIsLegalEntity === 'Yes' && !Object.values(shareHolderInfo).includes('')) {
+				setIsValid(true);
+			} else if(client.shareHolderIsLegalEntity === 'No') {
+				setIsValid(true);
+			}
 		}
 	}, [client]);
 	const handleChangeClientInput = (event: any) => {
@@ -184,20 +190,85 @@ export const ShareHoldersModal = ({
 		}
 	};
 
+	const handleChangeShareHolderInfoCheckBox = (event: any) => {
+		const { value, checked } = event.target;
+		const attributeValue: string = event.target.attributes['data-key'].value;
+
+		if (checked && !client.shareHolderInfo[attributeValue as keyof typeof client.shareHolderInfo].includes(value)) {
+			setClient({
+				...client,
+				uboInfo: { ...client.shareHolderInfo, [attributeValue]: [...client.shareHolderInfo[attributeValue as keyof typeof client.shareHolderInfo], value] }
+			});
+			
+		}
+		if (!checked && client.shareHolderInfo[attributeValue as keyof typeof client.shareHolderInfo].includes(value)) {
+			const filteredArray: string[] = client.shareHolderInfo[attributeValue as keyof typeof client.shareHolderInfo].filter(
+				(item: any) => item !== value
+			);
+			setClient({
+				...client,
+				uboInfo: { ...client.shareHolderInfo, [attributeValue]: [...filteredArray] }
+			});
+		}
+	};
+
 	const handleClose = () => {
 		updateShareHoldersModalShow(false);
 	};
 
+	const api = useAxios();
+
 	const handleSubmit = () => {
-		// TODO: send axios request to backEnd and wait for response
-		// IF REQUEST STATUS === 201 and SUCCESS DO THIS
-		console.log('ShareHolder client', client);
-		updateShareHoldersModalShow(false, client);
-		setClient(emptyClient);
-		addToast('UBO was added!', 'info');
-		// IF REQUEST STATUS GOT ERROR DO CATCH BLOCK AND THIS
-		// updateSupervisorModalShow(false);
-		// addToast('Error text', 'error');
+		console.log('ShareHolder data', client);
+		const bodyFormData = new FormData();
+		bodyFormData.append('full_name', client.fullName);
+		bodyFormData.append('birth_id', client.idNumber);
+		bodyFormData.append('place_of_birth', client.placeOfBirth);
+		bodyFormData.append('gender', client.gender);
+		bodyFormData.append('citizenship', client.citizenship.join(', '));
+		bodyFormData.append('tax_residency', client.taxResidency);
+		bodyFormData.append('residence_address', JSON.stringify(client.residence));
+		if (client.permanentAndMailAddressSame === 'No') {
+			bodyFormData.append('mail_address', JSON.stringify(client.mailAddress));
+		}
+		bodyFormData.append('political_person', client.politicallPerson === 'Yes' ? 'true' : 'false');
+		bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
+		bodyFormData.append('identification_type', client.identification.type);
+		bodyFormData.append('identification_number', client.identification.number);
+		bodyFormData.append('identification_issued_by', client.identification.issuedBy);
+		bodyFormData.append('identification_valid_thru', client.identification.validThru);
+		if (client.uboIsLegalEntity === 'Yes') {
+			bodyFormData.append('statutory_full_name', client.uboInfo.nameAndSurname);
+			bodyFormData.append('statutory_dob', client.uboInfo.dateOfBirth);
+			bodyFormData.append('statutory_permanent_residence', client.uboInfo.permanentResidence);
+			bodyFormData.append('statutory_citizenship', client.uboInfo.citizenship.join(', '));
+			bodyFormData.append('statutory_subsequently_business', client.uboInfo.subsequentlyBusinessCompany);
+			bodyFormData.append('statutory_office_address', client.uboInfo.registeredOffice);
+			bodyFormData.append('statutory_birth_id', client.uboInfo.idNumber);
+		}
+
+		api.request({
+			method: 'POST',
+			url: `${BASE_URL}kyc/l2-business/shareholder/`,
+			data: bodyFormData,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(function (response) {
+				// handle success
+				console.log(response);
+				client.id = response.data.id;
+				updateShareHoldersModalShow(false, client);
+				setClient(emptyClient);
+				addToast('Shareholder was added', 'info');
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				updateShareHoldersModalShow(false);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
 	};
 
 	const handleBack = () => {
@@ -301,6 +372,35 @@ export const ShareHoldersModal = ({
 								<option value="Other">Other</option>
 							</Select>
 						</label>
+					</div>
+					<div style={{ marginBottom: '10px', width: '100%' }}>
+						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+							Citizenship(s)
+						</p>
+						{COUNTRIES.map((country: any, index: number) => {
+							return (
+								<div
+									key={index}
+									style={{
+										display: 'flex',
+										justifyContent: 'flex-start',
+										marginBottom: '8px'
+									}}>
+									<input
+										type="checkbox"
+										value={country.name}
+										name={country.name}
+										id={`citizenship-checkbox-${index}`}
+										onChange={handleChangeCheckBox}
+										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
+										checked={client.citizenship.includes(`${country.name}`)}
+										required
+										data-key="citizenship"
+									/>
+									<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
+								</div>
+							);
+						})}
 					</div>
 					<div style={{ margin: '10px 0 30px', width: '100%' }}>
 						<label htmlFor="label-select-shareholder-tax-residency" style={{ fontStyle: 'italic' }}>
@@ -675,26 +775,30 @@ export const ShareHoldersModal = ({
 							align="left"
 							name="issuedBy"
 						/>
-						<label
-							htmlFor="label-shareholder-identification-validThru"
+						<div
 							style={{
-								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								margin: '26px 16px 26px 0',
+								display: 'flex',
+								justifyContent: 'space-between'
 							}}>
-							Valid thru
-						</label>
-						<TextField
-							id="label-shareholder-identification-validThru"
-							value={client.identification.validThru}
-							placeholder="Valid thru"
-							type="text"
-							onChange={handleChangeIdentificationInput}
-							size="small"
-							align="left"
-							name="validThru"
-							error={client.identification.validThru < 2}
-						/>
+							<label
+								htmlFor="label-identification-validThru"
+								style={{
+									margin: '6px 0 8px 0',
+									display: 'inline-block',
+									fontStyle: 'italic'
+								}}>
+								Valid thru
+							</label>
+							<input
+								type="date"
+								id="label-identification-validThru"
+								value={client.identification.validThru}
+								min="2023-01-01"
+								name="validThru"
+								onChange={handleChangeIdentificationInput}
+							/>
+						</div>
 					</div>
 					<p style={{ marginBottom: '25px' }}>Is the controlling person is a legal entity ?</p>
 					<div
@@ -752,21 +856,26 @@ export const ShareHoldersModal = ({
 								align="left"
 								name="nameAndSurname"
 							/>
-							<label
-								htmlFor="label-shareHolderInfo-dateOfBirth"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								Date of birth
-							</label>
-							<TextField
-								id="label-shareHolderInfo-dateOfBirth"
-								value={client.shareHolderInfo.dateOfBirth}
-								placeholder="Date of birth"
-								type="text"
-								onChange={handleChangeShareHolderInfoInput}
-								size="small"
-								align="left"
-								name="dateOfBirth"
-							/>
+							<div
+								style={{
+									margin: '26px 16px 26px 0',
+									display: 'flex',
+									justifyContent: 'space-between'
+								}}>
+								<label
+									htmlFor="label-uboInfo-dateOfBirth"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									Date of birth
+								</label>
+								<input
+									type="date"
+									id="label-uboInfo-dateOfBirth"
+									value={client.shareHolderInfo.dateOfBirth}
+									min="1900-01-01"
+									name="dateOfBirth"
+									onChange={handleChangeShareHolderInfoInput}
+								/>
+							</div>
 							<label
 								htmlFor="label-shareHolderInfo-permanentResidence"
 								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
@@ -842,37 +951,36 @@ export const ShareHoldersModal = ({
 								align="left"
 								name="idNumber"
 							/>
+							<div style={{ marginBottom: '10px', width: '100%' }}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Citizenship(s)
+								</p>
+								{COUNTRIES.map((country: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={country.name}
+												name={country.name}
+												id={`shareHolderInfo-citizenship-checkbox-${index}`}
+												onChange={handleChangeShareHolderInfoCheckBox}
+												checked={client.shareHolderInfo.citizenship.includes(`${country.name}`)}
+												required
+												data-key="citizenship"
+											/>
+											<label htmlFor={`shareHolderInfo-citizenship-checkbox-${index}`}>{country.name}</label>
+										</div>
+									);
+								})}
+							</div>
 						</div>
 					)}
-					<div style={{ marginBottom: '10px', width: '100%' }}>
-						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-							Citizenship(s)
-						</p>
-						{COUNTRIES.map((country: any, index: number) => {
-							return (
-								<div
-									key={index}
-									style={{
-										display: 'flex',
-										justifyContent: 'flex-start',
-										marginBottom: '8px'
-									}}>
-									<input
-										type="checkbox"
-										value={country.name}
-										name={country.name}
-										id={`citizenship-checkbox-${index}`}
-										onChange={handleChangeCheckBox}
-										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-										checked={client.citizenship.includes(`${country.name}`)}
-										required
-										data-key="citizenship"
-									/>
-									<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
-								</div>
-							);
-						})}
-					</div>
 				</WrapContainer>
 				<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
 					{isValid ? 'Submit' : 'Please fill up all fields'}

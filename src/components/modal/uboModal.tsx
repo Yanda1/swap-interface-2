@@ -7,6 +7,8 @@ import COUNTRIES from '../../data/listOfAllCountries.json';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
 import { spacing } from '../../styles';
 import { useToasts } from '../toast/toast';
+import { useAxios } from '../../hooks';
+import { BASE_URL } from '../../helpers';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -120,7 +122,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 
 	useEffect(() => {
 		setIsValid(false);
-		const { residence, identification, citizenship, taxResidency, gender } = client;
+		const { residence, identification, citizenship, taxResidency, gender, uboInfo } = client;
 		const result = Object.values(client);
 		if (
 			!result.includes('') &&
@@ -130,7 +132,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			taxResidency !== 'Select country' &&
 			gender !== 'Select gender'
 		) {
-			setIsValid(true);
+			if (client.uboIsLegalEntity === 'Yes' && !Object.values(uboInfo).includes('')) {
+				setIsValid(true);
+			} else if(client.uboIsLegalEntity === 'No') {
+				setIsValid(true);
+			}
 		}
 	}, [client]);
 	const handleChangeClientInput = (event: any) => {
@@ -189,21 +195,86 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			setClient({ ...client, [attributeValue]: [...filteredArray] });
 		}
 	};
+	
+	const handleChangeUboInfoCheckBox = (event: any) => {
+		const { value, checked } = event.target;
+		const attributeValue: string = event.target.attributes['data-key'].value;
+
+		if (checked && !client.uboInfo[attributeValue as keyof typeof client.uboInfo].includes(value)) {
+			setClient({
+				...client,
+				uboInfo: { ...client.uboInfo, [attributeValue]: [...client.uboInfo[attributeValue as keyof typeof client.uboInfo], value] }
+			});
+			
+		}
+		if (!checked && client.uboInfo[attributeValue as keyof typeof client.uboInfo].includes(value)) {
+			const filteredArray: string[] = client.uboInfo[attributeValue as keyof typeof client.uboInfo].filter(
+				(item: any) => item !== value
+			);
+			setClient({
+				...client,
+				uboInfo: { ...client.uboInfo, [attributeValue]: [...filteredArray] }
+			});
+		}
+	};
+
 	const handleClose = () => {
 		updateUboModalShow(false);
 	};
 
-	const handleSubmit = () => {
-		// TODO: send axios request to backEnd and wait for response
-		// IF REQUEST STATUS === 201 DO THIS
-		console.log('ubo client', client);
-		updateUboModalShow(false, client);
-		setClient(emptyClient);
-		addToast('UBO was added!', 'info');
+	const api = useAxios();
 
-		// IF REQUEST STATUS ERROR DO THIS
-		// updateSupervisorModalShow(false);
-		// addToast('Error text', 'error');
+	const handleSubmit = () => {
+		console.log('ubo data', client);
+		const bodyFormData = new FormData();
+		bodyFormData.append('full_name', client.fullName);
+		bodyFormData.append('birth_id', client.idNumber);
+		bodyFormData.append('place_of_birth', client.placeOfBirth);
+		bodyFormData.append('gender', client.gender);
+		bodyFormData.append('citizenship', client.citizenship.join(', '));
+		bodyFormData.append('tax_residency', client.taxResidency);
+		bodyFormData.append('residence_address', JSON.stringify(client.residence));
+		if (client.permanentAndMailAddressSame === 'No') {
+			bodyFormData.append('mail_address', JSON.stringify(client.mailAddress));
+		}
+		bodyFormData.append('political_person', client.politicallPerson === 'Yes' ? 'true' : 'false');
+		bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
+		bodyFormData.append('identification_type', client.identification.type);
+		bodyFormData.append('identification_number', client.identification.number);
+		bodyFormData.append('identification_issued_by', client.identification.issuedBy);
+		bodyFormData.append('identification_valid_thru', client.identification.validThru);
+		if (client.uboIsLegalEntity === 'Yes') {
+			bodyFormData.append('statutory_full_name', client.uboInfo.nameAndSurname);
+			bodyFormData.append('statutory_dob', client.uboInfo.dateOfBirth);
+			bodyFormData.append('statutory_permanent_residence', client.uboInfo.permanentResidence);
+			bodyFormData.append('statutory_citizenship', client.uboInfo.citizenship.join(', '));
+			bodyFormData.append('statutory_subsequently_business', client.uboInfo.subsequentlyBusinessCompany);
+			bodyFormData.append('statutory_office_address', client.uboInfo.registeredOffice);
+			bodyFormData.append('statutory_birth_id', client.uboInfo.idNumber);
+		}
+
+		api.request({
+			method: 'POST',
+			url: `${BASE_URL}kyc/l2-business/ubo/`,
+			data: bodyFormData,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(function (response) {
+				// handle success
+				console.log(response);
+				client.id = response.data.id;
+				updateUboModalShow(false, client);
+				setClient(emptyClient);
+				addToast('UBO was added', 'info');
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				updateUboModalShow(false);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
 	};
 
 	const handleBack = () => {
@@ -305,6 +376,34 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								<option value="Other">Other</option>
 							</Select>
 						</label>
+					</div>
+					<div style={{ marginBottom: '10px', width: '100%' }}>
+						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+							Citizenship(s)
+						</p>
+						{COUNTRIES.map((country: any, index: number) => {
+							return (
+								<div
+									key={index}
+									style={{
+										display: 'flex',
+										justifyContent: 'flex-start',
+										marginBottom: '8px'
+									}}>
+									<input
+										type="checkbox"
+										value={country.name}
+										name={country.name}
+										id={`citizenship-checkbox-${index}`}
+										onChange={handleChangeCheckBox}
+										checked={client.citizenship.includes(`${country.name}`)}
+										required
+										data-key="citizenship"
+									/>
+									<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
+								</div>
+							);
+						})}
 					</div>
 					<div style={{ margin: '10px 0 30px', width: '100%' }}>
 						<label htmlFor="label-select-tax-residency" style={{ fontStyle: 'italic' }}>
@@ -673,26 +772,30 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							align="left"
 							name="issuedBy"
 						/>
-						<label
-							htmlFor="label-identification-validThru"
+						<div
 							style={{
-								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								margin: '26px 16px 26px 0',
+								display: 'flex',
+								justifyContent: 'space-between'
 							}}>
-							Valid thru
-						</label>
-						<TextField
-							id="label-identification-validThru"
-							value={client.identification.validThru}
-							placeholder="Valid thru"
-							type="text"
-							onChange={handleChangeIdentificationInput}
-							size="small"
-							align="left"
-							name="validThru"
-							error={client.identification.validThru < 2}
-						/>
+							<label
+								htmlFor="label-identification-validThru"
+								style={{
+									margin: '6px 0 8px 0',
+									display: 'inline-block',
+									fontStyle: 'italic'
+								}}>
+								Valid thru
+							</label>
+							<input
+								type="date"
+								id="label-identification-validThru"
+								value={client.identification.validThru}
+								min="2023-01-01"
+								name="validThru"
+								onChange={handleChangeIdentificationInput}
+							/>
+						</div>
 					</div>
 					<p style={{ marginBottom: '25px' }}>
 						Is the Ultimate Beneficial Owner (UBO) a legal entity?
@@ -752,21 +855,26 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								align="left"
 								name="nameAndSurname"
 							/>
-							<label
-								htmlFor="label-uboInfo-dateOfBirth"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								Date of birth
-							</label>
-							<TextField
-								id="label-uboInfo-dateOfBirth"
-								value={client.uboInfo.dateOfBirth}
-								placeholder="Date of birth"
-								type="text"
-								onChange={handleChangeUboInfoInput}
-								size="small"
-								align="left"
-								name="dateOfBirth"
-							/>
+							<div
+								style={{
+									margin: '26px 16px 26px 0',
+									display: 'flex',
+									justifyContent: 'space-between'
+								}}>
+								<label
+									htmlFor="label-uboInfo-dateOfBirth"
+									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									Date of birth
+								</label>
+								<input
+									type="date"
+									id="label-uboInfo-dateOfBirth"
+									value={client.uboInfo.dateOfBirth}
+									min="1900-01-01"
+									name="dateOfBirth"
+									onChange={handleChangeUboInfoInput}
+								/>
+							</div>
 							<label
 								htmlFor="label-uboInfo-permanentResidence"
 								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
@@ -781,21 +889,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								size="small"
 								align="left"
 								name="permanentResidence"
-							/>
-							<label
-								htmlFor="label-uboInfo-citizenship"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								Citizenship
-							</label>
-							<TextField
-								id="label-uboInfo-citizenship"
-								value={client.uboInfo.citizenship}
-								placeholder="Citizenship"
-								type="text"
-								onChange={handleChangeUboInfoInput}
-								size="small"
-								align="left"
-								name="citizenship"
 							/>
 							<label
 								htmlFor="label-uboInfo-subsequentlyBusinessCompany"
@@ -842,36 +935,37 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								align="left"
 								name="idNumber"
 							/>
+							<div style={{ marginBottom: '10px', width: '100%' }}>
+								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+									Citizenship(s)
+								</p>
+								{COUNTRIES.map((country: any, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={country.name}
+												name={country.name}
+												id={`ubo-citizenship-checkbox-${index}`}
+												onChange={handleChangeUboInfoCheckBox}
+												checked={client.uboInfo.citizenship.includes(`${country.name}`)}
+												required
+												data-key="citizenship"
+											/>
+											<label htmlFor={`ubo-citizenship-checkbox-${index}`}>{country.name}</label>
+										</div>
+									);
+								})}
+							</div>
 						</div>
 					)}
-					<div style={{ marginBottom: '10px', width: '100%' }}>
-						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
-							Citizenship(s)
-						</p>
-						{COUNTRIES.map((country: any, index: number) => {
-							return (
-								<div
-									key={index}
-									style={{
-										display: 'flex',
-										justifyContent: 'flex-start',
-										marginBottom: '8px'
-									}}>
-									<input
-										type="checkbox"
-										value={country.name}
-										name={country.name}
-										id={`citizenship-checkbox-${index}`}
-										onChange={handleChangeCheckBox}
-										checked={client.citizenship.includes(`${country.name}`)}
-										required
-										data-key="citizenship"
-									/>
-									<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
-								</div>
-							);
-						})}
-					</div>
+					
 				</WrapContainer>
 				<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
 					Submit

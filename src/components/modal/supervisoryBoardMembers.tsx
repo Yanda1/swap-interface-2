@@ -7,6 +7,8 @@ import { spacing } from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
+import { useAxios } from '../../hooks';
+import { BASE_URL } from '../../helpers';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -133,16 +135,42 @@ export const SupervisoryBoardMembers = ({
 	const handleClose = () => {
 		updateSupervisorModalShow(false);
 	};
+
+	const api = useAxios();
+
 	const handleSubmit = () => {
-		// TODO: send axios request to backEnd and wait for response
-		// IF REQUEST STATUS === 201 and SUCCESS DO THIS
-		console.log('Supervisor client', client);
-		updateSupervisorModalShow(false, client);
-		setClient(emptyClient);
-		addToast('UBO was added!', 'info');
-		// IF REQUEST STATUS GOT ERROR DO CATCH BLOCK AND THIS
-		// updateSupervisorModalShow(false);
-		// addToast('Error text', 'error');
+		console.log('Board member data', client);
+		const bodyFormData = new FormData();
+		bodyFormData.append('full_name', client.fullName);
+		bodyFormData.append('dob', client.dateOfBirth);
+		bodyFormData.append('place_of_birth', client.placeOfBirth);
+		bodyFormData.append('residence_address', JSON.stringify(client.residence));
+		bodyFormData.append('gender', client.gender);
+		bodyFormData.append('citizenship', client.citizenship.join(', '));
+		bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
+
+		api.request({
+			method: 'POST',
+			url: `${BASE_URL}kyc/l2-business/boardmember/`,
+			data: bodyFormData,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(function (response) {
+				// handle success
+				console.log(response);
+				client.id = response.data.id;
+				updateSupervisorModalShow(false, client);
+				setClient(emptyClient);
+				addToast('Board member was added', 'info');
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				updateSupervisorModalShow(false);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
 	};
 	const handleBack = () => {
 		updateSupervisorModalShow(false);
@@ -183,6 +211,21 @@ export const SupervisoryBoardMembers = ({
 						maxLength={50}
 						error={client.fullName.length < 2}
 					/>
+					<div
+						style={{
+							margin: '26px 16px 26px 0',
+							display: 'flex',
+							justifyContent: 'space-between'
+						}}>
+						<label htmlFor="label-supervisory-date">Date of birth</label>
+						<input
+							type="date"
+							id="label-supervisory-date"
+							value={client.dateOfBirth}
+							min="1900-01-01"
+							onChange={(e: any) => handleChangeDate(e)}
+						/>
+					</div>
 					<label
 						htmlFor="label-shareholders-place-of-birth"
 						style={{
@@ -225,20 +268,6 @@ export const SupervisoryBoardMembers = ({
 								<option value="Other">Other</option>
 							</Select>
 						</label>
-					</div>
-					<div
-						style={{
-							margin: '26px 16px 26px 0',
-							display: 'flex',
-							justifyContent: 'space-between'
-						}}>
-						<label htmlFor="label-supervisory-date">Date of birth</label>
-						<input
-							type="date"
-							id="label-supervisory-date"
-							min="1900-01-01"
-							onChange={(e: any) => handleChangeDate(e)}
-						/>
 					</div>
 					<p style={{ marginBottom: '25px' }}>
 						Person against whom are applied CZ/international sanctions?
