@@ -66,6 +66,7 @@ export enum KycL2BusinessStatusEnum {
 	INITIAL = 0,
 	PENDING = 1,
 	PASSED = 2,
+	BASIC = 3,
 	REJECTED = 9
 }
 
@@ -172,7 +173,7 @@ type State = {
 	isNetworkConnected: boolean;
 	kycStatus: KycStatusEnum;
 	kycL2Status: KycL2StatusEnum;
-	kycL2Business: KycL2BusinessStatusEnum;
+	kycL2Business: KycL2BusinessStatusEnum | null;
 	accessToken: string;
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
@@ -220,7 +221,7 @@ const initialState: State = {
 	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
 	kycL2Status: KycL2StatusEnum.INITIAL,
-	kycL2Business: KycL2BusinessStatusEnum.INITIAL,
+	kycL2Business: null,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
@@ -256,6 +257,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, kycStatus: action.payload };
 		case KycL2Enum.STATUS:
 			return { ...state, kycL2Status: action.payload };
+		case KycL2BusinessEnum.STATUS:
+			return { ...state, kycL2Business: action.payload };
 		case ButtonEnum.BUTTON:
 			return { ...state, buttonStatus: action.payload };
 		case ThemeEnum.THEME:

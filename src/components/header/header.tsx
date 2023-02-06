@@ -29,6 +29,7 @@ import {
 	KycEnum,
 	KycL2Enum,
 	KycL2StatusEnum,
+	KycL2BusinessEnum,
 	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
@@ -282,7 +283,7 @@ export const Header = () => {
 					await getBinanceToken();
 				}
 				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
-				const { status: kycL2Status } = res?.data?.L2;
+				const { status: kycL2Status, statusBusiness: kycL2StatusBusiness } = res?.data?.L2;
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
@@ -290,6 +291,10 @@ export const Header = () => {
 				dispatch({
 					type: KycL2Enum.STATUS,
 					payload: kycL2Status
+				});
+				dispatch({
+					type: KycL2BusinessEnum.STATUS,
+					payload: kycL2StatusBusiness
 				});
 				setStorage({
 					...storage,

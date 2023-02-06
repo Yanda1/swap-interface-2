@@ -9,8 +9,7 @@ import {
 	IconType,
 	NetworkTokenModal,
 	SwapButton,
-	TextField,
-	useToasts
+	TextField
 } from '../components';
 import type { Fee } from '../helpers';
 import {
@@ -23,10 +22,9 @@ import {
 	isTokenSelected,
 	KycL2BusinessStatusEnum,
 	NETWORK_TO_ID,
-	routes,
 	useStore
 } from '../helpers';
-import { useAxios, useFees } from '../hooks';
+import { useFees } from '../hooks';
 import { KycL2LegalModal } from '../components/modal/kycL2LegalModal';
 
 const Wrapper = styled.main`
@@ -158,7 +156,8 @@ export const SwapForm = () => {
 			destinationMemo,
 			isUserVerified,
 			amount,
-			account
+			account,
+			kycL2Business
 		},
 		dispatch
 	} = useStore();
@@ -168,29 +167,10 @@ export const SwapForm = () => {
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
 	const [showKycL2, setShowKycL2] = useState(false);
-	const [loadKycL2Modal, setLoadKycL2Modal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
-	// @ts-ignore
-	const { addToast } = useToasts();
-	const api = useAxios();
-	const fetchData = async () => {
-		setLoadKycL2Modal(true);
-		try {
-			const res = await api.get(routes.kycStatus);
-			const l2Data = res?.data?.L2;
-			if (isUserVerified && l2Data.statusBusiness === KycL2BusinessStatusEnum.INITIAL) {
-				setLoadKycL2Modal(false);
-				setShowKycL2(true);
-			}
-		} catch (e: any) {
-			console.log(e);
-			setLoadKycL2Modal(false);
-			addToast('Something went wrong please try again or later!', 'warning');
-		}
-	};
 
 	const updateShowKycL2 = (value: boolean) => {
 		setShowKycL2(value);
@@ -397,8 +377,8 @@ export const SwapForm = () => {
 				/>
 			)}
 			<KYCL2Wrapper>
-				{isUserVerified && account && KycL2BusinessStatusEnum.INITIAL ? (
-					<Button isLoading={loadKycL2Modal} variant="pure" onClick={fetchData} color="default">
+				{isUserVerified && account && (kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC) ? (
+					<Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
 						KYC as Legal Person
 					</Button>
 				) : null}
