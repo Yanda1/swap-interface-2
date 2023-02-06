@@ -1,6 +1,18 @@
 [
-	"Up to EUR 40,000",
-	"Up to EUR 120,000",
-	"Up to EUR 400,000",
-	"Above EUR 400,000"
+	{
+		"name": "Up to EUR 40,000",
+		"value": 40000
+	},
+	{
+		"name": "Up to EUR 120,000",
+		"value": 120000
+	},
+	{
+		"name": "Up to EUR 400,000",
+		"value": 400000
+	},
+	{
+		"name": "Above EUR 400,000",
+		"value": 999999
+	}
 ]

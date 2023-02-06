@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
-import { BASE_URL, findAndReplace, makeId, useStore } from '../../helpers';
+import { BASE_URL, findAndReplace, useStore, KycL2BusinessEnum, KycL2BusinessStatusEnum } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
@@ -16,7 +16,7 @@ import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryBoardMembers } from './supervisoryBoardMembers';
 import { useMedia } from '../../hooks';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
-import axios from 'axios';
+import { useAxios } from '../../hooks';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -173,6 +173,14 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		setShowModal(showKycL2);
 	}, [showKycL2]);
 	const { addToast }: any | null = useToasts();
+	const api = useAxios();
+	const {
+		state: {
+			kycL2Business
+		},
+		dispatch
+	} = useStore();
+
 	const [input, setInput] = useState<{
 		appliedSanctions: string;
 		companyIdentificationNumber: string;
@@ -180,7 +188,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		countryOfOperates: any;
 		countryOfWork: string[];
 		file: any;
-		legalEntity: string;
 		mailAddress: any;
 		permanentAndMailAddressSame: string;
 		politicallPerson: string;
@@ -194,10 +201,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		sourceOfIncomeNatureOther: string;
 		supervisors: any;
 		taxResidency: string;
-		typeOfCriminal: string;
+		criminalOffenses: string;
 		ubo: any;
 		workArea: string[];
-		yearlyIncome: string[];
+		yearlyIncome: number | null;
 	}>({
 		appliedSanctions: '',
 		companyIdentificationNumber: '',
@@ -216,7 +223,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			// Court decision on appointment of legal guardian (if relevant).
 			pogDoc1: null
 		},
-		legalEntity: '',
 		mailAddress: {
 			street: '',
 			streetNumber: '',
@@ -243,15 +249,67 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		sourceOfIncomeNatureOther: '',
 		supervisors: [],
 		taxResidency: 'Select country',
-		typeOfCriminal: '',
+		criminalOffenses: '',
 		ubo: [],
 		workArea: [],
-		yearlyIncome: []
+		yearlyIncome: null
 	});
 	const [page, setPage] = useState<number>(0);
-	const {
-		state: { accessToken }
-	} = useStore();
+	const PAGE_AFTER_FIRST_PART = 13;
+
+	useEffect(() => { 
+		if(kycL2Business === KycL2BusinessStatusEnum.BASIC) {
+			// Skip first 12 pages
+			setIsFirstPartSent(true);
+			setPage(PAGE_AFTER_FIRST_PART);
+			// Pull UBOs, shareholders and board members data
+			api.request({
+				method: 'GET',
+				url: `${BASE_URL}kyc/l2-business/ubo/`,
+			})
+				.then(function (response) {
+					// handle success
+					response.data.map((record: any) => {
+						setInput({ ...input, ubo: [...input.ubo, record] });
+					});
+				})
+				.catch(function (response) {
+					// handle error
+					console.log(response);
+					addToast('Something went wrong, please try to refresh the page', 'error');
+				});
+			api.request({
+				method: 'GET',
+				url: `${BASE_URL}kyc/l2-business/shareholder/`,
+			})
+				.then(function (response) {
+					// handle success
+					response.data.map((record: any) => {
+						setInput({ ...input, shareHolders: [...input.shareHolders, record] });
+					});
+				})
+				.catch(function (response) {
+					// handle error
+					console.log(response);
+					addToast('Something went wrong, please try to refresh the page', 'error');
+				});
+			api.request({
+				method: 'GET',
+				url: `${BASE_URL}kyc/l2-business/boardmember/`,
+			})
+				.then(function (response) {
+					// handle success
+					response.data.map((record: any) => {
+						setInput({ ...input, supervisors: [...input.supervisors, record] });
+					});
+				})
+				.catch(function (response) {
+					// handle error
+					console.log(response);
+					addToast('Something went wrong, please try to refresh the page', 'error');
+				});
+		}
+	}, [kycL2Business]);
 
 	const myRef = useRef<HTMLDivElement | null>(null);
 	const refPoaDoc1 = useRef<HTMLInputElement>();
@@ -264,17 +322,42 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = (event: any) => {
-		// after user click on submit send axios with this bodyFormData server
 		event.preventDefault();
 		const bodyFormData = new FormData();
-		bodyFormData.append('poaDoc1', input.file.poaDoc1);
-		bodyFormData.append('posofDoc1', input.file.posofDoc1);
-		bodyFormData.append('porDoc1', input.file.porDoc1);
-		bodyFormData.append('representativesId', input.file.representativesId);
-		// TODO: pogDoc1 below NOT REQUIRED COULD BE NULL !!! ;)
-		bodyFormData.append('pogDoc1', input.file.pogDoc1);
-		console.log('bodyFormData on submit', bodyFormData);
-		updateShowKycL2(false);
+		bodyFormData.append('account_statement_doc', input.file.poaDoc1);
+		bodyFormData.append('source_of_funds_doc', input.file.posofDoc1);
+		if (input.file.porDoc1) {
+			bodyFormData.append('legal_entity_proof_doc', input.file.porDoc1);
+		}
+		if (input.file.representativesId) {
+			bodyFormData.append('representative_id_doc', input.file.representativesId);
+		}
+		if (input.file.pogDoc1) {
+			bodyFormData.append('legal_guardian_doc', input.file.pogDoc1);
+		}
+
+		api.request({
+			method: 'PATCH',
+			url: `${BASE_URL}kyc/l2-business/files`,
+			data: bodyFormData,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(function (response) {
+				// handle success
+				console.log(response);
+				dispatch({
+					type: KycL2BusinessEnum.STATUS,
+					payload: KycL2BusinessStatusEnum.PENDING
+				});
+				updateShowKycL2(false);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
 	};
 	const handleChangeInput = (event: any) => {
 		setInput({ ...input, [event.target.name]: event.target.value });
@@ -340,7 +423,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 
 	const handleOnBack = () => {
 		if (page > 0) {
-			setPage((prev: number) => prev - 1);
+			if (!isFirstPartSent || (isFirstPartSent && page > PAGE_AFTER_FIRST_PART)) {
+				setPage((prev: number) => prev - 1);
+			}
 		}
 	};
 
@@ -357,86 +442,101 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	const handleAddSupervisor = () => {
 		setAddSupervisor(true);
 	};
-	const updateUboModalShow = (showModal: boolean, uboClient: any) => {
-		if (uboClient) {
-			uboClient.id = makeId(20);
-			setInput({ ...input, ubo: [...input.ubo, uboClient] });
+	const updateUboModalShow = (showModal: boolean, uboData: any) => {
+		if (uboData) {
+			setInput({ ...input, ubo: [...input.ubo, uboData] });
 		}
 		setAddUbo(showModal);
 	};
-	const updateShareHoldersModalShow = (showModal: boolean, uboClient: any) => {
-		if (uboClient) {
-			uboClient.id = makeId(20);
-			setInput({ ...input, shareHolders: [...input.shareHolders, uboClient] });
+	const updateShareHoldersModalShow = (showModal: boolean, shareHolderData: any) => {
+		if (shareHolderData) {
+			setInput({ ...input, shareHolders: [...input.shareHolders, shareHolderData] });
 		}
 		setAddShareHolder(showModal);
 	};
-	const updateSupervisorModalShow = (showModal: boolean, uboClient: any) => {
-		if (uboClient) {
-			uboClient.id = makeId(20);
-			setInput({ ...input, supervisors: [...input.supervisors, uboClient] });
+	const updateSupervisorModalShow = (showModal: boolean, supervisorData: any) => {
+		if (supervisorData) {
+			setInput({ ...input, supervisors: [...input.supervisors, supervisorData] });
 		}
 		setAddSupervisor(showModal);
 	};
 	const handleDeleteUbo = (id: any) => {
-		setInput({ ...input, ubo: [...input.ubo.filter((item: any) => item.id !== id)] });
+		api.request({
+			method: 'DELETE',
+			url: `${BASE_URL}kyc/l2-business/ubo/${id}/`
+		})
+			.then(function () {
+				// handle success
+				setInput({ ...input, ubo: [...input.ubo.filter((item: any) => item.id !== id)] });
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
 	};
 
 	const handleDeleteShareHolder = (id: any) => {
+		// TODO axios delete action
 		setInput({ ...input, shareHolders: [...input.ubo.filter((item: any) => item.id !== id)] });
 	};
 
+	const handleDeleteSupervisorHolder = (id: any) => {
+		// TODO axios delete action
+		setInput({ ...input, supervisors: [...input.ubo.filter((item: any) => item.id !== id)] });
+	};
+
 	useEffect(() => {
-		// if page == 14 and !isFirstPartSent (first part was never sent) so sent first part of form
-		if (page === 14 && !isFirstPartSent) {
-			// TODO: send first part (axios request)
+		// if page == 13 and !isFirstPartSent (first part was never sent) so sent first part of form
+		if (page === 13 && !isFirstPartSent) {
 			const bodyFormData = new FormData();
-			bodyFormData.append('companyName', input.companyName);
-			bodyFormData.append('companyIdentificationNumber', input.companyIdentificationNumber);
-			bodyFormData.append('registeredOffice', input.registeredOffice);
-			bodyFormData.append('mailAddress', input.mailAddress);
-			bodyFormData.append('taxResidency', input.taxResidency);
-			bodyFormData.append('politicallPerson', input.politicallPerson);
-			bodyFormData.append('appliedSanctions', input.appliedSanctions);
-			bodyFormData.append('representPerson', JSON.stringify(input.representPerson));
-			bodyFormData.append('workArea', JSON.stringify(input.workArea));
-			bodyFormData.append('countryOfOperates', JSON.stringify(input.countryOfOperates));
-			bodyFormData.append('countryOfWork', JSON.stringify(input.countryOfWork));
-			bodyFormData.append('yearlyIncome', JSON.stringify(input.yearlyIncome));
+			bodyFormData.append('company_name', input.companyName);
+			bodyFormData.append('company_id', input.companyIdentificationNumber);
+			bodyFormData.append('office_address', JSON.stringify(input.registeredOffice));
+			if (input.permanentAndMailAddressSame === 'No') {
+				bodyFormData.append('mail_address', JSON.stringify(input.mailAddress));
+			}
+			bodyFormData.append('tax_residency', input.taxResidency);
+			bodyFormData.append('political_person', input.politicallPerson === 'Yes' ? 'true' : 'false');
+			bodyFormData.append('applied_sanctions', input.appliedSanctions === 'Yes' ? 'true' : 'false');
+			bodyFormData.append('represent_person', input.representPerson.join(', '));
+			bodyFormData.append('work_area', input.workArea.join(', '));
+			bodyFormData.append('country_of_operations', input.countryOfOperates.join(', '));
+			bodyFormData.append('country_of_work', input.countryOfWork.join(', '));
+			bodyFormData.append('yearly_income', input.yearlyIncome ? Number(input.yearlyIncome).toString() : '0');
 			const sourceOfIncomeNature = findAndReplace(
 				input.sourceOfIncomeNature,
 				'Other',
 				input.sourceOfIncomeNatureOther
 			);
-			bodyFormData.append('sourceOfIncomeNature', JSON.stringify(sourceOfIncomeNature));
+			bodyFormData.append('source_of_income_nature', sourceOfIncomeNature.join(', '));
 			const sourceOfFunds = findAndReplace(input.sourceOfFunds, 'Other', input.sourceOfFundsOther);
-			bodyFormData.append('sourceOfFunds', JSON.stringify(sourceOfFunds));
+			bodyFormData.append('source_of_funds', sourceOfFunds.join(', '));
 			bodyFormData.append(
-				'legalEntity',
-				JSON.stringify(input.legalEntity === 'Yes' ? 'true' : 'false')
+				'is_criminal',
+				input.criminalOffenses === 'Yes' ? 'true' : 'false'
 			);
 			bodyFormData.append(
-				'typeOfCriminal',
-				JSON.stringify(input.typeOfCriminal === 'Yes' ? 'true' : 'false')
-			);
-			bodyFormData.append(
-				'representativeTypeOfClient',
-				JSON.stringify(input.representativeTypeOfClient)
+				'representative_type',
+				input.representativeTypeOfClient === 'Natural Person' ? '0' : '1'
 			);
 
-			axios({
+			api.request({
 				method: 'POST',
-				url: `${BASE_URL}kyc/l2-business-data`,
+				url: `${BASE_URL}kyc/l2-business`,
 				data: bodyFormData,
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
-					Authorization: 'Bearer ' + accessToken
 				}
 			})
 				.then(function (response) {
 					// handle success
 					console.log(response);
 					setIsFirstPartSent(true);
+					dispatch({
+						type: KycL2BusinessEnum.STATUS,
+						payload: KycL2BusinessStatusEnum.BASIC
+					});
 				})
 				.catch(function (response) {
 					// handle error
@@ -477,31 +577,31 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			setIsValid(true);
 		} else if (
 			(page === 9 &&
-				input.yearlyIncome.length &&
+				input.yearlyIncome &&
 				input.sourceOfIncomeNature.length &&
 				!input.sourceOfIncomeNature.includes('Other')) ||
 			(page === 9 &&
-				input.yearlyIncome.length &&
+				input.yearlyIncome &&
 				input.sourceOfIncomeNature.includes('Other') &&
 				input.sourceOfIncomeNatureOther)
 		) {
 			setIsValid(true);
 		} else if (page === 10 && input.sourceOfFunds.length) {
 			setIsValid(true);
-		} else if (page === 11 && input.legalEntity) {
+		} else if (page === 11 && input.criminalOffenses) {
 			setIsValid(true);
-		} else if (page === 12 && input.typeOfCriminal) {
+		} else if (page === 12 && input.representativeTypeOfClient) {
 			setIsValid(true);
-		} else if (page === 13 && input.representativeTypeOfClient) {
-			setIsValid(true);
-		} else if (page === 14 || page === 15 || page === 16) {
+		} else if (page === 13 || page === 14 || page === 15) {
 			setIsValid(true);
 		} else if (
-			page === 17 &&
+			page === 16 &&
 			input.file.poaDoc1 &&
 			input.file.posofDoc1 &&
-			input.file.porDoc1 &&
-			input.file.representativesId
+			(input.representativeTypeOfClient === 'Natural Person' &&
+			input.file.representativesId) ||
+			(input.representativeTypeOfClient === 'Legal entity' &&
+			input.file.porDoc1)
 		) {
 			setIsValid(true);
 		}
@@ -1086,15 +1186,14 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												marginBottom: '8px'
 											}}>
 											<input
-												type="checkbox"
-												value={activity}
-												name={activity}
-												id={`yearlyIncome-checkbox-${index}`}
-												onChange={handleChangeCheckBox}
-												checked={input.yearlyIncome.includes(`${activity}`)}
-												data-key="yearlyIncome"
+												type="radio"
+												value={activity.value}
+												id={`yearlyIncome-radio-${index}`}
+												checked={input.yearlyIncome === activity.value.toString()}
+												onChange={handleChangeInput}
+												name="yearlyIncome"
 											/>
-											<label htmlFor={`yearlyIncome-checkbox-${index}`}>{activity}</label>
+											<label htmlFor={`yearlyIncome-radio-${index}`}>{activity.name}</label>
 										</div>
 									);
 								})}
@@ -1189,42 +1288,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								in particular an offense against property or economic offense committed not only in
 								relation with work or business activities (without regards to presumption of
 								innocence)?
-							</ContentTitle>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'space-evenly',
-									width: '100%',
-									marginBottom: '10px'
-								}}>
-								<label htmlFor="legalEntityTrue">
-									<input
-										id="legalEntityTrue"
-										type="radio"
-										value="Yes"
-										checked={input.legalEntity === 'Yes'}
-										onChange={handleChangeInput}
-										name="legalEntity"
-									/>
-									YES
-								</label>
-								<label htmlFor="legalEntityFalse">
-									<input
-										id="legalEntityFalse"
-										type="radio"
-										value="No"
-										checked={input.legalEntity === 'No'}
-										onChange={handleChangeInput}
-										name="legalEntity"
-									/>
-									NO
-								</label>
-							</div>
-						</>
-					)}
-					{page === 12 && (
-						<>
-							<ContentTitle>
+								<br/><br/>
 								These are mainly criminal offenses in the areas of taxes, corruption, public
 								procurement, and subsidy fraud.
 							</ContentTitle>
@@ -1235,32 +1299,32 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									width: '100%',
 									marginBottom: '10px'
 								}}>
-								<label htmlFor="typeOfCriminalTrue">
+								<label htmlFor="criminalOffensesTrue">
 									<input
-										id="typeOfCriminalTrue"
+										id="criminalOffensesTrue"
 										type="radio"
 										value="Yes"
-										checked={input.typeOfCriminal === 'Yes'}
+										checked={input.criminalOffenses === 'Yes'}
 										onChange={handleChangeInput}
-										name="typeOfCriminal"
+										name="criminalOffenses"
 									/>
 									YES
 								</label>
-								<label htmlFor="typeOfCriminalFalse">
+								<label htmlFor="criminalOffensesFalse">
 									<input
-										id="typeOfCriminalFalse"
+										id="criminalOffensesFalse"
 										type="radio"
 										value="No"
-										checked={input.typeOfCriminal === 'No'}
+										checked={input.criminalOffenses === 'No'}
 										onChange={handleChangeInput}
-										name="typeOfCriminal"
+										name="criminalOffenses"
 									/>
 									NO
 								</label>
 							</div>
 						</>
 					)}
-					{page === 13 && (
+					{page === 12 && (
 						<>
 							<ContentTitle style={{ marginBottom: '25px' }}>
 								The representative of the client is a:
@@ -1297,7 +1361,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</div>
 						</>
 					)}
-					{page === 14 && (
+					{page === 13 && (
 						<WrapContainer
 							style={{
 								display: 'flex',
@@ -1342,7 +1406,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</WrapContainer>
 						</WrapContainer>
 					)}
-					{page === 15 && (
+					{page === 14 && (
 						<WrapContainer
 							style={{
 								display: 'flex',
@@ -1392,7 +1456,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</WrapContainer>
 						</WrapContainer>
 					)}
-					{page === 16 && (
+					{page === 15 && (
 						<WrapContainer
 							style={{
 								display: 'flex',
@@ -1434,7 +1498,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 															Citizenship(s): {client.citizenship.join(', ')}
 														</ContainerText>
 													</div>
-													<DeleteUboBtn onClick={() => handleDeleteShareHolder(client.id)}>
+													<DeleteUboBtn onClick={() => handleDeleteSupervisorHolder(client.id)}>
 														Delete
 													</DeleteUboBtn>
 												</>
@@ -1445,8 +1509,14 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</WrapContainer>
 						</WrapContainer>
 					)}
-					{page === 17 && (
-						<WrapContainer>
+					{page === 16 && (
+						<WrapContainer
+							style={{
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
+								width: '100%'
+							}}>
 							<ContentTitle>
 								Copy of an account statement kept by an institution in the EEA
 							</ContentTitle>
@@ -1470,45 +1540,50 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									onChange={handleChangeFileInput}></FileInput>
 								{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
 							</LabelInput>
-							<ContentTitle>
-								Natural person Representative: Copy of personal identification or passport of the
-								representatives
-							</ContentTitle>
-							<LabelInput htmlFor="file-input-refRepresentativesId">
-								<FileInput
-									id="file-input-refRepresentativesId"
-									type="file"
-									ref={refRepresentativesId as any}
-									onChange={handleChangeFileInput}></FileInput>
-								{input.file.representativesId ? input.file.representativesId.name : 'Upload File'}
-							</LabelInput>
-							<ContentTitle>
-								Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or
-								other comparable foreign evidence) or other valid documents proving the existence of
-								legal entity (Articles of Associations, Deed of Foundation etc.).
-							</ContentTitle>
-							<LabelInput htmlFor="file-input-refPorDoc1">
-								<FileInput
-									id="file-input-refPorDoc1"
-									type="file"
-									ref={refPorDoc1 as any}
-									onChange={handleChangeFileInput}></FileInput>
-								{input.file.porDoc1 ? input.file.porDoc1.name : 'Upload File'}
-							</LabelInput>
-							<ContentTitle>
-								Court decision on appointment of legal guardian (if relevant).
-							</ContentTitle>
-							<LabelInput htmlFor="file-input-refPogDoc1">
-								<FileInput
-									id="file-input-refPogDoc1"
-									type="file"
-									ref={refPogDoc1 as any}
-									onChange={handleChangeFileInput}></FileInput>
-								{input.file.pogDoc1 ? input.file.pogDoc1.name : 'Upload File'}
-							</LabelInput>
+							
+							{ input.representativeTypeOfClient === 'Natural Person' && <>
+								<ContentTitle>
+									Natural person Representative: Copy of personal identification or passport of the
+									representatives
+								</ContentTitle>
+								<LabelInput htmlFor="file-input-refRepresentativesId">
+									<FileInput
+										id="file-input-refRepresentativesId"
+										type="file"
+										ref={refRepresentativesId as any}
+										onChange={handleChangeFileInput}></FileInput>
+									{input.file.representativesId ? input.file.representativesId.name : 'Upload File'}
+								</LabelInput>
+							</>}
+							{ input.representativeTypeOfClient === 'Legal entity'  && <>
+								<ContentTitle>
+									Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or
+									other comparable foreign evidence) or other valid documents proving the existence of
+									legal entity (Articles of Associations, Deed of Foundation etc.).
+								</ContentTitle>
+								<LabelInput htmlFor="file-input-refPorDoc1">
+									<FileInput
+										id="file-input-refPorDoc1"
+										type="file"
+										ref={refPorDoc1 as any}
+										onChange={handleChangeFileInput}></FileInput>
+									{input.file.porDoc1 ? input.file.porDoc1.name : 'Upload File'}
+								</LabelInput>
+								<ContentTitle>
+									Court decision on appointment of legal guardian (if relevant).
+								</ContentTitle>
+								<LabelInput htmlFor="file-input-refPogDoc1">
+									<FileInput
+										id="file-input-refPogDoc1"
+										type="file"
+										ref={refPogDoc1 as any}
+										onChange={handleChangeFileInput}></FileInput>
+									{input.file.pogDoc1 ? input.file.pogDoc1.name : 'Upload File'}
+								</LabelInput>
+							</>}
 						</WrapContainer>
 					)}
-					{page < 17 && (
+					{page < 16 && (
 						<div
 							style={{
 								margin: '0 auto',
@@ -1520,7 +1595,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</Button>
 						</div>
 					)}
-					{page >= 17 && (
+					{page >= 16 && (
 						<div
 							style={{
 								margin: '0 auto',
