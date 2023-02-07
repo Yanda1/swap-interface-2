@@ -156,46 +156,34 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		setShowModal(showKycL2);
 	}, [showKycL2]);
 	const [input, setInput] = useState<{
-		placeOfBirth: string;
-		yearlyIncome: number | null;
-		email: string;
-		residence: any;
-		mailAddress: any;
-		sourceOfIncome: string;
-		gender: string;
-		citizenship: string[];
-		taxResidency: string;
-		politicallPerson: string;
-		countryOfWork: string[];
-		workArea: string[];
-		sourceOfFunds: string[];
-		sourceOfFundsOther: string;
-		sourceOfIncomeNatureOther: string;
-		irregularSourceOfFunds: string[];
-		irregularSourceOfFundsOther: string;
 		appliedSanctions: string;
-		hasCriminalRecords: string;
-		sourceOfIncomeNature: string[];
+		citizenship: string[];
+		countryOfWork: string[];
 		declare: string[];
 		declareOther: string;
+		email: string;
 		file: any;
-		registeredOffice: any;
+		gender: string;
+		hasCriminalRecords: string;
+		irregularSourceOfFunds: string[];
+		irregularSourceOfFundsOther: string;
+		mailAddress: any;
 		permanentAndMailAddressSame: string;
-		identification: any;
-		companyName: string;
-		companyIdentificationNumber: string;
-		representPerson: string[];
-		legalEntity: string;
-		typeOfCriminal: string;
-		ubo: any;
-		shareHolders: any;
-		supervisors: any;
-		countryOfOperates: any;
-		representativeTypeOfClient: string;
+		placeOfBirth: string;
+		politicallPerson: string;
+		residence: any;
+		sourceOfFunds: string[];
+		sourceOfFundsOther: string;
+		sourceOfIncome: string;
+		sourceOfIncomeNature: string[];
+		sourceOfIncomeNatureOther: string;
+		taxResidency: string;
+		workArea: string[];
+		yearlyIncome: number | null;
 	}>({
+		appliedSanctions: '',
 		citizenship: [],
 		countryOfWork: [],
-		hasCriminalRecords: '',
 		declare: [],
 		declareOther: '',
 		email: '',
@@ -203,19 +191,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			poaDoc1: null,
 			posofDoc1: null
 		},
+		gender: 'Select gender',
+		hasCriminalRecords: '',
 		irregularSourceOfFunds: [],
 		irregularSourceOfFundsOther: '',
-		gender: 'Select gender',
-		permanentAndMailAddressSame: 'Yes',
-		countryOfOperates: [],
-		representativeTypeOfClient: '',
-		residence: {
-			street: '',
-			streetNumber: '',
-			municipality: '',
-			zipCode: '',
-			country: ''
-		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
@@ -223,39 +202,24 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			zipCode: '',
 			country: ''
 		},
-		sourceOfIncomeNature: [],
-		sourceOfIncomeNatureOther: '',
-		yearlyIncome: null,
-		appliedSanctions: '',
+		permanentAndMailAddressSame: 'Yes',
 		placeOfBirth: '',
 		politicallPerson: '',
-		sourceOfIncome: '',
-		sourceOfFunds: [],
-		sourceOfFundsOther: '',
-		identification: {
-			type: '',
-			number: '',
-			issuedBy: '',
-			validThru: ''
-		},
-		registeredOffice: {
+		residence: {
 			street: '',
 			streetNumber: '',
 			municipality: '',
-			state: '',
-			country: '',
-			pc: ''
+			zipCode: '',
+			country: ''
 		},
-		representPerson: [],
-		companyName: '',
-		companyIdentificationNumber: '',
-		legalEntity: '',
-		typeOfCriminal: '',
+		sourceOfFunds: [],
+		sourceOfFundsOther: '',
+		sourceOfIncome: '',
+		sourceOfIncomeNature: [],
+		sourceOfIncomeNatureOther: '',
 		taxResidency: 'Select country',
 		workArea: [],
-		ubo: [],
-		shareHolders: [],
-		supervisors: []
+		yearlyIncome: null,
 	});
 	const [page, setPage] = useState<number>(0);
 
@@ -616,7 +580,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											name={country.name}
 											id={`countryOfWork-checkbox-${index}`}
 											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 											checked={input.countryOfWork.includes(`${country.name}`)}
 											data-key="countryOfWork"
 										/>
@@ -655,7 +618,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											name={activity}
 											id={`workAreaList-checkbox-${index}`}
 											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 											checked={input.workArea.includes(`${activity}`)}
 											data-key="workArea"
 										/>
@@ -686,7 +648,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							name={activity}
 							id={`sourceOfFundsList-checkbox-${index}`}
 							onChange={handleChangeCheckBox}
-							// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
 							checked={input.sourceOfFunds.includes(`${activity}`)}
 							data-key="sourceOfFunds"
 							/>
@@ -857,6 +818,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									size="small"
 									align="left"
 									name="declareOther"
+									maxLength={100}
 									/>
 									) : null}
 								{input.declare.includes(
@@ -870,12 +832,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									size="small"
 									align="left"
 									name="declareOther"
+									maxLength={100}
 									/>
 									) : null}
 						</WrapContainer>
 					)}
 					{page === 9 && (
-						<WrapContainer>
+						<>
 							<TextTitle>
 								Have you ever been convicted or prosecuted for a criminal offense, in particular an
 								offense against property or economic offense committed not only in relation with
@@ -905,10 +868,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									No
 								</label>
 							</div>
-						</WrapContainer>
+						</>
 					)}
 					{page === 10 && (
-						<WrapContainer>
+						<>
 							<TextTitle>
 								Person against whom are applied CZ/international sanctions?
 							</TextTitle>
@@ -936,10 +899,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								No
 							</label>
 							</div>
-						</WrapContainer>
+						</>
 					)}
 					{page === 11 && (
-						<WrapContainer>
+						<>
 							<TextTitle>Politically exposed person?</TextTitle>
 							<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
 							<label htmlFor="politicallPersonTrue">
@@ -965,7 +928,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								No
 							</label>
 							</div>
-						</WrapContainer>
+						</>
 					)}
 					{page === 12 && (
 						<WrapContainer>
@@ -1155,6 +1118,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										size="small"
 										align="left"
 										name="street"
+										maxLength={100}
 									/>
 									<label
 										htmlFor="label-address-street-number"
@@ -1174,6 +1138,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										size="small"
 										align="left"
 										name="streetNumber"
+										maxLength={100}
 									/>
 									<label
 										htmlFor="label-address-municipality"
@@ -1193,6 +1158,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										size="small"
 										align="left"
 										name="municipality"
+										maxLength={100}
 									/>
 									<label
 										htmlFor="label-address-zipCode"
@@ -1212,6 +1178,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										size="small"
 										align="left"
 										name="zipCode"
+										maxLength={100}
 									/>
 								</div>
 							)}
