@@ -59,7 +59,8 @@ export enum KycL2StatusEnum {
 }
 
 export enum KycL2BusinessEnum {
-	STATUS = 'SET_KYCL2_Business_STATUS'
+	STATUS = 'SET_KYCL2_Business_STATUS',
+	REPR = 'SET_KYCL2_Business_REPR'
 }
 
 export enum KycL2BusinessStatusEnum {
@@ -68,6 +69,11 @@ export enum KycL2BusinessStatusEnum {
 	PASSED = 2,
 	BASIC = 3,
 	REJECTED = 9
+}
+
+export enum KycL2BusinessReprEnum {
+	NATURAL = 0,
+    LEGAL = 1
 }
 
 export enum BasicStatusEnum {
@@ -116,7 +122,7 @@ type KycL2Action = {
 
 type KycL2BusinessAction = {
 	type: KycL2BusinessEnum;
-	payload: KycL2BusinessStatusEnum;
+	payload: number;
 };
 
 type ButtonAction = {
@@ -174,6 +180,7 @@ type State = {
 	kycStatus: KycStatusEnum;
 	kycL2Status: KycL2StatusEnum;
 	kycL2Business: KycL2BusinessStatusEnum | null;
+	kycL2BusinessRepr: KycL2BusinessReprEnum | null;
 	accessToken: string;
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
@@ -222,6 +229,7 @@ const initialState: State = {
 	kycStatus: KycStatusEnum.PROCESS,
 	kycL2Status: KycL2StatusEnum.INITIAL,
 	kycL2Business: null,
+	kycL2BusinessRepr: null,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
@@ -259,6 +267,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, kycL2Status: action.payload };
 		case KycL2BusinessEnum.STATUS:
 			return { ...state, kycL2Business: action.payload };
+		case KycL2BusinessEnum.REPR:
+			return { ...state, kycL2BusinessRepr: action.payload };
 		case ButtonEnum.BUTTON:
 			return { ...state, buttonStatus: action.payload };
 		case ThemeEnum.THEME:

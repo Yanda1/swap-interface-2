@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
-import { BASE_URL, findAndReplace, useStore, KycL2BusinessEnum, KycL2BusinessStatusEnum } from '../../helpers';
+import { BASE_URL, findAndReplace, useStore, KycL2BusinessEnum, KycL2BusinessStatusEnum, KycL2BusinessReprEnum } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
@@ -176,7 +176,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	const api = useAxios();
 	const {
 		state: {
-			kycL2Business
+			kycL2Business,
+			kycL2BusinessRepr
 		},
 		dispatch
 	} = useStore();
@@ -591,6 +592,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		} else if (page === 11 && input.criminalOffenses) {
 			setIsValid(true);
 		} else if (page === 12 && input.representativeTypeOfClient) {
+			dispatch({
+				type: KycL2BusinessEnum.REPR,
+				payload: input.representativeTypeOfClient === 'Natural Person' ? KycL2BusinessReprEnum.NATURAL : KycL2BusinessReprEnum.LEGAL
+			});
 			setIsValid(true);
 		} else if (page === 13 || page === 14 || page === 15) {
 			setIsValid(true);
@@ -598,9 +603,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			page === 16 &&
 			input.file.poaDoc1 &&
 			input.file.posofDoc1 &&
-			(input.representativeTypeOfClient === 'Natural Person' &&
+			(kycL2BusinessRepr === KycL2BusinessReprEnum.NATURAL &&
 			input.file.representativesId) ||
-			(input.representativeTypeOfClient === 'Legal entity' &&
+			(kycL2BusinessRepr === KycL2BusinessReprEnum.LEGAL &&
 			input.file.porDoc1)
 		) {
 			setIsValid(true);
@@ -1541,7 +1546,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
 							</LabelInput>
 							
-							{ input.representativeTypeOfClient === 'Natural Person' && <>
+							{ kycL2BusinessRepr === KycL2BusinessReprEnum.NATURAL && <>
 								<ContentTitle>
 									Natural person Representative: Copy of personal identification or passport of the
 									representatives
@@ -1555,7 +1560,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									{input.file.representativesId ? input.file.representativesId.name : 'Upload File'}
 								</LabelInput>
 							</>}
-							{ input.representativeTypeOfClient === 'Legal entity'  && <>
+							{ kycL2BusinessRepr === KycL2BusinessReprEnum.LEGAL && <>
 								<ContentTitle>
 									Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or
 									other comparable foreign evidence) or other valid documents proving the existence of

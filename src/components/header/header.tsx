@@ -283,7 +283,7 @@ export const Header = () => {
 					await getBinanceToken();
 				}
 				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
-				const { status: kycL2Status, statusBusiness: kycL2StatusBusiness } = res?.data?.L2;
+				const { status: kycL2Status, statusBusiness: kycL2StatusBusiness, representativeType: reprType } = res?.data?.L2;
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
@@ -296,6 +296,12 @@ export const Header = () => {
 					type: KycL2BusinessEnum.STATUS,
 					payload: kycL2StatusBusiness
 				});
+				if(reprType !== undefined) {
+					dispatch({
+						type: KycL2BusinessEnum.REPR,
+						payload: reprType
+					});
+				}
 				setStorage({
 					...storage,
 					isKyced: kyc === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED
