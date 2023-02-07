@@ -195,15 +195,12 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		registeredOffice: any;
 		representPerson: string[];
 		representativeTypeOfClient: string;
-		shareHolders: any;
 		sourceOfFunds: string[];
 		sourceOfFundsOther: string;
 		sourceOfIncomeNature: string[];
 		sourceOfIncomeNatureOther: string;
-		supervisors: any;
 		taxResidency: string;
 		criminalOffenses: string;
-		ubo: any;
 		workArea: string[];
 		yearlyIncome: number | null;
 	}>({
@@ -243,20 +240,20 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		},
 		representPerson: [],
 		representativeTypeOfClient: '',
-		shareHolders: [],
 		sourceOfFunds: [],
 		sourceOfFundsOther: '',
 		sourceOfIncomeNature: [],
 		sourceOfIncomeNatureOther: '',
-		supervisors: [],
 		taxResidency: 'Select country',
 		criminalOffenses: '',
-		ubo: [],
 		workArea: [],
 		yearlyIncome: null
 	});
 	const [page, setPage] = useState<number>(0);
 	const PAGE_AFTER_FIRST_PART = 13;
+	const [ubos, setUbos] = useState<any>([]);
+	const [shareHolders, setShareHolders] = useState<any>([]);
+	const [supervisors, setSupervisors] = useState<any>([]);
 
 	useEffect(() => { 
 		if(kycL2Business === KycL2BusinessStatusEnum.BASIC) {
@@ -269,10 +266,20 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				url: `${BASE_URL}kyc/l2-business/ubo/`,
 			})
 				.then(function (response) {
+					let newRecords:any = [];
 					// handle success
 					response.data.map((record: any) => {
-						setInput({ ...input, ubo: [...input.ubo, record] });
+						const mappedRecord = {
+							id: record.id,
+							fullName: record.full_name,
+							idNumber: record.identification_number,
+							placeOfBirth: record.place_of_birth,
+							citizenship: record.citizenship,
+							taxResidency: record.tax_residency
+						};
+						newRecords = [...newRecords, mappedRecord];
 					});
+					setUbos(newRecords);
 				})
 				.catch(function (response) {
 					// handle error
@@ -284,10 +291,20 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				url: `${BASE_URL}kyc/l2-business/shareholder/`,
 			})
 				.then(function (response) {
+					let newRecords:any = [];
 					// handle success
 					response.data.map((record: any) => {
-						setInput({ ...input, shareHolders: [...input.shareHolders, record] });
+						const mappedRecord = {
+							id: record.id,
+							fullName: record.full_name,
+							idNumber: record.identification_number,
+							placeOfBirth: record.place_of_birth,
+							citizenship: record.citizenship,
+							taxResidency: record.tax_residency
+						};
+						newRecords = [...newRecords, mappedRecord];
 					});
+					setShareHolders(newRecords);
 				})
 				.catch(function (response) {
 					// handle error
@@ -299,10 +316,19 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				url: `${BASE_URL}kyc/l2-business/boardmember/`,
 			})
 				.then(function (response) {
+					let newRecords:any = [];
 					// handle success
 					response.data.map((record: any) => {
-						setInput({ ...input, supervisors: [...input.supervisors, record] });
+						const mappedRecord = {
+							id: record.id,
+							fullName: record.full_name,
+							dateOfBirth: record.dob,
+							placeOfBirth: record.place_of_birth,
+							citizenship: record.citizenship
+						};
+						newRecords = [...newRecords, mappedRecord];
 					});
+					setSupervisors(newRecords);
 				})
 				.catch(function (response) {
 					// handle error
@@ -445,19 +471,19 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	};
 	const updateUboModalShow = (showModal: boolean, uboData: any) => {
 		if (uboData) {
-			setInput({ ...input, ubo: [...input.ubo, uboData] });
+			setUbos([ ...ubos, uboData]);
 		}
 		setAddUbo(showModal);
 	};
 	const updateShareHoldersModalShow = (showModal: boolean, shareHolderData: any) => {
 		if (shareHolderData) {
-			setInput({ ...input, shareHolders: [...input.shareHolders, shareHolderData] });
+			setShareHolders([...shareHolders, shareHolderData]);
 		}
 		setAddShareHolder(showModal);
 	};
 	const updateSupervisorModalShow = (showModal: boolean, supervisorData: any) => {
 		if (supervisorData) {
-			setInput({ ...input, supervisors: [...input.supervisors, supervisorData] });
+			setSupervisors([...supervisors, supervisorData]);
 		}
 		setAddSupervisor(showModal);
 	};
@@ -468,7 +494,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 		})
 			.then(function () {
 				// handle success
-				setInput({ ...input, ubo: [...input.ubo.filter((item: any) => item.id !== id)] });
+				setUbos([...ubos.filter((item: any) => item.id !== id)]);
 			})
 			.catch(function (response) {
 				// handle error
@@ -478,13 +504,35 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	};
 
 	const handleDeleteShareHolder = (id: any) => {
-		// TODO axios delete action
-		setInput({ ...input, shareHolders: [...input.ubo.filter((item: any) => item.id !== id)] });
+		api.request({
+			method: 'DELETE',
+			url: `${BASE_URL}kyc/l2-business/shareholder/${id}/`
+		})
+			.then(function () {
+				// handle success
+				setShareHolders([...shareHolders.filter((item: any) => item.id !== id)]);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
 	};
 
 	const handleDeleteSupervisorHolder = (id: any) => {
-		// TODO axios delete action
-		setInput({ ...input, supervisors: [...input.ubo.filter((item: any) => item.id !== id)] });
+		api.request({
+			method: 'DELETE',
+			url: `${BASE_URL}kyc/l2-business/boardmember/${id}/`
+		})
+			.then(function () {
+				// handle success
+				setSupervisors([...supervisors.filter((item: any) => item.id !== id)]);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
 	};
 
 	useEffect(() => {
@@ -1382,7 +1430,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							</div>
 							<WrapContainer style={{ display: 'flex', flexWrap: 'wrap' }}>
 								<UboModal addUbo={addUbo} updateUboModalShow={updateUboModalShow} />
-								{input.ubo.map((client: any) => {
+								{ubos.map((client: any) => {
 									if (client) {
 										return (
 											<Container key={client.id}>
@@ -1397,7 +1445,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 														<ContainerText>Name: {client.fullName}</ContainerText>
 														<ContainerText>Id Number: {client.idNumber}</ContainerText>
 														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
-														<ContainerText>Citizenship: {client.citizenship}</ContainerText>
+														<ContainerText>
+															Citizenship(s): {client.citizenship instanceof Array ? client.citizenship.join(', ') : client.citizenship}
+														</ContainerText>
 														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
 													</div>
 													<DeleteUboBtn onClick={() => handleDeleteUbo(client.id)}>
@@ -1432,7 +1482,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									addShareHolder={addShareHolder}
 									updateShareHoldersModalShow={updateShareHoldersModalShow}
 								/>
-								{input.shareHolders.map((client: any) => {
+								{shareHolders.map((client: any) => {
 									if (client) {
 										return (
 											<Container key={client.id}>
@@ -1447,7 +1497,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 														<ContainerText>Name: {client.fullName}</ContainerText>
 														<ContainerText>Id Number: {client.idNumber}</ContainerText>
 														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
-														<ContainerText>Citizenship: {client.citizenship}</ContainerText>
+														<ContainerText>
+															Citizenship(s): {client.citizenship instanceof Array ? client.citizenship.join(', ') : client.citizenship}
+														</ContainerText>
 														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
 													</div>
 													<DeleteUboBtn onClick={() => handleDeleteShareHolder(client.id)}>
@@ -1483,7 +1535,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									addSupervisor={addSupervisor}
 									updateSupervisorModalShow={updateSupervisorModalShow}
 								/>
-								{input.supervisors.map((client: any) => {
+								{supervisors.map((client: any) => {
 									if (client) {
 										return (
 											<Container key={client.id}>
@@ -1500,7 +1552,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 														<ContainerText>Date of birth: {client.dateOfBirth}</ContainerText>
 														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
 														<ContainerText>
-															Citizenship(s): {client.citizenship.join(', ')}
+															Citizenship(s): {client.citizenship instanceof Array ? client.citizenship.join(', ') : client.citizenship}
 														</ContainerText>
 													</div>
 													<DeleteUboBtn onClick={() => handleDeleteSupervisorHolder(client.id)}>
