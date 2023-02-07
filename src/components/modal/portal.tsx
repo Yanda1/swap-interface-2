@@ -1,9 +1,8 @@
-import { ReactNode, useLayoutEffect, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useLayoutEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { createPortal } from 'react-dom';
-import { useClickOutside } from '../../hooks';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import type { ThemeProps } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import { DestinationEnum, hexToRgbA, useStore } from '../../helpers';
 
 type StyledProps = ThemeProps & { size: PortalSizeProps };
@@ -124,9 +123,9 @@ export const Portal = ({
 		dispatch
 	} = useStore();
 
-	const domNode = useClickOutside(() => {
-		if (isOpen) handleClick();
-	});
+	// const domNode = useClickOutside(() => {
+	// 	if (isOpen) handleClick();
+	// });
 
 	const [selectedSourceTokenNetwork, setSelectedSourceTokenNetwork] = useState({
 		network: '',
@@ -169,8 +168,7 @@ export const Portal = ({
 	return isOpen ? (
 		<PortalWrapper wrapperId="react-portal-modal-container">
 			<Wrapper theme={theme}>
-				{/* @ts-ignore */}
-				<Content theme={theme} size={size} ref={domNode}>
+				<Content theme={theme} size={size}>
 					{hasBackButton ? (
 						<BackButton onClick={handleBack} theme={theme}>
 							&#8592; BACK

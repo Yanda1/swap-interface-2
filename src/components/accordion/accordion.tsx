@@ -2,26 +2,26 @@ import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import {
 	ContentItem,
+	ContentItemLink,
+	ContentItemText,
 	ContentItemTitle,
 	ContentList,
-	ContentItemText,
-	ContentItemLink,
-	Spinner,
-	Icon
+	Icon,
+	Spinner
 } from '../../components';
-import { beautifyNumbers, useStore, WEI_TO_GLMR, formatDate, isLightTheme } from '../../helpers';
 import type { TransactionData } from '../../helpers';
+import { beautifyNumbers, formatDate, isLightTheme, useStore, WEI_TO_GLMR } from '../../helpers';
+import type { Theme } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
-	DEFAULT_OUTLINE_OFFSET,
 	DEFAULT_OUTLINE,
-	DEFAULT_TRANSIITON,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_TRANSITION,
 	fontSize,
 	mediaQuery,
 	pxToRem,
 	spacing
 } from '../../styles';
-import type { Theme } from '../../styles';
 import { Notifications } from '../../pages';
 import { useMedia } from '../../hooks';
 
@@ -47,7 +47,7 @@ const TitleWrapper = styled.div`
 	padding: ${spacing[12]} ${spacing[20]};
 	background-color: ${(props: StyleProps) =>
 		props.open ? props.theme.background.secondary : props.theme.background.default};
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 	position: relative;
 	z-index: 10;
 	display: flex;
@@ -235,7 +235,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 							icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
 							style={{
 								transform: `rotate(${item.open ? 180 : 0}deg)`,
-								transition: DEFAULT_TRANSIITON
+								transition: DEFAULT_TRANSITION
 							}}
 						/>
 					</TitleWrapper>

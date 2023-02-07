@@ -1,8 +1,14 @@
 import type { ReactNode } from 'react';
-import { DEFAULT_OUTLINE_OFFSET, DEFAULT_TRANSIITON, fontWeight } from '../../styles';
 import type { ColorType } from '../../styles';
+import {
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_TRANSITION,
+	fontWeight,
+	MAIN_MAX_WIDTH,
+	pxToRem
+} from '../../styles';
 import styled, { css } from 'styled-components';
-import { DEFAULT_BORDER_RADIUS, pxToRem, MAIN_MAX_WIDTH } from '../../styles';
 import { isLightTheme, useStore } from '../../helpers';
 import { Spinner } from '../../components';
 
@@ -69,7 +75,7 @@ const StyledButton = styled.button((props: ButtonProps) => {
 				? theme.button.transparent
 				: '#FFF'};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
-		transition: ${DEFAULT_TRANSIITON};
+		transition: ${DEFAULT_TRANSITION};
 		margin: ${isSecondaryDefault && '1px'};
 		cursor: ${props.disabled && 'not-allowed'};
 		outline: 1px solid transparent;

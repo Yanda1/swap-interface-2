@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import {
 	ColorType,
 	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSIITON,
+	DEFAULT_TRANSITION,
 	mediaQuery,
 	pxToRem,
 	spacing,
@@ -29,6 +29,7 @@ import {
 	KycEnum,
 	KycL2Enum,
 	KycL2StatusEnum,
+	KycL2BusinessEnum,
 	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
@@ -282,7 +283,7 @@ export const Header = () => {
 					await getBinanceToken();
 				}
 				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
-				const { status: kycL2Status } = res?.data?.L2;
+				const { status: kycL2Status, statusBusiness: kycL2StatusBusiness, representativeType: reprType } = res?.data?.L2;
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
@@ -291,7 +292,20 @@ export const Header = () => {
 					type: KycL2Enum.STATUS,
 					payload: kycL2Status
 				});
-				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED });
+				dispatch({
+					type: KycL2BusinessEnum.STATUS,
+					payload: kycL2StatusBusiness
+				});
+				if(reprType !== undefined) {
+					dispatch({
+						type: KycL2BusinessEnum.REPR,
+						payload: reprType
+					});
+				}
+				setStorage({
+					...storage,
+					isKyced: kyc === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED
+				});
 				// TODO: move this part to context?
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
@@ -431,7 +445,9 @@ export const Header = () => {
 			});
 			dispatch({
 				type: KycL2Enum.STATUS,
-				payload: JSON.parse(localStorageAuth).isKyced ? KycL2StatusEnum.PASSED : KycL2StatusEnum.INITIAL
+				payload: JSON.parse(localStorageAuth).isKyced
+					? KycL2StatusEnum.PASSED
+					: KycL2StatusEnum.INITIAL
 			});
 		}
 	}, []);
@@ -488,6 +504,20 @@ export const Header = () => {
 				style={{ marginRight: 'auto' }}
 				size={isMobile ? 'medium' : 112}
 			/>
+			{!isMobile && isNetworkSelected(sourceNetwork) && (
+				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
+					{sourceNetwork ? sourceNetwork : null}
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon
+						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+						size={16}
+						style={{
+							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
+							transition: DEFAULT_TRANSITION
+						}}
+					/>
+				</NetworkWrapper>
+			)}
 			{/* {!isMobile && (
 				<Button
 					variant="pure"
@@ -516,7 +546,7 @@ export const Header = () => {
 						size={16}
 						style={{
 							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
-							transition: DEFAULT_TRANSIITON
+							transition: DEFAULT_TRANSITION
 						}}
 					/>
 				</NetworkWrapper>
@@ -572,7 +602,7 @@ export const Header = () => {
 					</Networks>
 				</MenuWrapper>
 			)}
-			{showModal && <KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />}
+			<KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />
 			<StatusKycL2Modal
 				showStatusKycL2Modal={showStatusKycL2Modal}
 				updateStatusKycL2Modal={updateStatusKycL2Modal}

@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 import {
+	Button,
 	Fees,
 	Icon,
 	IconType,
@@ -19,10 +20,12 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
+	KycL2BusinessStatusEnum,
 	NETWORK_TO_ID,
 	useStore
 } from '../helpers';
 import { useFees } from '../hooks';
+import { KycL2LegalModal } from '../components/modal/kycL2LegalModal';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -132,6 +135,12 @@ const ExchangeRate = styled.div(
 `
 );
 
+const KYCL2Wrapper = styled.div`
+	margin-top: ${spacing[26]};
+	width: 100%;
+	text-align: center;
+`;
+
 type Limit = { message: string; value: string; error: boolean };
 
 export const SwapForm = () => {
@@ -146,7 +155,9 @@ export const SwapForm = () => {
 			destinationAmount,
 			destinationMemo,
 			isUserVerified,
-			amount
+			amount,
+			account,
+			kycL2Business
 		},
 		dispatch
 	} = useStore();
@@ -155,10 +166,15 @@ export const SwapForm = () => {
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
+	const [showKycL2, setShowKycL2] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+
+	const updateShowKycL2 = (value: boolean) => {
+		setShowKycL2(value);
+	};
 
 	// const { mobileWidth } = useMedia('xs');
 
@@ -360,6 +376,14 @@ export const SwapForm = () => {
 					onClick={handleSwap}
 				/>
 			)}
+			<KYCL2Wrapper>
+				{isUserVerified && account && (kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC) ? (
+					<Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
+						KYC as Legal Person
+					</Button>
+				) : null}
+				<KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={updateShowKycL2} />
+			</KYCL2Wrapper>
 		</Wrapper>
 	);
 };

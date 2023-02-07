@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
-import { useEtherBalance, useTokenBalance, useEthers } from '@usedapp/core';
+import { useEtherBalance, useEthers, useTokenBalance } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
-import { beautifyNumbers, useStore, NETWORK_TO_ID, isTokenSelected } from '../../helpers';
-import {
-	pxToRem,
-	spacing,
-	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSIITON,
-	mediaQuery,
-	DEFAULT_OUTLINE_OFFSET,
-	DEFAULT_OUTLINE
-} from '../../styles';
+import { beautifyNumbers, isTokenSelected, NETWORK_TO_ID, useStore } from '../../helpers';
 import type { Theme } from '../../styles';
+import {
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_TRANSITION,
+	mediaQuery,
+	pxToRem,
+	spacing
+} from '../../styles';
 import { useMedia } from '../../hooks';
 import { WalletModal } from '../../components';
 import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
@@ -61,7 +61,7 @@ const Account = styled.button`
 	display: flex;
 	align-items: center;
 	gap: ${spacing[4]};
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 	cursor: pointer;
 
 	${mediaQuery('s')} {

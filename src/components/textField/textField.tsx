@@ -4,7 +4,7 @@ import type { ThemeProps } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
 	DEFAULT_OUTLINE_OFFSET,
-	DEFAULT_TRANSIITON,
+	DEFAULT_TRANSITION,
 	fontSize,
 	HORIZONTAL_PADDING,
 	pxToRem,
@@ -49,7 +49,7 @@ const Input = styled.input(({ align, error, type, size }: StyledProps) => {
 		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		cursor: pointer;
-		transition: ${DEFAULT_TRANSIITON};
+		transition: ${DEFAULT_TRANSITION};
 		width: ${isTypeSearch ? '100%' : `calc(100% - ${pxToRem(HORIZONTAL_PADDING * 2 + 2)})`};
 		outline: 1px solid transparent;
 
@@ -111,6 +111,7 @@ type Props = {
 	name?: string;
 	id?: string;
 	checked?: boolean;
+	maxLength?: any;
 };
 
 export const TextField = ({
@@ -126,7 +127,8 @@ export const TextField = ({
 	required = false,
 	name,
 	id,
-	checked = false
+	checked = false,
+	maxLength
 }: Props) => {
 	const {
 		state: { theme }
@@ -152,6 +154,7 @@ export const TextField = ({
 				name={name}
 				id={id}
 				checked={checked}
+				maxLength={maxLength}
 			/>
 			{isTypeSearch && (
 				<Icon
