@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import {fontSize, fontStyle, pxToRem, spacing} from '../../styles';
+import {fontSize, pxToRem, spacing} from '../../styles';
 import { BASE_URL, button, ButtonEnum, findAndReplace, useStore, routes } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
@@ -54,7 +54,6 @@ export const WrapContainer = styled.div(() => {
 
 const Title = styled.h2`
 	text-align: center;
-	font-style: italic;
 `;
 
 const TextTitle = styled.p(() => {
@@ -62,7 +61,6 @@ const TextTitle = styled.p(() => {
 	return css`
 		font-size: ${fontSize[16]};
 		margin-bottom: ${pxToRem(25)};
-		font-style: ${fontStyle.italic};
 		font-weight: bold;
 		text-align: center;
 `;
@@ -349,7 +347,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		setInput({ ...input, residence: {...input.residence, country: [event.target.value]} });
 	};
 	const handleDropDownInputMailAddress = (event: any) => {
-		setInput({ ...input, mailAddress: {...input.residence, country: [event.target.value]} });
+		setInput({ ...input, mailAddress: {...input.mailAddress, country: [event.target.value]} });
 	};
 
 	const handleOnClose = () => {
@@ -431,7 +429,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<div style={{ marginBottom: '10px' }}>
 									<label
 										htmlFor="label-place-of-birth"
-										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+										style={{ marginBottom: '8px', display: 'inline-block' }}>
 										Place of birth
 									</label>
 									<TextField
@@ -450,7 +448,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<div style={{ marginBottom: '10px' }}>
 									<label
 										htmlFor="label-email"
-										style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+										style={{ marginBottom: '8px', display: 'inline-block'}}>
 										Email
 									</label>
 									<TextField
@@ -466,7 +464,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									/>
 								</div>
 								<div style={{ marginBottom: '10px' }}>
-									<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
+									<label htmlFor="label-select-gender">
 										Gender
 										<Select
 											name="gender"
@@ -515,7 +513,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<div style={{ marginBottom: '10px' }}>
 								<label
 									htmlFor="label-net-yearly-income"
-									style={{ marginBottom: '8px', display: 'inline-block', fontStyle: 'italic' }}>
+									style={{ marginBottom: '8px', display: 'inline-block'}}>
 									Net yearly income (Euro)
 								</label>
 								<TextField
@@ -531,7 +529,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								/>
 							</div>
 							<div style={{ margin: '10px 0 30px', width: '100%' }}>
-								<label htmlFor="label-select-tax-residency" style={{ fontStyle: 'italic' }}>
+								<label htmlFor="label-select-tax-residency">
 									Tax Residency
 									<Select
 										name="taxResidency"
@@ -935,8 +933,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<TextTitle>Residence</TextTitle>
 							<div style={{marginRight: '10px'}}>
 							<label
-								htmlFor="input.residence.country"
-								style={{ fontStyle: 'italic' }}>
+								htmlFor="input.residence.country">
 								Country
 							</label>
 							<Select
@@ -962,7 +959,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</Select>
 							<label
 								htmlFor="label-address-permanent-street"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
 								Street
 							</label>
 							<TextField
@@ -978,7 +975,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							/>
 							<label
 								htmlFor="label-address-permanent-street-number"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
 								Street number
 							</label>
 							<TextField
@@ -994,7 +991,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							/>
 							<label
 								htmlFor="label-address-permanent-municipality"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
 								Municipality
 							</label>
 							<TextField
@@ -1010,7 +1007,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							/>
 							<label
 								htmlFor="label-address-permanent-zipCode"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
 								ZIP Code
 							</label>
 							<TextField
@@ -1070,19 +1067,18 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										flexDirection: 'column',
 									}}>
 									<label
-										htmlFor="label-address-permanent-state-Or-Country"
+										htmlFor="label-input-mailAddress-country"
 										style={{
 											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
+											display: 'inline-block'
 										}}>
 										Country
 									</label>
 									<Select
 										name="mailAddressStateOrCountry"
 										onChange={handleDropDownInputMailAddress}
-										value={input.mailAddress.stateOrCountry}
-										id="label-address-permanent-state-Or-Country"
+										value={input.mailAddress.country}
+										id="label-input-mailAddress-country"
 										style={{
 											minHeight: '40px',
 											marginTop: '15px',
@@ -1101,16 +1097,15 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										;
 									</Select>
 									<label
-										htmlFor="label-address-street"
+										htmlFor="label-input-mailAddress-street"
 										style={{
 											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
+											display: 'inline-block'
 										}}>
 										Street
 									</label>
 									<TextField
-										id="label-address-street"
+										id="label-input-mailAddress-street"
 										value={input.mailAddress.street}
 										placeholder="Street"
 										type="text"
@@ -1121,16 +1116,15 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										maxLength={100}
 									/>
 									<label
-										htmlFor="label-address-street-number"
+										htmlFor="label-input-mailAddress-streetNumber"
 										style={{
 											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
+											display: 'inline-block'
 										}}>
 										Street number
 									</label>
 									<TextField
-										id="label-address-street-number"
+										id="label-input-mailAddress-streetNumber"
 										value={input.mailAddress.streetNumber}
 										placeholder="Street number"
 										type="text"
@@ -1141,16 +1135,15 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										maxLength={100}
 									/>
 									<label
-										htmlFor="label-address-municipality"
+										htmlFor="label-input-mailAddress-municipality"
 										style={{
 											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
+											display: 'inline-block'
 										}}>
 										Municipality
 									</label>
 									<TextField
-										id="label-address-municipality"
+										id="label-input-mailAddress-municipality"
 										value={input.mailAddress.municipality}
 										placeholder="Municipality"
 										type="text"
@@ -1161,16 +1154,15 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										maxLength={100}
 									/>
 									<label
-										htmlFor="label-address-zipCode"
+										htmlFor="label-input-mailAddress-zipCode"
 										style={{
 											margin: '6px 0 8px 0',
-											display: 'inline-block',
-											fontStyle: 'italic'
+											display: 'inline-block'
 										}}>
 										ZIP Code
 									</label>
 									<TextField
-										id="label-address-zipCode"
+										id="label-input-mailAddress-zipCode"
 										value={input.mailAddress.zipCode}
 										placeholder="ZIP Code"
 										type="text"
