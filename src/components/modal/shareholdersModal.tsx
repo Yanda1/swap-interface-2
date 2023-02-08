@@ -525,7 +525,6 @@ export const ShareHoldersModal = ({
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-shareholder-mailing-permanent-address-true">
-							Yes
 							<input
 								id="label-shareholder-mailing-permanent-address-true"
 								type="radio"
@@ -534,9 +533,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-shareholder-mailing-permanent-address-false">
-							No
 							<input
 								id="label-shareholder-mailing-permanent-address-false"
 								type="radio"
@@ -545,6 +544,7 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							No
 						</label>
 					</div>
 					{client.permanentAndMailAddressSame === 'No' && (
@@ -661,7 +661,6 @@ export const ShareHoldersModal = ({
 							margin: '0 0 30px 0'
 						}}>
 						<label htmlFor="politicallPersonTrue">
-							Yes
 							<input
 								id="politicallPersonTrue"
 								type="radio"
@@ -670,9 +669,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							Yes
 						</label>
 						<label htmlFor="politicallPersonFalse">
-							No
 							<input
 								id="politicallPersonFalse"
 								type="radio"
@@ -681,6 +680,7 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							No
 						</label>
 					</div>
 					<p style={{ marginBottom: '25px' }}>
@@ -694,7 +694,6 @@ export const ShareHoldersModal = ({
 							marginBottom: '30px'
 						}}>
 						<label htmlFor="appliedSanctionsTrue">
-							Yes
 							<input
 								id="appliedSanctionsTrue"
 								type="radio"
@@ -703,9 +702,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							Yes
 						</label>
 						<label htmlFor="appliedSanctionsFalse">
-							No
 							<input
 								id="appliedSanctionsFalse"
 								type="radio"
@@ -714,6 +713,7 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							No
 						</label>
 					</div>
 					<div>
@@ -809,7 +809,6 @@ export const ShareHoldersModal = ({
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-shareHolderIsLegalEntity-true">
-							Yes
 							<input
 								id="label-shareHolderIsLegalEntity-true"
 								type="radio"
@@ -818,9 +817,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="shareHolderIsLegalEntity"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-shareHolderIsLegalEntity-false">
-							No
 							<input
 								id="label-shareHolderIsLegalEntity-false"
 								type="radio"
@@ -829,6 +828,7 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="shareHolderIsLegalEntity"
 							/>
+							No
 						</label>
 					</div>
 					{client.shareHolderIsLegalEntity === 'Yes' && (

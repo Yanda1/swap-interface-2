@@ -280,7 +280,6 @@ export const SupervisoryBoardMembers = ({
 							marginBottom: '30px'
 						}}>
 						<label htmlFor="appliedSanctionsTrue">
-							Yes
 							<input
 								id="appliedSanctionsTrue"
 								type="radio"
@@ -289,9 +288,9 @@ export const SupervisoryBoardMembers = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							Yes
 						</label>
 						<label htmlFor="appliedSanctionsFalse">
-							No
 							<input
 								id="appliedSanctionsFalse"
 								type="radio"
@@ -300,6 +299,7 @@ export const SupervisoryBoardMembers = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							No
 						</label>
 					</div>
 					<div

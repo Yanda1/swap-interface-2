@@ -528,7 +528,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-mailing-permanent-address-true">
-							Yes
 							<input
 								id="label-mailing-permanent-address-true"
 								type="radio"
@@ -537,9 +536,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-mailing-permanent-address-false">
-							No
 							<input
 								id="label-mailing-permanent-address-false"
 								type="radio"
@@ -548,6 +547,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							No
 						</label>
 					</div>
 					{client.permanentAndMailAddressSame === 'No' && (
@@ -658,7 +658,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 					<p style={{ marginBottom: '25px' }}>Politically exposed person?</p>
 					<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
 						<label htmlFor="politicallPersonTrue">
-							Yes
 							<input
 								id="politicallPersonTrue"
 								type="radio"
@@ -667,9 +666,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							Yes
 						</label>
 						<label htmlFor="politicallPersonFalse">
-							No
 							<input
 								id="politicallPersonFalse"
 								type="radio"
@@ -678,6 +677,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							No
 						</label>
 					</div>
 					<p style={{ marginBottom: '25px' }}>
@@ -691,7 +691,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							marginBottom: '30px'
 						}}>
 						<label htmlFor="appliedSanctionsTrue">
-							Yes
 							<input
 								id="appliedSanctionsTrue"
 								type="radio"
@@ -700,9 +699,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							Yes
 						</label>
 						<label htmlFor="appliedSanctionsFalse">
-							No
 							<input
 								id="appliedSanctionsFalse"
 								type="radio"
@@ -711,6 +710,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							No
 						</label>
 					</div>
 					<div>
@@ -808,7 +808,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-uboIsLegalEntity-true">
-							Yes
 							<input
 								id="label-uboIsLegalEntity-true"
 								type="radio"
@@ -817,9 +816,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="uboIsLegalEntity"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-uboIsLegalEntity-false">
-							No
 							<input
 								id="label-uboIsLegalEntity-false"
 								type="radio"
@@ -828,6 +827,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="uboIsLegalEntity"
 							/>
+							No
 						</label>
 					</div>
 					{client.uboIsLegalEntity === 'Yes' && (
