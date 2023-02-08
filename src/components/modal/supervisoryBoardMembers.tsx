@@ -47,7 +47,7 @@ export const SupervisoryBoardMembers = ({
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		citizenship: '',
 		appliedSanctions: ''
@@ -63,9 +63,9 @@ export const SupervisoryBoardMembers = ({
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
-		citizenship: [],
+		citizenship: '',
 		appliedSanctions: ''
 	});
 
@@ -88,7 +88,7 @@ export const SupervisoryBoardMembers = ({
 			residence.streetNumber.length &&
 			residence.municipality.length &&
 			residence.zipCode.length &&
-			residence.stateOrCountry.length &&
+			residence.stateOrCountry !== 'Select country' &&
 			citizenship.length &&
 			appliedSanctions.length &&
 			gender !== 'Select gender'
@@ -313,19 +313,30 @@ export const SupervisoryBoardMembers = ({
 						<label
 							htmlFor="label-shareholder-address-permanent-state-Or-Country"
 							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-							State or Country
+							Country
 						</label>
-						<TextField
-							id="label-shareholder-address-permanent-state-Or-Country"
-							value={client.residence.stateOrCountry}
-							placeholder="State or Country"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
+						<Select
 							name="stateOrCountry"
-							maxLength={50}
-						/>
+							onChange={handleChangeResidenceInput}
+							value={client.residence.stateOrCountry}
+							id="label-shareholder-address-permanent-state-Or-Country"
+							style={{
+								minHeight: '40px',
+								marginTop: '15px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 						<label
 							htmlFor="label-shareholder-address-permanent-street"
 							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>

@@ -226,7 +226,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country',
 		},
 		permanentAndMailAddressSame: 'Yes',
 		politicallPerson: '',
@@ -235,7 +235,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			streetNumber: '',
 			municipality: '',
 			state: '',
-			country: '',
+			country: 'Select country',
 			pc: ''
 		},
 		representPerson: [],
@@ -603,7 +603,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			input.companyIdentificationNumber.trim().length > 1
 		) {
 			setIsValid(true);
-		} else if (page === 1 && !Object.values(input.registeredOffice).includes('')) {
+		} else if (page === 1 && !Object.values(input.registeredOffice).includes('') && input.registeredOffice.country !== 'Select Country') {
 			setIsValid(true);
 		} else if (
 			(page === 2 && input.permanentAndMailAddressSame === 'Yes') ||
@@ -813,17 +813,30 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										}}>
 										Country
 									</label>
-									<TextField
-										id="label-registeredOffice-country"
-										value={input.registeredOffice.country}
-										placeholder="Country"
-										type="text"
-										onChange={handleChangeRegisteredOfficeInput}
-										size="small"
-										align="left"
+									<Select
 										name="country"
-										error={input.registeredOffice.country < 2}
-									/>
+										onChange={handleChangeRegisteredOfficeInput}
+										value={input.registeredOffice.country}
+										id="label-registeredOffice-country"
+										style={{
+											marginTop: '0px',
+											width: '100%',
+											height: 'auto',
+											minHeight: '46px',
+											backgroundColor: '#1c2125',
+											color: 'white',
+											borderRadius: '6px',
+											display: 'block'
+										}}>
+										<option value="Select country">Select country</option>
+										{COUNTRIES.map((country: any) => {
+											return (
+												<option value={country.name} key={country.name}>
+													{country.name}
+												</option>
+											);
+										})};
+									</Select>
 									<label
 										htmlFor="label-registeredOffice-pc"
 										style={{
@@ -894,24 +907,36 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										}}>
 										<div style={{ width: '50%', marginRight: '20px' }}>
 											<label
-												htmlFor="label-address-permanent-state-Or-Country"
+												htmlFor="label-mail-address-state-Or-Country"
 												style={{
 													margin: '6px 0 8px 0',
 													display: 'inline-block',
 													fontStyle: 'italic'
 												}}>
-												State or Country
+												Country
 											</label>
-											<TextField
-												id="label-address-permanent-state-Or-Country"
-												value={input.mailAddress.stateOrCountry}
-												placeholder="State or Country"
-												type="text"
-												onChange={handleChangeMailInput}
-												size="small"
-												align="left"
+											<Select
 												name="stateOrCountry"
-											/>
+												onChange={handleChangeMailInput}
+												value={input.mailAddress.stateOrCountry}
+												id="label-mail-address-state-Or-Country"
+												style={{
+													minHeight: '40px',
+													marginTop: '15px',
+													backgroundColor: '#1c2125',
+													color: 'white',
+													borderRadius: '6px'
+												}}>
+												<option value="Select country">Select country</option>
+												{COUNTRIES.map((country: any) => {
+													return (
+														<option value={country.name} key={country.name}>
+															{country.name}
+														</option>
+													);
+												})}
+												;
+											</Select>
 											<label
 												htmlFor="label-address-street"
 												style={{
@@ -999,7 +1024,17 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					{page === 3 && (
 						<div style={{ margin: '20px 0 30px', width: '100%', textAlign: 'center' }}>
 							<ContentTitle>Tax Residency</ContentTitle>
-							<Select name="taxResidency" onChange={handleDropDownInput} value={input.taxResidency}>
+							<Select
+								name="taxResidency"
+								onChange={handleDropDownInput}
+								value={input.taxResidency}
+								style={{
+									minHeight: '40px',
+									marginTop: '15px',
+									backgroundColor: '#1c2125',
+									color: 'white',
+									borderRadius: '6px'
+								}}>
 								<option value="Select country">Select country</option>
 								{COUNTRIES.map((country: any) => {
 									return (

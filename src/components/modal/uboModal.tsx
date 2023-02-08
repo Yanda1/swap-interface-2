@@ -50,19 +50,19 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		identification: {
 			type: '',
 			number: '',
-			issuedBy: '',
+			issuedBy: 'Select country',
 			validThru: ''
 		},
 		politicallPerson: '',
@@ -92,19 +92,19 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		identification: {
 			type: '',
 			number: '',
-			issuedBy: '',
+			issuedBy: 'Select country',
 			validThru: ''
 		},
 		politicallPerson: '',
@@ -130,9 +130,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			!Object.values(identification).includes('') &&
 			citizenship.length > 0 &&
 			taxResidency !== 'Select country' &&
-			gender !== 'Select gender'
+			gender !== 'Select gender' &&
+			residence.stateOrCountry !== 'Select country' &&
+			identification.issuedBy !== 'Select country'
 		) {
-			if (client.uboIsLegalEntity === 'Yes' && !Object.values(uboInfo).includes('')) {
+			if (client.uboIsLegalEntity === 'Yes' && !Object.values(uboInfo).includes('') && uboInfo.citizenship.length > 0) {
 				setIsValid(true);
 			} else if(client.uboIsLegalEntity === 'No') {
 				setIsValid(true);
@@ -444,18 +446,30 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						<label
 							htmlFor="label-address-permanent-state-Or-Country"
 							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-							State or Country
+							Country
 						</label>
-						<TextField
-							id="label-address-permanent-state-Or-Country"
-							value={client.residence.stateOrCountry}
-							placeholder="State or Country"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
+						<Select
 							name="stateOrCountry"
-						/>
+							onChange={handleChangeResidenceInput}
+							value={client.residence.stateOrCountry}
+							id="label-address-permanent-state-Or-Country"
+							style={{
+								minHeight: '40px',
+								marginTop: '15px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 						<label
 							htmlFor="label-address-permanent-street"
 							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
@@ -559,24 +573,36 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							}}>
 							<span style={{ textAlign: 'center', fontSize: '20px' }}>Mailing address</span>
 							<label
-								htmlFor="label-address-permanent-state-Or-Country"
+								htmlFor="label-mail-address-state-Or-Country"
 								style={{
 									margin: '6px 0 8px 0',
 									display: 'inline-block',
 									fontStyle: 'italic'
 								}}>
-								State or Country
+								Country
 							</label>
-							<TextField
-								id="label-address-permanent-state-Or-Country"
-								value={client.mailAddress.stateOrCountry}
-								placeholder="State or Country"
-								type="text"
-								onChange={handleChangeMailInput}
-								size="small"
-								align="left"
+							<Select
 								name="stateOrCountry"
-							/>
+								onChange={handleChangeMailInput}
+								value={client.mailAddress.stateOrCountry}
+								id="label-mail-address-state-Or-Country"
+								style={{
+									minHeight: '40px',
+									marginTop: '15px',
+									backgroundColor: '#1c2125',
+									color: 'white',
+									borderRadius: '6px'
+								}}>
+								<option value="Select country">Select country</option>
+								{COUNTRIES.map((country: any) => {
+									return (
+										<option value={country.name} key={country.name}>
+											{country.name}
+										</option>
+									);
+								})}
+								;
+							</Select>
 							<label
 								htmlFor="label-address-street"
 								style={{
@@ -762,16 +788,28 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							}}>
 							Issued by
 						</label>
-						<TextField
-							id="label-identification-issuedBy"
-							value={client.identification.issuedBy}
-							placeholder="Issued by"
-							type="text"
-							onChange={handleChangeIdentificationInput}
-							size="small"
-							align="left"
+						<Select
 							name="issuedBy"
-						/>
+							onChange={handleChangeIdentificationInput}
+							value={client.identification.issuedBy}
+							id="label-identification-issuedBy"
+							style={{
+								minHeight: '40px',
+								marginTop: '15px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 						<div
 							style={{
 								margin: '26px 16px 26px 0',
