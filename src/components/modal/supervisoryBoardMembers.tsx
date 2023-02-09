@@ -47,7 +47,7 @@ export const SupervisoryBoardMembers = ({
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		citizenship: '',
 		appliedSanctions: ''
@@ -63,9 +63,9 @@ export const SupervisoryBoardMembers = ({
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
-		citizenship: [],
+		citizenship: '',
 		appliedSanctions: ''
 	});
 
@@ -88,7 +88,7 @@ export const SupervisoryBoardMembers = ({
 			residence.streetNumber.length &&
 			residence.municipality.length &&
 			residence.zipCode.length &&
-			residence.stateOrCountry.length &&
+			residence.stateOrCountry !== 'Select country' &&
 			citizenship.length &&
 			appliedSanctions.length &&
 			gender !== 'Select gender'
@@ -189,13 +189,12 @@ export const SupervisoryBoardMembers = ({
 			hasBackButton>
 			<Wrapper>
 				<ContentTitle>Information on members of the supervisory board</ContentTitle>
-				<WrapContainer>
+				<WrapContainer style={{ paddingLeft: '2px', paddingRight: '10px' }}>
 					<label
 						htmlFor="label-supervisory-full-name"
 						style={{
 							margin: '6px 0 8px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Full name
 					</label>
@@ -213,11 +212,17 @@ export const SupervisoryBoardMembers = ({
 					/>
 					<div
 						style={{
-							margin: '26px 16px 26px 0',
+							margin: '16px 16px 16px 0',
 							display: 'flex',
-							justifyContent: 'space-between'
+							// justifyContent: 'space-between'
 						}}>
-						<label htmlFor="label-supervisory-date">Date of birth</label>
+						<label htmlFor="label-supervisory-date"
+							style={{
+							margin: '6px 15px 8px 0',
+							display: 'inline-block'
+						}}>
+							Date of birth
+						</label>
 						<input
 							type="date"
 							id="label-supervisory-date"
@@ -230,8 +235,7 @@ export const SupervisoryBoardMembers = ({
 						htmlFor="label-shareholders-place-of-birth"
 						style={{
 							margin: '6px 0 8px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Place of Birth
 					</label>
@@ -247,27 +251,27 @@ export const SupervisoryBoardMembers = ({
 						maxLength={50}
 						error={client.placeOfBirth.length < 2}
 					/>
-					<div style={{ marginBottom: '10px' }}>
-						<label htmlFor="label-shareholder-select-gender" style={{ fontStyle: 'italic' }}>
+					<div style={{ margin: '10px 0' }}>
+						<label htmlFor="label-shareholder-select-gender">
 							Gender
-							<Select
-								name="gender"
-								onChange={handleDropDownInput}
-								value={client.gender}
-								id="label-shareholder-select-gender"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select gender">Select gender</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Other">Other</option>
-							</Select>
 						</label>
+						<Select
+							name="gender"
+							onChange={handleDropDownInput}
+							value={client.gender}
+							id="label-shareholder-select-gender"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select gender">Select gender</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Other">Other</option>
+						</Select>
 					</div>
 					<p style={{ marginBottom: '25px' }}>
 						Person against whom are applied CZ/international sanctions?
@@ -280,7 +284,6 @@ export const SupervisoryBoardMembers = ({
 							marginBottom: '30px'
 						}}>
 						<label htmlFor="appliedSanctionsTrue">
-							Yes
 							<input
 								id="appliedSanctionsTrue"
 								type="radio"
@@ -289,9 +292,9 @@ export const SupervisoryBoardMembers = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							Yes
 						</label>
 						<label htmlFor="appliedSanctionsFalse">
-							No
 							<input
 								id="appliedSanctionsFalse"
 								type="radio"
@@ -300,6 +303,7 @@ export const SupervisoryBoardMembers = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							No
 						</label>
 					</div>
 					<div
@@ -307,28 +311,39 @@ export const SupervisoryBoardMembers = ({
 							display: 'flex',
 							flexDirection: 'column'
 						}}>
-						<span style={{ textAlign: 'center', fontSize: '20px' }}>
+						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
 							Permanent or other residence
 						</span>
-						<label
-							htmlFor="label-shareholder-address-permanent-state-Or-Country"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-							State or Country
-						</label>
-						<TextField
-							id="label-shareholder-address-permanent-state-Or-Country"
-							value={client.residence.stateOrCountry}
-							placeholder="State or Country"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
-							name="stateOrCountry"
-							maxLength={50}
-						/>
+						<div style={{ margin: '10px 0 0 0' }}>
+							<label htmlFor="label-shareholder-address-permanent-state-Or-Country">
+								Country
+							</label>
+							<Select
+								name="stateOrCountry"
+								onChange={handleChangeResidenceInput}
+								value={client.residence.stateOrCountry}
+								id="label-shareholder-address-permanent-state-Or-Country"
+								style={{
+									minHeight: '46px',
+									marginTop: '8px',
+									backgroundColor: '#1c2125',
+									color: 'white',
+									borderRadius: '6px'
+								}}>
+								<option value="Select country">Select country</option>
+								{COUNTRIES.map((country: any) => {
+									return (
+										<option value={country.name} key={country.name}>
+											{country.name}
+										</option>
+									);
+								})}
+								;
+							</Select>
+						</div>
 						<label
 							htmlFor="label-shareholder-address-permanent-street"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Street
 						</label>
 						<TextField
@@ -344,7 +359,7 @@ export const SupervisoryBoardMembers = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-street-number"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Street number
 						</label>
 						<TextField
@@ -360,7 +375,7 @@ export const SupervisoryBoardMembers = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-municipality"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Municipality
 						</label>
 						<TextField
@@ -376,7 +391,7 @@ export const SupervisoryBoardMembers = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-zipCode"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							ZIP Code
 						</label>
 						<TextField
@@ -392,7 +407,7 @@ export const SupervisoryBoardMembers = ({
 						/>
 					</div>
 					<div style={{ marginBottom: '10px', width: '100%' }}>
-						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+						<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 							Citizenship(s)
 						</p>
 						{COUNTRIES.map((country: any, index: number) => {

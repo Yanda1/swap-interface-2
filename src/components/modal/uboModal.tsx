@@ -50,19 +50,19 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		identification: {
 			type: '',
 			number: '',
-			issuedBy: '',
+			issuedBy: 'Select country',
 			validThru: ''
 		},
 		politicallPerson: '',
@@ -92,19 +92,19 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		identification: {
 			type: '',
 			number: '',
-			issuedBy: '',
+			issuedBy: 'Select country',
 			validThru: ''
 		},
 		politicallPerson: '',
@@ -130,9 +130,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			!Object.values(identification).includes('') &&
 			citizenship.length > 0 &&
 			taxResidency !== 'Select country' &&
-			gender !== 'Select gender'
+			gender !== 'Select gender' &&
+			residence.stateOrCountry !== 'Select country' &&
+			identification.issuedBy !== 'Select country'
 		) {
-			if (client.uboIsLegalEntity === 'Yes' && !Object.values(uboInfo).includes('')) {
+			if (client.uboIsLegalEntity === 'Yes' && !Object.values(uboInfo).includes('') && uboInfo.citizenship.length > 0) {
 				setIsValid(true);
 			} else if(client.uboIsLegalEntity === 'No') {
 				setIsValid(true);
@@ -294,13 +296,12 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			hasBackButton>
 			<Wrapper>
 				<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
-				<WrapContainer style={{ paddingRight: '10px' }}>
+				<WrapContainer style={{ paddingLeft: '2px', paddingRight: '10px' }}>
 					<label
 						htmlFor="label-ubo-company-name"
 						style={{
 							margin: '6px 0 8px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Name and surname / business company name
 					</label>
@@ -319,8 +320,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						htmlFor="label-ubo-id-number"
 						style={{
 							margin: '6px 0 8px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Birth identification number / identification number
 					</label>
@@ -339,8 +339,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						htmlFor="label-ubo-place-of-birth"
 						style={{
 							margin: '12px 0 8px 0',
-							display: 'block',
-							fontStyle: 'italic'
+							display: 'block'
 						}}>
 						Place of Birth
 					</label>
@@ -355,30 +354,57 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						name="placeOfBirth"
 						error={client.placeOfBirth.length < 2}
 					/>
-					<div style={{ margin: '10px 0' }}>
-						<label htmlFor="label-select-gender" style={{ fontStyle: 'italic' }}>
+					<div style={{ marginTop: '12px' }}>
+						<label htmlFor="label-select-gender">
 							Gender
-							<Select
-								name="gender"
-								onChange={handleDropDownInput}
-								value={client.gender}
-								id="label-select-gender"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select gender">Select gender</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Other">Other</option>
-							</Select>
 						</label>
+						<Select
+							name="gender"
+							onChange={handleDropDownInput}
+							value={client.gender}
+							id="label-select-gender"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select gender">Select gender</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Other">Other</option>
+						</Select>
+					</div>
+					<div style={{ margin: '12px 0 30px', width: '100%' }}>
+						<label htmlFor="label-select-tax-residency">
+							Tax Residency
+						</label>
+						<Select
+							name="taxResidency"
+							onChange={handleDropDownInput}
+							value={client.taxResidency}
+							id="label-select-tax-residency"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 					</div>
 					<div style={{ marginBottom: '10px', width: '100%' }}>
-						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+						<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 							Citizenship(s)
 						</p>
 						{COUNTRIES.map((country: any, index: number) => {
@@ -405,60 +431,45 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							);
 						})}
 					</div>
-					<div style={{ margin: '10px 0 30px', width: '100%' }}>
-						<label htmlFor="label-select-tax-residency" style={{ fontStyle: 'italic' }}>
-							Tax Residency
-							<Select
-								name="taxResidency"
-								onChange={handleDropDownInput}
-								value={client.taxResidency}
-								id="label-select-tax-residency"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select country">Select country</option>
-								{COUNTRIES.map((country: any) => {
-									return (
-										<option value={country.name} key={country.name}>
-											{country.name}
-										</option>
-									);
-								})}
-								;
-							</Select>
-						</label>
-					</div>
 					<div
 						style={{
-							margin: '10px 0',
+							margin: '30px 0 10px 0',
 							display: 'flex',
 							flexDirection: 'column'
 						}}>
-						<span style={{ textAlign: 'center', fontSize: '20px' }}>
+						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
 							Permanent or other residence
 						</span>
 						<label
 							htmlFor="label-address-permanent-state-Or-Country"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-							State or Country
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+							Country
 						</label>
-						<TextField
-							id="label-address-permanent-state-Or-Country"
-							value={client.residence.stateOrCountry}
-							placeholder="State or Country"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
+						<Select
 							name="stateOrCountry"
-						/>
+							onChange={handleChangeResidenceInput}
+							value={client.residence.stateOrCountry}
+							id="label-address-permanent-state-Or-Country"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 						<label
 							htmlFor="label-address-permanent-street"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Street
 						</label>
 						<TextField
@@ -473,7 +484,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						/>
 						<label
 							htmlFor="label-address-permanent-street-number"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Street number
 						</label>
 						<TextField
@@ -488,7 +499,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						/>
 						<label
 							htmlFor="label-address-permanent-municipality"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Municipality
 						</label>
 						<TextField
@@ -503,7 +514,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						/>
 						<label
 							htmlFor="label-address-permanent-zipCode"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							ZIP Code
 						</label>
 						<TextField
@@ -528,7 +539,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-mailing-permanent-address-true">
-							Yes
 							<input
 								id="label-mailing-permanent-address-true"
 								type="radio"
@@ -537,9 +547,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-mailing-permanent-address-false">
-							No
 							<input
 								id="label-mailing-permanent-address-false"
 								type="radio"
@@ -548,41 +558,53 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							No
 						</label>
 					</div>
 					{client.permanentAndMailAddressSame === 'No' && (
 						<div
 							style={{
-								marginBottom: '12px',
+								marginTop: '30px',
+								marginBottom: '30px',
 								display: 'flex',
 								flexDirection: 'column'
 							}}>
-							<span style={{ textAlign: 'center', fontSize: '20px' }}>Mailing address</span>
+							<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Mailing address</span>
 							<label
-								htmlFor="label-address-permanent-state-Or-Country"
+								htmlFor="label-mail-address-state-Or-Country"
 								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									marginTop: '10px',
+									display: 'inline-block'
 								}}>
-								State or Country
+								Country
 							</label>
-							<TextField
-								id="label-address-permanent-state-Or-Country"
-								value={client.mailAddress.stateOrCountry}
-								placeholder="State or Country"
-								type="text"
-								onChange={handleChangeMailInput}
-								size="small"
-								align="left"
+							<Select
 								name="stateOrCountry"
-							/>
+								onChange={handleChangeMailInput}
+								value={client.mailAddress.stateOrCountry}
+								id="label-mail-address-state-Or-Country"
+								style={{
+									minHeight: '46px',
+									marginTop: '8px',
+									backgroundColor: '#1c2125',
+									color: 'white',
+									borderRadius: '6px'
+								}}>
+								<option value="Select country">Select country</option>
+								{COUNTRIES.map((country: any) => {
+									return (
+										<option value={country.name} key={country.name}>
+											{country.name}
+										</option>
+									);
+								})}
+								;
+							</Select>
 							<label
 								htmlFor="label-address-street"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Street
 							</label>
@@ -600,8 +622,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								htmlFor="label-address-street-number"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Street number
 							</label>
@@ -619,8 +640,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								htmlFor="label-address-municipality"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Municipality
 							</label>
@@ -638,8 +658,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								htmlFor="label-address-zipCode"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								ZIP Code
 							</label>
@@ -655,10 +674,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							/>
 						</div>
 					)}
-					<p style={{ marginBottom: '25px' }}>Politically exposed person?</p>
+					<p style={{ marginBottom: '15px' }}>Politically exposed person?</p>
 					<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
 						<label htmlFor="politicallPersonTrue">
-							Yes
 							<input
 								id="politicallPersonTrue"
 								type="radio"
@@ -667,9 +685,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							Yes
 						</label>
 						<label htmlFor="politicallPersonFalse">
-							No
 							<input
 								id="politicallPersonFalse"
 								type="radio"
@@ -678,9 +696,10 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							No
 						</label>
 					</div>
-					<p style={{ marginBottom: '25px' }}>
+					<p style={{ marginBottom: '15px' }}>
 						Person against whom are applied CZ/international sanctions?
 					</p>
 					<div
@@ -688,10 +707,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							display: 'flex',
 							justifyContent: 'space-evenly',
 							width: '100%',
-							marginBottom: '30px'
+							marginBottom: '10px'
 						}}>
 						<label htmlFor="appliedSanctionsTrue">
-							Yes
 							<input
 								id="appliedSanctionsTrue"
 								type="radio"
@@ -700,9 +718,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							Yes
 						</label>
 						<label htmlFor="appliedSanctionsFalse">
-							No
 							<input
 								id="appliedSanctionsFalse"
 								type="radio"
@@ -711,16 +729,24 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							No
 						</label>
 					</div>
-					<div>
-						<p>Identification (ID card or passport)</p>
+					<div
+						style={{
+							marginTop: '30px',
+							marginBottom: '30px',
+							display: 'flex',
+							flexDirection: 'column'
+						}}>
+						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
+							Identification (ID card or passport)
+						</span>
 						<label
 							htmlFor="label-identification-type"
 							style={{
 								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								display: 'inline-block'
 							}}>
 							Type
 						</label>
@@ -738,8 +764,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							htmlFor="label-identification-number"
 							style={{
 								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								display: 'inline-block'
 							}}>
 							Number
 						</label>
@@ -756,34 +781,44 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 						<label
 							htmlFor="label-identification-issuedBy"
 							style={{
-								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								marginTop: '6px',
+								display: 'inline-block'
 							}}>
 							Issued by
 						</label>
-						<TextField
-							id="label-identification-issuedBy"
-							value={client.identification.issuedBy}
-							placeholder="Issued by"
-							type="text"
-							onChange={handleChangeIdentificationInput}
-							size="small"
-							align="left"
+						<Select
 							name="issuedBy"
-						/>
+							onChange={handleChangeIdentificationInput}
+							value={client.identification.issuedBy}
+							id="label-identification-issuedBy"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 						<div
 							style={{
-								margin: '26px 16px 26px 0',
+								margin: '16px 16px 0 0',
 								display: 'flex',
-								justifyContent: 'space-between'
+								// justifyContent: 'space-between'
 							}}>
 							<label
 								htmlFor="label-identification-validThru"
 								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									margin: '6px 15px 8px 0',
+									display: 'inline-block'
 								}}>
 								Valid thru
 							</label>
@@ -808,7 +843,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-uboIsLegalEntity-true">
-							Yes
 							<input
 								id="label-uboIsLegalEntity-true"
 								type="radio"
@@ -817,9 +851,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="uboIsLegalEntity"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-uboIsLegalEntity-false">
-							No
 							<input
 								id="label-uboIsLegalEntity-false"
 								type="radio"
@@ -828,21 +862,22 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								onChange={handleChangeClientInput}
 								name="uboIsLegalEntity"
 							/>
+							No
 						</label>
 					</div>
 					{client.uboIsLegalEntity === 'Yes' && (
 						<div
 							style={{
-								margin: '10px 0',
+								margin: '30px 0 10px 0',
 								display: 'flex',
 								flexDirection: 'column'
 							}}>
-							<span style={{ textAlign: 'center', fontSize: '20px' }}>
-								Provide information about your statutory body.
+							<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
+								Provide information about your statutory body
 							</span>
 							<label
 								htmlFor="label-uboInfo-name-surname"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '16px 0 8px 0', display: 'inline-block' }}>
 								Name and Surname
 							</label>
 							<TextField
@@ -857,13 +892,16 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							/>
 							<div
 								style={{
-									margin: '26px 16px 26px 0',
+									margin: '16px 16px 16px 0',
 									display: 'flex',
-									justifyContent: 'space-between'
+									// justifyContent: 'space-between'
 								}}>
 								<label
 									htmlFor="label-uboInfo-dateOfBirth"
-									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									style={{
+									margin: '6px 15px 8px 0',
+									display: 'inline-block'
+								}}>
 									Date of birth
 								</label>
 								<input
@@ -877,7 +915,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							</div>
 							<label
 								htmlFor="label-uboInfo-permanentResidence"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Permanent Residence
 							</label>
 							<TextField
@@ -892,7 +930,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							/>
 							<label
 								htmlFor="label-uboInfo-subsequentlyBusinessCompany"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Subsequently business company
 							</label>
 							<TextField
@@ -907,7 +945,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							/>
 							<label
 								htmlFor="label-uboInfo-registeredOffice"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
 								Registered Office
 							</label>
 							<TextField
@@ -922,7 +960,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							/>
 							<label
 								htmlFor="label-uboInfo-idNumber"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
 								Identification number
 							</label>
 							<TextField
@@ -936,7 +974,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								name="idNumber"
 							/>
 							<div style={{ marginBottom: '10px', width: '100%' }}>
-								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+								<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 									Citizenship(s)
 								</p>
 								{COUNTRIES.map((country: any, index: number) => {

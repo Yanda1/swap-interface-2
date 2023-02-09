@@ -51,19 +51,19 @@ export const ShareHoldersModal = ({
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		identification: {
 			type: '',
 			number: '',
-			issuedBy: '',
+			issuedBy: 'Select country',
 			validThru: ''
 		},
 		politicallPerson: '',
@@ -92,19 +92,19 @@ export const ShareHoldersModal = ({
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		mailAddress: {
 			street: '',
 			streetNumber: '',
 			municipality: '',
 			zipCode: '',
-			stateOrCountry: ''
+			stateOrCountry: 'Select country'
 		},
 		identification: {
 			type: '',
 			number: '',
-			issuedBy: '',
+			issuedBy: 'Select country',
 			validThru: ''
 		},
 		politicallPerson: '',
@@ -130,9 +130,11 @@ export const ShareHoldersModal = ({
 			!Object.values(identification).includes('') &&
 			citizenship.length > 0 &&
 			gender !== 'Select gender' &&
-			taxResidency !== 'Select country'
+			taxResidency !== 'Select country' &&
+			residence.stateOrCountry !== 'Select country' &&
+			identification.issuedBy !== 'Select country'
 		) {
-			if (client.shareHolderIsLegalEntity === 'Yes' && !Object.values(shareHolderInfo).includes('')) {
+			if (client.shareHolderIsLegalEntity === 'Yes' && !Object.values(shareHolderInfo).includes('') && shareHolderInfo.citizenship.length > 0) {
 				setIsValid(true);
 			} else if(client.shareHolderIsLegalEntity === 'No') {
 				setIsValid(true);
@@ -197,7 +199,7 @@ export const ShareHoldersModal = ({
 		if (checked && !client.shareHolderInfo[attributeValue as keyof typeof client.shareHolderInfo].includes(value)) {
 			setClient({
 				...client,
-				uboInfo: { ...client.shareHolderInfo, [attributeValue]: [...client.shareHolderInfo[attributeValue as keyof typeof client.shareHolderInfo], value] }
+				shareHolderInfo: { ...client.shareHolderInfo, [attributeValue]: [...client.shareHolderInfo[attributeValue as keyof typeof client.shareHolderInfo], value] }
 			});
 			
 		}
@@ -207,7 +209,7 @@ export const ShareHoldersModal = ({
 			);
 			setClient({
 				...client,
-				uboInfo: { ...client.shareHolderInfo, [attributeValue]: [...filteredArray] }
+				shareHolderInfo: { ...client.shareHolderInfo, [attributeValue]: [...filteredArray] }
 			});
 		}
 	};
@@ -237,14 +239,14 @@ export const ShareHoldersModal = ({
 		bodyFormData.append('identification_number', client.identification.number);
 		bodyFormData.append('identification_issued_by', client.identification.issuedBy);
 		bodyFormData.append('identification_valid_thru', client.identification.validThru);
-		if (client.uboIsLegalEntity === 'Yes') {
-			bodyFormData.append('statutory_full_name', client.uboInfo.nameAndSurname);
-			bodyFormData.append('statutory_dob', client.uboInfo.dateOfBirth);
-			bodyFormData.append('statutory_permanent_residence', client.uboInfo.permanentResidence);
-			bodyFormData.append('statutory_citizenship', client.uboInfo.citizenship.join(', '));
-			bodyFormData.append('statutory_subsequently_business', client.uboInfo.subsequentlyBusinessCompany);
-			bodyFormData.append('statutory_office_address', client.uboInfo.registeredOffice);
-			bodyFormData.append('statutory_birth_id', client.uboInfo.idNumber);
+		if (client.shareHolderIsLegalEntity === 'Yes') {
+			bodyFormData.append('statutory_full_name', client.shareHolderInfo.nameAndSurname);
+			bodyFormData.append('statutory_dob', client.shareHolderInfo.dateOfBirth);
+			bodyFormData.append('statutory_permanent_residence', client.shareHolderInfo.permanentResidence);
+			bodyFormData.append('statutory_citizenship', client.shareHolderInfo.citizenship.join(', '));
+			bodyFormData.append('statutory_subsequently_business', client.shareHolderInfo.subsequentlyBusinessCompany);
+			bodyFormData.append('statutory_office_address', client.shareHolderInfo.registeredOffice);
+			bodyFormData.append('statutory_birth_id', client.shareHolderInfo.idNumber);
 		}
 
 		api.request({
@@ -290,13 +292,12 @@ export const ShareHoldersModal = ({
 				<ContentTitle>
 					Information on majority shareholders or person in control of client (more than 25%)
 				</ContentTitle>
-				<WrapContainer style={{ paddingRight: '10px' }}>
+				<WrapContainer style={{ paddingLeft: '2px', paddingRight: '10px' }}>
 					<label
 						htmlFor="label-shareholder-company-name"
 						style={{
 							marginBottom: '8px',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Name and surname / business company name
 					</label>
@@ -315,8 +316,7 @@ export const ShareHoldersModal = ({
 						htmlFor="label-shareholders-id-number"
 						style={{
 							margin: '10px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Birth identification number / identification number
 					</label>
@@ -335,8 +335,7 @@ export const ShareHoldersModal = ({
 						htmlFor="label-shareholders-place-of-birth"
 						style={{
 							margin: '10px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Place of Birth
 					</label>
@@ -352,29 +351,56 @@ export const ShareHoldersModal = ({
 						error={client.placeOfBirth.length < 2}
 					/>
 					<div style={{ margin: '10px 0' }}>
-						<label htmlFor="label-shareholder-select-gender" style={{ fontStyle: 'italic' }}>
+						<label htmlFor="label-shareholder-select-gender">
 							Gender
-							<Select
-								name="gender"
-								onChange={handleDropDownInput}
-								value={client.gender}
-								id="label-shareholder-select-gender"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select gender">Select gender</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Other">Other</option>
-							</Select>
 						</label>
+						<Select
+							name="gender"
+							onChange={handleDropDownInput}
+							value={client.gender}
+							id="label-shareholder-select-gender"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select gender">Select gender</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Other">Other</option>
+						</Select>
+					</div>
+					<div style={{ margin: '8px 0 30px', width: '100%' }}>
+						<label htmlFor="label-select-shareholder-tax-residency">
+							Tax Residency
+						</label>
+						<Select
+							name="taxResidency"
+							onChange={handleDropDownInput}
+							value={client.taxResidency}
+							id="label-select-shareholder-tax-residency"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 					</div>
 					<div style={{ marginBottom: '10px', width: '100%' }}>
-						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+						<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 							Citizenship(s)
 						</p>
 						{COUNTRIES.map((country: any, index: number) => {
@@ -402,60 +428,45 @@ export const ShareHoldersModal = ({
 							);
 						})}
 					</div>
-					<div style={{ margin: '10px 0 30px', width: '100%' }}>
-						<label htmlFor="label-select-shareholder-tax-residency" style={{ fontStyle: 'italic' }}>
-							Tax Residency
-							<Select
-								name="taxResidency"
-								onChange={handleDropDownInput}
-								value={client.taxResidency}
-								id="label-select-shareholder-tax-residency"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select country">Select country</option>
-								{COUNTRIES.map((country: any) => {
-									return (
-										<option value={country.name} key={country.name}>
-											{country.name}
-										</option>
-									);
-								})}
-								;
-							</Select>
-						</label>
-					</div>
 					<div
 						style={{
-							margin: '10px 0',
+							margin: '30px 0 10px 0',
 							display: 'flex',
 							flexDirection: 'column'
 						}}>
-						<span style={{ textAlign: 'center', fontSize: '20px' }}>
+						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
 							Permanent or other residence
 						</span>
 						<label
 							htmlFor="label-shareholder-address-permanent-state-Or-Country"
-							style={{ margin: '10px 0', display: 'inline-block', fontStyle: 'italic' }}>
-							State or Country
+							style={{ marginTop: '10px', display: 'inline-block' }}>
+							Country
 						</label>
-						<TextField
-							id="label-shareholder-address-permanent-state-Or-Country"
-							value={client.residence.stateOrCountry}
-							placeholder="State or Country"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
+						<Select
 							name="stateOrCountry"
-						/>
+							onChange={handleChangeResidenceInput}
+							value={client.residence.stateOrCountry}
+							id="label-shareholder-address-permanent-state-Or-Country"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 						<label
 							htmlFor="label-shareholder-address-permanent-street"
-							style={{ margin: '10px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '10px 0', display: 'inline-block' }}>
 							Street
 						</label>
 						<TextField
@@ -470,7 +481,7 @@ export const ShareHoldersModal = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-street-number"
-							style={{ margin: '10px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '10px 0', display: 'inline-block' }}>
 							Street number
 						</label>
 						<TextField
@@ -485,7 +496,7 @@ export const ShareHoldersModal = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-municipality"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Municipality
 						</label>
 						<TextField
@@ -500,7 +511,7 @@ export const ShareHoldersModal = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-zipCode"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							ZIP Code
 						</label>
 						<TextField
@@ -514,7 +525,7 @@ export const ShareHoldersModal = ({
 							name="zipCode"
 						/>
 					</div>
-					<p style={{ marginBottom: '25px' }}>
+					<p style={{ marginBottom: '15px' }}>
 						Is your permanent (RESIDENCE) address the same as your mailing address?
 					</p>
 					<div
@@ -525,7 +536,6 @@ export const ShareHoldersModal = ({
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-shareholder-mailing-permanent-address-true">
-							Yes
 							<input
 								id="label-shareholder-mailing-permanent-address-true"
 								type="radio"
@@ -534,9 +544,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-shareholder-mailing-permanent-address-false">
-							No
 							<input
 								id="label-shareholder-mailing-permanent-address-false"
 								type="radio"
@@ -545,6 +555,7 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="permanentAndMailAddressSame"
 							/>
+							No
 						</label>
 					</div>
 					{client.permanentAndMailAddressSame === 'No' && (
@@ -554,32 +565,42 @@ export const ShareHoldersModal = ({
 								display: 'flex',
 								flexDirection: 'column'
 							}}>
-							<span style={{ textAlign: 'center', fontSize: '20px' }}>Mailing address</span>
+							<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Mailing address</span>
 							<label
-								htmlFor="label-shareholder-address-permanent-state-Or-Country"
+								htmlFor="label-shareholder-mail-address-state-Or-Country"
 								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									marginTop: '10px',
+									display: 'inline-block'
 								}}>
-								State or Country
+								Country
 							</label>
-							<TextField
-								id="label-shareholder-address-permanent-state-Or-Country"
-								value={client.mailAddress.stateOrCountry}
-								placeholder="State or Country"
-								type="text"
-								onChange={handleChangeMailInput}
-								size="small"
-								align="left"
+							<Select
 								name="stateOrCountry"
-							/>
+								onChange={handleChangeMailInput}
+								value={client.mailAddress.stateOrCountry}
+								id="label-shareholder-mail-address-state-Or-Country"
+								style={{
+									minHeight: '46px',
+									marginTop: '8px',
+									backgroundColor: '#1c2125',
+									color: 'white',
+									borderRadius: '6px'
+								}}>
+								<option value="Select country">Select country</option>
+								{COUNTRIES.map((country: any) => {
+									return (
+										<option value={country.name} key={country.name}>
+											{country.name}
+										</option>
+									);
+								})}
+								;
+							</Select>
 							<label
 								htmlFor="label-shareholder-address-street"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Street
 							</label>
@@ -597,8 +618,7 @@ export const ShareHoldersModal = ({
 								htmlFor="label-shareholder-address-street-number"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Street number
 							</label>
@@ -616,8 +636,7 @@ export const ShareHoldersModal = ({
 								htmlFor="label-shareholder-address-municipality"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Municipality
 							</label>
@@ -635,8 +654,7 @@ export const ShareHoldersModal = ({
 								htmlFor="label-shareholder-address-zipCode"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								ZIP Code
 							</label>
@@ -657,11 +675,9 @@ export const ShareHoldersModal = ({
 						style={{
 							display: 'flex',
 							justifyContent: 'space-evenly',
-							width: '100%',
-							margin: '0 0 30px 0'
+							width: '100%'
 						}}>
 						<label htmlFor="politicallPersonTrue">
-							Yes
 							<input
 								id="politicallPersonTrue"
 								type="radio"
@@ -670,9 +686,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							Yes
 						</label>
 						<label htmlFor="politicallPersonFalse">
-							No
 							<input
 								id="politicallPersonFalse"
 								type="radio"
@@ -681,9 +697,10 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="politicallPerson"
 							/>
+							No
 						</label>
 					</div>
-					<p style={{ marginBottom: '25px' }}>
+					<p style={{ marginBottom: '15px' }}>
 						Person against whom are applied CZ/international sanctions?
 					</p>
 					<div
@@ -691,10 +708,9 @@ export const ShareHoldersModal = ({
 							display: 'flex',
 							justifyContent: 'space-evenly',
 							width: '100%',
-							marginBottom: '30px'
+							marginBottom: '10px'
 						}}>
 						<label htmlFor="appliedSanctionsTrue">
-							Yes
 							<input
 								id="appliedSanctionsTrue"
 								type="radio"
@@ -703,9 +719,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							Yes
 						</label>
 						<label htmlFor="appliedSanctionsFalse">
-							No
 							<input
 								id="appliedSanctionsFalse"
 								type="radio"
@@ -714,16 +730,22 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="appliedSanctions"
 							/>
+							No
 						</label>
 					</div>
-					<div>
-						<p>Identification (ID card or passport)</p>
+					<div
+						style={{
+							marginTop: '30px',
+							marginBottom: '30px',
+							display: 'flex',
+							flexDirection: 'column'
+						}}>
+						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Identification (ID card or passport)</span>
 						<label
 							htmlFor="label-shareholder-identification-type"
 							style={{
 								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								display: 'inline-block'
 							}}>
 							Type
 						</label>
@@ -741,8 +763,7 @@ export const ShareHoldersModal = ({
 							htmlFor="label-shareholder-identification-number"
 							style={{
 								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								display: 'inline-block'
 							}}>
 							Number
 						</label>
@@ -759,34 +780,43 @@ export const ShareHoldersModal = ({
 						<label
 							htmlFor="label-shareholder-identification-issuedBy"
 							style={{
-								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								marginTop: '8px',
+								display: 'inline-block'
 							}}>
 							Issued by
 						</label>
-						<TextField
-							id="label-shareholder-identification-issuedBy"
-							value={client.identification.issuedBy}
-							placeholder="Issued by"
-							type="text"
-							onChange={handleChangeIdentificationInput}
-							size="small"
-							align="left"
+						<Select
 							name="issuedBy"
-						/>
+							onChange={handleChangeIdentificationInput}
+							value={client.identification.issuedBy}
+							id="label-shareholder-identification-issuedBy"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})};
+						</Select>
 						<div
 							style={{
-								margin: '26px 16px 26px 0',
+								margin: '16px 16px 0 0',
 								display: 'flex',
-								justifyContent: 'space-between'
+								// justifyContent: 'space-between'
 							}}>
 							<label
 								htmlFor="label-identification-validThru"
 								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									margin: '6px 15px 8px 0',
+									display: 'inline-block'
 								}}>
 								Valid thru
 							</label>
@@ -809,7 +839,6 @@ export const ShareHoldersModal = ({
 							marginBottom: '20px'
 						}}>
 						<label htmlFor="label-shareHolderIsLegalEntity-true">
-							Yes
 							<input
 								id="label-shareHolderIsLegalEntity-true"
 								type="radio"
@@ -818,9 +847,9 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="shareHolderIsLegalEntity"
 							/>
+							Yes
 						</label>
 						<label htmlFor="label-shareHolderIsLegalEntity-false">
-							No
 							<input
 								id="label-shareHolderIsLegalEntity-false"
 								type="radio"
@@ -829,6 +858,7 @@ export const ShareHoldersModal = ({
 								onChange={handleChangeClientInput}
 								name="shareHolderIsLegalEntity"
 							/>
+							No
 						</label>
 					</div>
 					{client.shareHolderIsLegalEntity === 'Yes' && (
@@ -838,12 +868,12 @@ export const ShareHoldersModal = ({
 								display: 'flex',
 								flexDirection: 'column'
 							}}>
-							<span style={{ textAlign: 'center', fontSize: '20px' }}>
-								Provide information about your statutory body.
+							<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
+								Provide information about your statutory body
 							</span>
 							<label
 								htmlFor="label-shareHolderInfo-name-surname"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '16px 0 8px 0', display: 'inline-block' }}>
 								Name and Surname
 							</label>
 							<TextField
@@ -858,18 +888,21 @@ export const ShareHoldersModal = ({
 							/>
 							<div
 								style={{
-									margin: '26px 16px 26px 0',
+									margin: '16px 16px 16px 0',
 									display: 'flex',
-									justifyContent: 'space-between'
+									// justifyContent: 'space-between'
 								}}>
 								<label
-									htmlFor="label-uboInfo-dateOfBirth"
-									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									htmlFor="label-shareHolderInfo-dateOfBirth"
+									style={{
+										margin: '6px 15px 8px 0',
+										display: 'inline-block'
+									}}>
 									Date of birth
 								</label>
 								<input
 									type="date"
-									id="label-uboInfo-dateOfBirth"
+									id="label-shareHolderInfo-dateOfBirth"
 									value={client.shareHolderInfo.dateOfBirth}
 									min="1900-01-01"
 									name="dateOfBirth"
@@ -878,7 +911,7 @@ export const ShareHoldersModal = ({
 							</div>
 							<label
 								htmlFor="label-shareHolderInfo-permanentResidence"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Permanent Residence
 							</label>
 							<TextField
@@ -892,23 +925,8 @@ export const ShareHoldersModal = ({
 								name="permanentResidence"
 							/>
 							<label
-								htmlFor="label-shareHolderInfo-citizenship"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
-								Citizenship
-							</label>
-							<TextField
-								id="label-shareHolderInfo-citizenship"
-								value={client.shareHolderInfo.citizenship}
-								placeholder="Citizenship"
-								type="text"
-								onChange={handleChangeShareHolderInfoInput}
-								size="small"
-								align="left"
-								name="citizenship"
-							/>
-							<label
 								htmlFor="label-shareHolderInfo-subsequentlyBusinessCompany"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Subsequently business company
 							</label>
 							<TextField
@@ -923,7 +941,7 @@ export const ShareHoldersModal = ({
 							/>
 							<label
 								htmlFor="label-shareHolderInfo-registeredOffice"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Registered Office
 							</label>
 							<TextField
@@ -938,7 +956,7 @@ export const ShareHoldersModal = ({
 							/>
 							<label
 								htmlFor="label-shareHolderInfo-idNumber"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Identification number
 							</label>
 							<TextField
@@ -952,7 +970,7 @@ export const ShareHoldersModal = ({
 								name="idNumber"
 							/>
 							<div style={{ marginBottom: '10px', width: '100%' }}>
-								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+								<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 									Citizenship(s)
 								</p>
 								{COUNTRIES.map((country: any, index: number) => {
