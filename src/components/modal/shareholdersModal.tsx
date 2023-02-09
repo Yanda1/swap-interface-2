@@ -292,13 +292,12 @@ export const ShareHoldersModal = ({
 				<ContentTitle>
 					Information on majority shareholders or person in control of client (more than 25%)
 				</ContentTitle>
-				<WrapContainer style={{ paddingRight: '10px' }}>
+				<WrapContainer style={{ paddingLeft: '2px', paddingRight: '10px' }}>
 					<label
 						htmlFor="label-shareholder-company-name"
 						style={{
 							marginBottom: '8px',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Name and surname / business company name
 					</label>
@@ -317,8 +316,7 @@ export const ShareHoldersModal = ({
 						htmlFor="label-shareholders-id-number"
 						style={{
 							margin: '10px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Birth identification number / identification number
 					</label>
@@ -337,8 +335,7 @@ export const ShareHoldersModal = ({
 						htmlFor="label-shareholders-place-of-birth"
 						style={{
 							margin: '10px 0',
-							display: 'inline-block',
-							fontStyle: 'italic'
+							display: 'inline-block'
 						}}>
 						Place of Birth
 					</label>
@@ -354,29 +351,56 @@ export const ShareHoldersModal = ({
 						error={client.placeOfBirth.length < 2}
 					/>
 					<div style={{ margin: '10px 0' }}>
-						<label htmlFor="label-shareholder-select-gender" style={{ fontStyle: 'italic' }}>
+						<label htmlFor="label-shareholder-select-gender">
 							Gender
-							<Select
-								name="gender"
-								onChange={handleDropDownInput}
-								value={client.gender}
-								id="label-shareholder-select-gender"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select gender">Select gender</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-								<option value="Other">Other</option>
-							</Select>
 						</label>
+						<Select
+							name="gender"
+							onChange={handleDropDownInput}
+							value={client.gender}
+							id="label-shareholder-select-gender"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select gender">Select gender</option>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Other">Other</option>
+						</Select>
+					</div>
+					<div style={{ margin: '8px 0 30px', width: '100%' }}>
+						<label htmlFor="label-select-shareholder-tax-residency">
+							Tax Residency
+						</label>
+						<Select
+							name="taxResidency"
+							onChange={handleDropDownInput}
+							value={client.taxResidency}
+							id="label-select-shareholder-tax-residency"
+							style={{
+								minHeight: '46px',
+								marginTop: '8px',
+								backgroundColor: '#1c2125',
+								color: 'white',
+								borderRadius: '6px'
+							}}>
+							<option value="Select country">Select country</option>
+							{COUNTRIES.map((country: any) => {
+								return (
+									<option value={country.name} key={country.name}>
+										{country.name}
+									</option>
+								);
+							})}
+							;
+						</Select>
 					</div>
 					<div style={{ marginBottom: '10px', width: '100%' }}>
-						<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+						<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 							Citizenship(s)
 						</p>
 						{COUNTRIES.map((country: any, index: number) => {
@@ -404,45 +428,18 @@ export const ShareHoldersModal = ({
 							);
 						})}
 					</div>
-					<div style={{ margin: '10px 0 30px', width: '100%' }}>
-						<label htmlFor="label-select-shareholder-tax-residency" style={{ fontStyle: 'italic' }}>
-							Tax Residency
-							<Select
-								name="taxResidency"
-								onChange={handleDropDownInput}
-								value={client.taxResidency}
-								id="label-select-shareholder-tax-residency"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select country">Select country</option>
-								{COUNTRIES.map((country: any) => {
-									return (
-										<option value={country.name} key={country.name}>
-											{country.name}
-										</option>
-									);
-								})}
-								;
-							</Select>
-						</label>
-					</div>
 					<div
 						style={{
-							margin: '10px 0',
+							margin: '30px 0 10px 0',
 							display: 'flex',
 							flexDirection: 'column'
 						}}>
-						<span style={{ textAlign: 'center', fontSize: '20px' }}>
+						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
 							Permanent or other residence
 						</span>
 						<label
 							htmlFor="label-shareholder-address-permanent-state-Or-Country"
-							style={{ margin: '10px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ marginTop: '10px', display: 'inline-block' }}>
 							Country
 						</label>
 						<Select
@@ -451,8 +448,8 @@ export const ShareHoldersModal = ({
 							value={client.residence.stateOrCountry}
 							id="label-shareholder-address-permanent-state-Or-Country"
 							style={{
-								minHeight: '40px',
-								marginTop: '15px',
+								minHeight: '46px',
+								marginTop: '8px',
 								backgroundColor: '#1c2125',
 								color: 'white',
 								borderRadius: '6px'
@@ -469,7 +466,7 @@ export const ShareHoldersModal = ({
 						</Select>
 						<label
 							htmlFor="label-shareholder-address-permanent-street"
-							style={{ margin: '10px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '10px 0', display: 'inline-block' }}>
 							Street
 						</label>
 						<TextField
@@ -484,7 +481,7 @@ export const ShareHoldersModal = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-street-number"
-							style={{ margin: '10px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '10px 0', display: 'inline-block' }}>
 							Street number
 						</label>
 						<TextField
@@ -499,7 +496,7 @@ export const ShareHoldersModal = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-municipality"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							Municipality
 						</label>
 						<TextField
@@ -514,7 +511,7 @@ export const ShareHoldersModal = ({
 						/>
 						<label
 							htmlFor="label-shareholder-address-permanent-zipCode"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 							ZIP Code
 						</label>
 						<TextField
@@ -528,7 +525,7 @@ export const ShareHoldersModal = ({
 							name="zipCode"
 						/>
 					</div>
-					<p style={{ marginBottom: '25px' }}>
+					<p style={{ marginBottom: '15px' }}>
 						Is your permanent (RESIDENCE) address the same as your mailing address?
 					</p>
 					<div
@@ -568,13 +565,12 @@ export const ShareHoldersModal = ({
 								display: 'flex',
 								flexDirection: 'column'
 							}}>
-							<span style={{ textAlign: 'center', fontSize: '20px' }}>Mailing address</span>
+							<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Mailing address</span>
 							<label
 								htmlFor="label-shareholder-mail-address-state-Or-Country"
 								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									marginTop: '10px',
+									display: 'inline-block'
 								}}>
 								Country
 							</label>
@@ -584,8 +580,8 @@ export const ShareHoldersModal = ({
 								value={client.mailAddress.stateOrCountry}
 								id="label-shareholder-mail-address-state-Or-Country"
 								style={{
-									minHeight: '40px',
-									marginTop: '15px',
+									minHeight: '46px',
+									marginTop: '8px',
 									backgroundColor: '#1c2125',
 									color: 'white',
 									borderRadius: '6px'
@@ -604,8 +600,7 @@ export const ShareHoldersModal = ({
 								htmlFor="label-shareholder-address-street"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Street
 							</label>
@@ -623,8 +618,7 @@ export const ShareHoldersModal = ({
 								htmlFor="label-shareholder-address-street-number"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Street number
 							</label>
@@ -642,8 +636,7 @@ export const ShareHoldersModal = ({
 								htmlFor="label-shareholder-address-municipality"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								Municipality
 							</label>
@@ -661,8 +654,7 @@ export const ShareHoldersModal = ({
 								htmlFor="label-shareholder-address-zipCode"
 								style={{
 									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									display: 'inline-block'
 								}}>
 								ZIP Code
 							</label>
@@ -683,8 +675,7 @@ export const ShareHoldersModal = ({
 						style={{
 							display: 'flex',
 							justifyContent: 'space-evenly',
-							width: '100%',
-							margin: '0 0 30px 0'
+							width: '100%'
 						}}>
 						<label htmlFor="politicallPersonTrue">
 							<input
@@ -709,7 +700,7 @@ export const ShareHoldersModal = ({
 							No
 						</label>
 					</div>
-					<p style={{ marginBottom: '25px' }}>
+					<p style={{ marginBottom: '15px' }}>
 						Person against whom are applied CZ/international sanctions?
 					</p>
 					<div
@@ -717,7 +708,7 @@ export const ShareHoldersModal = ({
 							display: 'flex',
 							justifyContent: 'space-evenly',
 							width: '100%',
-							marginBottom: '30px'
+							marginBottom: '10px'
 						}}>
 						<label htmlFor="appliedSanctionsTrue">
 							<input
@@ -742,14 +733,19 @@ export const ShareHoldersModal = ({
 							No
 						</label>
 					</div>
-					<div>
-						<p>Identification (ID card or passport)</p>
+					<div
+						style={{
+							marginTop: '30px',
+							marginBottom: '30px',
+							display: 'flex',
+							flexDirection: 'column'
+						}}>
+						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Identification (ID card or passport)</span>
 						<label
 							htmlFor="label-shareholder-identification-type"
 							style={{
 								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								display: 'inline-block'
 							}}>
 							Type
 						</label>
@@ -767,8 +763,7 @@ export const ShareHoldersModal = ({
 							htmlFor="label-shareholder-identification-number"
 							style={{
 								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								display: 'inline-block'
 							}}>
 							Number
 						</label>
@@ -785,9 +780,8 @@ export const ShareHoldersModal = ({
 						<label
 							htmlFor="label-shareholder-identification-issuedBy"
 							style={{
-								margin: '6px 0 8px 0',
-								display: 'inline-block',
-								fontStyle: 'italic'
+								marginTop: '8px',
+								display: 'inline-block'
 							}}>
 							Issued by
 						</label>
@@ -797,8 +791,8 @@ export const ShareHoldersModal = ({
 							value={client.identification.issuedBy}
 							id="label-shareholder-identification-issuedBy"
 							style={{
-								minHeight: '40px',
-								marginTop: '15px',
+								minHeight: '46px',
+								marginTop: '8px',
 								backgroundColor: '#1c2125',
 								color: 'white',
 								borderRadius: '6px'
@@ -810,21 +804,19 @@ export const ShareHoldersModal = ({
 										{country.name}
 									</option>
 								);
-							})}
-							;
+							})};
 						</Select>
 						<div
 							style={{
-								margin: '26px 16px 26px 0',
+								margin: '16px 16px 0 0',
 								display: 'flex',
-								justifyContent: 'space-between'
+								// justifyContent: 'space-between'
 							}}>
 							<label
 								htmlFor="label-identification-validThru"
 								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block',
-									fontStyle: 'italic'
+									margin: '6px 15px 8px 0',
+									display: 'inline-block'
 								}}>
 								Valid thru
 							</label>
@@ -876,12 +868,12 @@ export const ShareHoldersModal = ({
 								display: 'flex',
 								flexDirection: 'column'
 							}}>
-							<span style={{ textAlign: 'center', fontSize: '20px' }}>
-								Provide information about your statutory body.
+							<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
+								Provide information about your statutory body
 							</span>
 							<label
 								htmlFor="label-shareHolderInfo-name-surname"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '16px 0 8px 0', display: 'inline-block' }}>
 								Name and Surname
 							</label>
 							<TextField
@@ -896,13 +888,16 @@ export const ShareHoldersModal = ({
 							/>
 							<div
 								style={{
-									margin: '26px 16px 26px 0',
+									margin: '16px 16px 16px 0',
 									display: 'flex',
-									justifyContent: 'space-between'
+									// justifyContent: 'space-between'
 								}}>
 								<label
 									htmlFor="label-shareHolderInfo-dateOfBirth"
-									style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+									style={{
+										margin: '6px 15px 8px 0',
+										display: 'inline-block'
+									}}>
 									Date of birth
 								</label>
 								<input
@@ -916,7 +911,7 @@ export const ShareHoldersModal = ({
 							</div>
 							<label
 								htmlFor="label-shareHolderInfo-permanentResidence"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Permanent Residence
 							</label>
 							<TextField
@@ -931,7 +926,7 @@ export const ShareHoldersModal = ({
 							/>
 							<label
 								htmlFor="label-shareHolderInfo-subsequentlyBusinessCompany"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Subsequently business company
 							</label>
 							<TextField
@@ -946,7 +941,7 @@ export const ShareHoldersModal = ({
 							/>
 							<label
 								htmlFor="label-shareHolderInfo-registeredOffice"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Registered Office
 							</label>
 							<TextField
@@ -961,7 +956,7 @@ export const ShareHoldersModal = ({
 							/>
 							<label
 								htmlFor="label-shareHolderInfo-idNumber"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block', fontStyle: 'italic' }}>
+								style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 								Identification number
 							</label>
 							<TextField
@@ -975,7 +970,7 @@ export const ShareHoldersModal = ({
 								name="idNumber"
 							/>
 							<div style={{ marginBottom: '10px', width: '100%' }}>
-								<p style={{ fontSize: '18px', fontStyle: 'italic', fontWeight: 'bold' }}>
+								<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 									Citizenship(s)
 								</p>
 								{COUNTRIES.map((country: any, index: number) => {
