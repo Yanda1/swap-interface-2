@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import {fontSize, pxToRem, spacing} from '../../styles';
+import {DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing} from '../../styles';
 import { BASE_URL, button, ButtonEnum, findAndReplace, useStore, routes } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
@@ -91,10 +91,20 @@ const FileInput = styled.input`
 	z-index: -100;
 `;
 
-const Select = styled.select`
-	width: 100%;
-	height: 100%;
+const Select = styled.select(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		background-color: ${theme.modal.default};
+		width: 100%;
+		min-height: 40px;
+		margin-top: 15px;
+		color: ${theme.font.default};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 `;
+});
 
 // const Container = styled.div(() => {
 // 	const {
@@ -470,14 +480,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											name="gender"
 											onChange={handleDropDownInput}
 											value={input.gender}
-											id="label-select-gender"
-											style={{
-												minHeight: '40px',
-												marginTop: '15px',
-												backgroundColor: '#1c2125',
-												color: 'white',
-												borderRadius: '6px'
-											}}>
+											id="label-select-gender">
 											<option value="Select gender">Select gender</option>
 											<option value="Male">Male</option>
 											<option value="Female">Female</option>
@@ -535,14 +538,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="taxResidency"
 										onChange={handleDropDownInput}
 										value={input.taxResidency}
-										id="label-select-tax-residency"
-										style={{
-											minHeight: '40px',
-											marginTop: '15px',
-											backgroundColor: '#1c2125',
-											color: 'white',
-											borderRadius: '6px'
-										}}>
+										id="label-select-tax-residency">
 										<option value="Select country">Select country</option>
 										{COUNTRIES.map((country: any) => {
 											return (
@@ -939,14 +935,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<Select
 								onChange={handleDropDownInputResidence}
 								value={input.residence.country}
-								id="input.residence.country"
-								style={{
-									minHeight: '40px',
-									marginTop: '15px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
+								id="input.residence.country">
 								<option value="Select country">Select country</option>
 								{COUNTRIES.map((country: any) => {
 									return (
@@ -1078,14 +1067,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="mailAddressStateOrCountry"
 										onChange={handleDropDownInputMailAddress}
 										value={input.mailAddress.country}
-										id="label-input-mailAddress-country"
-										style={{
-											minHeight: '40px',
-											marginTop: '15px',
-											backgroundColor: '#1c2125',
-											color: 'white',
-											borderRadius: '6px'
-										}}>
+										id="label-input-mailAddress-country">
 										<option value="Select country">Select country</option>
 										{COUNTRIES.map((country: any) => {
 											return (
