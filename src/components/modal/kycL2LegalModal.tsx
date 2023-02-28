@@ -23,6 +23,8 @@ import {ShareHoldersModal} from './shareholdersModal';
 import {SupervisoryBoardMembers} from './supervisoryBoardMembers';
 import {useAxios, useMedia} from '../../hooks';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
+import SelectDropDown from 'react-select';
+import countries from '../../data/countries.json';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -45,7 +47,6 @@ const Title = styled.h2(() => {
 export const ContentTitle = styled.p`
 	margin-bottom: ${pxToRem(26)};
 	font-size: ${fontSize[18]};
-	font-style: italic;
 	text-align: center;
 `;
 
@@ -84,7 +85,7 @@ const Select = styled.select(() => {
 	return css`
 		width: ${isMobile ? '100%' : '50%'};
 		height: 100%;
-		max-height: ${pxToRem(40)};
+		max-height: ${pxToRem(46)};
 		color: ${theme.font.default};
 		background-color: ${theme.background.secondary};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
@@ -175,6 +176,9 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
+	const {
+		state: {theme}
+	} = useStore();
 	const [showModal, setShowModal] = useState<boolean>(showKycL2);
 	const [isValid, setIsValid] = useState(false);
 	const [isFirstPartSent, setIsFirstPartSent] = useState(false);
@@ -426,6 +430,18 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 			);
 			setInput({...input, [attributeValue]: [...filteredArray]});
 		}
+	};
+
+	const handleSelectDropdownCountryOfOperates = (event: any) => {
+		console.log(event);
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setInput({...input, countryOfOperates: countries});
+	};
+
+	const handleSelectDropdownCountryOfWork = (event: any) => {
+		console.log(event);
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setInput({...input, countryOfWork: countries});
 	};
 
 	const handleChangeFileInput = () => {
@@ -689,7 +705,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					{page === 0 && (
 						<WrapContainer>
 							<Title>KYC L2 form for Legal Persons</Title>
-							<div style={{display: 'flex', justifyContent: 'space-around', flexShrink: 2}}>
+							<div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'baseline'}}>
 								<div style={{marginBottom: '10px', width: '50%', marginRight: '20px'}}>
 									<label
 										htmlFor="label-companyName"
@@ -882,7 +898,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 									display: 'flex',
 									width: '100%',
 									justifyContent: 'center',
-									marginBottom: '10px'
+									marginBottom: '30px'
 								}}>
 								<div style={{marginRight: '36px'}}>
 									<label htmlFor="label-mailing-permanent-address-true">
@@ -1169,70 +1185,73 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 						</>
 					)}
 					{page === 4 && (
-						<>
+						<div style={{marginBottom: '10px', width: '70%'}}>
 							<ContentTitle>
 								State or country, in which a branch, organized unit or establishment of the client
 								operates
 							</ContentTitle>
-							<WrapContainer>
-								{COUNTRIES.map((country: any, index: number) => {
-									return (
-										<div
-											key={index}
-											style={{
-												display: 'flex',
-												justifyContent: 'flex-start',
-												marginBottom: '8px'
-											}}>
-											<input
-												type="checkbox"
-												value={country.name}
-												name={country.name}
-												id={`countryOfOperates-checkbox-${index}`}
-												onChange={handleChangeCheckBox}
-												checked={input.countryOfOperates.includes(`${country.name}`)}
-												data-key="countryOfOperates"
-											/>
-											<label htmlFor={`countryOfOperates-checkbox-${index}`}>{country.name}</label>
-										</div>
-									);
-								})}
-							</WrapContainer>
-						</>
+							<SelectDropDown
+								name='citizenship'
+								onChange={(e: any) => handleSelectDropdownCountryOfOperates(e)}
+								options={countries}
+								isMulti
+								isSearchable
+								styles={{
+									menu: (base) => ({
+										...base,
+										backgroundColor: `${theme.background.secondary}`,
+									}),
+									option: (base, state) => ({
+										...base,
+										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+										height: '100%',
+										color: `${theme.font.default}`,
+										backgroundColor: `${theme.background.secondary}`,
+										cursor: 'pointer',
+									}),
+									control: (baseStyles) => ({
+										...baseStyles,
+										borderColor: 'grey',
+										backgroundColor: `${theme.background.secondary}`,
+										color: `${theme.font.default}`,
+										padding: 0,
+									}),
+								}}/>
+							<ContentTitle style={{marginTop: '50px'}}>State or country, in which the client conducts his business
+								activity</ContentTitle>
+							<SelectDropDown
+								name='citizenship'
+								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
+								options={countries}
+								isMulti
+								isSearchable
+								styles={{
+									menu: (base) => ({
+										...base,
+										backgroundColor: `${theme.background.secondary}`,
+									}),
+									option: (base, state) => ({
+										...base,
+										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+										height: '100%',
+										color: `${theme.font.default}`,
+										backgroundColor: `${theme.background.secondary}`,
+										cursor: 'pointer',
+									}),
+									control: (baseStyles) => ({
+										...baseStyles,
+										borderColor: 'grey',
+										backgroundColor: `${theme.background.secondary}`,
+										color: `${theme.font.default}`,
+										padding: 0,
+									}),
+								}}/>
+						</div>
 					)}
 					{page === 5 && (
-						<>
-							<ContentTitle>State or country, in which the client conducts his business activity</ContentTitle>
-							<WrapContainer>
-								{COUNTRIES.map((country: any, index: number) => {
-									return (
-										<div
-											key={index}
-											style={{
-												display: 'flex',
-												justifyContent: 'flex-start',
-												marginBottom: '8px'
-											}}>
-											<input
-												type="checkbox"
-												value={country.name}
-												name={country.name}
-												id={`countryOfWork-checkbox-${index}`}
-												onChange={handleChangeCheckBox}
-												checked={input.countryOfWork.includes(`${country.name}`)}
-												data-key="countryOfWork"
-											/>
-											<label htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
-										</div>
-									);
-								})}
-							</WrapContainer>
-						</>
-					)}
-					{page === 6 && (
-						<>
-							<div style={{display: 'flex'}}>
-								<div style={{width: '50%'}}>
+						<WrapContainer>
+							<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', paddingRight: '10px'}}>
+								<div>
 									<ContentTitle style={{textAlign: 'left'}}>Nature of prevailing source of income</ContentTitle>
 									{PREVAILING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
 										return (
@@ -1273,7 +1292,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										</div>
 									) : null}
 								</div>
-								<div style={{width: '50%'}}>
+								<div style={{marginBottom: '45px'}}>
 									<ContentTitle style={{textAlign: 'left'}}>
 										Net yearly income / yearly turnover
 									</ContentTitle>
@@ -1299,47 +1318,47 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										);
 									})}
 								</div>
+								<div style={{width: '100%', paddingBottom: '30px'}}>
+									<ContentTitle style={{textAlign: 'center'}}>
+										Source of funds intended for Transaction:
+									</ContentTitle>
+									{SOURCE_OF_FUNDS_LIST_COMPANY.map((activity: string, index: number) => {
+										return (
+											<div
+												key={index}
+												style={{
+													display: 'flex',
+													marginBottom: '8px'
+												}}>
+												<input
+													type="checkbox"
+													value={activity}
+													name={activity}
+													id={`sourceOfFundsList-checkbox-${index}`}
+													onChange={handleChangeCheckBox}
+													checked={input.sourceOfFunds.includes(`${activity}`)}
+													data-key="sourceOfFunds"
+												/>
+												<label htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
+											</div>
+										);
+									})}
+									{input.sourceOfFunds.includes('Other') ? (
+										<TextField
+											value={input.sourceOfFundsOther}
+											type="text"
+											placeholder="Specify..."
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="sourceOfFundsOther"
+										/>
+									) : null}
+								</div>
 							</div>
-							<div style={{textAlign: 'center', width: '100%'}}>
-								<ContentTitle>
-									Source of funds intended for Transaction:
-								</ContentTitle>
-								{SOURCE_OF_FUNDS_LIST_COMPANY.map((activity: string, index: number) => {
-									return (
-										<div
-											key={index}
-											style={{
-												display: 'flex',
-												marginBottom: '8px'
-											}}>
-											<input
-												type="checkbox"
-												value={activity}
-												name={activity}
-												id={`sourceOfFundsList-checkbox-${index}`}
-												onChange={handleChangeCheckBox}
-												checked={input.sourceOfFunds.includes(`${activity}`)}
-												data-key="sourceOfFunds"
-											/>
-											<label htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
-										</div>
-									);
-								})}
-								{input.sourceOfFunds.includes('Other') ? (
-									<TextField
-										value={input.sourceOfFundsOther}
-										type="text"
-										placeholder="Specify..."
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="sourceOfFundsOther"
-									/>
-								) : null}
-							</div>
-						</>
+						</WrapContainer>
 					)}
-					{page === 7 && (
+					{page === 6 && (
 						<div style={{display: 'flex', flexDirection: 'column'}}>
 							<ContentTitle>
 								Have you as a legal entity (or the member of your statutory body or your supervisory body or your
@@ -1372,7 +1391,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 									NO
 								</label>
 							</div>
-							<div style={{margin: '60px 0', width: '100%', textAlign: 'center'}}>
+							<div style={{margin: '45px 0 0', width: '100%', textAlign: 'center'}}>
 								<ContentTitle style={{margin: '70px 0 45px'}}>
 									The representative of the client is a:
 								</ContentTitle>
@@ -1409,7 +1428,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</div>
 						</div>
 					)}
-					{page === 13 && (
+					{page === 7 && (
 						<WrapContainer
 							style={{
 								display: 'flex',
@@ -1456,7 +1475,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</WrapContainer>
 						</WrapContainer>
 					)}
-					{page === 14 && (
+					{page === 8 && (
 						<WrapContainer
 							style={{
 								display: 'flex',
@@ -1508,7 +1527,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</WrapContainer>
 						</WrapContainer>
 					)}
-					{page === 15 && (
+					{page === 9 && (
 						<WrapContainer
 							style={{
 								display: 'flex',
@@ -1561,7 +1580,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</WrapContainer>
 						</WrapContainer>
 					)}
-					{page === 16 && (
+					{page === 10 && (
 						<WrapContainer
 							style={{
 								display: 'flex',
@@ -1635,7 +1654,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</>}
 						</WrapContainer>
 					)}
-					{page < 16 && (
+					{page < 10 && (
 						<div
 							style={{
 								margin: '0 auto',
@@ -1647,7 +1666,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</Button>
 						</div>
 					)}
-					{page >= 16 && (
+					{page >= 10 && (
 						<div
 							style={{
 								margin: '0 auto',

@@ -1,14 +1,16 @@
-import styled, { css } from 'styled-components';
-import { Portal } from './portal';
-import { TextField } from '../textField/textField';
-import { useEffect, useState } from 'react';
-import { Button } from '../button/button';
-import { spacing } from '../../styles';
+import styled, {css} from 'styled-components';
+import {Portal} from './portal';
+import {TextField} from '../textField/textField';
+import {useEffect, useState} from 'react';
+import {Button} from '../button/button';
+import {DEFAULT_BORDER_RADIUS, pxToRem, spacing} from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
-import { useToasts } from '../toast/toast';
-import { ContentTitle, WrapContainer } from './kycL2LegalModal';
-import { useAxios } from '../../hooks';
-import { BASE_URL } from '../../helpers';
+import {useToasts} from '../toast/toast';
+import {ContentTitle, WrapContainer} from './kycL2LegalModal';
+import {useAxios} from '../../hooks';
+import {BASE_URL, useStore} from '../../helpers';
+import SelectDropDown from 'react-select';
+import countries from '../../data/countries.json';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -20,23 +22,36 @@ const Wrapper = styled.div(() => {
 	`;
 });
 
-const Select = styled.select`
-	width: 100%;
-	height: 100%;
-`;
+const Select = styled.select(() => {
+	const {
+		state: {theme}
+	} = useStore();
+
+	return css`
+		color: ${theme.font.default};
+		background-color: ${theme.background.secondary};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		width: 100%;
+		height: 100%;
+		max-height: ${pxToRem(46)};
+	`;
+});
 
 type Props = {
 	addSupervisor?: boolean;
 	updateSupervisorModalShow?: any;
 };
 export const SupervisoryBoardMembers = ({
-	addSupervisor = false,
-	updateSupervisorModalShow
-}: Props) => {
+																					addSupervisor = false,
+																					updateSupervisorModalShow
+																				}: Props) => {
+	const {
+		state: {theme}
+	} = useStore();
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
 	// @ts-ignore
-	const { addToast } = useToasts();
+	const {addToast} = useToasts();
 	const [client, setClient] = useState<any>({
 		fullName: '',
 		dateOfBirth: '',
@@ -49,7 +64,7 @@ export const SupervisoryBoardMembers = ({
 			zipCode: '',
 			stateOrCountry: 'Select country'
 		},
-		citizenship: '',
+		citizenship: [],
 		appliedSanctions: ''
 	});
 
@@ -65,7 +80,7 @@ export const SupervisoryBoardMembers = ({
 			zipCode: '',
 			stateOrCountry: 'Select country'
 		},
-		citizenship: '',
+		citizenship: [],
 		appliedSanctions: ''
 	});
 
@@ -104,33 +119,23 @@ export const SupervisoryBoardMembers = ({
 		});
 	};
 	const handleDropDownInput = (event: any) => {
-		setClient({ ...client, [event.target.name]: event.target.value });
+		setClient({...client, [event.target.name]: event.target.value});
+	};
+
+	const handleSelectDropdownNatural = (event: any) => {
+		console.log(event);
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setClient({...client, citizenship: countries});
 	};
 	const handleChangeResidenceInput = (event: any) => {
 		setClient({
 			...client,
-			residence: { ...client.residence, [event.target.name]: event.target.value }
+			residence: {...client.residence, [event.target.name]: event.target.value}
 		});
 	};
-	const handleChangeCheckBox = (event: any) => {
-		const { value, checked } = event.target;
-		const attributeValue: string = event.target.attributes['data-key'].value;
 
-		if (checked && !client[attributeValue as keyof typeof client].includes(value)) {
-			setClient({
-				...client,
-				[attributeValue]: [...client[attributeValue as keyof typeof client], value]
-			});
-		}
-		if (!checked && client[attributeValue as keyof typeof client].includes(value)) {
-			const filteredArray: string[] = client[attributeValue as keyof typeof client].filter(
-				(item: any) => item !== value
-			);
-			setClient({ ...client, [attributeValue]: [...filteredArray] });
-		}
-	};
 	const handleChangeDate = (event: any) => {
-		setClient({ ...client, dateOfBirth: event.target.value });
+		setClient({...client, dateOfBirth: event.target.value});
 	};
 	const handleClose = () => {
 		updateSupervisorModalShow(false);
@@ -189,7 +194,7 @@ export const SupervisoryBoardMembers = ({
 			hasBackButton>
 			<Wrapper>
 				<ContentTitle>Information on members of the supervisory board</ContentTitle>
-				<WrapContainer style={{ paddingLeft: '2px', paddingRight: '10px' }}>
+				<WrapContainer style={{paddingLeft: '2px', paddingRight: '10px'}}>
 					<label
 						htmlFor="label-supervisory-full-name"
 						style={{
@@ -217,10 +222,10 @@ export const SupervisoryBoardMembers = ({
 							// justifyContent: 'space-between'
 						}}>
 						<label htmlFor="label-supervisory-date"
-							style={{
-							margin: '6px 15px 8px 0',
-							display: 'inline-block'
-						}}>
+									 style={{
+										 margin: '6px 15px 8px 0',
+										 display: 'inline-block'
+									 }}>
 							Date of birth
 						</label>
 						<input
@@ -251,7 +256,7 @@ export const SupervisoryBoardMembers = ({
 						maxLength={50}
 						error={client.placeOfBirth.length < 2}
 					/>
-					<div style={{ margin: '10px 0' }}>
+					<div style={{margin: '10px 0'}}>
 						<label htmlFor="label-shareholder-select-gender">
 							Gender
 						</label>
@@ -263,9 +268,6 @@ export const SupervisoryBoardMembers = ({
 							style={{
 								minHeight: '46px',
 								marginTop: '8px',
-								backgroundColor: '#1c2125',
-								color: 'white',
-								borderRadius: '6px'
 							}}>
 							<option value="Select gender">Select gender</option>
 							<option value="Male">Male</option>
@@ -273,7 +275,141 @@ export const SupervisoryBoardMembers = ({
 							<option value="Other">Other</option>
 						</Select>
 					</div>
-					<p style={{ marginBottom: '25px' }}>
+					<div style={{width: '100%'}}>
+						<label
+							htmlFor="label-country-incorporate"
+							style={{margin: '8px 0', display: 'inline-block'}}>
+							Citizenship(s)
+						</label>
+						<SelectDropDown
+							onChange={(e: any) => handleSelectDropdownNatural(e)}
+							options={countries}
+							isMulti
+							isSearchable
+							styles={{
+								menu: (base) => ({
+									...base,
+									backgroundColor: `${theme.background.secondary}`,
+								}),
+								option: (base, state) => ({
+									...base,
+									border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+									height: '100%',
+									color: `${theme.font.default}`,
+									backgroundColor: `${theme.background.secondary}`,
+									cursor: 'pointer',
+								}),
+								control: (baseStyles) => ({
+									...baseStyles,
+									borderColor: 'grey',
+									backgroundColor: `${theme.background.secondary}`,
+									color: `${theme.font.default}`,
+									padding: 0,
+								}),
+							}}/>
+					</div>
+					<p style={{textAlign: 'center', fontSize: '20px'}}>
+						Permanent or other residence
+					</p>
+					<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+						<div style={{width: '48%'}}>
+							<label htmlFor="label-shareholder-address-permanent-state-Or-Country"
+										 style={{margin: '8px 0', display: 'inline-block'}}>
+								Country
+							</label>
+							<Select
+								name="stateOrCountry"
+								onChange={handleChangeResidenceInput}
+								value={client.residence.stateOrCountry}
+								id="label-shareholder-address-permanent-state-Or-Country"
+								style={{
+									maxHeight: '45px',
+								}}>
+								<option value="Select country">Select country</option>
+								{COUNTRIES.map((country: any) => {
+									return (
+										<option value={country.name} key={country.name}>
+											{country.name}
+										</option>
+									);
+								})}
+								;
+							</Select>
+						</div>
+						<div style={{width: '48%'}}>
+							<label
+								htmlFor="label-shareholder-address-permanent-street"
+								style={{margin: '8px 0', display: 'inline-block'}}>
+								Street
+							</label>
+							<TextField
+								id="label-shareholder-address-permanent-street"
+								value={client.residence.street}
+								placeholder="Street"
+								type="text"
+								onChange={handleChangeResidenceInput}
+								size="small"
+								align="left"
+								name="street"
+								maxLength={50}
+							/>
+						</div>
+						<div style={{width: '48%'}}>
+							<label
+								htmlFor="label-shareholder-address-permanent-street-number"
+								style={{margin: '8px 0', display: 'inline-block'}}>
+								Street number
+							</label>
+							<TextField
+								id="label-shareholder-address-permanent-street-number"
+								value={client.residence.streetNumber}
+								placeholder="Street number"
+								type="text"
+								onChange={handleChangeResidenceInput}
+								size="small"
+								align="left"
+								name="streetNumber"
+								maxLength={50}
+							/>
+						</div>
+						<div style={{width: '48%'}}>
+							<label
+								htmlFor="label-shareholder-address-permanent-municipality"
+								style={{margin: '8px 0', display: 'inline-block'}}>
+								Municipality
+							</label>
+							<TextField
+								id="label-shareholder-address-permanent-municipality"
+								value={client.residence.municipality}
+								placeholder="Municipality"
+								type="text"
+								onChange={handleChangeResidenceInput}
+								size="small"
+								align="left"
+								name="municipality"
+								maxLength={50}
+							/>
+						</div>
+						<div style={{width: '48%'}}>
+							<label
+								htmlFor="label-shareholder-address-permanent-zipCode"
+								style={{margin: '8px 0', display: 'inline-block'}}>
+								ZIP Code
+							</label>
+							<TextField
+								id="label-shareholder-address-permanent-zipCode"
+								value={client.residence.zipCode}
+								placeholder="ZIP Code"
+								type="text"
+								onChange={handleChangeResidenceInput}
+								size="small"
+								align="left"
+								name="zipCode"
+								maxLength={50}
+							/>
+						</div>
+					</div>
+					<p style={{marginBottom: '25px'}}>
 						Person against whom are applied CZ/international sanctions?
 					</p>
 					<div
@@ -305,135 +441,6 @@ export const SupervisoryBoardMembers = ({
 							/>
 							No
 						</label>
-					</div>
-					<div
-						style={{
-							display: 'flex',
-							flexDirection: 'column'
-						}}>
-						<span style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
-							Permanent or other residence
-						</span>
-						<div style={{ margin: '10px 0 0 0' }}>
-							<label htmlFor="label-shareholder-address-permanent-state-Or-Country">
-								Country
-							</label>
-							<Select
-								name="stateOrCountry"
-								onChange={handleChangeResidenceInput}
-								value={client.residence.stateOrCountry}
-								id="label-shareholder-address-permanent-state-Or-Country"
-								style={{
-									minHeight: '46px',
-									marginTop: '8px',
-									backgroundColor: '#1c2125',
-									color: 'white',
-									borderRadius: '6px'
-								}}>
-								<option value="Select country">Select country</option>
-								{COUNTRIES.map((country: any) => {
-									return (
-										<option value={country.name} key={country.name}>
-											{country.name}
-										</option>
-									);
-								})}
-								;
-							</Select>
-						</div>
-						<label
-							htmlFor="label-shareholder-address-permanent-street"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-							Street
-						</label>
-						<TextField
-							id="label-shareholder-address-permanent-street"
-							value={client.residence.street}
-							placeholder="Street"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
-							name="street"
-							maxLength={50}
-						/>
-						<label
-							htmlFor="label-shareholder-address-permanent-street-number"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-							Street number
-						</label>
-						<TextField
-							id="label-shareholder-address-permanent-street-number"
-							value={client.residence.streetNumber}
-							placeholder="Street number"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
-							name="streetNumber"
-							maxLength={50}
-						/>
-						<label
-							htmlFor="label-shareholder-address-permanent-municipality"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-							Municipality
-						</label>
-						<TextField
-							id="label-shareholder-address-permanent-municipality"
-							value={client.residence.municipality}
-							placeholder="Municipality"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
-							name="municipality"
-							maxLength={50}
-						/>
-						<label
-							htmlFor="label-shareholder-address-permanent-zipCode"
-							style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-							ZIP Code
-						</label>
-						<TextField
-							id="label-shareholder-address-permanent-zipCode"
-							value={client.residence.zipCode}
-							placeholder="ZIP Code"
-							type="text"
-							onChange={handleChangeResidenceInput}
-							size="small"
-							align="left"
-							name="zipCode"
-							maxLength={50}
-						/>
-					</div>
-					<div style={{ marginBottom: '10px', width: '100%' }}>
-						<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
-							Citizenship(s)
-						</p>
-						{COUNTRIES.map((country: any, index: number) => {
-							return (
-								<div
-									key={index}
-									style={{
-										display: 'flex',
-										justifyContent: 'flex-start',
-										marginBottom: '8px'
-									}}>
-									<input
-										type="checkbox"
-										value={country.name}
-										name={country.name}
-										id={`citizenship-checkbox-${index}`}
-										onChange={handleChangeCheckBox}
-										// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-										checked={client.citizenship.includes(`${country.name}`)}
-										required
-										data-key="citizenship"
-									/>
-									<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
-								</div>
-							);
-						})}
 					</div>
 				</WrapContainer>
 				<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
