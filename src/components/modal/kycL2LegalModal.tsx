@@ -20,11 +20,12 @@ import REPRESENT_PERSON from '../../data/representClient.json';
 import NET_YEARLY_INCOME_LIST_COMPANY from '../../data/netYearlyCompanyIncome.json';
 import {UboModal} from './uboModal';
 import {ShareHoldersModal} from './shareholdersModal';
-import {SupervisoryBoardMembers} from './supervisoryBoardMembers';
+import {SupervisoryMembers} from './supervisoryMembers';
 import {useAxios, useMedia} from '../../hooks';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
 import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
+import makeAnimated from 'react-select/animated';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -43,7 +44,6 @@ const Title = styled.h2(() => {
 		margin-bottom: ${spacing[40]};
 	`;
 });
-
 export const ContentTitle = styled.p`
 	margin-bottom: ${pxToRem(26)};
 	font-size: ${fontSize[18]};
@@ -179,6 +179,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 	const {
 		state: {theme}
 	} = useStore();
+	const animatedComponents = makeAnimated();
 	const [showModal, setShowModal] = useState<boolean>(showKycL2);
 	const [isValid, setIsValid] = useState(false);
 	const [isFirstPartSent, setIsFirstPartSent] = useState(false);
@@ -188,10 +189,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 	const {addToast}: any | null = useToasts();
 	const api = useAxios();
 	const {
-		state: {
-			kycL2Business,
-			kycL2BusinessRepr
-		},
+		state: {kycL2Business},
 		dispatch
 	} = useStore();
 
@@ -227,8 +225,6 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 			poaDoc1: null,
 			// Documents proving information on the source of funds (for instance: payslip, tax return etc.)
 			posofDoc1: null,
-			// Natural person Representative: Copy of personal identification or passport of the representatives
-			representativesId: null,
 			// Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or other comparable foreign evidence) or other valid documents proving the existence of legal entity (Articles of Associations, Deed of Foundation etc.).
 			porDoc1: null,
 			// Court decision on appointment of legal guardian (if relevant).
@@ -263,14 +259,210 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 		yearlyIncome: null
 	});
 	const [page, setPage] = useState<number>(0);
-	const PAGE_AFTER_FIRST_PART = 13;
+	const PAGE_AFTER_FIRST_PART = 7;
 	const [ubos, setUbos] = useState<any>([]);
 	const [shareHolders, setShareHolders] = useState<any>([]);
 	const [supervisors, setSupervisors] = useState<any>([]);
+	const [addUbo, setAddUbo] = useState(false);
+	const [addShareHolder, setAddShareHolder] = useState(false);
+	const [addSupervisor, setAddSupervisor] = useState(false);
 
+	const myRef = useRef<HTMLDivElement | null>(null);
+	const refPoaDoc1 = useRef<HTMLInputElement>();
+	const refPosofDoc1 = useRef<HTMLInputElement>();
+	const refPorDoc1 = useRef<HTMLInputElement>();
+	const refPogDoc1 = useRef<HTMLInputElement>();
+	const handleNext = () => {
+		myRef?.current?.scrollTo(0, 0);
+		setPage((prev: number) => prev + 1);
+	};
+	const handleSubmit = (event: any) => {
+		event.preventDefault();
+		const bodyFormData = new FormData();
+		bodyFormData.append('account_statement_doc', input.file.poaDoc1);
+		bodyFormData.append('source_of_funds_doc', input.file.posofDoc1);
+		if (input.file.porDoc1) {
+			bodyFormData.append('legal_entity_proof_doc', input.file.porDoc1);
+		}
+		if (input.file.pogDoc1) {
+			bodyFormData.append('legal_guardian_doc', input.file.pogDoc1);
+		}
+
+		api.request({
+			method: 'PATCH',
+			url: `${BASE_URL}kyc/l2-business/files`,
+			data: bodyFormData,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			}
+		})
+			.then(function (response) {
+				// handle success
+				console.log(response);
+				dispatch({
+					type: KycL2BusinessEnum.STATUS,
+					payload: KycL2BusinessStatusEnum.PENDING
+				});
+				updateShowKycL2(false);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
+	};
+	const handleChangeInput = (event: any) => {
+		setInput({...input, [event.target.name]: event.target.value});
+	};
+	const handleChangeMailInput = (event: any) => {
+		setInput({
+			...input,
+			mailAddress: {...input.mailAddress, [event.target.name]: event.target.value}
+		});
+	};
+	const handleChangeRegisteredOfficeInput = (event: any) => {
+		setInput({
+			...input,
+			registeredOffice: {...input.registeredOffice, [event.target.name]: event.target.value}
+		});
+	};
+	const handleChangeCheckBox = (event: any) => {
+		const {value, checked} = event.target;
+		const attributeValue: string = event.target.attributes['data-key'].value;
+
+		if (checked && !input[attributeValue as keyof typeof input].includes(value)) {
+			setInput({
+				...input,
+				[attributeValue]: [...input[attributeValue as keyof typeof input], value]
+			});
+		}
+		if (!checked && input[attributeValue as keyof typeof input].includes(value)) {
+			const filteredArray: string[] = input[attributeValue as keyof typeof input].filter(
+				(item: any) => item !== value
+			);
+			setInput({...input, [attributeValue]: [...filteredArray]});
+		}
+	};
+	const [selectOperatesCountry, setSelectOperatesCountry] = useState<any[]>([]);
+	const [selectWorkCountry, setSelectWorkCountry] = useState<any[]>([]);
+	const handleSelectDropdownCountryOfOperates = (event: any) => {
+		setSelectOperatesCountry([...event]);
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setInput({...input, countryOfOperates: countries});
+	};
+	const handleSelectDropdownCountryOfWork = (event: any) => {
+		console.log(event);
+		setSelectWorkCountry([...event]);
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setInput({...input, countryOfWork: countries});
+	};
+	const handleChangeFileInput = () => {
+		const filepoaDoc1: any = refPoaDoc1?.current?.files && refPoaDoc1.current.files[0];
+		const fileposofDoc1: any = refPosofDoc1?.current?.files && refPosofDoc1.current.files[0];
+		const fileporDoc1: any = refPorDoc1?.current?.files && refPorDoc1.current.files[0];
+		const filePogDoc1: any = refPogDoc1?.current?.files && refPogDoc1.current.files[0];
+		setInput({
+			...input,
+			file: {
+				...input.file,
+				poaDoc1: filepoaDoc1,
+				posofDoc1: fileposofDoc1,
+				porDoc1: fileporDoc1,
+				pogDoc1: filePogDoc1
+			}
+		});
+	};
+	const handleDropDownInput = (event: any) => {
+		setInput({...input, [event.target.name]: event.target.value});
+	};
+	const handleOnClose = () => {
+		setShowModal(false);
+		updateShowKycL2(false);
+	};
+	const handleOnBack = () => {
+		if (page > 0) {
+			if (!isFirstPartSent || (isFirstPartSent && page > PAGE_AFTER_FIRST_PART)) {
+				setPage((prev: number) => prev - 1);
+			}
+		}
+	};
+	const handleAddUbo = () => {
+		setAddUbo(true);
+	};
+	const handleAddShareHolder = () => {
+		setAddShareHolder(true);
+	};
+	const handleAddSupervisor = () => {
+		setAddSupervisor(true);
+	};
+	const updateUboModalShow = (showModal: boolean, uboData: any) => {
+		if (uboData) {
+			setUbos([...ubos, uboData]);
+		}
+		setAddUbo(showModal);
+	};
+	const updateShareHoldersModalShow = (showModal: boolean, shareHolderData: any) => {
+		if (shareHolderData) {
+			setShareHolders([...shareHolders, shareHolderData]);
+		}
+		setAddShareHolder(showModal);
+	};
+	const updateSupervisorModalShow = (showModal: boolean, supervisorData: any) => {
+		if (supervisorData) {
+			setSupervisors([...supervisors, supervisorData]);
+		}
+		setAddSupervisor(showModal);
+	};
+	const handleDeleteUbo = (id: any) => {
+		api.request({
+			method: 'DELETE',
+			url: `${BASE_URL}kyc/l2-business/ubo/${id}/`
+		})
+			.then(function () {
+				// handle success
+				setUbos([...ubos.filter((item: any) => item.id !== id)]);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
+	};
+	const handleDeleteShareHolder = (id: any) => {
+		api.request({
+			method: 'DELETE',
+			url: `${BASE_URL}kyc/l2-business/shareholder/${id}/`
+		})
+			.then(function () {
+				// handle success
+				setShareHolders([...shareHolders.filter((item: any) => item.id !== id)]);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
+	};
+	const handleDeleteSupervisorHolder = (id: any) => {
+		api.request({
+			method: 'DELETE',
+			url: `${BASE_URL}kyc/l2-business/boardmember/${id}/`
+		})
+			.then(function () {
+				// handle success
+				setSupervisors([...supervisors.filter((item: any) => item.id !== id)]);
+			})
+			.catch(function (response) {
+				// handle error
+				console.log(response);
+				addToast('Something went wrong, please fill the form and try again!', 'error');
+			});
+	};
+
+	// useEffects
 	useEffect(() => {
 		if (kycL2Business === KycL2BusinessStatusEnum.BASIC) {
-			// Skip first 12 pages
+			// Skip first 7 pages
 			setIsFirstPartSent(true);
 			setPage(PAGE_AFTER_FIRST_PART);
 			// Pull UBOs, shareholders and board members data
@@ -351,218 +543,9 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 		}
 	}, [kycL2Business]);
 
-	const myRef = useRef<HTMLDivElement | null>(null);
-	const refPoaDoc1 = useRef<HTMLInputElement>();
-	const refPosofDoc1 = useRef<HTMLInputElement>();
-	const refRepresentativesId = useRef<HTMLInputElement>();
-	const refPorDoc1 = useRef<HTMLInputElement>();
-	const refPogDoc1 = useRef<HTMLInputElement>();
-	const handleNext = () => {
-		myRef?.current?.scrollTo(0, 0);
-		setPage((prev: number) => prev + 1);
-	};
-	const handleSubmit = (event: any) => {
-		event.preventDefault();
-		const bodyFormData = new FormData();
-		bodyFormData.append('account_statement_doc', input.file.poaDoc1);
-		bodyFormData.append('source_of_funds_doc', input.file.posofDoc1);
-		if (input.file.porDoc1) {
-			bodyFormData.append('legal_entity_proof_doc', input.file.porDoc1);
-		}
-		if (input.file.representativesId) {
-			bodyFormData.append('representative_id_doc', input.file.representativesId);
-		}
-		if (input.file.pogDoc1) {
-			bodyFormData.append('legal_guardian_doc', input.file.pogDoc1);
-		}
-
-		api.request({
-			method: 'PATCH',
-			url: `${BASE_URL}kyc/l2-business/files`,
-			data: bodyFormData,
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			}
-		})
-			.then(function (response) {
-				// handle success
-				console.log(response);
-				dispatch({
-					type: KycL2BusinessEnum.STATUS,
-					payload: KycL2BusinessStatusEnum.PENDING
-				});
-				updateShowKycL2(false);
-			})
-			.catch(function (response) {
-				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
-			});
-	};
-	const handleChangeInput = (event: any) => {
-		setInput({...input, [event.target.name]: event.target.value});
-	};
-	const handleChangeMailInput = (event: any) => {
-		setInput({
-			...input,
-			mailAddress: {...input.mailAddress, [event.target.name]: event.target.value}
-		});
-	};
-	const handleChangeRegisteredOfficeInput = (event: any) => {
-		setInput({
-			...input,
-			registeredOffice: {...input.registeredOffice, [event.target.name]: event.target.value}
-		});
-	};
-	const handleChangeCheckBox = (event: any) => {
-		const {value, checked} = event.target;
-		const attributeValue: string = event.target.attributes['data-key'].value;
-
-		if (checked && !input[attributeValue as keyof typeof input].includes(value)) {
-			setInput({
-				...input,
-				[attributeValue]: [...input[attributeValue as keyof typeof input], value]
-			});
-		}
-		if (!checked && input[attributeValue as keyof typeof input].includes(value)) {
-			const filteredArray: string[] = input[attributeValue as keyof typeof input].filter(
-				(item: any) => item !== value
-			);
-			setInput({...input, [attributeValue]: [...filteredArray]});
-		}
-	};
-
-	const handleSelectDropdownCountryOfOperates = (event: any) => {
-		console.log(event);
-		const countries = event.map((country: { value: string; label: string }) => country.value);
-		setInput({...input, countryOfOperates: countries});
-	};
-
-	const handleSelectDropdownCountryOfWork = (event: any) => {
-		console.log(event);
-		const countries = event.map((country: { value: string; label: string }) => country.value);
-		setInput({...input, countryOfWork: countries});
-	};
-
-	const handleChangeFileInput = () => {
-		const filepoaDoc1: any = refPoaDoc1?.current?.files && refPoaDoc1.current.files[0];
-		const fileposofDoc1: any = refPosofDoc1?.current?.files && refPosofDoc1.current.files[0];
-		const filerepresentativesId: any =
-			refRepresentativesId?.current?.files && refRepresentativesId.current.files[0];
-		const fileporDoc1: any = refPorDoc1?.current?.files && refPorDoc1.current.files[0];
-		const filePogDoc1: any = refPogDoc1?.current?.files && refPogDoc1.current.files[0];
-		setInput({
-			...input,
-			file: {
-				...input.file,
-				poaDoc1: filepoaDoc1,
-				posofDoc1: fileposofDoc1,
-				representativesId: filerepresentativesId,
-				porDoc1: fileporDoc1,
-				pogDoc1: filePogDoc1
-			}
-		});
-	};
-
-	const handleDropDownInput = (event: any) => {
-		setInput({...input, [event.target.name]: event.target.value});
-	};
-
-	const handleOnClose = () => {
-		setShowModal(false);
-		updateShowKycL2(false);
-	};
-
-	const handleOnBack = () => {
-		if (page > 0) {
-			if (!isFirstPartSent || (isFirstPartSent && page > PAGE_AFTER_FIRST_PART)) {
-				setPage((prev: number) => prev - 1);
-			}
-		}
-	};
-
-	const [addUbo, setAddUbo] = useState(false);
-	const [addShareHolder, setAddShareHolder] = useState(false);
-	const [addSupervisor, setAddSupervisor] = useState(false);
-
-	const handleAddUbo = () => {
-		setAddUbo(true);
-	};
-	const handleAddShareHolder = () => {
-		setAddShareHolder(true);
-	};
-	const handleAddSupervisor = () => {
-		setAddSupervisor(true);
-	};
-	const updateUboModalShow = (showModal: boolean, uboData: any) => {
-		if (uboData) {
-			setUbos([...ubos, uboData]);
-		}
-		setAddUbo(showModal);
-	};
-	const updateShareHoldersModalShow = (showModal: boolean, shareHolderData: any) => {
-		if (shareHolderData) {
-			setShareHolders([...shareHolders, shareHolderData]);
-		}
-		setAddShareHolder(showModal);
-	};
-	const updateSupervisorModalShow = (showModal: boolean, supervisorData: any) => {
-		if (supervisorData) {
-			setSupervisors([...supervisors, supervisorData]);
-		}
-		setAddSupervisor(showModal);
-	};
-	const handleDeleteUbo = (id: any) => {
-		api.request({
-			method: 'DELETE',
-			url: `${BASE_URL}kyc/l2-business/ubo/${id}/`
-		})
-			.then(function () {
-				// handle success
-				setUbos([...ubos.filter((item: any) => item.id !== id)]);
-			})
-			.catch(function (response) {
-				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
-			});
-	};
-
-	const handleDeleteShareHolder = (id: any) => {
-		api.request({
-			method: 'DELETE',
-			url: `${BASE_URL}kyc/l2-business/shareholder/${id}/`
-		})
-			.then(function () {
-				// handle success
-				setShareHolders([...shareHolders.filter((item: any) => item.id !== id)]);
-			})
-			.catch(function (response) {
-				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
-			});
-	};
-
-	const handleDeleteSupervisorHolder = (id: any) => {
-		api.request({
-			method: 'DELETE',
-			url: `${BASE_URL}kyc/l2-business/boardmember/${id}/`
-		})
-			.then(function () {
-				// handle success
-				setSupervisors([...supervisors.filter((item: any) => item.id !== id)]);
-			})
-			.catch(function (response) {
-				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
-			});
-	};
-
 	useEffect(() => {
 		// if page == 13 and !isFirstPartSent (first part was never sent) so sent first part of form
-		if (page === 13 && !isFirstPartSent) {
+		if (page === 7 && !isFirstPartSent) {
 			const bodyFormData = new FormData();
 			bodyFormData.append('company_name', input.companyName);
 			bodyFormData.append('company_id', input.companyIdentificationNumber);
@@ -621,66 +604,45 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 	}, [page]);
 
 	useEffect(() => {
-		setIsValid(true);
+		setIsValid(false);
 		if (
 			page === 0 &&
 			input.companyName.trim().length > 1 &&
-			input.companyIdentificationNumber.trim().length > 1
+			input.companyIdentificationNumber.trim().length > 1 &&
+			!Object.values(input.registeredOffice).includes('') &&
+			input.registeredOffice.country !== 'Select country'
 		) {
 			setIsValid(true);
-		} else if (page === 1 && !Object.values(input.registeredOffice).includes('') && input.registeredOffice.country !== 'Select Country') {
+		} else if (page === 1 && input.taxResidency !== 'Select country' && input.permanentAndMailAddressSame === 'Yes' ||
+			page === 1 && input.taxResidency !== 'Select country' &&
+			!Object.values(input.mailAddress).includes('') && input.mailAddress.country !== 'Select country') {
+			setIsValid(true);
+		} else if (page === 2 && input.politicallPerson && input.appliedSanctions) {
+			setIsValid(true);
+		} else if (page === 3 && input.representPerson.length > 0 && input.workArea.length > 0) {
+			setIsValid(true);
+		} else if (page === 4 && input.countryOfOperates.length && input.countryOfWork.length) {
 			setIsValid(true);
 		} else if (
-			(page === 2 && input.permanentAndMailAddressSame === 'Yes') ||
-			(page === 2 &&
-				input.permanentAndMailAddressSame === 'No' &&
-				!Object.values(input.mailAddress).includes(''))
+			page === 5 && input.yearlyIncome && (
+				(input.sourceOfIncomeNature.length && !input.sourceOfIncomeNature.includes('Other')) ||
+				(input.sourceOfIncomeNature.includes('Other') && input.sourceOfIncomeNatureOther)
+			) && (
+				(input.sourceOfFunds.length && !input.sourceOfFunds.includes('Other')) ||
+				(input.sourceOfFunds.includes('Other') && input.sourceOfFundsOther)
+			)
 		) {
 			setIsValid(true);
-		} else if (page === 3 && input.taxResidency !== 'Select country') {
-			setIsValid(true);
-		} else if (page === 4 && input.politicallPerson) {
-			setIsValid(true);
-		} else if (page === 5 && input.appliedSanctions) {
-			setIsValid(true);
-		} else if (page === 6 && input.representPerson.length && input.workArea.length) {
-			setIsValid(true);
-		} else if (page === 7 && input.countryOfOperates.length) {
-			setIsValid(true);
-		} else if (page === 8 && input.countryOfWork.length) {
-			setIsValid(true);
-		} else if (
-			(page === 9 &&
-				input.yearlyIncome &&
-				input.sourceOfIncomeNature.length &&
-				!input.sourceOfIncomeNature.includes('Other')) ||
-			(page === 9 &&
-				input.yearlyIncome &&
-				input.sourceOfIncomeNature.includes('Other') &&
-				input.sourceOfIncomeNatureOther)
-		) {
-			setIsValid(true);
-		} else if (page === 10 && input.sourceOfFunds.length) {
-			setIsValid(true);
-		} else if (page === 11 && input.criminalOffenses) {
-			setIsValid(true);
-		} else if (page === 12 && input.representativeTypeOfClient) {
+		} else if (page === 6 && input.criminalOffenses && input.representativeTypeOfClient) {
 			dispatch({
 				type: KycL2BusinessEnum.REPR,
 				payload: input.representativeTypeOfClient === 'Natural Person' ? KycL2BusinessReprEnum.NATURAL : KycL2BusinessReprEnum.LEGAL
 			});
 			setIsValid(true);
-		} else if (page === 13 || page === 14 || page === 15) {
+		} else if (page === 7 || page === 8 || page === 9) {
 			setIsValid(true);
 		} else if (
-			page === 16 &&
-			input.file.poaDoc1 &&
-			input.file.posofDoc1 &&
-			(kycL2BusinessRepr === KycL2BusinessReprEnum.NATURAL &&
-				input.file.representativesId) ||
-			(kycL2BusinessRepr === KycL2BusinessReprEnum.LEGAL &&
-				input.file.porDoc1)
-		) {
+			page === 10 && input.file.poaDoc1 && input.file.posofDoc1 && input.file.porDoc1) {
 			setIsValid(true);
 		}
 	}, [page, input]);
@@ -1191,8 +1153,8 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 								operates
 							</ContentTitle>
 							<SelectDropDown
-								name='citizenship'
 								onChange={(e: any) => handleSelectDropdownCountryOfOperates(e)}
+								defaultValue={selectOperatesCountry}
 								options={countries}
 								isMulti
 								isSearchable
@@ -1220,10 +1182,11 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							<ContentTitle style={{marginTop: '50px'}}>State or country, in which the client conducts his business
 								activity</ContentTitle>
 							<SelectDropDown
-								name='citizenship'
 								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
+								defaultValue={selectWorkCountry}
 								options={countries}
 								isMulti
+								components={animatedComponents}
 								isSearchable
 								styles={{
 									menu: (base) => ({
@@ -1377,7 +1340,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										onChange={handleChangeInput}
 										name="criminalOffenses"
 									/>
-									YES
+									Yes
 								</label>
 								<label htmlFor="criminalOffensesFalse">
 									<input
@@ -1388,7 +1351,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										onChange={handleChangeInput}
 										name="criminalOffenses"
 									/>
-									NO
+									No
 								</label>
 							</div>
 							<div style={{margin: '45px 0 0', width: '100%', textAlign: 'center'}}>
@@ -1545,7 +1508,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 								</Button>
 							</div>
 							<WrapContainer style={{display: 'flex', flexWrap: 'wrap'}}>
-								<SupervisoryBoardMembers
+								<SupervisoryMembers
 									addSupervisor={addSupervisor}
 									updateSupervisorModalShow={updateSupervisorModalShow}
 								/>
@@ -1611,47 +1574,30 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 									onChange={handleChangeFileInput}></FileInput>
 								{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
 							</LabelInput>
-
-							{kycL2BusinessRepr === KycL2BusinessReprEnum.NATURAL && <>
-								<ContentTitle>
-									Natural person Representative: Copy of personal identification or passport of the
-									representatives
-								</ContentTitle>
-								<LabelInput htmlFor="file-input-refRepresentativesId">
-									<FileInput
-										id="file-input-refRepresentativesId"
-										type="file"
-										ref={refRepresentativesId as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{input.file.representativesId ? input.file.representativesId.name : 'Upload File'}
-								</LabelInput>
-							</>}
-							{kycL2BusinessRepr === KycL2BusinessReprEnum.LEGAL && <>
-								<ContentTitle>
-									Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or
-									other comparable foreign evidence) or other valid documents proving the existence of
-									legal entity (Articles of Associations, Deed of Foundation etc.).
-								</ContentTitle>
-								<LabelInput htmlFor="file-input-refPorDoc1">
-									<FileInput
-										id="file-input-refPorDoc1"
-										type="file"
-										ref={refPorDoc1 as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{input.file.porDoc1 ? input.file.porDoc1.name : 'Upload File'}
-								</LabelInput>
-								<ContentTitle>
-									Court decision on appointment of legal guardian (if relevant).
-								</ContentTitle>
-								<LabelInput htmlFor="file-input-refPogDoc1">
-									<FileInput
-										id="file-input-refPogDoc1"
-										type="file"
-										ref={refPogDoc1 as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{input.file.pogDoc1 ? input.file.pogDoc1.name : 'Upload File'}
-								</LabelInput>
-							</>}
+							<ContentTitle>
+								Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or
+								other comparable foreign evidence) or other valid documents proving the existence of
+								legal entity (Articles of Associations, Deed of Foundation etc.).
+							</ContentTitle>
+							<LabelInput htmlFor="file-input-refPorDoc1">
+								<FileInput
+									id="file-input-refPorDoc1"
+									type="file"
+									ref={refPorDoc1 as any}
+									onChange={handleChangeFileInput}></FileInput>
+								{input.file.porDoc1 ? input.file.porDoc1.name : 'Upload File'}
+							</LabelInput>
+							<ContentTitle>
+								Court decision on appointment of legal guardian (if relevant).
+							</ContentTitle>
+							<LabelInput htmlFor="file-input-refPogDoc1">
+								<FileInput
+									id="file-input-refPogDoc1"
+									type="file"
+									ref={refPogDoc1 as any}
+									onChange={handleChangeFileInput}></FileInput>
+								{input.file.pogDoc1 ? input.file.pogDoc1.name : 'Upload File'}
+							</LabelInput>
 						</WrapContainer>
 					)}
 					{page < 10 && (

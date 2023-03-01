@@ -84,23 +84,13 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 	const {addToast} = useToasts();
 	const fileIdentification = useRef<HTMLInputElement>();
 	const [client, setClient] = useState<any>({
-		fullName: '',
-		companyName: '',
-		idNumber: '',
-		placeOfBirth: '',
-		gender: 'Select gender',
-		citizenship: [],
-		taxResidency: 'Select country',
-		fileIdentification: null,
-		permanentAndMailAddressSame: '',
 		appliedSanctions: '',
-		residence: {
-			street: '',
-			streetNumber: '',
-			municipality: '',
-			zipCode: '',
-			stateOrCountry: 'Select country'
-		},
+		citizenship: [],
+		companyName: '',
+		fileIdentification: null,
+		fullName: '',
+		gender: 'Select gender',
+		idNumber: '',
 		mailAddress: {
 			street: '',
 			streetNumber: '',
@@ -108,14 +98,16 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 			zipCode: '',
 			stateOrCountry: 'Select country'
 		},
-		identification: {
-			type: '',
-			number: '',
-			issuedBy: 'Select country',
-			validThru: ''
-		},
+		permanentAndMailAddressSame: '',
+		placeOfBirth: '',
 		politicallPerson: '',
-		shareHolderIsLegalEntity: '',
+		residence: {
+			street: '',
+			streetNumber: '',
+			municipality: '',
+			zipCode: '',
+			stateOrCountry: 'Select country'
+		},
 		shareHolderInfo: {
 			nameAndSurname: '',
 			dateOfBirth: '',
@@ -124,24 +116,17 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
-		}
+		},
+		taxResidency: 'Select country'
 	});
 	const [emptyClient] = useState({
-		fullName: '',
-		idNumber: '',
-		placeOfBirth: '',
-		gender: 'Select gender',
-		citizenship: [],
-		taxResidency: 'Select country',
-		permanentAndMailAddressSame: '',
 		appliedSanctions: '',
-		residence: {
-			street: '',
-			streetNumber: '',
-			municipality: '',
-			zipCode: '',
-			stateOrCountry: 'Select country'
-		},
+		citizenship: [],
+		companyName: '',
+		fileIdentification: null,
+		fullName: '',
+		gender: 'Select gender',
+		idNumber: '',
 		mailAddress: {
 			street: '',
 			streetNumber: '',
@@ -149,14 +134,16 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 			zipCode: '',
 			stateOrCountry: 'Select country'
 		},
-		identification: {
-			type: '',
-			number: '',
-			issuedBy: 'Select country',
-			validThru: ''
-		},
+		permanentAndMailAddressSame: '',
+		placeOfBirth: '',
 		politicallPerson: '',
-		shareHolderIsLegalEntity: '',
+		residence: {
+			street: '',
+			streetNumber: '',
+			municipality: '',
+			zipCode: '',
+			stateOrCountry: 'Select country'
+		},
 		shareHolderInfo: {
 			nameAndSurname: '',
 			dateOfBirth: '',
@@ -165,37 +152,36 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
-		}
+		},
+		taxResidency: 'Select country'
 	});
 
 	useEffect(() => {
 		setIsValid(false);
-		const {residence, identification, citizenship, gender, taxResidency, shareHolderInfo} = client;
-		const result = Object.values(client);
-		if (
-			!result.includes('') &&
-			!Object.values(residence).includes('') &&
-			!Object.values(identification).includes('') &&
-			citizenship.length > 0 &&
-			gender !== 'Select gender' &&
-			taxResidency !== 'Select country' &&
-			residence.stateOrCountry !== 'Select country' &&
-			identification.issuedBy !== 'Select country'
-		) {
-			if (client.shareHolderIsLegalEntity === 'Yes' && !Object.values(shareHolderInfo).includes('') && shareHolderInfo.citizenship.length > 0) {
+		if (isShareHolderLegal === 'natural') {
+			if (client.fullName && client.placeOfBirth && client.idNumber
+				&& client.gender !== 'Select gender' && client.taxResidency !== 'Select country' && client.citizenship.length > 0
+				&& client.fileIdentification && client.politicallPerson.length > 0 && client.appliedSanctions.length > 0
+				&& !Object.values(client.residence).includes('') && (client.permanentAndMailAddressSame === 'Yes'
+					|| client.permanentAndMailAddressSame === 'No' && !Object.values(client.mailAddress).includes(''))) {
 				setIsValid(true);
-			} else if (client.shareHolderIsLegalEntity === 'No') {
+			}
+		} else if (isShareHolderLegal === 'legal') {
+			if (client.companyName && client.fileIdentification && !Object.values(client.shareHolderInfo).includes('')) {
 				setIsValid(true);
 			}
 		}
 	}, [client]);
+
+	useEffect(() => {
+		setClient(emptyClient);
+	}, [isShareHolderLegal]);
 	const handleChangeClientInput = (event: any) => {
 		setClient({
 			...client,
 			[event.target.name]: event.target.value
 		});
 	};
-
 	const handleChangeFileInput = () => {
 		const file: any =
 			fileIdentification?.current?.files && fileIdentification.current.files[0];
@@ -208,15 +194,12 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 		console.log(event);
 		setClient({...client, [event.target.name]: event.target.value});
 	};
-
 	const handleSelectDropdownNatural = (event: any) => {
 		console.log(event);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
 		setClient({...client, citizenship: countries});
 	};
-
 	const handleSelectDropdownShareHolderInfo = (event: any) => {
-		console.log(event);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
 		setClient({...client, shareHolderInfo: {...client.shareHolderInfo, citizenship: countries}});
 	};
@@ -244,27 +227,28 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 	};
 
 	const api = useAxios();
-
 	const handleSubmit = () => {
 		console.log('ShareHolder data', client);
 		const bodyFormData = new FormData();
-		bodyFormData.append('full_name', client.fullName);
-		bodyFormData.append('birth_id', client.idNumber);
-		bodyFormData.append('place_of_birth', client.placeOfBirth);
-		bodyFormData.append('gender', client.gender);
-		bodyFormData.append('citizenship', client.citizenship.join(', '));
-		bodyFormData.append('tax_residency', client.taxResidency);
-		bodyFormData.append('residence_address', JSON.stringify(client.residence));
-		if (client.permanentAndMailAddressSame === 'No') {
-			bodyFormData.append('mail_address', JSON.stringify(client.mailAddress));
-		}
-		bodyFormData.append('political_person', client.politicallPerson === 'Yes' ? 'true' : 'false');
-		bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
-		bodyFormData.append('identification_type', client.identification.type);
-		bodyFormData.append('identification_number', client.identification.number);
-		bodyFormData.append('identification_issued_by', client.identification.issuedBy);
-		bodyFormData.append('identification_valid_thru', client.identification.validThru);
-		if (client.shareHolderIsLegalEntity === 'Yes') {
+		if (isShareHolderLegal === 'natural') {
+			bodyFormData.append('full_name', client.fullName);
+			bodyFormData.append('birth_id', client.idNumber);
+			bodyFormData.append('place_of_birth', client.placeOfBirth);
+			bodyFormData.append('gender', client.gender);
+			bodyFormData.append('tax_residency', client.taxResidency);
+			bodyFormData.append('citizenship', client.citizenship.join(', '));
+			// TODO: ask Daniel about key for backend
+			bodyFormData.append('FILE', client.fileIdentification);
+			bodyFormData.append('residence_address', JSON.stringify(client.residence));
+			if (client.permanentAndMailAddressSame === 'No') {
+				bodyFormData.append('mail_address', JSON.stringify(client.mailAddress));
+			}
+			bodyFormData.append('political_person', client.politicallPerson === 'Yes' ? 'true' : 'false');
+			bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
+		} else if (isShareHolderLegal === 'legal') {
+			bodyFormData.append('company_name', client.companyName);
+			// TODO: ask Daniel about key for backend
+			bodyFormData.append('FILE', client.fileIdentification);
 			bodyFormData.append('statutory_full_name', client.shareHolderInfo.nameAndSurname);
 			bodyFormData.append('statutory_dob', client.shareHolderInfo.dateOfBirth);
 			bodyFormData.append('statutory_permanent_residence', client.shareHolderInfo.permanentResidence);
@@ -320,7 +304,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 						Information on majority shareholders or person in control of client<br/> (more than 25%)
 					</ContentTitle>
 					<p style={{textAlign: 'center'}}>
-						Is the Ultimate Beneficial Owner (UBO) a legal entity?
+						Is the controlling person is a legal entity ?
 					</p>
 					<div
 						style={{
@@ -336,7 +320,6 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								value="Yes"
 								checked={isShareHolderLegal === 'legal'}
 								onChange={() => setIsShareHolderLegal('legal')}
-								name="permanentAndMailAddressSame"
 							/>
 							Yes
 						</label>
@@ -347,7 +330,6 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								value="No"
 								checked={isShareHolderLegal === 'natural'}
 								onChange={() => setIsShareHolderLegal('natural')}
-								name="permanentAndMailAddressSame"
 							/>
 							No
 						</label>
@@ -494,7 +476,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								identification or
 								passport of the representatives
 							</p>
-							<div style={{textAlign: 'center', margin: '20px 0'}}>
+							<div style={{textAlign: 'center', margin: '20px 0 40px'}}>
 								<LabelInput htmlFor="label-input-file-natural">
 									<FileInput
 										id="label-input-file-natural"
@@ -504,9 +486,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
 								</LabelInput>
 							</div>
-							<p style={{textAlign: 'center'}}>
-								Permanent or other residence
-							</p>
+							<p style={{textAlign: 'center', fontSize: '18px'}}>Permanent or other residence</p>
 							<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
 								<div style={{width: '48%'}}>
 									<label
@@ -636,113 +616,126 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								</label>
 							</div>
 							{client.permanentAndMailAddressSame === 'No' && (
-								<div
-									style={{
-										marginBottom: '12px',
-										display: 'flex',
-										flexDirection: 'column'
-									}}>
-									<span style={{textAlign: 'center', fontSize: '20px', fontWeight: 'bold'}}>Mailing address</span>
-									<label
-										htmlFor="label-shareholder-mail-address-state-Or-Country"
+								<>
+									<p style={{textAlign: 'center', fontSize: '18px'}}>Mailing address</p>
+									<div
 										style={{
-											marginTop: '10px',
-											display: 'inline-block'
+											margin: '0 0 10px 0',
+											display: 'flex',
+											flexWrap: 'wrap',
+											justifyContent: 'space-between'
 										}}>
-										Country
-									</label>
-									<Select
-										name="stateOrCountry"
-										onChange={handleChangeMailInput}
-										value={client.mailAddress.stateOrCountry}
-										id="label-shareholder-mail-address-state-Or-Country"
-										style={{
-											minHeight: '46px',
-											marginTop: '8px',
-										}}>
-										<option value="Select country">Select country</option>
-										{COUNTRIES.map((country: any) => {
-											return (
-												<option value={country.name} key={country.name}>
-													{country.name}
-												</option>
-											);
-										})}
-										;
-									</Select>
-									<label
-										htmlFor="label-shareholder-address-street"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										Street
-									</label>
-									<TextField
-										id="label-shareholder-address-street"
-										value={client.mailAddress.street}
-										placeholder="Street"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="street"
-									/>
-									<label
-										htmlFor="label-shareholder-address-street-number"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										Street number
-									</label>
-									<TextField
-										id="label-shareholder-address-street-number"
-										value={client.mailAddress.streetNumber}
-										placeholder="Street number"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="streetNumber"
-									/>
-									<label
-										htmlFor="label-shareholder-address-municipality"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										Municipality
-									</label>
-									<TextField
-										id="label-shareholder-address-municipality"
-										value={client.mailAddress.municipality}
-										placeholder="Municipality"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="municipality"
-									/>
-									<label
-										htmlFor="label-shareholder-address-zipCode"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										ZIP Code
-									</label>
-									<TextField
-										id="label-shareholder-address-zipCode"
-										value={client.mailAddress.zipCode}
-										placeholder="ZIP Code"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="zipCode"
-									/>
-								</div>
+										<div style={{width: '48%'}}>
+											<label
+												htmlFor="label-shareholder-mail-address-state-Or-Country"
+												style={{
+													marginTop: '10px',
+													display: 'inline-block'
+												}}>
+												Country
+											</label>
+											<Select
+												name="stateOrCountry"
+												onChange={handleChangeMailInput}
+												value={client.mailAddress.stateOrCountry}
+												id="label-shareholder-mail-address-state-Or-Country"
+												style={{
+													minHeight: '46px',
+													marginTop: '8px',
+												}}>
+												<option value="Select country">Select country</option>
+												{COUNTRIES.map((country: any) => {
+													return (
+														<option value={country.name} key={country.name}>
+															{country.name}
+														</option>
+													);
+												})}
+												;
+											</Select>
+										</div>
+										<div style={{width: '48%'}}>
+											<label
+												htmlFor="label-shareholder-address-street"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												Street
+											</label>
+											<TextField
+												id="label-shareholder-address-street"
+												value={client.mailAddress.street}
+												placeholder="Street"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="street"
+											/>
+										</div>
+										<div style={{width: '48%'}}>
+											<label
+												htmlFor="label-shareholder-address-street-number"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												Street number
+											</label>
+											<TextField
+												id="label-shareholder-address-street-number"
+												value={client.mailAddress.streetNumber}
+												placeholder="Street number"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="streetNumber"
+											/>
+										</div>
+										<div style={{width: '48%'}}>
+											<label
+												htmlFor="label-shareholder-address-municipality"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												Municipality
+											</label>
+											<TextField
+												id="label-shareholder-address-municipality"
+												value={client.mailAddress.municipality}
+												placeholder="Municipality"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="municipality"
+											/>
+										</div>
+										<div style={{width: '48%'}}>
+											<label
+												htmlFor="label-shareholder-address-zipCode"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												ZIP Code
+											</label>
+											<TextField
+												id="label-shareholder-address-zipCode"
+												value={client.mailAddress.zipCode}
+												placeholder="ZIP Code"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="zipCode"
+											/>
+										</div>
+									</div>
+								</>
 							)}
 							<p style={{marginBottom: '10px'}}>Politically exposed person?</p>
 							<div
@@ -809,17 +802,17 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 							</div>
 						</>
 					) : isShareHolderLegal === 'legal' ? (
-						<>
+						<div>
 							<label
-								htmlFor="label-shareholder-company"
+								htmlFor="label-shareholder-company-name"
 								style={{
 									marginBottom: '8px',
 									display: 'inline-block'
 								}}>
-								Name and surname
+								Business company name
 							</label>
 							<TextField
-								id="label-shareholders-company"
+								id="label-shareholders-company-name"
 								value={client.companyName}
 								placeholder="Business company name"
 								type="text"
@@ -829,11 +822,12 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								name="companyName"
 								error={client.companyName.length < 2}
 							/>
-							<p style={{textAlign: 'center', margin: '40px 0'}}>Identification <br/>
-								Copy of excerpt of public register or other valid documents proving the existence of legal entity
+							<p style={{textAlign: 'center', margin: '30px 0 0', fontSize: '16px', fontWeight: 'bold'}}>Copy of
+								excerpt of public register or
+								other valid documents proving the existence of legal entity
 								(Articles of Associations, Deed of Foundation etc.).
 							</p>
-							<div style={{textAlign: 'center', margin: '20px 0'}}>
+							<div style={{textAlign: 'center', margin: '20px 0 40px'}}>
 								<LabelInput htmlFor="file-input">
 									<FileInput
 										id="file-input"
@@ -843,7 +837,8 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
 								</LabelInput>
 							</div>
-							<p style={{textAlign: 'center'}}>Provide information about your statutory body</p>
+							<p style={{textAlign: 'center', fontSize: '16px', fontWeight: 'bold'}}>Provide information about your
+								statutory body</p>
 							<div
 								style={{
 									margin: '10px 0',
@@ -996,7 +991,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									/>
 								</div>
 							</div>
-						</>
+						</div>
 					) : null}
 				</div>
 				<div style={{textAlign: 'center'}}>

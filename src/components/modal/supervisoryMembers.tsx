@@ -11,6 +11,7 @@ import {useAxios} from '../../hooks';
 import {BASE_URL, useStore} from '../../helpers';
 import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
+import {DateInput} from './shareholdersModal';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -41,10 +42,10 @@ type Props = {
 	addSupervisor?: boolean;
 	updateSupervisorModalShow?: any;
 };
-export const SupervisoryBoardMembers = ({
-																					addSupervisor = false,
-																					updateSupervisorModalShow
-																				}: Props) => {
+export const SupervisoryMembers = ({
+																		 addSupervisor = false,
+																		 updateSupervisorModalShow
+																	 }: Props) => {
 	const {
 		state: {theme}
 	} = useStore();
@@ -187,93 +188,108 @@ export const SupervisoryBoardMembers = ({
 
 	return (
 		<Portal
-			size="large"
+			size="xl"
 			isOpen={showModal}
 			handleClose={handleClose}
 			handleBack={handleBack}
 			hasBackButton>
 			<Wrapper>
 				<ContentTitle>Information on members of the supervisory board</ContentTitle>
-				<WrapContainer style={{paddingLeft: '2px', paddingRight: '10px'}}>
-					<label
-						htmlFor="label-supervisory-full-name"
-						style={{
-							margin: '6px 0 8px 0',
-							display: 'inline-block'
-						}}>
-						Full name
-					</label>
-					<TextField
-						id="label-supervisory-full-name"
-						value={client.fullName}
-						placeholder="Full name"
-						type="text"
-						onChange={handleChangeClientInput}
-						size="small"
-						align="left"
-						name="fullName"
-						maxLength={50}
-						error={client.fullName.length < 2}
-					/>
-					<div
-						style={{
-							margin: '16px 16px 16px 0',
-							display: 'flex',
-							// justifyContent: 'space-between'
-						}}>
-						<label htmlFor="label-supervisory-date"
-									 style={{
-										 margin: '6px 15px 8px 0',
-										 display: 'inline-block'
-									 }}>
-							Date of birth
-						</label>
-						<input
-							type="date"
-							id="label-supervisory-date"
-							value={client.dateOfBirth}
-							min="1900-01-01"
-							onChange={(e: any) => handleChangeDate(e)}
-						/>
-					</div>
-					<label
-						htmlFor="label-shareholders-place-of-birth"
-						style={{
-							margin: '6px 0 8px 0',
-							display: 'inline-block'
-						}}>
-						Place of Birth
-					</label>
-					<TextField
-						id="label-shareholders-place-of-birth"
-						value={client.placeOfBirth}
-						placeholder="Place of Birth"
-						type="text"
-						onChange={handleChangeClientInput}
-						size="small"
-						align="left"
-						name="placeOfBirth"
-						maxLength={50}
-						error={client.placeOfBirth.length < 2}
-					/>
-					<div style={{margin: '10px 0'}}>
-						<label htmlFor="label-shareholder-select-gender">
-							Gender
-						</label>
-						<Select
-							name="gender"
-							onChange={handleDropDownInput}
-							value={client.gender}
-							id="label-shareholder-select-gender"
-							style={{
-								minHeight: '46px',
-								marginTop: '8px',
-							}}>
-							<option value="Select gender">Select gender</option>
-							<option value="Male">Male</option>
-							<option value="Female">Female</option>
-							<option value="Other">Other</option>
-						</Select>
+				<WrapContainer style={{padding: '0 10px'}}>
+					<div style={{
+						margin: '0 0 10px 0',
+						display: 'flex',
+						flexWrap: 'wrap',
+						justifyContent: 'space-between'
+					}}>
+						<div style={{width: '48%'}}>
+							<label
+								htmlFor="label-supervisory-full-name"
+								style={{
+									margin: '6px 0 8px 0',
+									display: 'inline-block'
+								}}>
+								Full name
+							</label>
+							<TextField
+								id="label-supervisory-full-name"
+								value={client.fullName}
+								placeholder="Full name"
+								type="text"
+								onChange={handleChangeClientInput}
+								size="small"
+								align="left"
+								name="fullName"
+								maxLength={50}
+								error={client.fullName.length < 2}
+							/>
+						</div>
+						<div style={{width: '48%', display: 'flex', flexDirection: 'column'}}>
+							<label
+								htmlFor="label-supervisory-date"
+								style={{
+									margin: '8px 0',
+									display: 'inline-block'
+								}}>
+								Date of incorporation
+							</label>
+							<DateInput
+								style={{
+									backgroundColor: `${theme.background.secondary}`,
+									color: `${theme.font.default}`,
+									minHeight: '40px',
+									border: '1px solid grey',
+									borderRadius: `${DEFAULT_BORDER_RADIUS}`
+								}}
+								type="date"
+								id="label-supervisory-date"
+								value={client.dateOfBirth}
+								min="1900-01-01"
+								name="dateOfBirth"
+								onChange={(e: any) => handleChangeDate(e)}
+							/>
+						</div>
+						<div style={{width: '48%'}}>
+							<label
+								htmlFor="label-shareholders-place-of-birth"
+								style={{
+									margin: '6px 0 8px 0',
+									display: 'inline-block'
+								}}>
+								Place of Birth
+							</label>
+							<TextField
+								id="label-shareholders-place-of-birth"
+								value={client.placeOfBirth}
+								placeholder="Place of Birth"
+								type="text"
+								onChange={handleChangeClientInput}
+								size="small"
+								align="left"
+								name="placeOfBirth"
+								maxLength={50}
+								error={client.placeOfBirth.length < 2}
+							/>
+						</div>
+						<div style={{width: '48%'}}>
+							<label htmlFor="label-shareholder-select-gender">
+								Gender
+							</label>
+							<Select
+								name="gender"
+								onChange={handleDropDownInput}
+								value={client.gender}
+								id="label-shareholder-select-gender"
+								style={{
+									minHeight: '46px',
+									marginTop: '8px',
+								}}>
+								<option value="Select gender">Select gender</option>
+								<option value="Male">Male</option>
+								<option value="Female">Female</option>
+								<option value="Other">Other</option>
+							</Select>
+						</div>
 					</div>
 					<div style={{width: '100%'}}>
 						<label
