@@ -351,7 +351,6 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 		setInput({...input, countryOfOperates: countries});
 	};
 	const handleSelectDropdownCountryOfWork = (event: any) => {
-		console.log(event);
 		setSelectWorkCountry([...event]);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
 		setInput({...input, countryOfWork: countries});
