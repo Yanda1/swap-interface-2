@@ -233,8 +233,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 			bodyFormData.append('citizenship', client.citizenship.join(', '));
 			bodyFormData.append('tax_residency', client.taxResidency);
 			bodyFormData.append('residence_address', JSON.stringify(client.residence));
-			// TODO: ask Daniel about key for backend
-			bodyFormData.append('FILE', client.fileIdentification);
+			bodyFormData.append('id_doc', client.fileIdentification);
 			if (client.permanentAndMailAddressSame === 'No') {
 				bodyFormData.append('mail_address', JSON.stringify(client.mailAddress));
 			}
@@ -242,8 +241,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 			bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
 		} else if (isUBOLegalEntity === 'legal') {
 			bodyFormData.append('company_name', client.companyName);
-			// TODO: ask Daniel about key for backend
-			bodyFormData.append('FILE', client.fileIdentification);
+			bodyFormData.append('id_doc', client.fileIdentification);
 			bodyFormData.append('statutory_citizenship', client.uboInfo.citizenship.join(', '));
 			bodyFormData.append('statutory_full_name', client.uboInfo.nameAndSurname);
 			bodyFormData.append('statutory_subsequently_business', client.uboInfo.subsequentlyBusinessCompany);
