@@ -450,11 +450,11 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									isMulti
 									isSearchable
 									styles={{
-										menu: (base) => ({
+										menu: (base): any => ({
 											...base,
 											backgroundColor: `${theme.background.secondary}`,
 										}),
-										option: (base, state) => ({
+										option: (base, state): any => ({
 											...base,
 											border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
 											height: '100%',
@@ -462,7 +462,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 											backgroundColor: `${theme.background.secondary}`,
 											cursor: 'pointer',
 										}),
-										control: (baseStyles) => ({
+										control: (baseStyles): any => ({
 											...baseStyles,
 											borderColor: 'grey',
 											backgroundColor: `${theme.background.secondary}`,
@@ -859,11 +859,11 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 										isMulti
 										isSearchable
 										styles={{
-											menu: (base) => ({
+											menu: (base): any => ({
 												...base,
 												backgroundColor: `${theme.background.secondary}`,
 											}),
-											option: (base, state) => ({
+											option: (base, state): any => ({
 												...base,
 												border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
 												height: '100%',
@@ -871,7 +871,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 												backgroundColor: `${theme.background.secondary}`,
 												cursor: 'pointer',
 											}),
-											control: (baseStyles) => ({
+											control: (baseStyles): any => ({
 												...baseStyles,
 												borderColor: 'grey',
 												backgroundColor: `${theme.background.secondary}`,
