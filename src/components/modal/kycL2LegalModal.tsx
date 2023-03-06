@@ -32,22 +32,23 @@ const Wrapper = styled.div(() => {
 		display: flex;
 		width: 100%;
 		flex-direction: column;
-		align-items: center;
+		align-items: left;
 		padding: ${spacing[10]} ${spacing[20]};
 	`;
 });
 
 const Title = styled.h2(() => {
 	return css`
-		text-align: center;
-		font-style: italic;
+		text-align: left;
 		margin-bottom: ${spacing[40]};
+		line-height: 1.4;
 	`;
 });
 export const ContentTitle = styled.p`
 	margin-bottom: ${pxToRem(26)};
 	font-size: ${fontSize[18]};
-	text-align: center;
+	text-align: left;
+	line-height: 1.4;
 `;
 
 const LabelInput = styled.label(() => {
@@ -56,7 +57,7 @@ const LabelInput = styled.label(() => {
 	} = useStore();
 
 	return css`
-		text-align: center;
+		text-align: left;
 		cursor: pointer;
 		min-width: ${pxToRem(120)};
 		margin-bottom: ${pxToRem(20)};
@@ -749,7 +750,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 											margin: '6px 0 8px 0',
 											display: 'inline-block'
 										}}>
-										Str number
+										Street number
 									</label>
 									<TextField
 										id="label-registeredOffice-streetNumber"
@@ -788,12 +789,12 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 											margin: '6px 0 8px 0',
 											display: 'inline-block'
 										}}>
-										Municipality
+										City
 									</label>
 									<TextField
 										id="label-registeredOffice-municipality"
 										value={input.registeredOffice.municipality}
-										placeholder="Municipality"
+										placeholder="City"
 										type="text"
 										onChange={handleChangeRegisteredOfficeInput}
 										size="small"
@@ -970,12 +971,12 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 												margin: '6px 0 8px 0',
 												display: 'inline-block'
 											}}>
-											Municipality
+											City
 										</label>
 										<TextField
 											id="label-address-municipality"
 											value={input.mailAddress.municipality}
-											placeholder="Municipality"
+											placeholder="City"
 											type="text"
 											onChange={handleChangeMailInput}
 											size="small"
@@ -988,7 +989,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 												margin: '6px 0 8px 0',
 												display: 'inline-block'
 											}}>
-											Str number
+											Street number
 										</label>
 										<TextField
 											id="label-address-street-number"
@@ -1118,7 +1119,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</div>
 							<div style={{width: '100%'}}>
 								<ContentTitle>
-									The Client conducts his work / business activity in these areas:
+									Is your business conducting activities in one of these areas? <br/> - If yes select the relevant ones -
 								</ContentTitle>
 							</div>
 							<WrapContainer style={{height: '50%'}}>
@@ -1216,7 +1217,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 						<WrapContainer>
 							<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', paddingRight: '10px'}}>
 								<div>
-									<ContentTitle style={{textAlign: 'left'}}>Nature of prevailing source of income</ContentTitle>
+									<ContentTitle style={{textAlign: 'left', lineHeight: '1.6'}}>Nature of prevailing source of income</ContentTitle>
 									{PREVAILING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
 										return (
 											<div
@@ -1256,8 +1257,8 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										</div>
 									) : null}
 								</div>
-								<div style={{marginBottom: '45px'}}>
-									<ContentTitle style={{textAlign: 'left'}}>
+								<div style={{width: '100%'}}>
+									<ContentTitle>
 										Net yearly income / yearly turnover
 									</ContentTitle>
 									{NET_YEARLY_INCOME_LIST_COMPANY.map((activity: any, index: number) => {
@@ -1283,7 +1284,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 									})}
 								</div>
 								<div style={{width: '100%', paddingBottom: '30px'}}>
-									<ContentTitle style={{textAlign: 'center'}}>
+									<ContentTitle>
 										Source of funds intended for Transaction:
 									</ContentTitle>
 									{SOURCE_OF_FUNDS_LIST_COMPANY.map((activity: string, index: number) => {
