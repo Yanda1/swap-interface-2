@@ -175,15 +175,12 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 	};
 
 	const handleSelectDropdownNatural = (event: any) => {
-		console.log(event);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
 		setClient({...client, citizenship: countries});
 	};
 
 	const handleSelectDropdownUboInfo = (event: any) => {
-		console.log(event);
-		const countries = event.map((country: { value: string; label: string }) => country.value);
-		setClient({...client, uboInfo: {...client.uboInfo, citizenship: countries}});
+		setClient({...client, uboInfo: {...client.uboInfo, citizenship: event.value}});
 	};
 
 	const handleChangeResidenceInput = (event: any) => {
@@ -233,22 +230,22 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 			bodyFormData.append('citizenship', client.citizenship.join(', '));
 			bodyFormData.append('tax_residency', client.taxResidency);
 			bodyFormData.append('residence_address', JSON.stringify(client.residence));
-			bodyFormData.append('id_doc', client.fileIdentification);
+			bodyFormData.append('identification_doc', client.fileIdentification);
 			if (client.permanentAndMailAddressSame === 'No') {
 				bodyFormData.append('mail_address', JSON.stringify(client.mailAddress));
 			}
 			bodyFormData.append('political_person', client.politicallPerson === 'Yes' ? 'true' : 'false');
 			bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
 		} else if (isUBOLegalEntity === 'legal') {
-			bodyFormData.append('company_name', client.companyName);
-			bodyFormData.append('id_doc', client.fileIdentification);
-			bodyFormData.append('statutory_citizenship', client.uboInfo.citizenship.join(', '));
+			bodyFormData.append('full_name', client.companyName);
+			bodyFormData.append('identification_doc', client.fileIdentification);
+			bodyFormData.append('statutory_coi', client.uboInfo.citizenship);
 			bodyFormData.append('statutory_full_name', client.uboInfo.nameAndSurname);
 			bodyFormData.append('statutory_subsequently_business', client.uboInfo.subsequentlyBusinessCompany);
 			bodyFormData.append('statutory_permanent_residence', client.uboInfo.permanentResidence);
 			bodyFormData.append('statutory_office_address', client.uboInfo.registeredOffice);
-			bodyFormData.append('statutory_birth_id', client.uboInfo.idNumber);
-			bodyFormData.append('statutory_dob', client.uboInfo.dateOfBirth);
+			bodyFormData.append('statutory_id', client.uboInfo.idNumber);
+			bodyFormData.append('statutory_doi', client.uboInfo.dateOfBirth);
 		}
 
 		api.request({
@@ -822,41 +819,14 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 								<p style={{textAlign: 'center', fontSize: '18px', fontWeight: 'bold'}}>
 									Provide information about your statutory body
 								</p>
-								<div style={{marginBottom: '10px', width: '100%'}}>
-									<label
-										htmlFor="label-uboInfo-name-surname"
-										style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-										Citizenship(s)
-									</label>
-									<SelectDropDown
-										name='citizenship'
-										onChange={(e: any) => handleSelectDropdownUboInfo(e)}
-										options={countries}
-										isMulti
-										isSearchable
-										styles={{
-											menu: (base): any => ({
-												...base,
-												backgroundColor: `${theme.background.secondary}`,
-											}),
-											option: (base, state): any => ({
-												...base,
-												border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-												height: '100%',
-												color: `${theme.font.default}`,
-												backgroundColor: `${theme.background.secondary}`,
-												cursor: 'pointer',
-											}),
-											control: (baseStyles): any => ({
-												...baseStyles,
-												borderColor: 'grey',
-												backgroundColor: `${theme.background.secondary}`,
-												color: `${theme.font.default}`,
-												padding: 0,
-											}),
-										}}/>
-								</div>
-								<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
+								<div
+									style={{
+										margin: '10px 0',
+										display: 'flex',
+										flexWrap: 'wrap',
+										justifyContent: 'space-between',
+										alignItems: 'baseline'
+									}}>
 									<div style={{width: '48%'}}>
 										<label
 											htmlFor="label-uboInfo-name-surname"
@@ -873,81 +843,15 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											align="left"
 											name="nameAndSurname"
 										/>
-										<label
-											htmlFor="label-uboInfo-permanentResidence"
-											style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-											Permanent Residence
-										</label>
-										<TextField
-											id="label-uboInfo-permanentResidence"
-											value={client.uboInfo.permanentResidence}
-											placeholder="Permanent Residence"
-											type="text"
-											onChange={handleChangeUboInfoInput}
-											size="small"
-											align="left"
-											name="permanentResidence"
-										/>
 									</div>
-									<div style={{width: '48%'}}>
-										<label
-											htmlFor="label-uboInfo-subsequentlyBusinessCompany"
-											style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-											Subsequently business company
-										</label>
-										<TextField
-											id="label-uboInfo-subsequentlyBusinessCompany"
-											value={client.uboInfo.subsequentlyBusinessCompany}
-											placeholder="Subsequently business company"
-											type="text"
-											onChange={handleChangeUboInfoInput}
-											size="small"
-											align="left"
-											name="subsequentlyBusinessCompany"
-										/>
-										<label
-											htmlFor="label-uboInfo-registeredOffice"
-											style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-											Registered Office
-										</label>
-										<TextField
-											id="label-uboInfo-registeredOffice"
-											value={client.uboInfo.registeredOffice}
-											placeholder="Registered Office"
-											type="text"
-											onChange={handleChangeUboInfoInput}
-											size="small"
-											align="left"
-											name="registeredOffice"
-										/>
-									</div>
-									<div style={{width: '48%'}}>
-										<label
-											htmlFor="label-uboInfo-idNumber"
-											style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-											Identification number
-										</label>
-										<TextField
-											id="label-uboInfo-idNumber"
-											value={client.uboInfo.idNumber}
-											placeholder="Identification number"
-											type="text"
-											onChange={handleChangeUboInfoInput}
-											size="small"
-											align="left"
-											name="idNumber"
-										/>
-									</div>
-									<div style={{
-										width: '48%',
-										display: 'flex',
-										flexDirection: 'column',
-										justifyContent: 'flex-start'
-									}}>
+									<div style={{width: '48%', display: 'flex', flexDirection: 'column'}}>
 										<label
 											htmlFor="label-uboInfo-dateOfBirth"
-											style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-											Date of birth
+											style={{
+												margin: '8px 0',
+												display: 'inline-block'
+											}}>
+											Date of incorporation
 										</label>
 										<DateInput
 											style={{
@@ -963,6 +867,107 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											min="1900-01-01"
 											name="dateOfBirth"
 											onChange={handleChangeUboInfoInput}
+										/>
+									</div>
+									<div style={{width: '48%'}}>
+										<label
+											htmlFor="label-uboInfo-country-incorporate"
+											style={{margin: '8px 0', display: 'inline-block'}}>
+											Country of incorporation
+										</label>
+										<SelectDropDown
+											onChange={(e: any) => handleSelectDropdownUboInfo(e)}
+											options={countries}
+											isSearchable
+											isMulti
+											styles={{
+												menu: (base): any => ({
+													...base,
+													backgroundColor: `${theme.background.secondary}`,
+												}),
+												option: (base, state): any => ({
+													...base,
+													border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+													height: '100%',
+													color: `${theme.font.default}`,
+													backgroundColor: `${theme.background.secondary}`,
+													cursor: 'pointer',
+												}),
+												control: (baseStyles): any => ({
+													...baseStyles,
+													borderColor: 'grey',
+													backgroundColor: `${theme.background.secondary}`,
+													color: `${theme.font.default}`,
+													padding: 0,
+												}),
+											}}/>
+									</div>
+									<div style={{width: '48%'}}>
+										<label
+											htmlFor="label-uboInfo-subsequentlyBusinessCompany"
+											style={{margin: '8px 0', display: 'inline-block'}}>
+											Subsequently business company
+										</label>
+										<TextField
+											id="label-uboInfo-subsequentlyBusinessCompany"
+											value={client.uboInfo.subsequentlyBusinessCompany}
+											placeholder="Subsequently business company"
+											type="text"
+											onChange={handleChangeUboInfoInput}
+											size="small"
+											align="left"
+											name="subsequentlyBusinessCompany"
+										/>
+									</div>
+									<div style={{width: '48%'}}>
+										<label
+											htmlFor="label-uboInfo-registeredOffice"
+											style={{margin: '8px 0', display: 'inline-block'}}>
+											Registered Office
+										</label>
+										<TextField
+											id="label-uboInfo-registeredOffice"
+											value={client.uboInfo.registeredOffice}
+											placeholder="Registered Office"
+											type="text"
+											onChange={handleChangeUboInfoInput}
+											size="small"
+											align="left"
+											name="registeredOffice"
+										/>
+									</div>
+									<div style={{width: '48%'}}>
+										<label
+											htmlFor="label-uboInfo-permanentResidence"
+											style={{margin: '8px 0', display: 'inline-block'}}>
+											Permanent Residence
+										</label>
+										<TextField
+											id="label-uboInfo-permanentResidence"
+											value={client.uboInfo.permanentResidence}
+											placeholder="Permanent Residence"
+											type="text"
+											onChange={handleChangeUboInfoInput}
+											size="small"
+											align="left"
+											name="permanentResidence"
+										/>
+									</div>
+									<div>
+										<label
+											htmlFor="label-uboInfo-idNumber"
+											style={{margin: '8px 0', display: 'inline-block'}}>
+											Identification number
+										</label>
+										<TextField
+											id="label-uboInfo-idNumber"
+											value={client.uboInfo.idNumber}
+											placeholder="Identification number"
+											type="text"
+											onChange={handleChangeUboInfoInput}
+											size="small"
+											align="left"
+											name="idNumber"
 										/>
 									</div>
 								</div>

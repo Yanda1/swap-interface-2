@@ -191,17 +191,14 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 		});
 	};
 	const handleDropDownInput = (event: any) => {
-		console.log(event);
 		setClient({...client, [event.target.name]: event.target.value});
 	};
 	const handleSelectDropdownNatural = (event: any) => {
-		console.log(event);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
 		setClient({...client, citizenship: countries});
 	};
 	const handleSelectDropdownShareHolderInfo = (event: any) => {
-		const countries = event.map((country: { value: string; label: string }) => country.value);
-		setClient({...client, shareHolderInfo: {...client.shareHolderInfo, citizenship: countries}});
+		setClient({...client, shareHolderInfo: {...client.shareHolderInfo, citizenship: event.value}});
 	};
 	const handleChangeResidenceInput = (event: any) => {
 		setClient({
@@ -238,7 +235,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 			bodyFormData.append('tax_residency', client.taxResidency);
 			bodyFormData.append('citizenship', client.citizenship.join(', '));
 			// TODO: ask Daniel about key for backend
-			bodyFormData.append('FILE', client.fileIdentification);
+			bodyFormData.append('identification_doc', client.fileIdentification);
 			bodyFormData.append('residence_address', JSON.stringify(client.residence));
 			if (client.permanentAndMailAddressSame === 'No') {
 				bodyFormData.append('mail_address', JSON.stringify(client.mailAddress));
@@ -246,16 +243,16 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 			bodyFormData.append('political_person', client.politicallPerson === 'Yes' ? 'true' : 'false');
 			bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
 		} else if (isShareHolderLegal === 'legal') {
-			bodyFormData.append('company_name', client.companyName);
+			bodyFormData.append('full_name', client.companyName);
 			// TODO: ask Daniel about key for backend
-			bodyFormData.append('FILE', client.fileIdentification);
+			bodyFormData.append('identification_doc', client.fileIdentification);
 			bodyFormData.append('statutory_full_name', client.shareHolderInfo.nameAndSurname);
-			bodyFormData.append('statutory_dob', client.shareHolderInfo.dateOfBirth);
+			bodyFormData.append('statutory_doi', client.shareHolderInfo.dateOfBirth);
 			bodyFormData.append('statutory_permanent_residence', client.shareHolderInfo.permanentResidence);
-			bodyFormData.append('statutory_citizenship', client.shareHolderInfo.citizenship.join(', '));
+			bodyFormData.append('statutory_coi', client.shareHolderInfo.citizenship);
 			bodyFormData.append('statutory_subsequently_business', client.shareHolderInfo.subsequentlyBusinessCompany);
 			bodyFormData.append('statutory_office_address', client.shareHolderInfo.registeredOffice);
-			bodyFormData.append('statutory_birth_id', client.shareHolderInfo.idNumber);
+			bodyFormData.append('statutory_id', client.shareHolderInfo.idNumber);
 		}
 
 		api.request({
@@ -837,8 +834,9 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
 								</LabelInput>
 							</div>
-							<p style={{textAlign: 'center', fontSize: '16px', fontWeight: 'bold'}}>Provide information about your
-								statutory body</p>
+							<p style={{textAlign: 'center', fontSize: '16px', fontWeight: 'bold'}}>
+								Provide information about your statutory body
+							</p>
 							<div
 								style={{
 									margin: '10px 0',
@@ -849,36 +847,20 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								}}>
 								<div style={{width: '48%'}}>
 									<label
-										htmlFor="label-country-incorporate"
+										htmlFor="label-shareHolderInfo-name-surname"
 										style={{margin: '8px 0', display: 'inline-block'}}>
-										Country of incorporate
+										Name and Surname
 									</label>
-									<SelectDropDown
-										onChange={(e: any) => handleSelectDropdownShareHolderInfo(e)}
-										options={countries}
-										isMulti
-										isSearchable
-										styles={{
-											menu: (base): any => ({
-												...base,
-												backgroundColor: `${theme.background.secondary}`,
-											}),
-											option: (base, state): any => ({
-												...base,
-												border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-												height: '100%',
-												color: `${theme.font.default}`,
-												backgroundColor: `${theme.background.secondary}`,
-												cursor: 'pointer',
-											}),
-											control: (baseStyles): any => ({
-												...baseStyles,
-												borderColor: 'grey',
-												backgroundColor: `${theme.background.secondary}`,
-												color: `${theme.font.default}`,
-												padding: 0,
-											}),
-										}}/>
+									<TextField
+										id="label-shareHolderInfo-name-surname"
+										value={client.shareHolderInfo.nameAndSurname}
+										placeholder="Name and Surname"
+										type="text"
+										onChange={handleChangeShareHolderInfoInput}
+										size="small"
+										align="left"
+										name="nameAndSurname"
+									/>
 								</div>
 								<div style={{width: '48%', display: 'flex', flexDirection: 'column'}}>
 									<label
@@ -907,20 +889,36 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								</div>
 								<div style={{width: '48%'}}>
 									<label
-										htmlFor="label-shareHolderInfo-name-surname"
+										htmlFor="label-country-incorporate"
 										style={{margin: '8px 0', display: 'inline-block'}}>
-										Name and Surname
+										Country of incorporation
 									</label>
-									<TextField
-										id="label-shareHolderInfo-name-surname"
-										value={client.shareHolderInfo.nameAndSurname}
-										placeholder="Name and Surname"
-										type="text"
-										onChange={handleChangeShareHolderInfoInput}
-										size="small"
-										align="left"
-										name="nameAndSurname"
-									/>
+									<SelectDropDown
+										onChange={(e: any) => handleSelectDropdownShareHolderInfo(e)}
+										options={countries}
+										isSearchable
+										isMulti
+										styles={{
+											menu: (base): any => ({
+												...base,
+												backgroundColor: `${theme.background.secondary}`,
+											}),
+											option: (base, state): any => ({
+												...base,
+												border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+												height: '100%',
+												color: `${theme.font.default}`,
+												backgroundColor: `${theme.background.secondary}`,
+												cursor: 'pointer',
+											}),
+											control: (baseStyles): any => ({
+												...baseStyles,
+												borderColor: 'grey',
+												backgroundColor: `${theme.background.secondary}`,
+												color: `${theme.font.default}`,
+												padding: 0,
+											})
+										}}/>
 								</div>
 								<div style={{width: '48%'}}>
 									<label

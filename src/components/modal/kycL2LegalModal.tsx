@@ -475,11 +475,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					response.data.map((record: any) => {
 						const mappedRecord = {
 							id: record.id,
-							fullName: record.full_name,
-							idNumber: record.identification_number,
-							placeOfBirth: record.place_of_birth,
-							citizenship: record.citizenship,
-							taxResidency: record.tax_residency
+							fullName: record.full_name
 						};
 						newRecords = [...newRecords, mappedRecord];
 					});
@@ -500,11 +496,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					response.data.map((record: any) => {
 						const mappedRecord = {
 							id: record.id,
-							fullName: record.full_name,
-							idNumber: record.identification_number,
-							placeOfBirth: record.place_of_birth,
-							citizenship: record.citizenship,
-							taxResidency: record.tax_residency
+							fullName: record.full_name
 						};
 						newRecords = [...newRecords, mappedRecord];
 					});
@@ -834,8 +826,12 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					)}
 					{page === 1 && (
 						<WrapContainer>
-							<ContentTitle>Tax Residency</ContentTitle>
-							<div style={{textAlign: 'center', minHeight: '40px', width: '100%', marginBottom: '50px'}}>
+							<label
+								htmlFor="taxResidency"
+								style={{marginBottom: '8px', display: 'inline-block'}}>
+								Tax Residency
+							</label>
+							<div style={{textAlign: 'left', minHeight: '40px', width: '100%', marginBottom: '50px'}}>
 								<Select
 									style={{width: '300px', height: '40px'}}
 									name="taxResidency"
@@ -851,17 +847,18 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 									})}
 								</Select>
 							</div>
-							<ContentTitle style={{marginTop: '20px'}}>
-								Is your mailing address the same as your registered office address?
-							</ContentTitle>
 							<div
 								style={{
 									display: 'flex',
 									width: '100%',
-									justifyContent: 'center',
+									justifyContent: 'left',
 									marginBottom: '30px'
 								}}>
-								<div style={{marginRight: '36px'}}>
+								<label
+									style={{marginBottom: '8px', display: 'inline-block'}}>
+									Is your mailing address the same as your registered office address?
+								</label>
+								<div style={{margin: '0 36px'}}>
 									<label htmlFor="label-mailing-permanent-address-true">
 										<input
 											id="label-mailing-permanent-address-true"
@@ -1009,17 +1006,18 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 						</WrapContainer>
 					)}
 					{page === 2 && (
-						<>
-							<div style={{margin: '20px 0 30px', width: '100%', textAlign: 'center'}}>
-								<ContentTitle>Politically exposed person?</ContentTitle>
+						<WrapContainer>
+							
 								<div
 									style={{
 										display: 'flex',
 										width: '100%',
-										justifyContent: 'space-evenly',
-										marginTop: '20px'
+										// justifyContent: 'center',
+										marginBottom: '50px',
+										alignItems: 'baseline'
 									}}>
-									<div>
+									<label>Politically exposed person?</label>
+									<div style={{margin: '0 36px'}}>
 										<label htmlFor="politicallPersonTrue">
 											<input
 												id="politicallPersonTrue"
@@ -1046,43 +1044,47 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										</label>
 									</div>
 								</div>
-							</div>
-							<div style={{margin: '20px 0 30px', width: '100%', textAlign: 'center'}}>
-								<ContentTitle>
-									Person against whom are applied CZ/international sanctions?
-								</ContentTitle>
+							
 								<div
 									style={{
 										display: 'flex',
 										width: '100%',
-										justifyContent: 'space-evenly',
-										marginTop: '20px'
+										// justifyContent: 'center',
+										marginBottom: '30px',
+										alignItems: 'baseline'
 									}}>
-									<label htmlFor="appliedSanctionsTrue">
-										<input
-											id="appliedSanctionsTrue"
-											type="radio"
-											value="Yes"
-											checked={input.appliedSanctions === 'Yes'}
-											onChange={handleChangeInput}
-											name="appliedSanctions"
-										/>
-										Yes
+									<label>
+										Person against whom are applied CZ/international sanctions?
 									</label>
-									<label htmlFor="appliedSanctionsFalse">
-										<input
-											id="appliedSanctionsFalse"
-											type="radio"
-											value="No"
-											checked={input.appliedSanctions === 'No'}
-											onChange={handleChangeInput}
-											name="appliedSanctions"
-										/>
-										No
-									</label>
+									<div style={{margin: '0 36px'}}>
+										<label htmlFor="appliedSanctionsTrue">
+											<input
+												id="appliedSanctionsTrue"
+												type="radio"
+												value="Yes"
+												checked={input.appliedSanctions === 'Yes'}
+												onChange={handleChangeInput}
+												name="appliedSanctions"
+											/>
+											Yes
+										</label>
+									</div>
+									<div>
+										<label htmlFor="appliedSanctionsFalse">
+											<input
+												id="appliedSanctionsFalse"
+												type="radio"
+												value="No"
+												checked={input.appliedSanctions === 'No'}
+												onChange={handleChangeInput}
+												name="appliedSanctions"
+											/>
+											No
+										</label>
+									</div>
 								</div>
-							</div>
-						</>
+							
+						</WrapContainer>
 					)}
 					{page === 3 && (
 						<>
@@ -1322,71 +1324,84 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					)}
 					{page === 6 && (
 						<div style={{display: 'flex', flexDirection: 'column'}}>
-							<ContentTitle>
-								Have you as a legal entity (or the member of your statutory body or your supervisory body or your
-								ultimate beneficial owner ) ever been convicted for a criminal offense, in particular an offense
-								against
-								property or economic offense committed not only in relation with work or business activities (without
-								regards to presumption of innocence)?
-							</ContentTitle>
-							<div style={{display: 'flex', justifyContent: 'space-around', marginTop: '35px'}}>
-								<label htmlFor="criminalOffensesTrue">
-									<input
-										id="criminalOffensesTrue"
-										type="radio"
-										value="Yes"
-										checked={input.criminalOffenses === 'Yes'}
-										onChange={handleChangeInput}
-										name="criminalOffenses"
-									/>
-									Yes
+							<div 
+								style={{
+									display: 'flex',
+									// justifyContent: 'center',
+									marginBottom: '50px'
+								}}>
+								<label>
+									Have you as a legal entity (or the member of your statutory body or your supervisory body or your
+									ultimate beneficial owner ) ever been convicted for a criminal offense, in particular an offense
+									against
+									property or economic offense committed not only in relation with work or business activities (without
+									regards to presumption of innocence)?
 								</label>
-								<label htmlFor="criminalOffensesFalse">
-									<input
-										id="criminalOffensesFalse"
-										type="radio"
-										value="No"
-										checked={input.criminalOffenses === 'No'}
-										onChange={handleChangeInput}
-										name="criminalOffenses"
-									/>
-									No
-								</label>
-							</div>
-							<div style={{margin: '45px 0 0', width: '100%', textAlign: 'center'}}>
-								<ContentTitle style={{margin: '70px 0 45px'}}>
-									The representative of the client is a:
-								</ContentTitle>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'space-evenly',
-										width: '100%',
-										marginBottom: '10px'
-									}}>
-									<label htmlFor="representativeTypeOfClientTrue">
+								<div style={{margin: '0 36px'}}>
+									<label htmlFor="criminalOffensesTrue">
 										<input
-											id="representativeTypeOfClientTrue"
+											id="criminalOffensesTrue"
 											type="radio"
-											value="Natural Person"
-											checked={input.representativeTypeOfClient === 'Natural Person'}
+											value="Yes"
+											checked={input.criminalOffenses === 'Yes'}
 											onChange={handleChangeInput}
-											name="representativeTypeOfClient"
+											name="criminalOffenses"
 										/>
-										Natural Person
-									</label>
-									<label htmlFor="representativeTypeOfClientFalse">
-										<input
-											id="representativeTypeOfClientFalse"
-											type="radio"
-											value="Legal entity"
-											checked={input.representativeTypeOfClient === 'Legal entity'}
-											onChange={handleChangeInput}
-											name="representativeTypeOfClient"
-										/>
-										Legal entity
+										Yes
 									</label>
 								</div>
+								<div>
+									<label htmlFor="criminalOffensesFalse">
+										<input
+											id="criminalOffensesFalse"
+											type="radio"
+											value="No"
+											checked={input.criminalOffenses === 'No'}
+											onChange={handleChangeInput}
+											name="criminalOffenses"
+										/>
+										No
+									</label>
+								</div>
+							</div>
+							<div style={{width: '100%' }}>
+								
+									<div
+										style={{
+											display: 'flex',
+											width: '100%',
+											// justifyContent: 'center',
+											marginBottom: '30px',
+											alignItems: 'baseline'
+										}}>
+										<label>The representative of the client is a:</label>
+										<div style={{margin: '0 36px'}}>
+											<label htmlFor="representativeTypeOfClientTrue">
+												<input
+													id="representativeTypeOfClientTrue"
+													type="radio"
+													value="Natural Person"
+													checked={input.representativeTypeOfClient === 'Natural Person'}
+													onChange={handleChangeInput}
+													name="representativeTypeOfClient"
+												/>
+												Natural Person
+											</label>
+										</div>
+										<div>
+											<label htmlFor="representativeTypeOfClientFalse">
+												<input
+													id="representativeTypeOfClientFalse"
+													type="radio"
+													value="Legal entity"
+													checked={input.representativeTypeOfClient === 'Legal entity'}
+													onChange={handleChangeInput}
+													name="representativeTypeOfClient"
+												/>
+												Legal entity
+											</label>
+										</div>
+									</div>
 							</div>
 						</div>
 					)}
@@ -1418,13 +1433,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 															flexDirection: 'column',
 															alignItems: 'flex-start'
 														}}>
-														<ContainerText>Name: {client.fullName}</ContainerText>
-														<ContainerText>Id Number: {client.idNumber}</ContainerText>
-														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
-														<ContainerText>
-															Citizenship(s): {client.citizenship instanceof Array ? client.citizenship.join(', ') : client.citizenship}
-														</ContainerText>
-														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
+														<ContainerText><strong>{client.fullName || client.companyName}</strong></ContainerText>
 													</div>
 													<DeleteUboBtn onClick={() => handleDeleteUbo(client.id)}>
 														Delete
@@ -1470,13 +1479,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 															flexDirection: 'column',
 															alignItems: 'flex-start'
 														}}>
-														<ContainerText>Name: {client.fullName}</ContainerText>
-														<ContainerText>Id Number: {client.idNumber}</ContainerText>
-														<ContainerText>Place of birth: {client.placeOfBirth}</ContainerText>
-														<ContainerText>
-															Citizenship(s): {client.citizenship instanceof Array ? client.citizenship.join(', ') : client.citizenship}
-														</ContainerText>
-														<ContainerText>Tax residency: {client.taxResidency}</ContainerText>
+														<ContainerText><strong>{client.fullName || client.companyName}</strong></ContainerText>
 													</div>
 													<DeleteUboBtn onClick={() => handleDeleteShareHolder(client.id)}>
 														Delete
