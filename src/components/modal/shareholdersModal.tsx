@@ -548,12 +548,12 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									<label
 										htmlFor="label-shareholder-address-permanent-municipality"
 										style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-										Municipality
+										City
 									</label>
 									<TextField
 										id="label-shareholder-address-permanent-municipality"
 										value={client.residence.municipality}
-										placeholder="Municipality"
+										placeholder="City"
 										type="text"
 										onChange={handleChangeResidenceInput}
 										size="small"
@@ -698,12 +698,12 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 													margin: '6px 0 8px 0',
 													display: 'inline-block'
 												}}>
-												Municipality
+												City
 											</label>
 											<TextField
 												id="label-shareholder-address-municipality"
 												value={client.mailAddress.municipality}
-												placeholder="Municipality"
+												placeholder="City"
 												type="text"
 												onChange={handleChangeMailInput}
 												size="small"
@@ -734,7 +734,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									</div>
 								</>
 							)}
-							<p style={{marginBottom: '10px'}}>Politically exposed person?</p>
+							<p style={{marginBottom: '10px'}}>Are you a politically exposed person?</p>
 							<div
 								style={{
 									display: 'flex',
@@ -765,7 +765,7 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 								</label>
 							</div>
 							<p style={{marginBottom: '15px'}}>
-								Person against whom are applied CZ/international sanctions?
+								Are you a person against whom are applied Czech or international sanctions?
 							</p>
 							<div
 								style={{
@@ -806,12 +806,12 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									marginBottom: '8px',
 									display: 'inline-block'
 								}}>
-								Business company name
+								Company name
 							</label>
 							<TextField
 								id="label-shareholders-company-name"
 								value={client.companyName}
-								placeholder="Business company name"
+								placeholder="Company name"
 								type="text"
 								onChange={handleChangeClientInput}
 								size="small"
@@ -941,12 +941,12 @@ export const ShareHoldersModal = ({addShareHolder = false, updateShareHoldersMod
 									<label
 										htmlFor="label-shareHolderInfo-registeredOffice"
 										style={{margin: '8px 0', display: 'inline-block'}}>
-										Registered Office
+										Registered office address
 									</label>
 									<TextField
 										id="label-shareHolderInfo-registeredOffice"
 										value={client.shareHolderInfo.registeredOffice}
-										placeholder="Registered Office"
+										placeholder="Registered office address"
 										type="text"
 										onChange={handleChangeShareHolderInfoInput}
 										size="small"

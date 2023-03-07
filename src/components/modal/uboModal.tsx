@@ -541,12 +541,12 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									<label
 										htmlFor="label-address-permanent-municipality"
 										style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-										Municipality
+										City
 									</label>
 									<TextField
 										id="label-address-permanent-municipality"
 										value={client.residence.municipality}
-										placeholder="Municipality"
+										placeholder="City"
 										type="text"
 										onChange={handleChangeResidenceInput}
 										size="small"
@@ -680,12 +680,12 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											<label
 												htmlFor="label-address-municipality"
 												style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-												Municipality
+												City
 											</label>
 											<TextField
 												id="label-address-municipality"
 												value={client.mailAddress.municipality}
-												placeholder="Municipality"
+												placeholder="City"
 												type="text"
 												onChange={handleChangeMailInput}
 												size="small"
@@ -713,7 +713,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									</div>
 								</>
 							)}
-							<p style={{marginBottom: '15px'}}>Politically exposed person?</p>
+							<p style={{marginBottom: '15px'}}>Are you a politically exposed person?</p>
 							<div style={{display: 'flex', justifyContent: 'space-evenly', width: '100%', marginBottom: '30px'}}>
 								<label htmlFor="politicallPersonTrue">
 									<input
@@ -739,7 +739,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 								</label>
 							</div>
 							<p style={{marginBottom: '15px'}}>
-								Person against whom are applied CZ/international sanctions?
+								Are you a person against whom are applied Czech or international sanctions?
 							</p>
 							<div
 								style={{
@@ -777,12 +777,12 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 							<label
 								style={{display: 'block', marginBottom: '10px'}}
 								htmlFor="label-ubo-company-name">
-								Business company name
+								Company name
 							</label>
 							<TextField
 								id="label-ubo-company-name"
 								value={client.companyName}
-								placeholder="Business company name"
+								placeholder="Company name"
 								type="text"
 								onChange={handleChangeClientInput}
 								size="small"
@@ -923,12 +923,12 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										<label
 											htmlFor="label-uboInfo-registeredOffice"
 											style={{margin: '8px 0', display: 'inline-block'}}>
-											Registered Office
+											Registered office address
 										</label>
 										<TextField
 											id="label-uboInfo-registeredOffice"
 											value={client.uboInfo.registeredOffice}
-											placeholder="Registered Office"
+											placeholder="Registered office address"
 											type="text"
 											onChange={handleChangeUboInfoInput}
 											size="small"

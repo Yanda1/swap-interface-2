@@ -658,18 +658,18 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					}}>
 					{page === 0 && (
 						<WrapContainer>
-							<Title>KYC L2 form for Legal Persons</Title>
+							<Title>Business verification</Title>
 							<div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'baseline'}}>
 								<div style={{marginBottom: '10px', width: '50%', marginRight: '20px'}}>
 									<label
 										htmlFor="label-companyName"
 										style={{marginBottom: '8px', display: 'inline-block'}}>
-										Business company name
+										Company name
 									</label>
 									<TextField
 										id="label-companyName"
 										value={input.companyName}
-										placeholder="Business company name"
+										placeholder="Company name"
 										type="text"
 										onChange={handleChangeInput}
 										size="small"
@@ -682,12 +682,12 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 									<label
 										htmlFor="label-identification-number"
 										style={{marginBottom: '8px', display: 'inline-block'}}>
-										Business identification number
+										Company identification number
 									</label>
 									<TextField
 										id="label-identification-number"
 										value={input.companyIdentificationNumber}
-										placeholder="Business identification number"
+										placeholder="Company identification number"
 										type="text"
 										onChange={handleChangeInput}
 										size="small"
@@ -827,6 +827,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					)}
 					{page === 1 && (
 						<WrapContainer>
+							<Title>Business verification</Title>
 							<label
 								htmlFor="taxResidency"
 								style={{marginBottom: '8px', display: 'inline-block'}}>
@@ -1008,7 +1009,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 					)}
 					{page === 2 && (
 						<WrapContainer>
-							
+							<Title>Business verification</Title>
 								<div
 									style={{
 										display: 'flex',
@@ -1017,7 +1018,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										marginBottom: '50px',
 										alignItems: 'baseline'
 									}}>
-									<label>Politically exposed person?</label>
+									<label>Are you a politically exposed person?</label>
 									<div style={{margin: '0 36px'}}>
 										<label htmlFor="politicallPersonTrue">
 											<input
@@ -1055,7 +1056,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 										alignItems: 'baseline'
 									}}>
 									<label>
-										Person against whom are applied CZ/international sanctions?
+										Are you a person against whom are applied Czech or international sanctions?
 									</label>
 									<div style={{margin: '0 36px'}}>
 										<label htmlFor="appliedSanctionsTrue">
@@ -1088,11 +1089,11 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 						</WrapContainer>
 					)}
 					{page === 3 && (
-						<>
+						<WrapContainer>
+							<Title>Business verification</Title>
 							<div style={{width: '100%'}}>
 								<ContentTitle>
-									The client is represented (person acting on behalf of the client in each
-									Transaction)
+									Who is representing the company?
 								</ContentTitle>
 								{REPRESENT_PERSON.map((activity: any, index: number) => {
 									return (
@@ -1119,7 +1120,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 							</div>
 							<div style={{width: '100%'}}>
 								<ContentTitle>
-									Is your business conducting activities in one of these areas? <br/> - If yes select the relevant ones -
+									Select in which areas your company is conducting activities
 								</ContentTitle>
 							</div>
 							<WrapContainer style={{height: '50%'}}>
@@ -1146,78 +1147,82 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 									);
 								})}
 							</WrapContainer>
-						</>
+						</WrapContainer>
 					)}
 					{page === 4 && (
-						<div style={{marginBottom: '10px', width: '70%'}}>
-							<ContentTitle>
-								State or country, in which a branch, organized unit or establishment of the client
-								operates
-							</ContentTitle>
-							<SelectDropDown
-								onChange={(e: any) => handleSelectDropdownCountryOfOperates(e)}
-								defaultValue={selectOperatesCountry}
-								options={countries}
-								isMulti
-								isSearchable
-								styles={{
-									menu: (base): any => ({
-										...base,
-										backgroundColor: `${theme.background.secondary}`,
-									}),
-									option: (base, state): any => ({
-										...base,
-										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-										height: '100%',
-										color: `${theme.font.default}`,
-										backgroundColor: `${theme.background.secondary}`,
-										cursor: 'pointer',
-									}),
-									control: (baseStyles): any => ({
-										...baseStyles,
-										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
-										color: `${theme.font.default}`,
-										padding: 0,
-									}),
-								}}/>
-							<ContentTitle style={{marginTop: '50px'}}>State or country, in which the client conducts his business
-								activity</ContentTitle>
-							<SelectDropDown
-								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
-								defaultValue={selectWorkCountry}
-								options={countries}
-								isMulti
-								components={animatedComponents}
-								isSearchable
-								styles={{
-									menu: (base): any => ({
-										...base,
-										backgroundColor: `${theme.background.secondary}`,
-									}),
-									option: (base, state): any => ({
-										...base,
-										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-										height: '100%',
-										color: `${theme.font.default}`,
-										backgroundColor: `${theme.background.secondary}`,
-										cursor: 'pointer',
-									}),
-									control: (baseStyles): any => ({
-										...baseStyles,
-										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
-										color: `${theme.font.default}`,
-										padding: 0,
-									}),
-								}}/>
-						</div>
+						<WrapContainer>
+							<Title>Business verification</Title>
+							<div style={{marginBottom: '10px', width: '70%'}}>
+								<ContentTitle>
+									State or country, in which a branch, organized unit or establishment of your company
+									operates
+								</ContentTitle>
+								<SelectDropDown
+									onChange={(e: any) => handleSelectDropdownCountryOfOperates(e)}
+									defaultValue={selectOperatesCountry}
+									options={countries}
+									isMulti
+									isSearchable
+									styles={{
+										menu: (base): any => ({
+											...base,
+											backgroundColor: `${theme.background.secondary}`,
+										}),
+										option: (base, state): any => ({
+											...base,
+											border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+											height: '100%',
+											color: `${theme.font.default}`,
+											backgroundColor: `${theme.background.secondary}`,
+											cursor: 'pointer',
+										}),
+										control: (baseStyles): any => ({
+											...baseStyles,
+											borderColor: 'grey',
+											backgroundColor: `${theme.background.secondary}`,
+											color: `${theme.font.default}`,
+											padding: 0,
+										}),
+									}}/>
+								<ContentTitle style={{marginTop: '50px'}}>State or country, in which your company conducts its business
+									activity</ContentTitle>
+								<SelectDropDown
+									onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
+									defaultValue={selectWorkCountry}
+									options={countries}
+									isMulti
+									components={animatedComponents}
+									isSearchable
+									styles={{
+										menu: (base): any => ({
+											...base,
+											backgroundColor: `${theme.background.secondary}`,
+										}),
+										option: (base, state): any => ({
+											...base,
+											border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+											height: '100%',
+											color: `${theme.font.default}`,
+											backgroundColor: `${theme.background.secondary}`,
+											cursor: 'pointer',
+										}),
+										control: (baseStyles): any => ({
+											...baseStyles,
+											borderColor: 'grey',
+											backgroundColor: `${theme.background.secondary}`,
+											color: `${theme.font.default}`,
+											padding: 0,
+										}),
+									}}/>
+							</div>
+						</WrapContainer>
 					)}
 					{page === 5 && (
 						<WrapContainer>
+							<Title>Business verification</Title>
 							<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', paddingRight: '10px'}}>
 								<div>
-									<ContentTitle style={{textAlign: 'left', lineHeight: '1.6'}}>Nature of prevailing source of income</ContentTitle>
+									<ContentTitle style={{textAlign: 'left', lineHeight: '1.6'}}>Source of income</ContentTitle>
 									{PREVAILING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
 										return (
 											<div
@@ -1285,7 +1290,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 								</div>
 								<div style={{width: '100%', paddingBottom: '30px'}}>
 									<ContentTitle>
-										Source of funds intended for Transaction:
+										Source of funds intended for transaction:
 									</ContentTitle>
 									{SOURCE_OF_FUNDS_LIST_COMPANY.map((activity: string, index: number) => {
 										return (
@@ -1324,87 +1329,90 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 						</WrapContainer>
 					)}
 					{page === 6 && (
-						<div style={{display: 'flex', flexDirection: 'column'}}>
-							<div 
-								style={{
-									display: 'flex',
-									// justifyContent: 'center',
-									marginBottom: '50px'
-								}}>
-								<label>
-									Have you as a legal entity (or the member of your statutory body or your supervisory body or your
-									ultimate beneficial owner ) ever been convicted for a criminal offense, in particular an offense
-									against
-									property or economic offense committed not only in relation with work or business activities (without
-									regards to presumption of innocence)?
-								</label>
-								<div style={{margin: '0 36px'}}>
-									<label htmlFor="criminalOffensesTrue">
-										<input
-											id="criminalOffensesTrue"
-											type="radio"
-											value="Yes"
-											checked={input.criminalOffenses === 'Yes'}
-											onChange={handleChangeInput}
-											name="criminalOffenses"
-										/>
-										Yes
+						<WrapContainer>
+						<Title>Business verification</Title>
+							<div style={{display: 'flex', flexDirection: 'column'}}>
+								<div 
+									style={{
+										display: 'flex',
+										// justifyContent: 'center',
+										marginBottom: '50px'
+									}}>
+									<label>
+										Have you as a legal entity (or the member of your statutory body or your supervisory body or your
+										ultimate beneficial owner ) ever been convicted for a criminal offense, in particular an offense
+										against
+										property or economic offense committed not only in relation with work or business activities (without
+										regards to presumption of innocence)?
 									</label>
-								</div>
-								<div>
-									<label htmlFor="criminalOffensesFalse">
-										<input
-											id="criminalOffensesFalse"
-											type="radio"
-											value="No"
-											checked={input.criminalOffenses === 'No'}
-											onChange={handleChangeInput}
-											name="criminalOffenses"
-										/>
-										No
-									</label>
-								</div>
-							</div>
-							<div style={{width: '100%' }}>
-								
-									<div
-										style={{
-											display: 'flex',
-											width: '100%',
-											// justifyContent: 'center',
-											marginBottom: '30px',
-											alignItems: 'baseline'
-										}}>
-										<label>The representative of the client is a:</label>
-										<div style={{margin: '0 36px'}}>
-											<label htmlFor="representativeTypeOfClientTrue">
-												<input
-													id="representativeTypeOfClientTrue"
-													type="radio"
-													value="Natural Person"
-													checked={input.representativeTypeOfClient === 'Natural Person'}
-													onChange={handleChangeInput}
-													name="representativeTypeOfClient"
-												/>
-												Natural Person
-											</label>
-										</div>
-										<div>
-											<label htmlFor="representativeTypeOfClientFalse">
-												<input
-													id="representativeTypeOfClientFalse"
-													type="radio"
-													value="Legal entity"
-													checked={input.representativeTypeOfClient === 'Legal entity'}
-													onChange={handleChangeInput}
-													name="representativeTypeOfClient"
-												/>
-												Legal entity
-											</label>
-										</div>
+									<div style={{margin: '0 36px'}}>
+										<label htmlFor="criminalOffensesTrue">
+											<input
+												id="criminalOffensesTrue"
+												type="radio"
+												value="Yes"
+												checked={input.criminalOffenses === 'Yes'}
+												onChange={handleChangeInput}
+												name="criminalOffenses"
+											/>
+											Yes
+										</label>
 									</div>
+									<div>
+										<label htmlFor="criminalOffensesFalse">
+											<input
+												id="criminalOffensesFalse"
+												type="radio"
+												value="No"
+												checked={input.criminalOffenses === 'No'}
+												onChange={handleChangeInput}
+												name="criminalOffenses"
+											/>
+											No
+										</label>
+									</div>
+								</div>
+								<div style={{width: '100%' }}>
+									
+										<div
+											style={{
+												display: 'flex',
+												width: '100%',
+												// justifyContent: 'center',
+												marginBottom: '30px',
+												alignItems: 'baseline'
+											}}>
+											<label>The representative of the client is a:</label>
+											<div style={{margin: '0 36px'}}>
+												<label htmlFor="representativeTypeOfClientTrue">
+													<input
+														id="representativeTypeOfClientTrue"
+														type="radio"
+														value="Natural Person"
+														checked={input.representativeTypeOfClient === 'Natural Person'}
+														onChange={handleChangeInput}
+														name="representativeTypeOfClient"
+													/>
+													Natural Person
+												</label>
+											</div>
+											<div>
+												<label htmlFor="representativeTypeOfClientFalse">
+													<input
+														id="representativeTypeOfClientFalse"
+														type="radio"
+														value="Legal entity"
+														checked={input.representativeTypeOfClient === 'Legal entity'}
+														onChange={handleChangeInput}
+														name="representativeTypeOfClient"
+													/>
+													Legal entity
+												</label>
+											</div>
+										</div>
+								</div>
 							</div>
-						</div>
+						</WrapContainer>
 					)}
 					{page === 7 && (
 						<WrapContainer
@@ -1414,6 +1422,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 								alignItems: 'center',
 								width: '100%'
 							}}>
+							<Title>Business verification</Title>
 							<ContentTitle>Information on Ultimate Beneficial Owner(s)</ContentTitle>
 							<div style={{marginBottom: '10px'}}>
 								<Button variant="secondary" onClick={handleAddUbo}>
@@ -1555,7 +1564,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 								width: '100%'
 							}}>
 							<ContentTitle>
-								Copy of an account statement kept by an institution in the EEA
+								Copy of an account statement kept by an institution in the European Economic Area
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-refPoasDoc1">
 								<FileInput
@@ -1566,7 +1575,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 								{input.file.poaDoc1 ? input.file.poaDoc1.name : 'Upload File'}
 							</LabelInput>
 							<ContentTitle>
-								Documents proving information on the source of funds (for instance: payslip, tax
+								Documents proving information on the source of funds (i.e.: payslip, tax
 								return etc.)
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-refPosofDoc1">
@@ -1578,8 +1587,7 @@ export const KycL2LegalModal = ({showKycL2 = true, updateShowKycL2}: Props) => {
 								{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
 							</LabelInput>
 							<ContentTitle>
-								Legal person: Copy of excerpt of public register of Czech Republic or Slovakia (or
-								other comparable foreign evidence) or other valid documents proving the existence of
+								Copy of excerpt of public register or other valid documents proving the existence of
 								legal entity (Articles of Associations, Deed of Foundation etc.).
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-refPorDoc1">
