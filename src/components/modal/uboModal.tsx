@@ -1,21 +1,21 @@
-import styled, {css} from 'styled-components';
-import {Portal} from './portal';
-import {TextField} from '../textField/textField';
-import {useEffect, useRef, useState} from 'react';
-import {Button} from '../button/button';
+import styled, { css } from 'styled-components';
+import { Portal } from './portal';
+import { TextField } from '../textField/textField';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '../button/button';
 import COUNTRIES from '../../data/listOfAllCountries.json';
-import {ContentTitle, WrapContainer} from './kycL2LegalModal';
-import {DEFAULT_BORDER_RADIUS, pxToRem, spacing} from '../../styles';
-import {BASE_URL, useStore} from '../../helpers';
-import {DateInput} from './shareholdersModal';
+import { ContentTitle, WrapContainer } from './kycL2LegalModal';
+import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
+import { BASE_URL, useStore } from '../../helpers';
+import { DateInput } from './shareholdersModal';
 import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
-import {useAxios} from '../../hooks';
-import {useToasts} from '../toast/toast';
+import { useAxios } from '../../hooks';
+import { useToasts } from '../toast/toast';
 
 const Select = styled.select(() => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	return css`
@@ -36,7 +36,7 @@ const FileInput = styled.input`
 
 const LabelInput = styled.label(() => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	return css`
@@ -58,17 +58,17 @@ type Props = {
 	addUbo?: any;
 	updateUboModalShow?: any;
 };
-export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
+export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 	const fileIdentification = useRef<HTMLInputElement>();
-	const [isUBOLegalEntity, setIsUBOLegalEntity] = useState<string>('empty');
-	const [showModal, setShowModal] = useState<boolean>(false);
-	const [isValid, setIsValid] = useState<boolean>(false);
+	const [ isUBOLegalEntity, setIsUBOLegalEntity ] = useState<string>('empty');
+	const [ showModal, setShowModal ] = useState<boolean>(false);
+	const [ isValid, setIsValid ] = useState<boolean>(false);
 	// @ts-ignore
-	const {addToast} = useToasts();
-	const [client, setClient] = useState<any>({
+	const { addToast } = useToasts();
+	const [ client, setClient ] = useState<any>({
 		appliedSanctions: '',
 		citizenship: [],
 		companyName: '',
@@ -105,7 +105,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 		}
 	});
 
-	const [emptyClient] = useState({
+	const [ emptyClient ] = useState({
 		appliedSanctions: '',
 		citizenship: [],
 		companyName: '',
@@ -148,9 +148,9 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 			if (client.fullName && client.idNumber && client.placeOfBirth && client.gender !== 'Select gender'
 				&& client.citizenship.length > 0 && client.taxResidency !== 'Select country' && !Object.values(client.residence).includes('')
 				&& client.fileIdentification && client.politicallPerson.length > 0 && client.appliedSanctions.length > 0
-				&& (client.permanentAndMailAddressSame === 'Yes'
+				&& ( client.permanentAndMailAddressSame === 'Yes'
 					|| client.permanentAndMailAddressSame === 'No'
-					&& !Object.values(client.mailAddress).includes(''))) {
+					&& !Object.values(client.mailAddress).includes('') )) {
 				setIsValid(true);
 			}
 		} else if (isUBOLegalEntity === 'legal') {
@@ -158,11 +158,11 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 				setIsValid(true);
 			}
 		}
-	}, [client]);
+	}, [ client ]);
 
 	useEffect(() => {
 		setClient(emptyClient);
-	}, [isUBOLegalEntity]);
+	}, [ isUBOLegalEntity ]);
 	const handleChangeClientInput = (event: any) => {
 		setClient({
 			...client,
@@ -171,29 +171,29 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 	};
 
 	const handleDropDownInput = (event: any) => {
-		setClient({...client, [event.target.name]: event.target.value});
+		setClient({ ...client, [event.target.name]: event.target.value });
 	};
 
 	const handleSelectDropdownNatural = (event: any) => {
 		const countries = event.map((country: { value: string; label: string }) => country.value);
-		setClient({...client, citizenship: countries});
+		setClient({ ...client, citizenship: countries });
 	};
 
 	const handleSelectDropdownUboInfo = (event: any) => {
-		setClient({...client, uboInfo: {...client.uboInfo, citizenship: event.value}});
+		setClient({ ...client, uboInfo: { ...client.uboInfo, citizenship: event.value } });
 	};
 
 	const handleChangeResidenceInput = (event: any) => {
 		setClient({
 			...client,
-			residence: {...client.residence, [event.target.name]: event.target.value}
+			residence: { ...client.residence, [event.target.name]: event.target.value }
 		});
 	};
 
 	const handleChangeMailInput = (event: any) => {
 		setClient({
 			...client,
-			mailAddress: {...client.mailAddress, [event.target.name]: event.target.value}
+			mailAddress: { ...client.mailAddress, [event.target.name]: event.target.value }
 		});
 	};
 
@@ -201,7 +201,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 	const handleChangeUboInfoInput = (event: any) => {
 		setClient({
 			...client,
-			uboInfo: {...client.uboInfo, [event.target.name]: event.target.value}
+			uboInfo: { ...client.uboInfo, [event.target.name]: event.target.value }
 		});
 	};
 
@@ -278,7 +278,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 
 	useEffect(() => {
 		setShowModal(addUbo);
-	}, [addUbo]);
+	}, [ addUbo ]);
 
 	return (
 		<Portal
@@ -288,20 +288,20 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 			handleBack={handleBack}
 			hasBackButton>
 			<WrapContainer
-				style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0 10px'}}>
+				style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0 10px' }}>
 				<div>
 					<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
-					<p style={{textAlign: 'center'}}>
-						Is the Ultimate Beneficial Owner (UBO) a legal entity?
-					</p>
 					<div
 						style={{
 							display: 'flex',
-							justifyContent: 'space-evenly',
 							width: '100%',
-							marginBottom: '20px'
+							marginBottom: '20px',
+							alignItems: 'baseline'
 						}}>
-						<label htmlFor="label-typeOfClient-true">
+						<p style={{ textAlign: 'left', marginRight: '30px' }}>
+							Is the Ultimate Beneficial Owner (UBO) a legal entity?
+						</p>
+						<label htmlFor="label-typeOfClient-true" style={{ display: 'inline-block', marginRight: '30px' }}>
 							<input
 								id="label-typeOfClient-true"
 								type="radio"
@@ -324,10 +324,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 					</div>
 					{isUBOLegalEntity === 'natural' ? (
 						<>
-							<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
-								<div style={{width: '48%'}}>
+							<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+								<div style={{ width: '48%' }}>
 									<label
-										htmlFor="label-ubo-full-name" style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+										htmlFor="label-ubo-full-name" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Name and surname
 									</label>
 									<TextField
@@ -342,9 +342,9 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										error={client.fullName.length < 2}
 									/>
 								</div>
-								<div style={{width: '48%'}}>
+								<div style={{ width: '48%' }}>
 									<label
-										htmlFor="label-ubo-place-of-birth" style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+										htmlFor="label-ubo-place-of-birth" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Place of Birth
 									</label>
 									<TextField
@@ -359,9 +359,9 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										error={client.placeOfBirth.length < 2}
 									/>
 								</div>
-								<div style={{width: '48%'}}>
+								<div style={{ width: '48%' }}>
 									<label
-										htmlFor="label-ubo-id-number" style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+										htmlFor="label-ubo-id-number" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Birth identification number
 									</label>
 									<TextField
@@ -376,8 +376,8 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										error={client.idNumber.length < 2}
 									/>
 								</div>
-								<div style={{width: '48%'}}>
-									<label htmlFor="label-select-gender" style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+								<div style={{ width: '48%' }}>
+									<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Gender
 									</label>
 									<Select
@@ -396,7 +396,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									</Select>
 								</div>
 							</div>
-							<div style={{margin: '12px 0 30px', width: '100%'}}>
+							<div style={{ margin: '12px 0 30px', width: '48%' }}>
 								<label htmlFor="label-select-tax-residency">
 									Tax Residency
 								</label>
@@ -420,8 +420,8 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									;
 								</Select>
 							</div>
-							<div style={{marginBottom: '10px', width: '100%'}}>
-								<p style={{fontSize: '18px', fontWeight: 'bold'}}>
+							<div style={{ marginBottom: '10px', width: '48%' }}>
+								<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
 									Citizenship(s)
 								</p>
 								<SelectDropDown
@@ -431,32 +431,41 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									isMulti
 									isSearchable
 									styles={{
-										menu: (base): any => ({
+										multiValueRemove: (styles) => ( {
+											...styles,
+											color: 'red',
+											':hover': {
+												backgroundColor: 'red',
+												color: 'white'
+											}
+										} ),
+										menu: (base): any => ( {
 											...base,
-											backgroundColor: `${theme.background.secondary}`,
-										}),
-										option: (base, state): any => ({
+											backgroundColor: `${theme.background.secondary}`
+										} ),
+										option: (base, state): any => ( {
 											...base,
 											border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
 											height: '100%',
 											color: `${theme.font.default}`,
 											backgroundColor: `${theme.background.secondary}`,
-											cursor: 'pointer',
-										}),
-										control: (baseStyles): any => ({
+											cursor: 'pointer'
+										} ),
+										control: (baseStyles): any => ( {
 											...baseStyles,
 											borderColor: 'grey',
 											backgroundColor: `${theme.background.secondary}`,
 											color: `${theme.font.default}`,
-											padding: 0,
-										}),
-									}}/>
+											padding: 0
+										} )
+									}}
+								/>
 							</div>
-							<p style={{marginTop: '40px', textAlign: 'center'}}>Identification (ID card or passport) <br/>Copy of
+							<p style={{ margin: '40px 0 30px', textAlign: 'left' }}>Identification (ID card or passport) <br/>Copy of
 								personal identification
 								or passport of the
 								representatives</p>
-							<div style={{textAlign: 'center', marginBottom: '40px'}}>
+							<div style={{ textAlign: 'left', marginBottom: '40px' }}>
 								<LabelInput htmlFor="file-input-address">
 									<FileInput
 										id="file-input-address"
@@ -464,10 +473,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										ref={fileIdentification as any}
 										onChange={handleChangeFileInput}>
 									</FileInput>
-									{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
+									{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
 							</div>
-							<p style={{textAlign: 'center', fontSize: '18px'}}>
+							<p style={{ textAlign: 'center', fontSize: '18px' }}>
 								Permanent or other residence
 							</p>
 							<div
@@ -477,10 +486,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									flexWrap: 'wrap',
 									justifyContent: 'space-between'
 								}}>
-								<div style={{width: '48%'}}>
+								<div style={{ width: '48%' }}>
 									<label
 										htmlFor="label-address-permanent-state-Or-Country"
-										style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Country
 									</label>
 									<Select
@@ -502,10 +511,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										;
 									</Select>
 								</div>
-								<div style={{width: '48%'}}>
+								<div style={{ width: '48%' }}>
 									<label
 										htmlFor="label-address-permanent-street"
-										style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Street
 									</label>
 									<TextField
@@ -520,10 +529,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									/>
 								</div>
 
-								<div style={{width: '48%'}}>
+								<div style={{ width: '48%' }}>
 									<label
 										htmlFor="label-address-permanent-street-number"
-										style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Street number
 									</label>
 									<TextField
@@ -537,10 +546,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										name="streetNumber"
 									/>
 								</div>
-								<div style={{width: '48%'}}>
+								<div style={{ width: '48%' }}>
 									<label
 										htmlFor="label-address-permanent-municipality"
-										style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Municipality
 									</label>
 									<TextField
@@ -553,35 +562,30 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										align="left"
 										name="municipality"
 									/>
-
 								</div>
-								<label
-									htmlFor="label-address-permanent-zipCode"
-									style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
-									ZIP Code
-								</label>
-								<TextField
-									id="label-address-permanent-zipCode"
-									value={client.residence.zipCode}
-									placeholder="ZIP Code"
-									type="text"
-									onChange={handleChangeResidenceInput}
-									size="small"
-									align="left"
-									name="zipCode"
-								/>
+								<div style={{ width: '48%' }}>
+									<label
+										htmlFor="label-address-permanent-zipCode"
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										ZIP Code
+									</label>
+									<TextField
+										id="label-address-permanent-zipCode"
+										value={client.residence.zipCode}
+										placeholder="ZIP Code"
+										type="text"
+										onChange={handleChangeResidenceInput}
+										size="small"
+										align="left"
+										name="zipCode"
+									/>
+								</div>
 							</div>
-							<p style={{marginBottom: '25px'}}>
-								Is your permanent (RESIDENCE) address the same as your mailing address?
-							</p>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'space-evenly',
-									width: '100%',
-									marginBottom: '20px'
-								}}>
-								<label htmlFor="label-mailing-permanent-address-true">
+							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
+									Is your permanent (RESIDENCE) address the same as your mailing address?
+								</p>
+								<label htmlFor="label-mailing-permanent-address-true" style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="label-mailing-permanent-address-true"
 										type="radio"
@@ -606,7 +610,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 							</div>
 							{client.permanentAndMailAddressSame === 'No' && (
 								<>
-									<p style={{textAlign: 'center', fontSize: '18px'}}>Mailing address</p>
+									<p style={{ textAlign: 'center', fontSize: '18px' }}>Mailing address</p>
 									<div
 										style={{
 											margin: '0 0 10px 0',
@@ -614,10 +618,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											flexWrap: 'wrap',
 											justifyContent: 'space-between'
 										}}>
-										<div style={{width: '48%'}}>
+										<div style={{ width: '48%' }}>
 											<label
 												htmlFor="label-mail-address-state-Or-Country"
-												style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 												Country
 											</label>
 											<Select
@@ -642,10 +646,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 												;
 											</Select>
 										</div>
-										<div style={{width: '48%'}}>
+										<div style={{ width: '48%' }}>
 											<label
 												htmlFor="label-address-street"
-												style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 												Street
 											</label>
 											<TextField
@@ -659,10 +663,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 												name="street"
 											/>
 										</div>
-										<div style={{width: '48%'}}>
+										<div style={{ width: '48%' }}>
 											<label
 												htmlFor="label-address-street-number"
-												style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 												Street number
 											</label>
 											<TextField
@@ -676,10 +680,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 												name="streetNumber"
 											/>
 										</div>
-										<div style={{width: '48%'}}>
+										<div style={{ width: '48%' }}>
 											<label
 												htmlFor="label-address-municipality"
-												style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 												Municipality
 											</label>
 											<TextField
@@ -693,10 +697,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 												name="municipality"
 											/>
 										</div>
-										<div style={{width: '48%'}}>
+										<div style={{ width: '48%' }}>
 											<label
 												htmlFor="label-address-zipCode"
-												style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 												ZIP Code
 											</label>
 											<TextField
@@ -713,9 +717,9 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									</div>
 								</>
 							)}
-							<p style={{marginBottom: '15px'}}>Politically exposed person?</p>
-							<div style={{display: 'flex', justifyContent: 'space-evenly', width: '100%', marginBottom: '30px'}}>
-								<label htmlFor="politicallPersonTrue">
+							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+								<p style={{ marginBottom: '25px', marginRight: '30px' }}>Politically exposed person?</p>
+								<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="politicallPersonTrue"
 										type="radio"
@@ -738,17 +742,11 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 									No
 								</label>
 							</div>
-							<p style={{marginBottom: '15px'}}>
-								Person against whom are applied CZ/international sanctions?
-							</p>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'space-evenly',
-									width: '100%',
-									marginBottom: '20px'
-								}}>
-								<label htmlFor="appliedSanctionsTrue">
+							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
+									Person against whom are applied CZ/international sanctions?
+								</p>
+								<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="appliedSanctionsTrue"
 										type="radio"
@@ -774,31 +772,33 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 						</>
 					) : isUBOLegalEntity === 'legal' ? (
 						<div>
-							<label
-								style={{display: 'block', marginBottom: '10px'}}
-								htmlFor="label-ubo-company-name">
-								Business company name
-							</label>
-							<TextField
-								id="label-ubo-company-name"
-								value={client.companyName}
-								placeholder="Business company name"
-								type="text"
-								onChange={handleChangeClientInput}
-								size="small"
-								align="left"
-								name="companyName"
-								error={client.companyName.length < 2}
-							/>
+							<div style={{ width: '48%' }}>
+								<label
+									style={{ display: 'block', marginBottom: '10px' }}
+									htmlFor="label-ubo-company-name">
+									Business company name
+								</label>
+								<TextField
+									id="label-ubo-company-name"
+									value={client.companyName}
+									placeholder="Business company name"
+									type="text"
+									onChange={handleChangeClientInput}
+									size="small"
+									align="left"
+									name="companyName"
+									error={client.companyName.length < 2}
+								/>
+							</div>
 							<p style={{
-								textAlign: 'center',
+								textAlign: 'left',
 								margin: '30px 0',
 								fontWeight: 'bold',
 								fontSize: '16px'
 							}}>Copy of excerpt of public register
-								or other valid documents proving the existence of legal entity <br/>(Articles of Associations, Deed of
+								or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
 								Foundation etc.)</p>
-							<div style={{textAlign: 'center'}}>
+							<div style={{ textAlign: 'left' }}>
 								<LabelInput htmlFor="fileIdentification">
 									<FileInput
 										id="fileIdentification"
@@ -812,11 +812,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 							<div
 								style={{
 									margin: '30px 0 10px 0',
-									padding: '0 10px',
 									display: 'flex',
 									flexDirection: 'column'
 								}}>
-								<p style={{textAlign: 'center', fontSize: '18px', fontWeight: 'bold'}}>
+								<p style={{ textAlign: 'left', fontSize: '18px', fontWeight: 'bold' }}>
 									Provide information about your statutory body
 								</p>
 								<div
@@ -825,12 +824,12 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 										display: 'flex',
 										flexWrap: 'wrap',
 										justifyContent: 'space-between',
-										alignItems: 'baseline'
+										alignItems: 'baseline',
 									}}>
-									<div style={{width: '48%'}}>
+									<div style={{ width: '48%' }}>
 										<label
 											htmlFor="label-uboInfo-name-surname"
-											style={{margin: '6px 0 8px 0', display: 'inline-block'}}>
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 											Name and Surname
 										</label>
 										<TextField
@@ -844,7 +843,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											name="nameAndSurname"
 										/>
 									</div>
-									<div style={{width: '48%', display: 'flex', flexDirection: 'column'}}>
+									<div style={{ width: '48%', display: 'flex', flexDirection: 'column' }}>
 										<label
 											htmlFor="label-uboInfo-dateOfBirth"
 											style={{
@@ -869,10 +868,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											onChange={handleChangeUboInfoInput}
 										/>
 									</div>
-									<div style={{width: '48%'}}>
+									<div style={{ width: '48%' }}>
 										<label
 											htmlFor="label-uboInfo-country-incorporate"
-											style={{margin: '8px 0', display: 'inline-block'}}>
+											style={{ margin: '8px 0', display: 'inline-block' }}>
 											Country of incorporation
 										</label>
 										<SelectDropDown
@@ -881,31 +880,31 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											isSearchable
 											isMulti
 											styles={{
-												menu: (base): any => ({
+												menu: (base): any => ( {
 													...base,
 													backgroundColor: `${theme.background.secondary}`,
-												}),
-												option: (base, state): any => ({
+												} ),
+												option: (base, state): any => ( {
 													...base,
 													border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
 													height: '100%',
 													color: `${theme.font.default}`,
 													backgroundColor: `${theme.background.secondary}`,
 													cursor: 'pointer',
-												}),
-												control: (baseStyles): any => ({
+												} ),
+												control: (baseStyles): any => ( {
 													...baseStyles,
 													borderColor: 'grey',
 													backgroundColor: `${theme.background.secondary}`,
 													color: `${theme.font.default}`,
 													padding: 0,
-												}),
+												} ),
 											}}/>
 									</div>
-									<div style={{width: '48%'}}>
+									<div style={{ width: '48%' }}>
 										<label
 											htmlFor="label-uboInfo-subsequentlyBusinessCompany"
-											style={{margin: '8px 0', display: 'inline-block'}}>
+											style={{ margin: '8px 0', display: 'inline-block' }}>
 											Subsequently business company
 										</label>
 										<TextField
@@ -919,10 +918,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											name="subsequentlyBusinessCompany"
 										/>
 									</div>
-									<div style={{width: '48%'}}>
+									<div style={{ width: '48%' }}>
 										<label
 											htmlFor="label-uboInfo-registeredOffice"
-											style={{margin: '8px 0', display: 'inline-block'}}>
+											style={{ margin: '8px 0', display: 'inline-block' }}>
 											Registered Office
 										</label>
 										<TextField
@@ -936,10 +935,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											name="registeredOffice"
 										/>
 									</div>
-									<div style={{width: '48%'}}>
+									<div style={{ width: '48%' }}>
 										<label
 											htmlFor="label-uboInfo-permanentResidence"
-											style={{margin: '8px 0', display: 'inline-block'}}>
+											style={{ margin: '8px 0', display: 'inline-block' }}>
 											Permanent Residence
 										</label>
 										<TextField
@@ -953,10 +952,10 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 											name="permanentResidence"
 										/>
 									</div>
-									<div>
+									<div style={{ width: '48%' }}>
 										<label
 											htmlFor="label-uboInfo-idNumber"
-											style={{margin: '8px 0', display: 'inline-block'}}>
+											style={{ margin: '8px 0', display: 'inline-block' }}>
 											Identification number
 										</label>
 										<TextField
@@ -975,7 +974,7 @@ export const UboModal = ({addUbo = false, updateUboModalShow}: Props) => {
 						</div>
 					) : null}
 				</div>
-				<div style={{textAlign: 'center'}}>
+				<div style={{ textAlign: 'center' }}>
 					<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
 						{isValid ? 'Submit' : 'Please fill up all fields'}
 					</Button>

@@ -1,17 +1,17 @@
-import styled, {css} from 'styled-components';
-import {Portal} from './portal';
-import {TextField} from '../textField/textField';
-import {useEffect, useState} from 'react';
-import {Button} from '../button/button';
-import {DEFAULT_BORDER_RADIUS, pxToRem, spacing} from '../../styles';
+import styled, { css } from 'styled-components';
+import { Portal } from './portal';
+import { TextField } from '../textField/textField';
+import { useEffect, useState } from 'react';
+import { Button } from '../button/button';
+import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
-import {useToasts} from '../toast/toast';
-import {ContentTitle, WrapContainer} from './kycL2LegalModal';
-import {useAxios} from '../../hooks';
-import {BASE_URL, useStore} from '../../helpers';
+import { useToasts } from '../toast/toast';
+import { ContentTitle, WrapContainer } from './kycL2LegalModal';
+import { useAxios } from '../../hooks';
+import { BASE_URL, useStore } from '../../helpers';
 import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
-import {DateInput} from './shareholdersModal';
+import { DateInput } from './shareholdersModal';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -25,7 +25,7 @@ const Wrapper = styled.div(() => {
 
 const Select = styled.select(() => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
 
 	return css`
@@ -47,13 +47,13 @@ export const SupervisoryMembers = ({
 																		 updateSupervisorModalShow
 																	 }: Props) => {
 	const {
-		state: {theme}
+		state: { theme }
 	} = useStore();
-	const [showModal, setShowModal] = useState<boolean>(false);
-	const [isValid, setIsValid] = useState<boolean>(false);
+	const [ showModal, setShowModal ] = useState<boolean>(false);
+	const [ isValid, setIsValid ] = useState<boolean>(false);
 	// @ts-ignore
-	const {addToast} = useToasts();
-	const [client, setClient] = useState<any>({
+	const { addToast } = useToasts();
+	const [ client, setClient ] = useState<any>({
 		fullName: '',
 		dateOfBirth: '',
 		placeOfBirth: '',
@@ -69,7 +69,7 @@ export const SupervisoryMembers = ({
 		appliedSanctions: ''
 	});
 
-	const [emptyClient] = useState({
+	const [ emptyClient ] = useState({
 		fullName: '',
 		dateOfBirth: '',
 		placeOfBirth: '',
@@ -111,7 +111,7 @@ export const SupervisoryMembers = ({
 		) {
 			setIsValid(true);
 		}
-	}, [client]);
+	}, [ client ]);
 
 	const handleChangeClientInput = (event: any) => {
 		setClient({
@@ -120,23 +120,23 @@ export const SupervisoryMembers = ({
 		});
 	};
 	const handleDropDownInput = (event: any) => {
-		setClient({...client, [event.target.name]: event.target.value});
+		setClient({ ...client, [event.target.name]: event.target.value });
 	};
 
 	const handleSelectDropdownNatural = (event: any) => {
 		console.log(event);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
-		setClient({...client, citizenship: countries});
+		setClient({ ...client, citizenship: countries });
 	};
 	const handleChangeResidenceInput = (event: any) => {
 		setClient({
 			...client,
-			residence: {...client.residence, [event.target.name]: event.target.value}
+			residence: { ...client.residence, [event.target.name]: event.target.value }
 		});
 	};
 
 	const handleChangeDate = (event: any) => {
-		setClient({...client, dateOfBirth: event.target.value});
+		setClient({ ...client, dateOfBirth: event.target.value });
 	};
 	const handleClose = () => {
 		updateSupervisorModalShow(false);
@@ -184,7 +184,7 @@ export const SupervisoryMembers = ({
 
 	useEffect(() => {
 		setShowModal(addSupervisor);
-	}, [addSupervisor]);
+	}, [ addSupervisor ]);
 
 	return (
 		<Portal
@@ -195,14 +195,14 @@ export const SupervisoryMembers = ({
 			hasBackButton>
 			<Wrapper>
 				<ContentTitle>Information on members of the supervisory board</ContentTitle>
-				<WrapContainer style={{padding: '0 10px'}}>
+				<WrapContainer style={{ padding: '0 10px' }}>
 					<div style={{
 						margin: '0 0 10px 0',
 						display: 'flex',
 						flexWrap: 'wrap',
 						justifyContent: 'space-between'
 					}}>
-						<div style={{width: '48%'}}>
+						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-supervisory-full-name"
 								style={{
@@ -224,7 +224,7 @@ export const SupervisoryMembers = ({
 								error={client.fullName.length < 2}
 							/>
 						</div>
-						<div style={{width: '48%', display: 'flex', flexDirection: 'column'}}>
+						<div style={{ width: '48%', display: 'flex', flexDirection: 'column' }}>
 							<label
 								htmlFor="label-supervisory-date"
 								style={{
@@ -249,7 +249,7 @@ export const SupervisoryMembers = ({
 								onChange={(e: any) => handleChangeDate(e)}
 							/>
 						</div>
-						<div style={{width: '48%'}}>
+						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-shareholders-place-of-birth"
 								style={{
@@ -271,7 +271,7 @@ export const SupervisoryMembers = ({
 								error={client.placeOfBirth.length < 2}
 							/>
 						</div>
-						<div style={{width: '48%'}}>
+						<div style={{ width: '48%' }}>
 							<label htmlFor="label-shareholder-select-gender">
 								Gender
 							</label>
@@ -291,10 +291,10 @@ export const SupervisoryMembers = ({
 							</Select>
 						</div>
 					</div>
-					<div style={{width: '100%'}}>
+					<div style={{ width: '48%' }}>
 						<label
 							htmlFor="label-country-incorporate"
-							style={{margin: '8px 0', display: 'inline-block'}}>
+							style={{ margin: '8px 0', display: 'inline-block' }}>
 							Citizenship(s)
 						</label>
 						<SelectDropDown
@@ -303,34 +303,34 @@ export const SupervisoryMembers = ({
 							isMulti
 							isSearchable
 							styles={{
-								menu: (base): any => ({
+								menu: (base): any => ( {
 									...base,
 									backgroundColor: `${theme.background.secondary}`,
-								}),
-								option: (base, state): any => ({
+								} ),
+								option: (base, state): any => ( {
 									...base,
 									border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
 									height: '100%',
 									color: `${theme.font.default}`,
 									backgroundColor: `${theme.background.secondary}`,
 									cursor: 'pointer',
-								}),
-								control: (baseStyles): any => ({
+								} ),
+								control: (baseStyles): any => ( {
 									...baseStyles,
 									borderColor: 'grey',
 									backgroundColor: `${theme.background.secondary}`,
 									color: `${theme.font.default}`,
 									padding: 0,
-								}),
+								} ),
 							}}/>
 					</div>
-					<p style={{textAlign: 'center', fontSize: '20px'}}>
+					<p style={{ textAlign: 'left', fontSize: '18px', margin: '30px 0' }}>
 						Permanent or other residence
 					</p>
-					<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between'}}>
-						<div style={{width: '48%'}}>
+					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+						<div style={{ width: '48%' }}>
 							<label htmlFor="label-shareholder-address-permanent-state-Or-Country"
-										 style={{margin: '8px 0', display: 'inline-block'}}>
+										 style={{ margin: '8px 0', display: 'inline-block' }}>
 								Country
 							</label>
 							<Select
@@ -352,10 +352,10 @@ export const SupervisoryMembers = ({
 								;
 							</Select>
 						</div>
-						<div style={{width: '48%'}}>
+						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-shareholder-address-permanent-street"
-								style={{margin: '8px 0', display: 'inline-block'}}>
+								style={{ margin: '8px 0', display: 'inline-block' }}>
 								Street
 							</label>
 							<TextField
@@ -370,10 +370,10 @@ export const SupervisoryMembers = ({
 								maxLength={50}
 							/>
 						</div>
-						<div style={{width: '48%'}}>
+						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-shareholder-address-permanent-street-number"
-								style={{margin: '8px 0', display: 'inline-block'}}>
+								style={{ margin: '8px 0', display: 'inline-block' }}>
 								Street number
 							</label>
 							<TextField
@@ -388,10 +388,10 @@ export const SupervisoryMembers = ({
 								maxLength={50}
 							/>
 						</div>
-						<div style={{width: '48%'}}>
+						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-shareholder-address-permanent-municipality"
-								style={{margin: '8px 0', display: 'inline-block'}}>
+								style={{ margin: '8px 0', display: 'inline-block' }}>
 								Municipality
 							</label>
 							<TextField
@@ -406,10 +406,10 @@ export const SupervisoryMembers = ({
 								maxLength={50}
 							/>
 						</div>
-						<div style={{width: '48%'}}>
+						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-shareholder-address-permanent-zipCode"
-								style={{margin: '8px 0', display: 'inline-block'}}>
+								style={{ margin: '8px 0', display: 'inline-block' }}>
 								ZIP Code
 							</label>
 							<TextField
@@ -425,17 +425,17 @@ export const SupervisoryMembers = ({
 							/>
 						</div>
 					</div>
-					<p style={{marginBottom: '25px'}}>
-						Person against whom are applied CZ/international sanctions?
-					</p>
 					<div
 						style={{
 							display: 'flex',
-							justifyContent: 'space-evenly',
 							width: '100%',
-							marginBottom: '30px'
+							margin: '20px 0',
+							alignItems: 'baseline'
 						}}>
-						<label htmlFor="appliedSanctionsTrue">
+						<p style={{ marginBottom: '25px', marginRight: '30px' }}>
+							Person against whom are applied CZ/international sanctions?
+						</p>
+						<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
 							<input
 								id="appliedSanctionsTrue"
 								type="radio"
