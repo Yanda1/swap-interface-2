@@ -856,6 +856,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									marginBottom: '50px'
 								}}>
 								<Select
+									id="taxResidency"
 									style={{ width: '300px', height: '40px' }}
 									name="taxResidency"
 									onChange={handleDropDownInput}

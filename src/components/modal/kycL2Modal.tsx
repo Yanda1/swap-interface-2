@@ -1,11 +1,11 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import {DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing} from '../../styles';
-import { BASE_URL, button, ButtonEnum, findAndReplace, useStore, routes } from '../../helpers';
+import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
+import { BASE_URL, button, ButtonEnum, findAndReplace, routes, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
 import { Portal } from './portal';
-import { useAxios } from '../../hooks';
+import { useAxios, useMedia } from '../../hooks';
 import { useToasts } from '../toast/toast';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
@@ -13,6 +13,10 @@ import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
 import FUNDS_IRREGULAR_FOR_BUSINESS_LIST from '../../data/fundsIrregularForBussinesList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
 import DECLARE_LIST from '../../data/declareList.json';
+import SelectDropDown from 'react-select';
+import countries from '../../data/countries.json';
+import { ContentTitle } from './kycL2LegalModal';
+import makeAnimated from 'react-select/animated';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -33,11 +37,13 @@ export const WrapContainer = styled.div(() => {
 		width: 100%;
 		overflow-y: auto;
 		margin-bottom: ${spacing[10]};
+
 		::-webkit-scrollbar {
 			display: block;
 			width: 1px;
 			background-color: ${theme.background.tertiary};
 		}
+
 		::-webkit-scrollbar-thumb {
 			display: block;
 			background-color: ${theme.button.default};
@@ -45,6 +51,7 @@ export const WrapContainer = styled.div(() => {
 			border-right: none;
 			border-left: none;
 		}
+
 		::-webkit-scrollbar-track-piece {
 			display: block;
 			background: ${theme.button.disabled};
@@ -56,15 +63,6 @@ const Title = styled.h2`
 	text-align: center;
 `;
 
-const TextTitle = styled.p(() => {
-
-	return css`
-		font-size: ${fontSize[16]};
-		margin-bottom: ${pxToRem(25)};
-		font-weight: bold;
-		text-align: center;
-`;
-});
 const LabelInput = styled.label(() => {
 	const {
 		state: { theme }
@@ -95,15 +93,16 @@ const Select = styled.select(() => {
 	const {
 		state: { theme }
 	} = useStore();
+	const { mobileWidth: isMobile } = useMedia('s');
 
 	return css`
-		background-color: ${theme.modal.default};
-		width: 100%;
-		min-height: 40px;
-		margin-top: 15px;
+		width: ${isMobile ? '100%' : '50%'};
+		height: 100%;
+		max-height: ${pxToRem(46)};
 		color: ${theme.font.default};
+		background-color: ${theme.background.secondary};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
-`;
+	`;
 });
 
 // const Container = styled.div(() => {
@@ -159,11 +158,15 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
-	const [showModal, setShowModal] = useState<boolean>(showKycL2);
+	const {
+		state: { theme }
+	} = useStore();
+	const animatedComponents = makeAnimated();
+	const [ showModal, setShowModal ] = useState<boolean>(showKycL2);
 	useEffect(() => {
 		setShowModal(showKycL2);
-	}, [showKycL2]);
-	const [input, setInput] = useState<{
+	}, [ showKycL2 ]);
+	const [ input, setInput ] = useState<{
 		appliedSanctions: string;
 		citizenship: string[];
 		countryOfWork: string[];
@@ -229,7 +232,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		workArea: [],
 		yearlyIncome: null,
 	});
-	const [page, setPage] = useState<number>(0);
+	const [ page, setPage ] = useState<number>(0);
+	const [ selectWorkCountry, setSelectWorkCountry ] = useState<any[]>([]);
+	const [ selectCitizenShip, setSelectCitizenShip ] = useState<any[]>([]);
 
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
@@ -329,15 +334,26 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		if (checked && !input[attributeValue as keyof typeof input].includes(value)) {
 			setInput({
 				...input,
-				[attributeValue]: [...input[attributeValue as keyof typeof input], value]
+				[attributeValue]: [ ...input[attributeValue as keyof typeof input], value ]
 			});
 		}
 		if (!checked && input[attributeValue as keyof typeof input].includes(value)) {
 			const filteredArray: string[] = input[attributeValue as keyof typeof input].filter(
 				(item: any) => item !== value
 			);
-			setInput({ ...input, [attributeValue]: [...filteredArray] });
+			setInput({ ...input, [attributeValue]: [ ...filteredArray ] });
 		}
+	};
+
+	const handleSelectDropdownCountryOfWork = (event: any) => {
+		setSelectWorkCountry([ ...event ]);
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setInput({ ...input, countryOfWork: countries });
+	};
+	const handleSelectDropdownNatural = (event: any) => {
+		setSelectCitizenShip([ ...event ]);
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setInput({ ...input, citizenship: countries });
 	};
 	const handleChangeFileInput = () => {
 		const filePosoaDoc1: any =
@@ -354,10 +370,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		setInput({ ...input, [event.target.name]: event.target.value });
 	};
 	const handleDropDownInputResidence = (event: any) => {
-		setInput({ ...input, residence: {...input.residence, country: [event.target.value]} });
+		setInput({ ...input, residence: { ...input.residence, country: [ event.target.value ] } });
 	};
 	const handleDropDownInputMailAddress = (event: any) => {
-		setInput({ ...input, mailAddress: {...input.mailAddress, country: [event.target.value]} });
+		setInput({ ...input, mailAddress: { ...input.mailAddress, country: [ event.target.value ] } });
 	};
 
 	const handleOnClose = () => {
@@ -371,7 +387,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		}
 	};
 
-	const [isValid, setIsValid] = useState(false);
+	const [ isValid, setIsValid ] = useState(false);
 
 	useEffect(() => {
 		setIsValid(false);
@@ -395,8 +411,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			setIsValid(true);
 		} else if (page === 6 && input.citizenship.length > 0) {
 			setIsValid(true);
-		} else if (page === 7 && !input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFunds.length > 0  ||
-		page === 7 && input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFundsOther.trim().length > 0) {
+		} else if (page === 7 && !input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFunds.length > 0 ||
+			page === 7 && input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFundsOther.trim().length > 0) {
 			setIsValid(true);
 		} else if (page === 8 && input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country') && !input.declareOther.trim().length || page === 8 && input.declareOther.trim().length > 0) {
 			setIsValid(true);
@@ -406,14 +422,14 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			setIsValid(true);
 		} else if (page === 11 && input.politicallPerson.length > 0) {
 			setIsValid(true);
-		} else if (page === 12 && !Object.values(input.residence).includes('')) {
+		} else if (page === 12 && !Object.values(input.residence).includes('') && !input.residence.country.includes('Select country')) {
 			setIsValid(true);
-		} else if (page === 13 && input.permanentAndMailAddressSame === 'Yes' || page === 13 && !Object.values(input.mailAddress).includes('')) {
+		} else if (page === 13 && input.permanentAndMailAddressSame === 'Yes' || page === 13 && !Object.values(input.mailAddress).includes('') && !input.mailAddress.country.includes('Select country')) {
 			setIsValid(true);
 		} else if (page === 14 && input.file.poaDoc1 && input.file.posofDoc1) {
 			setIsValid(true);
 		}
-	}, [page, input]);
+	}, [ page, input ]);
 
 	return (
 		<Portal
@@ -434,7 +450,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					}}>
 					{page === 0 && (
 						<WrapContainer>
-						<Title>KYC L2 form for Natural Person</Title>
+							<Title>KYC L2 form for Natural Person</Title>
 							<div style={{ marginRight: '15px', marginBottom: '10px' }}>
 								<div style={{ marginBottom: '10px' }}>
 									<label
@@ -458,7 +474,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<div style={{ marginBottom: '10px' }}>
 									<label
 										htmlFor="label-email"
-										style={{ marginBottom: '8px', display: 'inline-block'}}>
+										style={{ marginBottom: '8px', display: 'inline-block' }}>
 										Email
 									</label>
 									<TextField
@@ -516,7 +532,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<div style={{ marginBottom: '10px' }}>
 								<label
 									htmlFor="label-net-yearly-income"
-									style={{ marginBottom: '8px', display: 'inline-block'}}>
+									style={{ marginBottom: '8px', display: 'inline-block' }}>
 									Net yearly income (Euro)
 								</label>
 								<TextField
@@ -554,50 +570,94 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 						</WrapContainer>
 					)}
 					{page === 2 && (
-						<WrapContainer>
 						<div style={{ marginBottom: '10px', width: '100%' }}>
-							<TextTitle>
-								Country in which the Client conducts his work / business activity
-							</TextTitle>
-							{COUNTRIES.map((country: any, index: number) => {
-								return (
-									<div
-										key={index}
-										style={{
-											display: 'flex',
-											justifyContent: 'flex-start',
-											marginBottom: '8px'
-										}}>
-										<input
-											type="checkbox"
-											value={country.name}
-											name={country.name}
-											id={`countryOfWork-checkbox-${index}`}
-											onChange={handleChangeCheckBox}
-											checked={input.countryOfWork.includes(`${country.name}`)}
-											data-key="countryOfWork"
-										/>
-										<label style={{marginLeft: '4px'}} htmlFor={`countryOfWork-checkbox-${index}`}>{country.name}</label>
-									</div>
-								);
-							})}
+							<ContentTitle>
+								State or country, in which a branch, organized unit or establishment of the client
+								operates
+							</ContentTitle>
+							<SelectDropDown
+								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
+								defaultValue={selectWorkCountry}
+								options={countries}
+								isMulti
+								components={animatedComponents}
+								isSearchable
+								styles={{
+									multiValueRemove: (styles) => ( {
+										...styles,
+										color: 'red',
+										':hover': {
+											backgroundColor: 'red',
+											color: 'white'
+										}
+									} ),
+									menu: (base): any => ( {
+										...base,
+										backgroundColor: `${theme.background.secondary}`
+									} ),
+									option: (base, state): any => ( {
+										...base,
+										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+										height: '100%',
+										color: `${theme.font.default}`,
+										backgroundColor: `${theme.background.secondary}`,
+										cursor: 'pointer'
+									} ),
+									control: (baseStyles): any => ( {
+										...baseStyles,
+										borderColor: 'grey',
+										backgroundColor: `${theme.background.secondary}`,
+										color: `${theme.font.default}`,
+										padding: 0
+									} )
+								}}
+							/>
 						</div>
-						</WrapContainer>
 					)}
 					{page === 3 && (
 						<WrapContainer>
-						<div
-							style={{
-								display: 'flex',
-								flexWrap: 'wrap',
-								flexDirection: 'column',
-								alignItems: 'stretch',
-								marginBottom: '15px'
-							}}>
-							<TextTitle>
-								The Client conducts his work / business activity in these areas:
-							</TextTitle>
-							{WORK_AREA_LIST.map((activity: string, index: number) => {
+							<div
+								style={{
+									display: 'flex',
+									flexWrap: 'wrap',
+									flexDirection: 'column',
+									alignItems: 'stretch',
+									marginBottom: '15px'
+								}}>
+								<ContentTitle>
+									The Client conducts his work / business activity in these areas:
+								</ContentTitle>
+								{WORK_AREA_LIST.map((activity: string, index: number) => {
+									return (
+										<div
+											key={index}
+											style={{
+												display: 'flex',
+												justifyContent: 'flex-start',
+												marginBottom: '8px'
+											}}>
+											<input
+												type="checkbox"
+												value={activity}
+												name={activity}
+												id={`workAreaList-checkbox-${index}`}
+												onChange={handleChangeCheckBox}
+												checked={input.workArea.includes(`${activity}`)}
+												data-key="workArea"
+											/>
+											<label style={{ marginLeft: '4px' }} htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
+										</div>
+									);
+								})}
+							</div>
+						</WrapContainer>
+					)}
+					{page === 4 && (
+						<WrapContainer>
+							<ContentTitle>
+								Source of funds intended for Transaction:
+							</ContentTitle>
+							{SOURCE_OF_FUNDS_LIST.map((activity: string, index: number) => {
 								return (
 									<div
 										key={index}
@@ -610,106 +670,38 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											type="checkbox"
 											value={activity}
 											name={activity}
-											id={`workAreaList-checkbox-${index}`}
+											id={`sourceOfFundsList-checkbox-${index}`}
 											onChange={handleChangeCheckBox}
-											checked={input.workArea.includes(`${activity}`)}
-											data-key="workArea"
+											checked={input.sourceOfFunds.includes(`${activity}`)}
+											data-key="sourceOfFunds"
 										/>
-										<label style={{marginLeft: '4px'}} htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
+										<label style={{ marginLeft: '4px' }}
+													 htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
 									</div>
 								);
 							})}
-						</div>
-						</WrapContainer>
-					)}
-					{page === 4 && (
-						<WrapContainer>
-							<TextTitle>
-								Source of funds intended for Transaction:
-							</TextTitle>
-						{SOURCE_OF_FUNDS_LIST.map((activity: string, index: number) => {
-							return (
-							<div
-							key={index}
-							style={{
-							display: 'flex',
-							justifyContent: 'flex-start',
-							marginBottom: '8px'
-						}}>
-							<input
-							type="checkbox"
-							value={activity}
-							name={activity}
-							id={`sourceOfFundsList-checkbox-${index}`}
-							onChange={handleChangeCheckBox}
-							checked={input.sourceOfFunds.includes(`${activity}`)}
-							data-key="sourceOfFunds"
-							/>
-							<label style={{marginLeft: '4px'}} htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
-							</div>
-							);
-						})}
-						{input.sourceOfFunds.includes('Other') ? (
-							<TextField
-							value={input.sourceOfFundsOther}
-							type="text"
-							placeholder="Specify..."
-							onChange={handleChangeInput}
-							size="small"
-							align="left"
-							name="sourceOfFundsOther"
-							maxLength={100}
-							/>
+							{input.sourceOfFunds.includes('Other') ? (
+								<div style={{ width: '70%' }}>
+									<TextField
+										value={input.sourceOfFundsOther}
+										type="text"
+										placeholder="Specify..."
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="sourceOfFundsOther"
+										maxLength={100}
+									/>
+								</div>
 							) : null}
 						</WrapContainer>
 					)}
 					{page === 5 && (
 						<WrapContainer>
-							<TextTitle>
+							<ContentTitle>
 								Nature of prevailing source of income
-							</TextTitle>
-								{SOURCE_OF_INCOME_NATURE_LIST.map((activity: string, index: number) => {
-									return (
-									<div
-									key={index}
-									style={{
-									display: 'flex',
-									justifyContent: 'flex-start',
-									marginBottom: '8px'
-								}}>
-									<input
-									type="checkbox"
-									value={activity}
-									name={activity}
-									id={`sourceOfIncomeNatureList-checkbox-${index}`}
-									onChange={handleChangeCheckBox}
-									checked={input.sourceOfIncomeNature.includes(`${activity}`)}
-									data-key="sourceOfIncomeNature"
-									/>
-									<label style={{marginLeft: '4px'}} htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>{activity}</label>
-									</div>
-									);
-								})}
-								{input.sourceOfIncomeNature.includes('Other') ? (
-									<TextField
-									value={input.sourceOfIncomeNatureOther}
-									type="text"
-									placeholder="Food industry, hospitality, transportation, consultancy, agriculture, IT, science, etc."
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="sourceOfIncomeNatureOther"
-									maxLength={100}
-									/>
-									) : null}
-						</WrapContainer>
-					)}
-					{page === 6 && (
-						<WrapContainer style={{ marginBottom: '10px'}}>
-							<TextTitle>
-								Citizenship(s)
-							</TextTitle>
-							{COUNTRIES.map((country: any, index: number) => {
+							</ContentTitle>
+							{SOURCE_OF_INCOME_NATURE_LIST.map((activity: string, index: number) => {
 								return (
 									<div
 										key={index}
@@ -720,26 +712,83 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										}}>
 										<input
 											type="checkbox"
-											value={country.name}
-											name={country.name}
-											id={`citizenship-checkbox-${index}`}
+											value={activity}
+											name={activity}
+											id={`sourceOfIncomeNatureList-checkbox-${index}`}
 											onChange={handleChangeCheckBox}
-											// SAVE CHECKED IF WAS CHECKED BEFORE CLOSED MODAL
-											checked={input.citizenship.includes(`${country.name}`)}
-											data-key="citizenship"
+											checked={input.sourceOfIncomeNature.includes(`${activity}`)}
+											data-key="sourceOfIncomeNature"
 										/>
-										<label htmlFor={`citizenship-checkbox-${index}`}>{country.name}</label>
+										<label style={{ marginLeft: '4px' }}
+													 htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>{activity}</label>
 									</div>
 								);
 							})}
+							{input.sourceOfIncomeNature.includes('Other') ? (
+								<div style={{ width: '70%' }}>
+									<TextField
+										value={input.sourceOfIncomeNatureOther}
+										type="text"
+										placeholder="Food industry, hospitality, transportation, consultancy, etc."
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="sourceOfIncomeNatureOther"
+										maxLength={100}
+									/>
+								</div>
+							) : null}
 						</WrapContainer>
+					)}
+					{page === 6 && (
+						<div style={{ marginBottom: '10px', width: '70%' }}>
+							<ContentTitle style={{ textAlign: 'center' }}>Citizenship(s)</ContentTitle>
+							<SelectDropDown
+								name='citizenship'
+								placeholder='Select country'
+								defaultValue={selectCitizenShip}
+								onChange={(e: any) => handleSelectDropdownNatural(e)}
+								options={countries}
+								isMulti
+								isSearchable
+								styles={{
+									multiValueRemove: (styles) => ( {
+										...styles,
+										color: 'red',
+										':hover': {
+											backgroundColor: 'red',
+											color: 'white'
+										}
+									} ),
+									menu: (base): any => ( {
+										...base,
+										backgroundColor: `${theme.background.secondary}`
+									} ),
+									option: (base, state): any => ( {
+										...base,
+										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+										height: '100%',
+										color: `${theme.font.default}`,
+										backgroundColor: `${theme.background.secondary}`,
+										cursor: 'pointer'
+									} ),
+									control: (baseStyles): any => ( {
+										...baseStyles,
+										borderColor: 'grey',
+										backgroundColor: `${theme.background.secondary}`,
+										color: `${theme.font.default}`,
+										padding: 0
+									} )
+								}}
+							/>
+						</div>
 					)}
 					{page === 7 && (
 						<WrapContainer>
 							<div style={{ marginBottom: '15px' }}>
-								<TextTitle>
+								<ContentTitle>
 									State, which of the stated incomes of funds intended for business is irregular:
-								</TextTitle>
+								</ContentTitle>
 								{FUNDS_IRREGULAR_FOR_BUSINESS_LIST.map((activity: string, index: number) => {
 									return (
 										<div
@@ -758,53 +807,55 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												checked={input.irregularSourceOfFunds.includes(`${activity}`)}
 												data-key="irregularSourceOfFunds"
 											/>
-											<label style={{marginLeft: '4px'}} htmlFor={`fundsIrregularForBusinessList-checkbox-${index}`}>
+											<label style={{ marginLeft: '4px' }} htmlFor={`fundsIrregularForBusinessList-checkbox-${index}`}>
 												{activity}
 											</label>
 										</div>
 									);
 								})}
 								{input.irregularSourceOfFunds.includes('Other') ? (
-									<TextField
-										value={input.irregularSourceOfFundsOther}
-										type="text"
-										placeholder="Specify..."
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="irregularSourceOfFundsOther"
-										maxLength={100}
-									/>
+									<div style={{ width: '70%' }}>
+										<TextField
+											value={input.irregularSourceOfFundsOther}
+											type="text"
+											placeholder="Specify..."
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="irregularSourceOfFundsOther"
+											maxLength={100}
+										/>
+									</div>
 								) : null}
 							</div>
 						</WrapContainer>
 					)}
 					{page === 8 && (
 						<WrapContainer>
-							<TextTitle>
+							<ContentTitle>
 								I declare that
-							</TextTitle>
+							</ContentTitle>
 							{DECLARE_LIST.map((activity: string, index: number) => {
 								return (
-									<div style={{marginBottom: '14px'}} key={activity}>
-									<label htmlFor={`declare-${index}`}>
-									<input
-										id={`declare-${index}`}
-										type="radio"
-										value={activity}
-										checked={input.declare.includes(activity)}
-										onChange={handleChangeInput}
-										name="declare"
-									/>
-										{activity}
-								</label>
+									<div style={{ marginBottom: '14px' }} key={activity}>
+										<label htmlFor={`declare-${index}`}>
+											<input
+												id={`declare-${index}`}
+												type="radio"
+												value={activity}
+												checked={input.declare.includes(activity)}
+												onChange={handleChangeInput}
+												name="declare"
+											/>
+											{activity}
+										</label>
 									</div>
 								);
 							})}
-								{input.declare.includes(
-									'I am a national of another state or country, specifically:'
-									) ? (
-									<TextField
+							{input.declare.includes(
+								'I am a national of another state or country, specifically:'
+							) ? (
+								<TextField
 									value={input.declareOther}
 									type="text"
 									placeholder="Specify..."
@@ -813,12 +864,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									align="left"
 									name="declareOther"
 									maxLength={100}
-									/>
-									) : null}
-								{input.declare.includes(
-									'I am registered to a permanent or other type of residency in another state or country, specifically:'
-									) ? (
-									<TextField
+								/>
+							) : null}
+							{input.declare.includes(
+								'I am registered to a permanent or other type of residency in another state or country, specifically:'
+							) ? (
+								<TextField
 									value={input.declareOther}
 									type="text"
 									placeholder="Specify..."
@@ -827,204 +878,203 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									align="left"
 									name="declareOther"
 									maxLength={100}
-									/>
-									) : null}
+								/>
+							) : null}
 						</WrapContainer>
 					)}
 					{page === 9 && (
-						<>
-							<TextTitle>
+						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
 								Have you ever been convicted or prosecuted for a criminal offense, in particular an
 								offense against property or economic offense committed not only in relation with
 								work or business activities (without regards to presumption of innocence)?
-							</TextTitle>
-							<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
-								<label htmlFor="hasCriminalRecordsTrue">
-									<input
-										id="hasCriminalRecordsTrue"
-										type="radio"
-										value="Yes"
-										checked={input.hasCriminalRecords === 'Yes'}
-										onChange={handleChangeInput}
-										name="hasCriminalRecords"
-									/>
-									Yes
-								</label>
-								<label htmlFor="hasCriminalRecordsFalse">
-									<input
-										id="hasCriminalRecordsFalse"
-										type="radio"
-										value="No"
-										checked={input.hasCriminalRecords === 'No'}
-										onChange={handleChangeInput}
-										name="hasCriminalRecords"
-									/>
-									No
-								</label>
-							</div>
-						</>
+							</p>
+							<label htmlFor="hasCriminalRecordsTrue" style={{ display: 'block', marginRight: '10px' }}>
+								<input
+									id="hasCriminalRecordsTrue"
+									type="radio"
+									value="Yes"
+									checked={input.hasCriminalRecords === 'Yes'}
+									onChange={handleChangeInput}
+									name="hasCriminalRecords"
+								/>
+								Yes
+							</label>
+							<label htmlFor="hasCriminalRecordsFalse">
+								<input
+									id="hasCriminalRecordsFalse"
+									type="radio"
+									value="No"
+									checked={input.hasCriminalRecords === 'No'}
+									onChange={handleChangeInput}
+									name="hasCriminalRecords"
+								/>
+								No
+							</label>
+						</div>
 					)}
 					{page === 10 && (
-						<>
-							<TextTitle>
+						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
 								Person against whom are applied CZ/international sanctions?
-							</TextTitle>
-							<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
-							<label htmlFor="appliedSanctionsTrue">
-							<input
-							id="appliedSanctionsTrue"
-							type="radio"
-							value="Yes"
-							checked={input.appliedSanctions === 'Yes'}
-							onChange={handleChangeInput}
-							name="appliedSanctions"
-							/>
+							</p>
+							<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
+								<input
+									id="appliedSanctionsTrue"
+									type="radio"
+									value="Yes"
+									checked={input.appliedSanctions === 'Yes'}
+									onChange={handleChangeInput}
+									name="appliedSanctions"
+								/>
 								Yes
 							</label>
 							<label htmlFor="appliedSanctionsFalse">
-							<input
-							id="appliedSanctionsFalse"
-							type="radio"
-							value="No"
-							checked={input.appliedSanctions === 'No'}
-							onChange={handleChangeInput}
-							name="appliedSanctions"
-							/>
+								<input
+									id="appliedSanctionsFalse"
+									type="radio"
+									value="No"
+									checked={input.appliedSanctions === 'No'}
+									onChange={handleChangeInput}
+									name="appliedSanctions"
+								/>
 								No
 							</label>
-							</div>
-						</>
+						</div>
+
 					)}
 					{page === 11 && (
-						<>
-							<TextTitle>Politically exposed person?</TextTitle>
-							<div style={{ display: 'flex', justifyContent: 'space-evenly', width: '100%' }}>
-							<label htmlFor="politicallPersonTrue">
-							<input
-							id="politicallPersonTrue"
-							type="radio"
-							value="Yes"
-							checked={input.politicallPerson === 'Yes'}
-							onChange={handleChangeInput}
-							name="politicallPerson"
-							/>
+						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+							<p style={{ marginBottom: '25px', marginRight: '30px' }}>Politically exposed person?</p>
+							<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
+								<input
+									id="politicallPersonTrue"
+									type="radio"
+									value="Yes"
+									checked={input.politicallPerson === 'Yes'}
+									onChange={handleChangeInput}
+									name="politicallPerson"
+								/>
 								Yes
 							</label>
 							<label htmlFor="politicallPersonFalse">
-							<input
-							id="politicallPersonFalse"
-							type="radio"
-							value="No"
-							checked={input.politicallPerson === 'No'}
-							onChange={handleChangeInput}
-							name="politicallPerson"
-							/>
+								<input
+									id="politicallPersonFalse"
+									type="radio"
+									value="No"
+									checked={input.politicallPerson === 'No'}
+									onChange={handleChangeInput}
+									name="politicallPerson"
+								/>
 								No
 							</label>
-							</div>
-						</>
+						</div>
+
 					)}
 					{page === 12 && (
-						<WrapContainer>
-							<TextTitle>Residence</TextTitle>
-							<div style={{marginRight: '10px'}}>
-							<label
-								htmlFor="input.residence.country">
-								Country
-							</label>
-							<Select
-								onChange={handleDropDownInputResidence}
-								value={input.residence.country}
-								id="input.residence.country">
-								<option value="Select country">Select country</option>
-								{COUNTRIES.map((country: any) => {
-									return (
-										<option value={country.name} key={country.name}>
-											{country.name}
-										</option>
-									);
-								})}
-								;
-							</Select>
-							<label
-								htmlFor="label-address-permanent-street"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
-								Street
-							</label>
-							<TextField
-								id="label-address-permanent-street"
-								value={input.residence.street}
-								placeholder="Street"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="street"
-								maxLength={100}
-							/>
-							<label
-								htmlFor="label-address-permanent-street-number"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
-								Street number
-							</label>
-							<TextField
-								id="label-address-permanent-street-number"
-								value={input.residence.streetNumber}
-								placeholder="Street number"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="streetNumber"
-								maxLength={100}
-							/>
-							<label
-								htmlFor="label-address-permanent-municipality"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
-								Municipality
-							</label>
-							<TextField
-								id="label-address-permanent-municipality"
-								value={input.residence.municipality}
-								placeholder="Municipality"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="municipality"
-								maxLength={100}
-							/>
-							<label
-								htmlFor="label-address-permanent-zipCode"
-								style={{ margin: '6px 0 8px 0', display: 'inline-block'}}>
-								ZIP Code
-							</label>
-							<TextField
-								id="label-address-permanent-zipCode"
-								value={input.residence.zipCode}
-								placeholder="ZIP Code"
-								type="text"
-								onChange={handleChangeResidenceInput}
-								size="small"
-								align="left"
-								name="zipCode"
-								maxLength={100}
-							/>
+						<div>
+							<ContentTitle>Residence</ContentTitle>
+							<div style={{ display: 'flex' }}>
+								<div style={{ width: '50%', marginRight: '20px' }}>
+									<label
+										htmlFor="input.residence.country" style={{
+										margin: '6px 0 8px 0',
+										display: 'inline-block'
+									}}>
+										Country
+									</label>
+									<Select
+										style={{ width: '100%' }}
+										onChange={handleDropDownInputResidence}
+										value={input.residence.country}
+										id="input.residence.country">
+										<option value="Select country">Select country</option>
+										{COUNTRIES.map((country: any) => {
+											return (
+												<option value={country.name} key={country.name}>
+													{country.name}
+												</option>
+											);
+										})}
+										;
+									</Select>
+									<label
+										htmlFor="label-address-permanent-street"
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										Street
+									</label>
+									<TextField
+										id="label-address-permanent-street"
+										value={input.residence.street}
+										placeholder="Street"
+										type="text"
+										onChange={handleChangeResidenceInput}
+										size="small"
+										align="left"
+										name="street"
+										maxLength={100}
+									/>
+									<label
+										htmlFor="label-address-permanent-street-number"
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										Street number
+									</label>
+									<TextField
+										id="label-address-permanent-street-number"
+										value={input.residence.streetNumber}
+										placeholder="Street number"
+										type="text"
+										onChange={handleChangeResidenceInput}
+										size="small"
+										align="left"
+										name="streetNumber"
+										maxLength={100}
+									/>
+								</div>
+								<div style={{ width: '50%' }}>
+									<label
+										htmlFor="label-address-permanent-municipality"
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										Municipality
+									</label>
+									<TextField
+										id="label-address-permanent-municipality"
+										value={input.residence.municipality}
+										placeholder="Municipality"
+										type="text"
+										onChange={handleChangeResidenceInput}
+										size="small"
+										align="left"
+										name="municipality"
+										maxLength={100}
+									/>
+									<label
+										htmlFor="label-address-permanent-zipCode"
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										ZIP Code
+									</label>
+									<TextField
+										id="label-address-permanent-zipCode"
+										value={input.residence.zipCode}
+										placeholder="ZIP Code"
+										type="text"
+										onChange={handleChangeResidenceInput}
+										size="small"
+										align="left"
+										name="zipCode"
+										maxLength={100}
+									/>
+								</div>
 							</div>
-						</WrapContainer>
+						</div>
 					)}
 					{page === 13 && (
-						<WrapContainer>
-							<TextTitle>
-								Is your permanent (RESIDENCE) address the same as your mailing address?
-							</TextTitle>
-							<div
-								style={{
-									display: 'flex',
-									justifyContent: 'space-evenly',
-									marginBottom: '20px'
-								}}>
-								<label htmlFor="label-mailing-permanent-address-true">
+						<>
+							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
+									Is your permanent (RESIDENCE) address the same as your mailing address?
+								</p>
+								<label htmlFor="label-mailing-permanent-address-true" style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="label-mailing-permanent-address-true"
 										type="radio"
@@ -1048,121 +1098,129 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								</label>
 							</div>
 							{input.permanentAndMailAddressSame === 'No' && (
-								<div
-									style={{
-										marginBottom: '12px',
-										marginRight: '10px',
-										display: 'flex',
-										flexDirection: 'column',
-									}}>
-									<label
-										htmlFor="label-input-mailAddress-country"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										Country
-									</label>
-									<Select
-										name="mailAddressStateOrCountry"
-										onChange={handleDropDownInputMailAddress}
-										value={input.mailAddress.country}
-										id="label-input-mailAddress-country">
-										<option value="Select country">Select country</option>
-										{COUNTRIES.map((country: any) => {
-											return (
-												<option value={country.name} key={country.name}>
-													{country.name}
-												</option>
-											);
-										})}
-										;
-									</Select>
-									<label
-										htmlFor="label-input-mailAddress-street"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										Street
-									</label>
-									<TextField
-										id="label-input-mailAddress-street"
-										value={input.mailAddress.street}
-										placeholder="Street"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="street"
-										maxLength={100}
-									/>
-									<label
-										htmlFor="label-input-mailAddress-streetNumber"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										Street number
-									</label>
-									<TextField
-										id="label-input-mailAddress-streetNumber"
-										value={input.mailAddress.streetNumber}
-										placeholder="Street number"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="streetNumber"
-										maxLength={100}
-									/>
-									<label
-										htmlFor="label-input-mailAddress-municipality"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										Municipality
-									</label>
-									<TextField
-										id="label-input-mailAddress-municipality"
-										value={input.mailAddress.municipality}
-										placeholder="Municipality"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="municipality"
-										maxLength={100}
-									/>
-									<label
-										htmlFor="label-input-mailAddress-zipCode"
-										style={{
-											margin: '6px 0 8px 0',
-											display: 'inline-block'
-										}}>
-										ZIP Code
-									</label>
-									<TextField
-										id="label-input-mailAddress-zipCode"
-										value={input.mailAddress.zipCode}
-										placeholder="ZIP Code"
-										type="text"
-										onChange={handleChangeMailInput}
-										size="small"
-										align="left"
-										name="zipCode"
-										maxLength={100}
-									/>
-								</div>
+								<>
+									<div style={{ display: 'flex' }}>
+										<div style={{ width: '50%', marginRight: '20px' }}>
+											<label
+												htmlFor="label-input-mailAddress-country"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												Country
+											</label>
+											<Select
+												style={{ width: '100%' }}
+												name="mailAddressStateOrCountry"
+												onChange={handleDropDownInputMailAddress}
+												value={input.mailAddress.country}
+												id="label-input-mailAddress-country">
+												<option value="Select country">Select country</option>
+												{COUNTRIES.map((country: any) => {
+													return (
+														<option value={country.name} key={country.name}>
+															{country.name}
+														</option>
+													);
+												})}
+												;
+											</Select>
+											<label
+												htmlFor="label-input-mailAddress-street"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												Street
+											</label>
+											<TextField
+												id="label-input-mailAddress-street"
+												value={input.mailAddress.street}
+												placeholder="Street"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="street"
+												maxLength={100}
+											/>
+											<label
+												htmlFor="label-input-mailAddress-streetNumber"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												Street number
+											</label>
+											<TextField
+												id="label-input-mailAddress-streetNumber"
+												value={input.mailAddress.streetNumber}
+												placeholder="Street number"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="streetNumber"
+												maxLength={100}
+											/>
+										</div>
+										<div style={{ width: '50%' }}>
+											<label
+												htmlFor="label-input-mailAddress-municipality"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												Municipality
+											</label>
+											<TextField
+												id="label-input-mailAddress-municipality"
+												value={input.mailAddress.municipality}
+												placeholder="Municipality"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="municipality"
+												maxLength={100}
+											/>
+											<label
+												htmlFor="label-input-mailAddress-zipCode"
+												style={{
+													margin: '6px 0 8px 0',
+													display: 'inline-block'
+												}}>
+												ZIP Code
+											</label>
+											<TextField
+												id="label-input-mailAddress-zipCode"
+												value={input.mailAddress.zipCode}
+												placeholder="ZIP Code"
+												type="text"
+												onChange={handleChangeMailInput}
+												size="small"
+												align="left"
+												name="zipCode"
+												maxLength={100}
+											/>
+										</div>
+									</div>
+								</>
 							)}
-						</WrapContainer>
+						</>
 					)}
 					{page === 14 && (
-						<>
-							<TextTitle>
+						<div
+							style={{
+								margin: '0 0 10px',
+								textAlign: 'left',
+								display: 'flex',
+								alignItems: 'baseline',
+								flexWrap: 'wrap'
+							}}>
+							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 								Copies of statements of account kept by an institution in the EEA (proof of address)
-							</TextTitle>
+							</ContentTitle>
 							<LabelInput htmlFor="file-input-address">
 								<FileInput
 									id="file-input-address"
@@ -1170,12 +1228,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									ref={fileInputAddress as any}
 									onChange={handleChangeFileInput}>
 								</FileInput>
-								{input.file.poaDoc1 ? input.file.poaDoc1.name : 'Upload File'}
+								{input.file.poaDoc1 && input.file.poaDoc1.name.length < 15 ? input.file.poaDoc1.name : input.file.poaDoc1 && input.file.poaDoc1.name.length >= 15 ? input.file.poaDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 							</LabelInput>
-							<TextTitle>
+							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 								Documents proving information on the source of funds (for instance: payslip, tax
 								return etc.)
-							</TextTitle>
+							</ContentTitle>
 							<LabelInput htmlFor="file-input-proof">
 								<FileInput
 									id="file-input-proof"
@@ -1183,9 +1241,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									ref={fileInputDocs as any}
 									onChange={handleChangeFileInput}>
 								</FileInput>
-								{input.file.posofDoc1 ? input.file.posofDoc1.name : 'Upload File'}
+								{input.file.posofDoc1 && input.file.posofDoc1.name.length < 15 ? input.file.posofDoc1.name : input.file.posofDoc1 && input.file.posofDoc1.name.length >= 15 ? input.file.posofDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 							</LabelInput>
-						</>
+						</div>
 					)}
 					{page < 14 && (
 						<Button variant="secondary" onClick={handleNext} disabled={!isValid}>

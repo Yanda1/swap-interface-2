@@ -436,9 +436,9 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 								</Select>
 							</div>
 							<div style={{ marginBottom: '10px', width: '48%' }}>
-								<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
+								<ContentTitle>
 									Citizenship(s)
-								</p>
+								</ContentTitle>
 								<SelectDropDown
 									name='citizenship'
 									onChange={(e: any) => handleSelectDropdownNatural(e)}
@@ -467,11 +467,11 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										} ),
 									}}/>
 							</div>
-							<p style={{ textAlign: 'left', margin: '40px 0' }}>Identification (ID card or passport).<br/> Copy of
+							<ContentTitle>Identification (ID card or passport).<br/> Copy of
 								personal
 								identification or
 								passport of the representatives
-							</p>
+							</ContentTitle>
 							<div style={{ textAlign: 'left', margin: '20px 0 40px' }}>
 								<LabelInput htmlFor="label-input-file-natural">
 									<FileInput
@@ -483,7 +483,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 								</LabelInput>
 							</div>
 
-							<p style={{ textAlign: 'center', fontSize: '18px' }}>Permanent or other residence</p>
+							<ContentTitle>Permanent or other residence</ContentTitle>
 							<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
 								<div style={{ width: '48%' }}>
 									<label
@@ -823,11 +823,11 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									error={client.companyName.length < 2}
 								/>
 							</div>
-							<p style={{ textAlign: 'left', margin: '40px 0 0', fontSize: '16px', fontWeight: 'bold' }}>Copy of
+							<ContentTitle>Copy of
 								excerpt of public register or
 								other valid documents proving the existence of legal entity
 								(Articles of Associations, Deed of Foundation etc.).
-							</p>
+							</ContentTitle>
 							<div style={{ textAlign: 'left', margin: '40px 0' }}>
 								<LabelInput htmlFor="file-input">
 									<FileInput
@@ -838,9 +838,9 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
 								</LabelInput>
 							</div>
-							<p style={{ textAlign: 'left', fontSize: '16px', fontWeight: 'bold' }}>
+							<ContentTitle>
 								Provide information about your statutory body
-							</p>
+							</ContentTitle>
 							<div
 								style={{
 									margin: '10px 0',

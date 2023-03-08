@@ -421,9 +421,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								</Select>
 							</div>
 							<div style={{ marginBottom: '10px', width: '48%' }}>
-								<p style={{ fontSize: '18px', fontWeight: 'bold' }}>
-									Citizenship(s)
-								</p>
+								<ContentTitle>Citizenship(s)</ContentTitle>
 								<SelectDropDown
 									name='citizenship'
 									onChange={(e: any) => handleSelectDropdownNatural(e)}
@@ -461,10 +459,10 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									}}
 								/>
 							</div>
-							<p style={{ margin: '40px 0 30px', textAlign: 'left' }}>Identification (ID card or passport) <br/>Copy of
+							<ContentTitle>Identification (ID card or passport) <br/>Copy of
 								personal identification
 								or passport of the
-								representatives</p>
+								representatives</ContentTitle>
 							<div style={{ textAlign: 'left', marginBottom: '40px' }}>
 								<LabelInput htmlFor="file-input-address">
 									<FileInput
@@ -476,9 +474,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
 							</div>
-							<p style={{ textAlign: 'center', fontSize: '18px' }}>
+							<ContentTitle>
 								Permanent or other residence
-							</p>
+							</ContentTitle>
 							<div
 								style={{
 									margin: '0 0 10px 0',
@@ -610,7 +608,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							</div>
 							{client.permanentAndMailAddressSame === 'No' && (
 								<>
-									<p style={{ textAlign: 'center', fontSize: '18px' }}>Mailing address</p>
+									<ContentTitle>Mailing address</ContentTitle>
 									<div
 										style={{
 											margin: '0 0 10px 0',
@@ -790,14 +788,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									error={client.companyName.length < 2}
 								/>
 							</div>
-							<p style={{
-								textAlign: 'left',
-								margin: '30px 0',
-								fontWeight: 'bold',
-								fontSize: '16px'
-							}}>Copy of excerpt of public register
+							<ContentTitle>Copy of excerpt of public register
 								or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
-								Foundation etc.)</p>
+								Foundation etc.)</ContentTitle>
 							<div style={{ textAlign: 'left' }}>
 								<LabelInput htmlFor="fileIdentification">
 									<FileInput
@@ -811,13 +804,13 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							</div>
 							<div
 								style={{
-									margin: '30px 0 10px 0',
+									margin: '20px 0',
 									display: 'flex',
 									flexDirection: 'column'
 								}}>
-								<p style={{ textAlign: 'left', fontSize: '18px', fontWeight: 'bold' }}>
+								<ContentTitle>
 									Provide information about your statutory body
-								</p>
+								</ContentTitle>
 								<div
 									style={{
 										margin: '10px 0',

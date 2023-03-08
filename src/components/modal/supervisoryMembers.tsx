@@ -292,11 +292,9 @@ export const SupervisoryMembers = ({
 						</div>
 					</div>
 					<div style={{ width: '48%' }}>
-						<label
-							htmlFor="label-country-incorporate"
-							style={{ margin: '8px 0', display: 'inline-block' }}>
+						<ContentTitle>
 							Citizenship(s)
-						</label>
+						</ContentTitle>
 						<SelectDropDown
 							onChange={(e: any) => handleSelectDropdownNatural(e)}
 							options={countries}
@@ -324,9 +322,9 @@ export const SupervisoryMembers = ({
 								} ),
 							}}/>
 					</div>
-					<p style={{ textAlign: 'left', fontSize: '18px', margin: '30px 0' }}>
+					<ContentTitle>
 						Permanent or other residence
-					</p>
+					</ContentTitle>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
 						<div style={{ width: '48%' }}>
 							<label htmlFor="label-shareholder-address-permanent-state-Or-Country"
