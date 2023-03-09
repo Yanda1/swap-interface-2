@@ -103,6 +103,7 @@ export const ContentItemLink = styled.div`
 const IconWrapper = styled.div`
 	display: flex;
 	justify-content: center;
+	margin-top: ${spacing[10]};
 
 	${mediaQuery('s')} {
 		margin-top: ${spacing[16]};

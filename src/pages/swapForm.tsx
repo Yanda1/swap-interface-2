@@ -2,15 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
-import {
-	Button,
-	Fees,
-	Icon,
-	IconType,
-	NetworkTokenModal,
-	SwapButton,
-	TextField
-} from '../components';
+import { Button, Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
 import type { Fee } from '../helpers';
 import {
 	AmountEnum,
@@ -163,14 +155,14 @@ export const SwapForm = () => {
 	} = useStore();
 	const swapButtonRef = useRef();
 	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
-	const [showDestinationModal, setShowDestinationModal] = useState(false);
+	const [ showDestinationModal, setShowDestinationModal ] = useState(false);
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
-	const [showSourceModal, setShowSourceModal] = useState(false);
-	const [showKycL2, setShowKycL2] = useState(false);
-	const [hasMemo, setHasMemo] = useState(false);
-	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
-	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
-	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+	const [ showSourceModal, setShowSourceModal ] = useState(false);
+	const [ showKycL2, setShowKycL2 ] = useState(false);
+	const [ hasMemo, setHasMemo ] = useState(false);
+	const [ destinationAddressIsValid, setDestinationAddressIsValid ] = useState(false);
+	const [ destinationMemoIsValid, setDestinationMemoIsValid ] = useState(false);
+	const [ limit, setLimit ] = useState<Limit>({ message: '', value: '', error: false });
 
 	const updateShowKycL2 = (value: boolean) => {
 		setShowKycL2(value);
@@ -184,8 +176,8 @@ export const SwapForm = () => {
 				+minAmount >= +maxAmount
 					? 'Insufficent funds'
 					: +minAmount < +amount
-					? 'Max Amount'
-					: 'Min Amount';
+						? 'Max Amount'
+						: 'Min Amount';
 			const value = +minAmount >= +maxAmount ? '' : +minAmount < +amount ? maxAmount : minAmount;
 			setLimit({
 				message,
@@ -195,47 +187,47 @@ export const SwapForm = () => {
 		} else {
 			setLimit({ message: '', value: '', error: false });
 		}
-	}, [destinationToken, amount, minAmount, maxAmount]);
+	}, [ destinationToken, amount, minAmount, maxAmount ]);
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
 			const calculatedDestinationAmount =
-				(+amount / (1 + BINANCE_FEE)) * getPrice(sourceToken, destinationToken) -
+				( +amount / ( 1 + BINANCE_FEE ) ) * getPrice(sourceToken, destinationToken) -
 				withdrawFee.amount -
-				cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0);
+				cexFee.reduce((total: number, fee: Fee) => ( total += fee.amount ), 0);
 			dispatch({
 				type: DestinationEnum.AMOUNT,
 				payload: calculatedDestinationAmount < 0 ? '' : calculatedDestinationAmount.toString()
 			});
 		}
-	}, [amount, destinationToken, cexFee, withdrawFee]);
+	}, [ amount, destinationToken, cexFee, withdrawFee ]);
 
 	useEffect(() => {
 		const hasTag =
 			// @ts-ignore
-			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+			DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
 				'hasTag'
-			];
+				];
 		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
-	}, [sourceToken, destinationNetwork, sourceNetwork]);
+	}, [ sourceToken, destinationNetwork, sourceNetwork ]);
 
 	useEffect(() => {
 		const addressRegEx = new RegExp(
 			// @ts-ignore,
-			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+			DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
 				'tokens'
-			]?.[destinationToken]?.['addressRegex']
+				]?.[destinationToken]?.['addressRegex']
 		);
 		const memoRegEx = new RegExp(
 			// @ts-ignore
-			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+			DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
 				'tokens'
-			]?.[destinationToken]?.['tagRegex']
+				]?.[destinationToken]?.['tagRegex']
 		);
 
 		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
 		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
-	}, [destinationAddress, destinationMemo, destinationToken]);
+	}, [ destinationAddress, destinationMemo, destinationToken ]);
 
 	const handleSwap = (): void => {
 		// @ts-ignore
@@ -315,7 +307,7 @@ export const SwapForm = () => {
 							size="large"
 							icon={
 								isTokenSelected(destinationToken)
-									? (destinationToken.toLowerCase() as IconType)
+									? ( destinationToken.toLowerCase() as IconType )
 									: 'questionMark'
 							}
 							onClick={() => setShowDestinationModal(!showDestinationModal)}
@@ -339,8 +331,8 @@ export const SwapForm = () => {
 				{!isTokenSelected(destinationToken)
 					? ''
 					: `1 ${sourceToken} = ${beautifyNumbers({
-							n: getPrice(sourceToken, destinationToken)
-					  })} ${destinationToken}`}
+						n: getPrice(sourceToken, destinationToken)
+					})} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
 				value={destinationAddress}
@@ -367,22 +359,22 @@ export const SwapForm = () => {
 			)}
 			{isUserVerified &&
 				isNetworkSelected(destinationNetwork) &&
-				isTokenSelected(destinationToken) && <Fees />}
-			{isUserVerified && (
-				<SwapButton
-					ref={swapButtonRef}
-					validInputs={destinationMemoIsValid && destinationAddressIsValid && !limit.error}
-					amount={amount.toString()}
-					onClick={handleSwap}
-				/>
-			)}
+				isTokenSelected(destinationToken)}
+			<Fees/>
+			<SwapButton
+				ref={swapButtonRef}
+				validInputs={destinationMemoIsValid && destinationAddressIsValid && !limit.error}
+				amount={amount.toString()}
+				onClick={handleSwap}
+			/>
+
 			<KYCL2Wrapper>
-				{isUserVerified && account && (kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC) ? (
+				{isUserVerified && account && ( kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC ) ? (
 					<Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
 						KYC as Legal Person
 					</Button>
 				) : null}
-				<KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={updateShowKycL2} />
+				<KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={updateShowKycL2}/>
 			</KYCL2Wrapper>
 		</Wrapper>
 	);

@@ -13,6 +13,8 @@ import {
 	ContractAdress,
 	isSwapRejected,
 	isTokenSelected,
+	KycL2StatusEnum,
+	KycStatusEnum,
 	makeId,
 	NETWORK_TO_ID,
 	PairEnum,
@@ -37,12 +39,13 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		localStorage.removeItem('swaps');
 	}
 	const { account } = useEthers();
-	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
-	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('localSwaps', []);
-	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
+	const [ swapProductId, setSwapProductId ] = useLocalStorage<string>('productId', '');
+	const [ swapsStorage, setSwapsStorage ] = useLocalStorage<any>('localSwaps', []);
+	const [ isDepositConfirmed, setIsDepositConfirmed ] = useLocalStorage<any>(
 		'isDepositConfirmed',
 		true
 	);
+
 
 	const {
 		state: {
@@ -54,13 +57,17 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationMemo,
 			isUserVerified,
 			destinationAmount,
-			pair
+			pair,
+			kycStatus,
+			kycL2Status,
+			buttonStatus
 		},
 		dispatch
 	} = useStore();
 	const { chainId, library: web3Provider } = useEthers();
 	const { maxAmount, minAmount } = useFees();
 	const currentBlockNumber = useBlockNumber();
+	console.log(buttonStatus);
 
 	const isDisabled =
 		!isDepositConfirmed ||
@@ -68,31 +75,40 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isTokenSelected(sourceToken) ||
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
-		+destinationAmount < 0;
+		+destinationAmount < 0 ||
+		kycStatus !== 'PASS' ||
+		kycL2Status !== 0;
+
 	const message = !isDisabled
 		? 'Swap'
-		: !isTokenSelected(destinationToken)
-		? 'Select Network and Token'
-		: +amount < +minAmount
-		? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-		: +amount > +maxAmount
-		? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-		: // @ts-ignore
-		DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
-				'hasTag'
-		  ] && !destinationMemo
-		? 'Please insert a valid Destination Memo'
-		: !destinationAddress
-		? 'Please insert a valid Destination Address'
-		: 'Wait for deposit';
+		: !isUserVerified && buttonStatus.text === 'Connect Wallet'
+			? 'Connect wallet to swap'
+			: !isUserVerified && buttonStatus.text === 'Login'
+				? 'Log in to swap'
+				: !isUserVerified && kycStatus !== KycStatusEnum.PASS || kycL2Status !== KycL2StatusEnum.PASSED
+					? 'Pass KYC to swap'
+					: !isTokenSelected(destinationToken)
+						? 'Select Network and Token'
+						: +amount < +minAmount
+							? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+							: +amount > +maxAmount
+								? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
+								: // @ts-ignore
+								DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+									'hasTag'
+									] && !destinationMemo
+									? 'Please insert a valid Destination Memo'
+									: !destinationAddress
+										? 'Please insert a valid Destination Address'
+										: 'Wait for deposit';
 	const sourceTokenData =
 		// @ts-ignore
-		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
+		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken];
 
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
-	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
+	if (web3Provider && !( web3Provider instanceof providers.FallbackProvider )) {
 		protocol.connect(web3Provider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
@@ -114,7 +130,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		}
 	);
 
-	useImperativeHandle(ref, () => ({
+	useImperativeHandle(ref, () => ( {
 		async onSubmit() {
 			const productId = utils.id(makeId(32));
 			setSwapProductId(productId);
@@ -145,7 +161,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				);
 			}
 		}
-	}));
+	} ));
 
 	useEffect(() => {
 		if (
@@ -165,7 +181,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 					sourceToken,
 					currentBlockNumber
 				};
-				setSwapsStorage([...swapsStorage, swap]);
+				setSwapsStorage([ ...swapsStorage, swap ]);
 				setSwapProductId('');
 				setIsDepositConfirmed(!isDepositConfirmed);
 			}
@@ -179,7 +195,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		} else {
 			return;
 		}
-	}, [transactionContractSwapState, transactionSwapState]);
+	}, [ transactionContractSwapState, transactionSwapState ]);
 
 	return (
 		<ButtonWrapper>

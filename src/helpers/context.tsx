@@ -73,7 +73,7 @@ export enum KycL2BusinessStatusEnum {
 
 export enum KycL2BusinessReprEnum {
 	NATURAL = 0,
-    LEGAL = 1
+	LEGAL = 1
 }
 
 export enum BasicStatusEnum {
@@ -301,9 +301,9 @@ const authReducer = (state: State, action: Action): State => {
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [state, dispatch] = useReducer(authReducer, initialState);
+	const [ state, dispatch ] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
-	const { account, isNetworkConnected, kycStatus, isUserVerified, kycL2Status } = state;
+	const { account, isNetworkConnected, kycStatus, kycL2Status } = state;
 
 	useEffect(() => {
 		if (!account) {
@@ -320,20 +320,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			});
 		}
 
-		if (account && !isUserVerified && isNetworkConnected) {
+		if (account && isNetworkConnected) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
-		if (kycStatus !== KycStatusEnum.PASS && kycL2Status !== KycL2StatusEnum.PASSED) {
-			dispatch({ type: VerificationEnum.USER, payload: false });
-		} else if (
-			kycStatus === KycStatusEnum.PASS &&
-			isNetworkConnected &&
-			account &&
-			kycL2Status === KycL2StatusEnum.PASSED
-		) {
+
+		if (kycStatus === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED && account && isNetworkConnected) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
+		} else {
+			dispatch({ type: VerificationEnum.USER, payload: false });
+
 		}
-	}, [account, isNetworkConnected, kycStatus, kycL2Status, isUserVerified]);
+
+		// TODO: please do not delete comment section below ;)
+		// if (( kycStatus !== KycStatusEnum.PASS && kycL2Status !== KycL2StatusEnum.PASSED ) || !account || !isNetworkConnected) {
+		// 	dispatch({ type: VerificationEnum.USER, payload: false });
+		// } else if (
+		// 	kycStatus === KycStatusEnum.PASS &&
+		// 	isNetworkConnected &&
+		// 	account &&
+		// 	kycL2Status === KycL2StatusEnum.PASSED
+		// ) {
+		// 	dispatch({ type: VerificationEnum.USER, payload: true });
+		// }
+	}, [ account, isNetworkConnected, kycStatus, kycL2Status ]);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

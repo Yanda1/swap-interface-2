@@ -103,7 +103,6 @@ export const TabModal = () => {
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			const randomNum = Math.floor(Math.random() * PHRASES.length);
-			console.log(randomNum);
 			setNumber(randomNum);
 		}, 7000);
 
