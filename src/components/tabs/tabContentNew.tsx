@@ -1,18 +1,10 @@
 import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import styled, { css } from 'styled-components';
-import {
-	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSITION,
-	fontSize,
-	mediaQuery,
-	pxToRem,
-	spacing,
-	Theme
-} from '../../styles';
+import { DEFAULT_BORDER_RADIUS, DEFAULT_TRANSITION, fontSize, mediaQuery, pxToRem, spacing, Theme } from '../../styles';
 import { useBlockNumber } from '@usedapp/core';
 import { useAxios } from '../../hooks';
 import { useEffect, useState } from 'react';
-import { Spinner } from '../spinner/spinner';
+import { Icon } from '../icon/icon';
 
 type Props = {
 	data?: any;
@@ -29,9 +21,8 @@ const Content = styled.div`
 
 	display: block;
 	background: ${(props: StyleProps) => props.theme.background.secondary};
-	border: 1px solid
-		${(props: StyleProps) =>
-			props.type === 'history' ? 'transparent' : props.theme.border.default};
+	border: 1px solid ${(props: StyleProps) =>
+		props.type === 'history' ? 'transparent' : props.theme.border.default};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-left-radius: 0;
 	margin-top: -1px;
@@ -93,7 +84,7 @@ export const ContentItemText = styled.div(() => {
 	} = useStore();
 
 	return css`
-		color: ${(props: StyleProps) => (props.color ? props.color : theme.font.select)};
+		color: ${(props: StyleProps) => ( props.color ? props.color : theme.font.select )};
 		line-height: ${fontSize[22]};
 	`;
 });
@@ -109,7 +100,7 @@ export const ContentItemLink = styled.div`
 		color: ${(props: StyleProps) => props.theme.button.default};
 	}
 `;
-const SpinnerWrapper = styled.div`
+const IconWrapper = styled.div`
 	display: flex;
 	justify-content: center;
 
@@ -119,7 +110,7 @@ const SpinnerWrapper = styled.div`
 `;
 
 export const TabContentNew = ({ swap, type = 'swap' }: any) => {
-	const [withdrawLink, setWithdrawLink] = useState<{
+	const [ withdrawLink, setWithdrawLink ] = useState<{
 		amount: string;
 		status: number;
 		type: number;
@@ -147,13 +138,13 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 	};
 	useEffect(() => {
 		void getWithDrawLink();
-	}, [withdrawal]);
+	}, [ withdrawal ]);
 
 	return swap ? (
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
-				{swap.costRequestCounter <= 0 ? 'Starting process':null }
+				{swap.costRequestCounter <= 0 ? 'Starting process' : null}
 				{swap.costRequestCounter ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
@@ -164,8 +155,8 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 							{swap.costRequestCounter < 2
 								? '...in progress'
 								: 'Done'}
-								<br/>
-								<br/>
+							<br/>
+							<br/>
 						</ContentItemText>
 						<ContentItemText>
 							{swap.depositBlock <= 0
@@ -186,20 +177,20 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 							{currentBlockNumber - swap.depositBlock < BLOCKS_AMOUNT
 								? 'Your request is being processed. Please wait'
 								: currentBlockNumber - swap.depositBlock >= BLOCKS_AMOUNT && !swap.action.length
-								? 'Your request will be confirmed soon'
-								: null}
+									? 'Your request will be confirmed soon'
+									: null}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
-							Conversion approved 
+							Conversion approved
 						</ContentItemTitle>
 						<ContentItemText>Market: {swap.sourceToken}-{orders.s.replace(swap.sourceToken, '')}</ContentItemText>
 						<ContentItemText>Exchange rate: {orders.p}</ContentItemText>
-						
-						<br />
+
+						<br/>
 						<ContentItemTitle>
 							Finalising the transaction now
 						</ContentItemTitle>
@@ -207,7 +198,8 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 				) : null}
 				{withdrawal && !withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemLink theme={theme}>Sending {orders.s.replace(swap.sourceToken, '')} to your wallet</ContentItemLink>
+						<ContentItemLink theme={theme}>Sending {orders.s.replace(swap.sourceToken, '')} to your
+							wallet</ContentItemLink>
 					</ContentItem>
 				) : withdrawal?.t === 1 && withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
@@ -218,7 +210,7 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 				) : withdrawal?.t === 0 && withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemLink theme={theme} onClick={() => window.open(withdrawLink.url)}>
-							The {orders.s.replace(swap.sourceToken, '')} swap completed, funds available in destination address 
+							The {orders.s.replace(swap.sourceToken, '')} swap completed, funds available in destination address
 							<br/>
 							Auditing in progress, please wait
 						</ContentItemLink>
@@ -234,9 +226,12 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 					</ContentItem>
 				) : null}
 				{swap.complete === null ? (
-					<SpinnerWrapper>
-						<Spinner size="medium" color="default" />
-					</SpinnerWrapper>
+					<IconWrapper>
+						<Icon
+							size="large"
+							icon='moneyAnimated'
+						/>
+					</IconWrapper>
 				) : null}
 			</ContentList>
 		</Content>

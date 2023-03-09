@@ -1,5 +1,5 @@
 import './styles/fonts/font.css';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import type { Theme } from './styles';
 import {
@@ -11,6 +11,7 @@ import {
 	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
+	spacing,
 	viewport
 } from './styles';
 import { Header } from './components';
@@ -64,6 +65,16 @@ const Wrapper = styled.main`
 	max-width: ${MAIN_MAX_WIDTH};
 `;
 
+const Title = styled.p(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+		text-align: center;
+		margin: 0 0 ${spacing[20]};
+		color: ${theme.font.default}
+	`;
+});
+
 const App = () => {
 	const {
 		state: { theme }
@@ -71,19 +82,22 @@ const App = () => {
 
 	return (
 		<Router>
-			<GlobalStyles theme={theme} />
-			<Header />
+			<GlobalStyles theme={theme}/>
+			<Header/>
 			<Routes>
 				<Route
 					path="/"
 					element={
 						<Wrapper>
-							<SwapForm />
-							<TabModal />
+							<Title>Swap over 20 Ethereum and Moonbeam tokens for 150+ tokens across 80+ different networks directly
+								from
+								your wallet</Title>
+							<SwapForm/>
+							<TabModal/>
 						</Wrapper>
 					}
 				/>
-				<Route path="/transaction-history" element={<TransactionHistory />} />
+				<Route path="/transaction-history" element={<TransactionHistory/>}/>
 			</Routes>
 		</Router>
 	);

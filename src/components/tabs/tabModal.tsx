@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import type { Theme } from '../../styles';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { useStore } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
 import { TabWrapper } from './TabWrapper';
 import { useEthers } from '@usedapp/core';
+import PHRASES from '../../data/phrases.json';
 
 const Wrapper = styled.div`
 	max-width: 100%;
-	margin: ${pxToRem(76)} auto;
+	margin: ${pxToRem(50)} auto;
 `;
 
 const Paragraph = styled.p(
@@ -62,24 +63,32 @@ const Tab = styled.div(({ active }: Active) => {
 	`;
 });
 
+const TextContainer = styled.div`
+	text-align: center;
+	font-style: italic;
+	height: ${pxToRem(70)};
+	font-size: ${fontSize[14]};
+	padding: ${spacing[14]} ${spacing[8]};
+`;
+
 export const TabModal = () => {
-	const [swaps, setSwaps] = useState<Props[]>([]);
+	const [ swaps, setSwaps ] = useState<Props[]>([]);
 	const {
 		state: { isUserVerified, theme }
 	} = useStore();
-	const [swapsStorage] = useLocalStorage<Props[]>('localSwaps', []);
+	const [ swapsStorage ] = useLocalStorage<Props[]>('localSwaps', []);
 	const { account } = useEthers();
 
 	// GET ALL UNFINISHED SWAPS
 	useEffect(() => {
 		const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => swap.complete === null);
 		setSwaps(filteredSwaps);
-	}, [swapsStorage.length]);
+	}, [ swapsStorage.length ]);
 
-	const [selectedProductId, setSelectedProductId] = useState('');
-	const [toggleIndex, setToggleIndex] = useState<number>(0);
+	const [ selectedProductId, setSelectedProductId ] = useState('');
+	const [ toggleIndex, setToggleIndex ] = useState<number>(0);
 
-	const [accountSwaps, setAccountSwaps] = useState<Props[]>([]);
+	const [ accountSwaps, setAccountSwaps ] = useState<Props[]>([]);
 	useEffect(() => {
 		if (account) {
 			const accountSwaps: Props[] = swaps.filter((swap: Props) => swap.account === account);
@@ -88,7 +97,18 @@ export const TabModal = () => {
 				setSelectedProductId(swaps[0].swapProductId);
 			}
 		}
-	}, [swaps, account]);
+	}, [ swaps, account ]);
+
+	const [ number, setNumber ] = useState(0);
+	useEffect(() => {
+		const intervalId = setInterval(() => {
+			const randomNum = Math.floor(Math.random() * PHRASES.length);
+			console.log(randomNum);
+			setNumber(randomNum);
+		}, 7000);
+
+		return () => clearInterval(intervalId);
+	}, []);
 
 	return isUserVerified ? (
 		<Wrapper>
@@ -115,6 +135,7 @@ export const TabModal = () => {
 							isVisible={swap.swapProductId === selectedProductId}
 						/>
 					))}
+					<TextContainer>{PHRASES[number]}</TextContainer>
 				</>
 			)}
 		</Wrapper>
