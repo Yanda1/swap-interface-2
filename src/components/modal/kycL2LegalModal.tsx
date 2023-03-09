@@ -603,7 +603,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	}, [ page ]);
 
 	useEffect(() => {
-		setIsValid(true);
+		setIsValid(false);
 		if (
 			page === 0 &&
 			input.companyName.trim().length > 1 &&
@@ -622,9 +622,14 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				input.mailAddress.country !== 'Select country' )
 		) {
 			setIsValid(true);
-		} else if (page === 2 && input.politicallPerson && input.appliedSanctions) {
+		} else if (page === 2 && input.representPerson.length === 1 && input.representPerson[0] === 'Statutory body' ||
+			( input.representPerson.includes('Based on a power of attorney') ||
+				input.representPerson.includes('Legal representative') ||
+				input.representPerson.includes('Legal guardian')
+			) && input.politicallPerson && input.appliedSanctions
+		) {
 			setIsValid(true);
-		} else if (page === 3 && input.representPerson.length > 0 && input.workArea.length > 0) {
+		} else if (page === 3 && input.workArea.length > 0) {
 			setIsValid(true);
 		} else if (page === 4 && input.countryOfOperates.length && input.countryOfWork.length) {
 			setIsValid(true);
@@ -658,7 +663,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			size="xl"
 			isOpen={showModal}
 			handleClose={handleOnClose}
-			hasBackButton
+			hasBackButton={page > 0 && !isFirstPartSent}
 			handleBack={handleOnBack}>
 			<Wrapper ref={myRef}>
 				<div
@@ -1030,84 +1035,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					)}
 					{page === 2 && (
 						<WrapContainer>
-							<div
-								style={{
-									display: 'flex',
-									width: '100%',
-									// justifyContent: 'center',
-									marginBottom: '50px',
-									alignItems: 'baseline'
-								}}>
-								<label>Politically exposed person?</label>
-								<div style={{ margin: '0 36px' }}>
-									<label htmlFor="politicallPersonTrue">
-										<input
-											id="politicallPersonTrue"
-											type="radio"
-											value="Yes"
-											checked={input.politicallPerson === 'Yes'}
-											onChange={handleChangeInput}
-											name="politicallPerson"
-										/>
-										Yes
-									</label>
-								</div>
-								<div>
-									<label htmlFor="politicallPersonFalse">
-										<input
-											id="politicallPersonFalse"
-											type="radio"
-											value="No"
-											checked={input.politicallPerson === 'No'}
-											onChange={handleChangeInput}
-											name="politicallPerson"
-										/>
-										No
-									</label>
-								</div>
-							</div>
-
-							<div
-								style={{
-									display: 'flex',
-									width: '100%',
-									// justifyContent: 'center',
-									marginBottom: '30px',
-									alignItems: 'baseline'
-								}}>
-								<label>Person against whom are applied CZ/international sanctions?</label>
-								<div style={{ margin: '0 36px' }}>
-									<label htmlFor="appliedSanctionsTrue">
-										<input
-											id="appliedSanctionsTrue"
-											type="radio"
-											value="Yes"
-											checked={input.appliedSanctions === 'Yes'}
-											onChange={handleChangeInput}
-											name="appliedSanctions"
-										/>
-										Yes
-									</label>
-								</div>
-								<div>
-									<label htmlFor="appliedSanctionsFalse">
-										<input
-											id="appliedSanctionsFalse"
-											type="radio"
-											value="No"
-											checked={input.appliedSanctions === 'No'}
-											onChange={handleChangeInput}
-											name="appliedSanctions"
-										/>
-										No
-									</label>
-								</div>
-							</div>
-						</WrapContainer>
-					)}
-					{page === 3 && (
-						<>
-							<div style={{ width: '100%' }}>
+							<div style={{ width: '100%', marginBottom: '50px' }}>
 								<ContentTitle>
 									The client is represented (person acting on behalf of the client in each
 									Transaction)
@@ -1135,13 +1063,94 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									);
 								})}
 							</div>
-							<div style={{ width: '100%' }}>
-								<ContentTitle>
-									Is your business conducting activities in one of these areas? <br/> - If yes
-									select the relevant ones -
-								</ContentTitle>
-							</div>
-							<WrapContainer style={{ height: '50%' }}>
+							{input.representPerson.includes('Based on a power of attorney') ||
+							input.representPerson.includes('Legal representative') ||
+							input.representPerson.includes('Legal guardian') ? (
+									<>
+										<div
+											style={{
+												display: 'flex',
+												width: '100%',
+												// justifyContent: 'center',
+												marginBottom: '30px',
+												alignItems: 'baseline'
+											}}>
+											<label>Politically exposed person?</label>
+											<div style={{ margin: '0 36px' }}>
+												<label htmlFor="politicallPersonTrue">
+													<input
+														id="politicallPersonTrue"
+														type="radio"
+														value="Yes"
+														checked={input.politicallPerson === 'Yes'}
+														onChange={handleChangeInput}
+														name="politicallPerson"
+													/>
+													Yes
+												</label>
+											</div>
+											<div>
+												<label htmlFor="politicallPersonFalse">
+													<input
+														id="politicallPersonFalse"
+														type="radio"
+														value="No"
+														checked={input.politicallPerson === 'No'}
+														onChange={handleChangeInput}
+														name="politicallPerson"
+													/>
+													No
+												</label>
+											</div>
+										</div>
+										<div
+											style={{
+												display: 'flex',
+												width: '100%',
+												// justifyContent: 'center',
+												marginBottom: '30px',
+												alignItems: 'baseline'
+											}}>
+											<label>Person against whom are applied CZ/international sanctions?</label>
+											<div style={{ margin: '0 36px' }}>
+												<label htmlFor="appliedSanctionsTrue">
+													<input
+														id="appliedSanctionsTrue"
+														type="radio"
+														value="Yes"
+														checked={input.appliedSanctions === 'Yes'}
+														onChange={handleChangeInput}
+														name="appliedSanctions"
+													/>
+													Yes
+												</label>
+											</div>
+											<div>
+												<label htmlFor="appliedSanctionsFalse">
+													<input
+														id="appliedSanctionsFalse"
+														type="radio"
+														value="No"
+														checked={input.appliedSanctions === 'No'}
+														onChange={handleChangeInput}
+														name="appliedSanctions"
+													/>
+													No
+												</label>
+											</div>
+										</div>
+									</>
+								)
+								: null}
+						</WrapContainer>
+					)}
+					{page === 3 && (
+						<WrapContainer>
+							<ContentTitle>
+								Is your business conducting activities in one of these areas? <br/> - If yes
+								select the relevant ones -
+							</ContentTitle>
+							<div>
 								{WORK_AREA_LIST.map((activity: string, index: number) => {
 									return (
 										<div
@@ -1149,7 +1158,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											style={{
 												display: 'flex',
 												justifyContent: 'flex-start',
-												marginBottom: '8px'
+												marginBottom: '6px'
 											}}>
 											<input
 												type="checkbox"
@@ -1164,8 +1173,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										</div>
 									);
 								})}
-							</WrapContainer>
-						</>
+							</div>
+						</WrapContainer>
 					)}
 					{page === 4 && (
 						<div style={{ marginBottom: '10px', width: '70%' }}>
