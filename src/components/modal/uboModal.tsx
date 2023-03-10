@@ -395,84 +395,91 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										<option value="Other">Other</option>
 									</Select>
 								</div>
+								<div style={{ width: '48%' }}>
+									<label htmlFor="label-select-tax-residency"
+												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										Tax Residency
+									</label>
+									<Select
+										name="taxResidency"
+										onChange={handleDropDownInput}
+										value={client.taxResidency}
+										id="label-select-tax-residency"
+										style={{
+											minHeight: '46px',
+										}}>
+										<option value="Select country">Select country</option>
+										{COUNTRIES.map((country: any) => {
+											return (
+												<option value={country.name} key={country.name}>
+													{country.name}
+												</option>
+											);
+										})}
+										;
+									</Select>
+								</div>
+								<div style={{ width: '48%' }}>
+									<label htmlFor="label-citizenship-natural-ubo"
+												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										Citizenship(s)
+									</label>
+									<SelectDropDown
+										id="label-citizenship-natural-ubo"
+										name='citizenship'
+										onChange={(e: any) => handleSelectDropdownNatural(e)}
+										options={countries}
+										isMulti
+										isSearchable
+										styles={{
+											multiValueRemove: (styles) => ( {
+												...styles,
+												color: 'red',
+												':hover': {
+													backgroundColor: 'red',
+													color: 'white'
+												}
+											} ),
+											menu: (base): any => ( {
+												...base,
+												backgroundColor: `${theme.background.secondary}`
+											} ),
+											option: (base, state): any => ( {
+												...base,
+												border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+												height: '100%',
+												color: `${theme.font.default}`,
+												backgroundColor: `${theme.background.secondary}`,
+												cursor: 'pointer'
+											} ),
+											control: (baseStyles): any => ( {
+												...baseStyles,
+												borderColor: 'grey',
+												backgroundColor: `${theme.background.secondary}`,
+												color: `${theme.font.default}`,
+												padding: 0,
+												minHeight: '46px',
+											} )
+										}}
+									/>
+								</div>
 							</div>
-							<div style={{ margin: '12px 0 30px', width: '48%' }}>
-								<label htmlFor="label-select-tax-residency">
-									Tax Residency
-								</label>
-								<Select
-									name="taxResidency"
-									onChange={handleDropDownInput}
-									value={client.taxResidency}
-									id="label-select-tax-residency"
-									style={{
-										minHeight: '46px',
-										marginTop: '8px',
-									}}>
-									<option value="Select country">Select country</option>
-									{COUNTRIES.map((country: any) => {
-										return (
-											<option value={country.name} key={country.name}>
-												{country.name}
-											</option>
-										);
-									})}
-									;
-								</Select>
-							</div>
-							<div style={{ marginBottom: '10px', width: '48%' }}>
-								<ContentTitle>Citizenship(s)</ContentTitle>
-								<SelectDropDown
-									name='citizenship'
-									onChange={(e: any) => handleSelectDropdownNatural(e)}
-									options={countries}
-									isMulti
-									isSearchable
-									styles={{
-										multiValueRemove: (styles) => ( {
-											...styles,
-											color: 'red',
-											':hover': {
-												backgroundColor: 'red',
-												color: 'white'
-											}
-										} ),
-										menu: (base): any => ( {
-											...base,
-											backgroundColor: `${theme.background.secondary}`
-										} ),
-										option: (base, state): any => ( {
-											...base,
-											border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-											height: '100%',
-											color: `${theme.font.default}`,
-											backgroundColor: `${theme.background.secondary}`,
-											cursor: 'pointer'
-										} ),
-										control: (baseStyles): any => ( {
-											...baseStyles,
-											borderColor: 'grey',
-											backgroundColor: `${theme.background.secondary}`,
-											color: `${theme.font.default}`,
-											padding: 0
-										} )
-									}}
-								/>
-							</div>
-							<ContentTitle>Identification (ID card or passport) <br/>Copy of
-								personal identification
-								or passport of the
-								representatives</ContentTitle>
-							<div style={{ textAlign: 'left', marginBottom: '40px' }}>
-								<LabelInput htmlFor="file-input-address">
-									<FileInput
-										id="file-input-address"
-										type="file"
-										ref={fileIdentification as any}
-										onChange={handleChangeFileInput}>
-									</FileInput>
-									{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px' }}>
+								<ContentTitle style={{ width: '80%' }}>Identification (ID card or passport). Copy of
+									personal identification
+									or passport of the
+									representatives</ContentTitle>
+								<div style={{ textAlign: 'left', marginBottom: '40px' }}>
+									<LabelInput htmlFor="file-input-address">
+										<FileInput
+											id="file-input-address"
+											type="file"
+											ref={fileIdentification as any}
+											onChange={handleChangeFileInput}>
+										</FileInput>
+										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
+									</LabelInput>
+								</div>
 							</div>
 							<ContentTitle>
 								Permanent or other residence
@@ -788,23 +795,25 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									error={client.companyName.length < 2}
 								/>
 							</div>
-							<ContentTitle>Copy of excerpt of public register
-								or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
-								Foundation etc.)</ContentTitle>
-							<div style={{ textAlign: 'left' }}>
-								<LabelInput htmlFor="fileIdentification">
-									<FileInput
-										id="fileIdentification"
-										type="file"
-										ref={fileIdentification as any}
-										onChange={handleChangeFileInput}>
-									</FileInput>
-									{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
-								</LabelInput>
+							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px' }}>
+								<ContentTitle style={{ width: '80%' }}>Copy of excerpt of public register
+									or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
+									Foundation etc.)</ContentTitle>
+								<div style={{ textAlign: 'left' }}>
+									<LabelInput htmlFor="fileIdentification">
+										<FileInput
+											id="fileIdentification"
+											type="file"
+											ref={fileIdentification as any}
+											onChange={handleChangeFileInput}>
+										</FileInput>
+										{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
+									</LabelInput>
+								</div>
 							</div>
 							<div
 								style={{
-									margin: '20px 0',
+									margin: '0 0 20px',
 									display: 'flex',
 									flexDirection: 'column'
 								}}>

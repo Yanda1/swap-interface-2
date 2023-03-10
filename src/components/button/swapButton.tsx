@@ -67,7 +67,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const { chainId, library: web3Provider } = useEthers();
 	const { maxAmount, minAmount } = useFees();
 	const currentBlockNumber = useBlockNumber();
-	console.log(buttonStatus);
 
 	const isDisabled =
 		!isDepositConfirmed ||
@@ -77,7 +76,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isUserVerified ||
 		+destinationAmount < 0 ||
 		kycStatus !== 'PASS' ||
-		kycL2Status !== 0;
+		kycL2Status !== 2;
 
 	const message = !isDisabled
 		? 'Swap'

@@ -622,11 +622,11 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				input.mailAddress.country !== 'Select country' )
 		) {
 			setIsValid(true);
-		} else if (page === 2 && input.representPerson.length === 1 && input.representPerson[0] === 'Statutory body' ||
+		} else if (page === 2 && ( ( input.representPerson.length === 1 && input.representPerson[0] === 'Statutory body' ) ||
 			( input.representPerson.includes('Based on a power of attorney') ||
 				input.representPerson.includes('Legal representative') ||
 				input.representPerson.includes('Legal guardian')
-			) && input.politicallPerson && input.appliedSanctions
+			) && input.politicallPerson && input.appliedSanctions )
 		) {
 			setIsValid(true);
 		} else if (page === 3 && input.workArea.length > 0) {

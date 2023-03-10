@@ -410,79 +410,84 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										<option value="Other">Other</option>
 									</Select>
 								</div>
-							</div>
-							<div style={{ margin: '8px 0 30px', width: '48%' }}>
-								<label htmlFor="label-select-shareholder-tax-residency">
-									Tax Residency
-								</label>
-								<Select
-									name="taxResidency"
-									onChange={handleDropDownInput}
-									value={client.taxResidency}
-									id="label-select-shareholder-tax-residency"
-									style={{
-										minHeight: '46px',
-										marginTop: '8px',
-									}}>
-									<option value="Select country">Select country</option>
-									{COUNTRIES.map((country: any) => {
-										return (
-											<option value={country.name} key={country.name}>
-												{country.name}
-											</option>
-										);
-									})}
-									;
-								</Select>
-							</div>
-							<div style={{ marginBottom: '10px', width: '48%' }}>
-								<ContentTitle>
-									Citizenship(s)
-								</ContentTitle>
-								<SelectDropDown
-									name='citizenship'
-									onChange={(e: any) => handleSelectDropdownNatural(e)}
-									options={countries}
-									isMulti
-									isSearchable
-									styles={{
-										menu: (base): any => ( {
-											...base,
-											backgroundColor: `${theme.background.secondary}`,
-										} ),
-										option: (base, state): any => ( {
-											...base,
-											border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-											height: '100%',
-											color: `${theme.font.default}`,
-											backgroundColor: `${theme.background.secondary}`,
-											cursor: 'pointer',
-										} ),
-										control: (baseStyles): any => ( {
-											...baseStyles,
-											borderColor: 'grey',
-											backgroundColor: `${theme.background.secondary}`,
-											color: `${theme.font.default}`,
-											padding: 0,
-										} ),
-									}}/>
-							</div>
-							<ContentTitle>Identification (ID card or passport).<br/> Copy of
-								personal
-								identification or
-								passport of the representatives
-							</ContentTitle>
-							<div style={{ textAlign: 'left', margin: '20px 0 40px' }}>
-								<LabelInput htmlFor="label-input-file-natural">
-									<FileInput
-										id="label-input-file-natural"
-										type="file"
-										ref={fileIdentification as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								<div style={{ width: '48%' }}>
+									<label htmlFor="label-select-shareholder-tax-residency"
+												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										Tax Residency
+									</label>
+									<Select
+										name="taxResidency"
+										onChange={handleDropDownInput}
+										value={client.taxResidency}
+										id="label-select-shareholder-tax-residency"
+										style={{
+											minHeight: '46px',
+										}}>
+										<option value="Select country">Select country</option>
+										{COUNTRIES.map((country: any) => {
+											return (
+												<option value={country.name} key={country.name}>
+													{country.name}
+												</option>
+											);
+										})}
+										;
+									</Select>
+								</div>
+								<div style={{ width: '48%' }}>
+									<label htmlFor="label-citizenship-natural-share"
+												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										Citizenship(s)
+									</label>
+									<SelectDropDown
+										id="label-citizenship-natural-share"
+										name='citizenship'
+										onChange={(e: any) => handleSelectDropdownNatural(e)}
+										options={countries}
+										isMulti
+										isSearchable
+										styles={{
+											menu: (base): any => ( {
+												...base,
+												backgroundColor: `${theme.background.secondary}`,
+											} ),
+											option: (base, state): any => ( {
+												...base,
+												border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+												height: '100%',
+												color: `${theme.font.default}`,
+												backgroundColor: `${theme.background.secondary}`,
+												cursor: 'pointer',
+											} ),
+											control: (baseStyles): any => ( {
+												...baseStyles,
+												borderColor: 'grey',
+												backgroundColor: `${theme.background.secondary}`,
+												color: `${theme.font.default}`,
+												padding: 0,
+												minHeight: '46px'
+											} ),
+										}}/>
+								</div>
 							</div>
 
+							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px' }}>
+								<ContentTitle style={{ width: '80%' }}>Identification (ID card or passport). Copy of
+									personal
+									identification or
+									passport of the representatives
+								</ContentTitle>
+								<div style={{ textAlign: 'left', margin: '20px 0 40px' }}>
+									<LabelInput htmlFor="label-input-file-natural">
+										<FileInput
+											id="label-input-file-natural"
+											type="file"
+											ref={fileIdentification as any}
+											onChange={handleChangeFileInput}></FileInput>
+										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
+									</LabelInput>
+								</div>
+							</div>
 							<ContentTitle>Permanent or other residence</ContentTitle>
 							<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
 								<div style={{ width: '48%' }}>
@@ -583,10 +588,9 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 								style={{
 									display: 'flex',
 									width: '100%',
-									marginBottom: '20px',
 									alignItems: 'baseline'
 								}}>
-								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
+								<p style={{ marginRight: '30px' }}>
 									Is your permanent (RESIDENCE) address the same as your mailing address?
 								</p>
 								<label htmlFor="label-shareholder-mailing-permanent-address-true"
@@ -739,10 +743,9 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 								style={{
 									display: 'flex',
 									width: '100%',
-									marginBottom: '20px',
 									alignItems: 'baseline'
 								}}>
-								<p style={{ marginBottom: '25px', marginRight: '30px' }}>Politically exposed person?</p>
+								<p style={{ marginRight: '30px' }}>Politically exposed person?</p>
 								<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="politicallPersonTrue"
@@ -770,7 +773,6 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 								style={{
 									display: 'flex',
 									width: '100%',
-									marginBottom: '20px',
 									alignItems: 'baseline'
 								}}>
 								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
@@ -823,20 +825,22 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									error={client.companyName.length < 2}
 								/>
 							</div>
-							<ContentTitle>Copy of
-								excerpt of public register or
-								other valid documents proving the existence of legal entity
-								(Articles of Associations, Deed of Foundation etc.).
-							</ContentTitle>
-							<div style={{ textAlign: 'left', margin: '40px 0' }}>
-								<LabelInput htmlFor="file-input">
-									<FileInput
-										id="file-input"
-										type="file"
-										ref={fileIdentification as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
-								</LabelInput>
+							<div style={{ display: 'flex', alignItems: 'baseline' }}>
+								<ContentTitle style={{ width: '80%' }}>Copy of
+									excerpt of public register or
+									other valid documents proving the existence of legal entity
+									(Articles of Associations, Deed of Foundation etc.).
+								</ContentTitle>
+								<div style={{ textAlign: 'left', margin: '40px 0' }}>
+									<LabelInput htmlFor="file-input">
+										<FileInput
+											id="file-input"
+											type="file"
+											ref={fileIdentification as any}
+											onChange={handleChangeFileInput}></FileInput>
+										{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
+									</LabelInput>
+								</div>
 							</div>
 							<ContentTitle>
 								Provide information about your statutory body
