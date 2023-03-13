@@ -663,7 +663,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			size="xl"
 			isOpen={showModal}
 			handleClose={handleOnClose}
-			hasBackButton={page > 0 && !isFirstPartSent}
+			hasBackButton={(page > 0 && !isFirstPartSent) || page > PAGE_AFTER_FIRST_PART}
 			handleBack={handleOnBack}>
 			<Wrapper ref={myRef}>
 				<div
@@ -1527,6 +1527,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								flexDirection: 'column',
 								width: '100%'
 							}}>
+							<Title>Business verification</Title>
 							<div
 								style={{
 									margin: '0 0 10px',
@@ -1584,6 +1585,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								flexDirection: 'column',
 								width: '100%'
 							}}>
+							<Title>Business verification</Title>
 							<div
 								style={{
 									margin: '0 0 10px',
@@ -1648,6 +1650,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								flexDirection: 'column',
 								width: '100%'
 							}}>
+							<Title>Business verification</Title>
 							<div
 								style={{
 									margin: '0 0 10px',
