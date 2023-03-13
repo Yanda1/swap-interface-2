@@ -1,5 +1,5 @@
 import './styles/fonts/font.css';
-import styled, { createGlobalStyle } from 'styled-components';
+import styled, { createGlobalStyle, css } from 'styled-components';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import type { Theme } from './styles';
 import {
@@ -11,9 +11,10 @@ import {
 	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
+	spacing,
 	viewport
 } from './styles';
-import { Header } from './components';
+import { Header, Footer } from './components';
 import { SwapForm, TransactionHistory } from './pages';
 import { useStore } from './helpers';
 import { TabModal } from './components/tabs/tabModal';
@@ -34,7 +35,8 @@ export const GlobalStyles = createGlobalStyle`
 		font-size: ${fontSize[14]};
 		line-height: ${fontSize[18]};
 		max-width: ${viewport[1760]};
-		min-height: 100vh;
+		// min-height: 100vh;
+		height: 100vh;
 		color: ${(props: Props) => props.theme.font.default};
 		box-sizing: border-box;
 		scroll-behavior: smooth;
@@ -59,10 +61,28 @@ export const GlobalStyles = createGlobalStyle`
 	}
 `;
 
-const Wrapper = styled.main`
+const MainWrapper = styled.main`
+	margin: 0;
+	min-height: 100vh;
+    display: flex;
+  	flex-direction: column;
+`;
+
+const ContentWrapper = styled.main`
 	margin: 0 auto;
 	max-width: ${MAIN_MAX_WIDTH};
+	flex: 1;
 `;
+
+const Title = styled.p(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+		text-align: center;
+		margin: 0 0 ${spacing[20]};
+		color: ${theme.font.default}
+	`;
+});
 
 const App = () => {
 	const {
@@ -71,20 +91,26 @@ const App = () => {
 
 	return (
 		<Router>
-			<GlobalStyles theme={theme} />
-			<Header />
-			<Routes>
-				<Route
-					path="/"
-					element={
-						<Wrapper>
-							<SwapForm />
-							<TabModal />
-						</Wrapper>
-					}
-				/>
-				<Route path="/transaction-history" element={<TransactionHistory />} />
-			</Routes>
+			<MainWrapper>
+				<GlobalStyles theme={theme}/>
+				<Header/>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<ContentWrapper>
+								<Title>Swap over 20 Ethereum and Moonbeam tokens for 150+ tokens across 80+ different networks directly
+									from
+									your wallet</Title>
+								<SwapForm/>
+								<TabModal/>
+							</ContentWrapper>
+						}
+					/>
+					<Route path="/transaction-history" element={<TransactionHistory/>}/>
+				</Routes>
+				<Footer/>
+			</MainWrapper>
 		</Router>
 	);
 };

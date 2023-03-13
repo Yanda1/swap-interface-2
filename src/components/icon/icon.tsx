@@ -121,7 +121,7 @@ import { ReactComponent as IOTX } from '../../assets/IOTX.svg';
 import { ReactComponent as IRIS } from '../../assets/IRIS.svg';
 import { ReactComponent as JOE } from '../../assets/JOE.svg';
 import { ReactComponent as KAVA } from '../../assets/KAVA.svg';
-import { ReactComponent as KDA2 } from '../../assets/kda.svg';
+import { ReactComponent as KDA2, ReactComponent as KDA } from '../../assets/kda.svg';
 import { ReactComponent as KLAY } from '../../assets/KLAY.svg';
 import { ReactComponent as KSM } from '../../assets/KSM.svg';
 import { ReactComponent as LSK } from '../../assets/LSK.svg';
@@ -134,8 +134,7 @@ import { ReactComponent as MOB } from '../../assets/MOB.svg';
 import { ReactComponent as MOVR } from '../../assets/MOVR.svg';
 import { ReactComponent as NEAR } from '../../assets/NEAR.svg';
 import { ReactComponent as NEBL } from '../../assets/NEBL.svg';
-import { ReactComponent as NEO } from '../../assets/neo.svg';
-import { ReactComponent as NEO3 } from '../../assets/neo.svg';
+import { ReactComponent as NEO, ReactComponent as NEO3 } from '../../assets/neo.svg';
 import { ReactComponent as APT } from '../../assets/APT.svg';
 import { ReactComponent as HBAR } from '../../assets/hbar.svg';
 import { ReactComponent as ONE } from '../../assets/ONE.svg';
@@ -186,7 +185,6 @@ import { ReactComponent as HOOK } from '../../assets/hook.svg';
 import { ReactComponent as ILV } from '../../assets/ilv.svg';
 import { ReactComponent as IMX } from '../../assets/imx.svg';
 import { ReactComponent as JASMY } from '../../assets/jasmy.svg';
-import { ReactComponent as KDA } from '../../assets/kda.svg';
 import { ReactComponent as KEY } from '../../assets/key.svg';
 import { ReactComponent as KNC } from '../../assets/knc.svg';
 import { ReactComponent as LAZIO } from '../../assets/lazio.svg';
@@ -269,6 +267,7 @@ import { ReactComponent as HNT } from '../../assets/hnt.svg';
 import { ReactComponent as ANC } from '../../assets/anc.svg';
 import { ReactComponent as USTC } from '../../assets/ustc.svg';
 import { ReactComponent as SRM } from '../../assets/srm.svg';
+import { ReactComponent as MoneyAnimated } from '../../assets/money-animated.svg';
 
 import type { ThemeProps } from '../../styles';
 import {
@@ -377,6 +376,7 @@ const Icons = {
 	swapperLight: SwapperLight,
 	settingsDark: SettingsDark,
 	settingsLight: SettingsLight,
+	moneyAnimated: MoneyAnimated,
 
 	// avaxapt: AVAXAPT,
 	akro: AKRO,
@@ -582,44 +582,44 @@ const StyledIcon = styled.div`
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	cursor: ${(props: StyleProps) => (props.onClick ? 'pointer' : 'unset')};
+	cursor: ${(props: StyleProps) => ( props.onClick ? 'pointer' : 'unset' )};
 	transition: ${DEFAULT_TRANSITION};
 
 	${(props: StyleProps) =>
 		props.onClick && props.size === 'large'
 			? css`
-					padding: ${spacing[8]} ${spacing[12]};
-					border: 1px solid ${props.theme.border.default};
-					border-radius: ${DEFAULT_BORDER_RADIUS};
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					background: ${`linear-gradient(to left, ${props.theme.background.secondary}, ${props.theme.background.secondary})`};
-					transition: ${DEFAULT_TRANSITION};
+				padding: ${spacing[8]} ${spacing[12]};
+				border: 1px solid ${props.theme.border.default};
+				border-radius: ${DEFAULT_BORDER_RADIUS};
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background: ${`linear-gradient(to left, ${props.theme.background.secondary}, ${props.theme.background.secondary})`};
+				transition: ${DEFAULT_TRANSITION};
 
-					& svg {
-						font-size: ${spacing[32]};
-					}
-			  `
+				& svg {
+					font-size: ${spacing[32]};
+				}
+			`
 			: null}
 	${(props: StyleProps) =>
 		props.onClick
 			? css`
-					outline: 1px solid transparent;
+				outline: 1px solid transparent;
 
-					&:hover {
-						opacity: 0.8;
-					}
+				&:hover {
+					opacity: 0.8;
+				}
 
-					&:focus-visible {
-						outline-offset: ${DEFAULT_OUTLINE_OFFSET};
-						outline: ${(props: StyleProps) => DEFAULT_OUTLINE(props.theme)};
-					}
+				&:focus-visible {
+					outline-offset: ${DEFAULT_OUTLINE_OFFSET};
+					outline: ${(props: StyleProps) => DEFAULT_OUTLINE(props.theme)};
+				}
 
-					&:active {
-						outline: none;
-					}
-			  `
+				&:active {
+					outline: none;
+				}
+			`
 			: null}
 	& > * {
 		width: 1em;
@@ -637,7 +637,7 @@ export const Icon = ({ icon, size, onClick, style = {} }: Props) => {
 
 	return Icon ? (
 		<StyledIcon onClick={onClick} size={size} theme={theme} style={style} data-testid="icon">
-			<Icon onClick={onClick ?? null} theme={theme} />
+			<Icon onClick={onClick ?? null} theme={theme}/>
 		</StyledIcon>
 	) : null;
 };
