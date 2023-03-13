@@ -231,7 +231,7 @@ export const SupervisoryMembers = ({
 									margin: '8px 0',
 									display: 'inline-block'
 								}}>
-								Date of incorporation
+								Date of birth
 							</label>
 							<DateInput
 								style={{
@@ -390,12 +390,12 @@ export const SupervisoryMembers = ({
 							<label
 								htmlFor="label-shareholder-address-permanent-municipality"
 								style={{ margin: '8px 0', display: 'inline-block' }}>
-								Municipality
+								City
 							</label>
 							<TextField
 								id="label-shareholder-address-permanent-municipality"
 								value={client.residence.municipality}
-								placeholder="Municipality"
+								placeholder="City"
 								type="text"
 								onChange={handleChangeResidenceInput}
 								size="small"
@@ -431,7 +431,7 @@ export const SupervisoryMembers = ({
 							alignItems: 'baseline'
 						}}>
 						<p style={{ marginBottom: '25px', marginRight: '30px' }}>
-							Person against whom are applied CZ/international sanctions?
+							Are you a person against whom are applied Czech or international sanctions?
 						</p>
 						<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
 							<input

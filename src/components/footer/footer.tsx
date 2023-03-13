@@ -30,7 +30,7 @@ export const Footer = () => {
         <KYCL2Wrapper>
             {isUserVerified && account && ( kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC ) ? (
                 <Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
-                    KYC as Legal Person
+                    Verify as a business
                 </Button>
             ) : null}
             <KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={setShowKycL2}/>

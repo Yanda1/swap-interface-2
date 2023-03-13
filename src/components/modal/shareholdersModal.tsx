@@ -553,12 +553,12 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									<label
 										htmlFor="label-shareholder-address-permanent-municipality"
 										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Municipality
+										City
 									</label>
 									<TextField
 										id="label-shareholder-address-permanent-municipality"
 										value={client.residence.municipality}
-										placeholder="Municipality"
+										placeholder="City"
 										type="text"
 										onChange={handleChangeResidenceInput}
 										size="small"
@@ -703,12 +703,12 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 													margin: '6px 0 8px 0',
 													display: 'inline-block'
 												}}>
-												Municipality
+												City
 											</label>
 											<TextField
 												id="label-shareholder-address-municipality"
 												value={client.mailAddress.municipality}
-												placeholder="Municipality"
+												placeholder="City"
 												type="text"
 												onChange={handleChangeMailInput}
 												size="small"
@@ -745,7 +745,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									width: '100%',
 									alignItems: 'baseline'
 								}}>
-								<p style={{ marginRight: '30px' }}>Politically exposed person?</p>
+								<p style={{ marginRight: '30px' }}>Are you a politically exposed person?</p>
 								<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="politicallPersonTrue"
@@ -776,7 +776,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									alignItems: 'baseline'
 								}}>
 								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
-									Person against whom are applied CZ/international sanctions?
+									Are you a person against whom are applied Czech or international sanctions?
 								</p>
 								<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
 									<input
@@ -811,12 +811,12 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										marginBottom: '8px',
 										display: 'inline-block'
 									}}>
-									Business company name
+									Company name
 								</label>
 								<TextField
 									id="label-shareholders-company-name"
 									value={client.companyName}
-									placeholder="Business company name"
+									placeholder="Company name"
 									type="text"
 									onChange={handleChangeClientInput}
 									size="small"
@@ -949,12 +949,12 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									<label
 										htmlFor="label-shareHolderInfo-registeredOffice"
 										style={{ margin: '8px 0', display: 'inline-block' }}>
-										Registered Office
+										Registered office address
 									</label>
 									<TextField
 										id="label-shareHolderInfo-registeredOffice"
 										value={client.shareHolderInfo.registeredOffice}
-										placeholder="Registered Office"
+										placeholder="Registered office address"
 										type="text"
 										onChange={handleChangeShareHolderInfoInput}
 										size="small"
