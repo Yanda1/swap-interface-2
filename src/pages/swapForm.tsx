@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 import { Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
 import type { Fee } from '../helpers';
@@ -139,7 +138,8 @@ export const SwapForm = () => {
 			destinationAmount,
 			destinationMemo,
 			isUserVerified,
-			amount
+			amount,
+			availableDestinationNetworks: DESTINATION_NETWORKS
 		},
 		dispatch
 	} = useStore();
@@ -188,31 +188,35 @@ export const SwapForm = () => {
 	}, [ amount, destinationToken, cexFee, withdrawFee ]);
 
 	useEffect(() => {
-		const hasTag =
-			// @ts-ignore
-			DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-				'hasTag'
-				];
-		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
-	}, [ sourceToken, destinationNetwork, sourceNetwork ]);
+		if (DESTINATION_NETWORKS) {
+			const hasTag = 
+				// @ts-ignore
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+					'hasTag'
+					];
+			setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
+		}
+	}, [ DESTINATION_NETWORKS, sourceToken, destinationNetwork, sourceNetwork ]);
 
 	useEffect(() => {
-		const addressRegEx = new RegExp(
-			// @ts-ignore,
-			DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-				'tokens'
-				]?.[destinationToken]?.['addressRegex']
-		);
-		const memoRegEx = new RegExp(
-			// @ts-ignore
-			DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-				'tokens'
-				]?.[destinationToken]?.['tagRegex']
-		);
+		if (DESTINATION_NETWORKS) {
+			const addressRegEx = new RegExp(
+				// @ts-ignore,
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+					'tokens'
+					]?.[destinationToken]?.['addressRegex']
+			);
+			const memoRegEx = new RegExp(
+				// @ts-ignore
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+					'tokens'
+					]?.[destinationToken]?.['tagRegex']
+			);
 
-		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
-		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
-	}, [ destinationAddress, destinationMemo, destinationToken ]);
+			setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
+			setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
+		}
+	}, [ DESTINATION_NETWORKS, destinationAddress, destinationMemo, destinationToken ]);
 
 	const handleSwap = (): void => {
 		// @ts-ignore
