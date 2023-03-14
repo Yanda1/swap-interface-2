@@ -18,8 +18,6 @@ import {
 } from '../helpers';
 import type { GraphType, DestinationNetworks, Price, Fee } from '../helpers';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
-import SOURCE_NETWORKS from '../data/sourceNetworks.json';
-import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { BigNumber, utils, providers } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
@@ -51,17 +49,22 @@ export const useFees = () => {
 			amount,
 			isNetworkConnected,
 			destinationAddress,
-			account
+			account,
+			availableSourceNetworks: SOURCE_NETWORKS,
+			availableDestinationNetworks: DESTINATION_NETWORKS,
 		}
 	} = useStore();
 
 	const { chainId, library: web3Provider } = useEthers();
 	const sourceTokenData = useMemo(
 		() =>
-			// @ts-ignore
 			// eslint-disable-next-line
-			SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken],
-		[sourceToken]
+			SOURCE_NETWORKS ?
+				// @ts-ignore
+				// eslint-disable-next-line
+				SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+			: {},
+		[SOURCE_NETWORKS, sourceToken]
 	);
 	const gasPrice = useGasPrice();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
@@ -99,7 +102,7 @@ export const useFees = () => {
 
 	const uniqueTokens: string[] = useMemo(
 		() =>
-			isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
+			DESTINATION_NETWORKS && isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
 				? // @ts-ignore
 				  Object.keys(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]).reduce(
 						(tokens: string[], network: string) => {
@@ -117,7 +120,7 @@ export const useFees = () => {
 						[sourceToken]
 				  )
 				: [],
-		[sourceToken]
+		[DESTINATION_NETWORKS, sourceToken]
 	);
 
 	const isSymbol = (symbol: string): boolean => {

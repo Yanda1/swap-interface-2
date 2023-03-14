@@ -1,6 +1,8 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
+import { BASE_URL } from './constants';
 import type { ColorType, Theme } from '../styles';
 import { darkTheme } from '../styles';
+import axios from 'axios';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -103,6 +105,10 @@ export enum DefaultSelectEnum {
 	NETWORK = 'Select Network'
 }
 
+export enum AvailableCurrenciesEnum {
+	SET = 'SET'
+}
+
 type SourceNetworks = 'ETH' | 'GLMR' | DefaultSelectEnum.NETWORK;
 
 type VerificationAction = {
@@ -160,6 +166,11 @@ type PairAction = {
 	payload: string;
 };
 
+type AvailableCurrenciesAction = {
+	type: AvailableCurrenciesEnum;
+	payload: { sourceNetworks: any; destinationNetworks: any };
+};
+
 type Action =
 	| VerificationAction
 	| ButtonAction
@@ -171,7 +182,8 @@ type Action =
 	| DestinationAction
 	| AmountAction
 	| ProductIdAction
-	| PairAction;
+	| PairAction
+	| AvailableCurrenciesAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -196,6 +208,8 @@ type State = {
 	amount: string;
 	productId: string;
 	pair: string;
+	availableSourceNetworks: any | null;
+	availableDestinationNetworks: any | null;
 };
 
 enum ButtonName {
@@ -242,7 +256,9 @@ const initialState: State = {
 	destinationMemo: '',
 	amount: '',
 	productId: '',
-	pair: ''
+	pair: '',
+	availableSourceNetworks: null,
+	availableDestinationNetworks: null
 };
 
 type Dispatch = (action: Action) => void;
@@ -295,6 +311,12 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, productId: action.payload };
 		case PairEnum.PAIR:
 			return { ...state, pair: action.payload };
+		case AvailableCurrenciesEnum.SET:
+			return { 
+				...state,
+				availableSourceNetworks: action.payload.sourceNetworks,
+				availableDestinationNetworks: action.payload.destinationNetworks
+			};
 		default:
 			return state;
 	}
@@ -343,6 +365,23 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		// 	dispatch({ type: VerificationEnum.USER, payload: true });
 		// }
 	}, [ account, isNetworkConnected, kycStatus, kycL2Status ]);
+
+	useEffect(() => {
+		axios.request({
+			url: `${BASE_URL}cex/currencies`
+		})
+			.then(function(response: any) {
+				dispatch({
+					type: AvailableCurrenciesEnum.SET,
+					payload: response.data
+				});
+			})
+			.catch(function(response: any) {
+				console.log(response);
+				console.error();
+			});
+
+	}, []);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

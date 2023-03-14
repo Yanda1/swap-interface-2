@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
-import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { mediaQuery, spacing } from '../../styles';
 import { SelectList, Portal, Button } from '../../components';
 import { useMedia } from '../../hooks';
@@ -55,7 +53,14 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const { mobileWidth: isMobile } = useMedia('xs');
 	const {
 		dispatch,
-		state: { destinationNetwork, destinationToken, sourceNetwork, sourceToken }
+		state: { 
+			destinationNetwork,
+			destinationToken,
+			sourceNetwork,
+			sourceToken,
+			availableSourceNetworks: SOURCE_NETWORKS,
+			availableDestinationNetworks: DESTINATION_NETWORKS
+		}
 	} = useStore();
 
 	const isSource = type === 'SOURCE';
@@ -68,25 +73,25 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		[destinationNetwork, destinationToken, sourceNetwork, sourceToken]
 	);
 
-	const sourceNetworksList = _.orderBy(
+	const sourceNetworksList = SOURCE_NETWORKS ? _.orderBy(
 		Object.keys(SOURCE_NETWORKS).map(
 			// @ts-ignore
 			// eslint-disable-next-line
 			(id) => CHAINS[id]?.name
 		)
-	);
+	) : [];
 
 	const sourceTokensList = useMemo(
 		() =>
-			isNetworkSelected(sourceNetwork)
+			SOURCE_NETWORKS && isNetworkSelected(sourceNetwork)
 				? // @ts-ignore
 				  _.orderBy(Object.keys(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens']))
 				: [],
-		[sourceNetwork]
+		[SOURCE_NETWORKS, sourceNetwork]
 	);
 
 	const destinationNetworksList = useMemo(() => {
-		if (isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)) {
+		if (DESTINATION_NETWORKS && isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)) {
 			const allDestinationNetworks = Object.keys(
 				// @ts-ignore
 				DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]
@@ -104,21 +109,25 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		} else {
 			return [];
 		}
-	}, [sourceToken, sourceNetwork]);
+	}, [DESTINATION_NETWORKS, sourceToken, sourceNetwork]);
 
 	const destinationTokensList = useMemo(() => {
-		const tokensFromJson =
-			// @ts-ignore
-			DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[
-				destinationNetwork as DestinationNetworks
-			]?.['tokens'];
+		if (DESTINATION_NETWORKS) {
+			const tokensFromJson =
+				// @ts-ignore
+				DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[
+					destinationNetwork as DestinationNetworks
+				]?.['tokens'];
 
-		const filteredTokens = (tokensFromJson ? Object.keys(tokensFromJson) : []).filter(
-			(token) => token !== sourceToken
-		);
-
-		return _.orderBy(filteredTokens);
-	}, [sourceToken, destinationNetwork, sourceNetwork]);
+			const filteredTokens = (tokensFromJson ? Object.keys(tokensFromJson) : []).filter(
+				(token) => token !== sourceToken
+			);
+			
+			return _.orderBy(filteredTokens);
+		} else {
+			return [];
+		}
+	}, [DESTINATION_NETWORKS, sourceToken, destinationNetwork, sourceNetwork]);
 
 	const handleSubmit = () => {
 		setShowModal(!showModal);

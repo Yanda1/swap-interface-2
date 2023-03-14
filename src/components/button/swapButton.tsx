@@ -1,9 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
-import DESTINATION_NETWORKS from '../../data/destinationNetworks.json';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
-import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { providers, utils } from 'ethers';
 import { Button } from '..';
 import { Contract } from '@ethersproject/contracts';
@@ -60,7 +58,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			pair,
 			kycStatus,
 			kycL2Status,
-			buttonStatus
+			buttonStatus,
+			availableSourceNetworks: SOURCE_NETWORKS,
+			availableDestinationNetworks: DESTINATION_NETWORKS
 		},
 		dispatch
 	} = useStore();
@@ -100,9 +100,10 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 									: !destinationAddress
 										? 'Please insert a valid Destination Address'
 										: 'Wait for deposit';
-	const sourceTokenData =
+	const sourceTokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
-		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken];
+		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken]
+		: {};
 
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
@@ -198,7 +199,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	return (
 		<ButtonWrapper>
-			<Button disabled={isDisabled} color="default" onClick={onClick}>
+			<Button isLoading={!SOURCE_NETWORKS && !DESTINATION_NETWORKS} disabled={isDisabled} color="default" onClick={onClick}>
 				{message}
 			</Button>
 		</ButtonWrapper>
