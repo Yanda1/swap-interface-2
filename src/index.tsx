@@ -11,7 +11,7 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 const config: Config = {
 	readOnlyChainId: Mainnet.chainId,
 	readOnlyUrls: {
-		[Mainnet.chainId]: 'https://eth-mainnet-public.unifra.io',
+		[Mainnet.chainId]: 'https://ethereum.publicnode.com',
 		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network'
 	},
 	networks: [Mainnet, Moonbeam]

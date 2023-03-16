@@ -112,7 +112,7 @@ export const Wallet = () => {
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			{isTokenSelected(sourceToken) && (
 				<Amount theme={theme}>
-					{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
+					{beautifyNumbers({ n: balance ?? '0.0', digits: 4 })} {sourceToken}
 				</Amount>
 			)}
 			<Account theme={theme} onClick={openModal}>
