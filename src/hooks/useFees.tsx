@@ -123,28 +123,38 @@ export const useFees = () => {
 		[DESTINATION_NETWORKS, sourceToken]
 	);
 
-	const isSymbol = (symbol: string): boolean => {
-		let k = 0;
+	const uniquePairs: string[] = useMemo(
+		() => {
+			if(uniqueTokens) {
+				const result = [];
+				// let k = 0;
 
-		for (let i = 0; i < uniqueTokens.length - 1; i++) {
-			k++;
-			for (let j = k; j < uniqueTokens.length; j++) {
-				if (
-					uniqueTokens[i] + uniqueTokens[j] === symbol ||
-					uniqueTokens[j] + uniqueTokens[i] === symbol
-				) {
-					return true;
+				// for (let i = 0; i < uniqueTokens.length - 1; i++) {
+				// 	k++;
+				// 	for (let j = k; j < uniqueTokens.length; j++) {
+				// 		result.push(uniqueTokens[i] + uniqueTokens[j]);
+				// 		result.push(uniqueTokens[j] + uniqueTokens[i]);
+				// 	}
+				// }
+				
+				// TODO: use above logic for "double-swap" P.S. need performance improvement
+				for (let i = 0; i < uniqueTokens.length - 1; i++) {
+					result.push(uniqueTokens[i] + sourceToken);
+					result.push(sourceToken + uniqueTokens[i]);
 				}
+				
+				return result;
+			} else {
+				return [];
 			}
-		}
-
-		return false;
-	};
+		},
+		[uniqueTokens, sourceToken]
+	);
 
 	useEffect(() => {
 		if (allPairs) {
 			const filteredPairs = allPairs
-				.filter((pair: any) => isSymbol(pair.symbol))
+				.filter((pair: any) => uniquePairs.includes(pair.symbol))
 				.map((pair: any) => {
 					return {
 						baseAsset: pair.baseAsset,
@@ -162,7 +172,7 @@ export const useFees = () => {
 
 	useEffect(() => {
 		if (allPrices) {
-			const filteredPrices = allPrices.filter((price: any) => isSymbol(price.symbol));
+			const filteredPrices = allPrices.filter((price: any) => uniquePairs.includes(price.symbol));
 			setAllFilteredPrices(filteredPrices);
 		}
 	}, [allPrices, uniqueTokens]);
