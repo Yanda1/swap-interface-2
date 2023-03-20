@@ -108,7 +108,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
-	if (web3Provider && !( web3Provider instanceof providers.FallbackProvider )) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider)) {
 		protocol.connect(web3Provider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(

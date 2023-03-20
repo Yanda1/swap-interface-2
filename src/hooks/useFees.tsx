@@ -71,7 +71,7 @@ export const useFees = () => {
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
-	if (web3Provider && isNetworkConnected && !(web3Provider instanceof providers.FallbackProvider)) {
+	if (web3Provider && isNetworkConnected && !(web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider)) {
 		contract.connect(web3Provider.getSigner());
 	}
 	const walletBalance = useEtherBalance(account);

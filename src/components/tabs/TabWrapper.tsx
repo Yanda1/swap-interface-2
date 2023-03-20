@@ -65,7 +65,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 	const tokenContract =
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
-	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider)) {
 		protocol.connect(web3Provider.getSigner());
 		if (tokenContract) {
 			tokenContract.connect(web3Provider.getSigner());
