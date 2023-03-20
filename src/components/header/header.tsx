@@ -157,9 +157,6 @@ export const NETWORK_PARAMS = {
 export const Header = () => {
 	const { mobileWidth: isMobile } = useMedia('s');
 	const { mobileWidth: isDeskTop } = useMedia('m');
-	useEffect(() => {
-		console.log('isDeskTop', isDeskTop);
-	}, [ isDeskTop ]);
 	const {
 		state: {
 			buttonStatus,
@@ -600,7 +597,7 @@ export const Header = () => {
 						theme={theme}
 						ref={domNode}
 						style={{
-							maxWidth: `${isDeskTop ? '100%' : pxToRem(170)}`,
+							maxWidth: `${isDeskTop ? '100%' : pxToRem(200)}`,
 							right: `${!isDeskTop && '20%'}`
 						}}>
 						{Object.values(CHAINS).map((chain) => (
