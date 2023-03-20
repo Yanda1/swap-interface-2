@@ -663,8 +663,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			size="xl"
 			isOpen={showModal}
 			handleClose={handleOnClose}
-			hasBackButton={(page > 0 && !isFirstPartSent) || page > PAGE_AFTER_FIRST_PART}
-			handleBack={handleOnBack}>
+			hasBackButton={( page > 0 && !isFirstPartSent ) || page > PAGE_AFTER_FIRST_PART}
+			handleBack={handleOnBack}
+			closeOutside={false}>
 			<Wrapper ref={myRef}>
 				<div
 					style={{
@@ -678,11 +679,11 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					{page === 0 && (
 						<WrapContainer>
 							<Title>Business verification</Title>
-							<div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'baseline'}}>
-								<div style={{marginBottom: '10px', width: '50%', marginRight: '20px'}}>
+							<div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'baseline' }}>
+								<div style={{ marginBottom: '10px', width: '50%', marginRight: '20px' }}>
 									<label
 										htmlFor="label-companyName"
-										style={{marginBottom: '8px', display: 'inline-block'}}>
+										style={{ marginBottom: '8px', display: 'inline-block' }}>
 										Company name
 									</label>
 									<TextField
@@ -700,7 +701,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								<div style={{ marginBottom: '10px', width: '50%' }}>
 									<label
 										htmlFor="label-identification-number"
-										style={{marginBottom: '8px', display: 'inline-block'}}>
+										style={{ marginBottom: '8px', display: 'inline-block' }}>
 										Company identification number
 									</label>
 									<TextField
@@ -1338,7 +1339,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										);
 									})}
 								</div>
-								<div style={{width: '100%', paddingBottom: '30px'}}>
+								<div style={{ width: '100%', paddingBottom: '30px' }}>
 									<ContentTitle>
 										Source of funds intended for transaction:
 									</ContentTitle>
@@ -1382,9 +1383,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					)}
 					{page === 6 && (
 						<WrapContainer>
-						<Title>Business verification</Title>
-							<div style={{display: 'flex', flexDirection: 'column'}}>
-								<div 
+							<Title>Business verification</Title>
+							<div style={{ display: 'flex', flexDirection: 'column' }}>
+								<div
 									style={{
 										display: 'flex',
 										// justifyContent: 'center',
@@ -1394,10 +1395,11 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										Have you as a legal entity (or the member of your statutory body or your supervisory body or your
 										ultimate beneficial owner ) ever been convicted for a criminal offense, in particular an offense
 										against
-										property or economic offense committed not only in relation with work or business activities (without
+										property or economic offense committed not only in relation with work or business activities
+										(without
 										regards to presumption of innocence)?
 									</label>
-									<div style={{margin: '0 36px'}}>
+									<div style={{ margin: '0 36px' }}>
 										<label htmlFor="criminalOffensesTrue">
 											<input
 												id="criminalOffensesTrue"
@@ -1424,44 +1426,44 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										</label>
 									</div>
 								</div>
-								<div style={{width: '100%' }}>
-									
-										<div
-											style={{
-												display: 'flex',
-												width: '100%',
-												// justifyContent: 'center',
-												marginBottom: '30px',
-												alignItems: 'baseline'
-											}}>
-											<label>The representative of the client is a:</label>
-											<div style={{margin: '0 36px'}}>
-												<label htmlFor="representativeTypeOfClientTrue">
-													<input
-														id="representativeTypeOfClientTrue"
-														type="radio"
-														value="Natural Person"
-														checked={input.representativeTypeOfClient === 'Natural Person'}
-														onChange={handleChangeInput}
-														name="representativeTypeOfClient"
-													/>
-													Natural Person
-												</label>
-											</div>
-											<div>
-												<label htmlFor="representativeTypeOfClientFalse">
-													<input
-														id="representativeTypeOfClientFalse"
-														type="radio"
-														value="Legal entity"
-														checked={input.representativeTypeOfClient === 'Legal entity'}
-														onChange={handleChangeInput}
-														name="representativeTypeOfClient"
-													/>
-													Legal entity
-												</label>
-											</div>
+								<div style={{ width: '100%' }}>
+
+									<div
+										style={{
+											display: 'flex',
+											width: '100%',
+											// justifyContent: 'center',
+											marginBottom: '30px',
+											alignItems: 'baseline'
+										}}>
+										<label>The representative of the client is a:</label>
+										<div style={{ margin: '0 36px' }}>
+											<label htmlFor="representativeTypeOfClientTrue">
+												<input
+													id="representativeTypeOfClientTrue"
+													type="radio"
+													value="Natural Person"
+													checked={input.representativeTypeOfClient === 'Natural Person'}
+													onChange={handleChangeInput}
+													name="representativeTypeOfClient"
+												/>
+												Natural Person
+											</label>
 										</div>
+										<div>
+											<label htmlFor="representativeTypeOfClientFalse">
+												<input
+													id="representativeTypeOfClientFalse"
+													type="radio"
+													value="Legal entity"
+													checked={input.representativeTypeOfClient === 'Legal entity'}
+													onChange={handleChangeInput}
+													name="representativeTypeOfClient"
+												/>
+												Legal entity
+											</label>
+										</div>
+									</div>
 								</div>
 							</div>
 						</WrapContainer>
@@ -1491,7 +1493,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									</Button>
 								</div>
 							</div>
-							<WrapContainer style={{display: 'flex', flexWrap: 'wrap'}}>
+							<WrapContainer style={{ display: 'flex', flexWrap: 'wrap' }}>
 								<UboModal addUbo={addUbo} updateUboModalShow={updateUboModalShow}/>
 								{ubos.map((client: any) => {
 									if (client) {
@@ -1660,7 +1662,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									flexWrap: 'wrap'
 								}}>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-								Copy of an account statement kept by an institution in the European Economic Area
+									Copy of an account statement kept by an institution in the European Economic Area
 								</ContentTitle>
 								<LabelInput htmlFor="file-input-refPoasDoc1">
 									<FileInput
