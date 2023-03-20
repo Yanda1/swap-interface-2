@@ -124,10 +124,6 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					type: DestinationEnum.TOKEN,
 					payload: name
 				});
-				dispatch({
-					type: AmountEnum.AMOUNT,
-					payload: ''
-				});
 			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
 				if(isUserVerified) {
 					try {
@@ -181,6 +177,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				}
 				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+				dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+				dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 			} else if (value === 'SOURCE_TOKEN') {
 				dispatch({
 					type: SourceEnum.TOKEN,
@@ -188,6 +186,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				});
 				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+				dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+				dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 			}
 		},
 		[destinationToken, destinationNetwork, sourceNetwork, sourceToken, value] // TODO: add destinationWallet later

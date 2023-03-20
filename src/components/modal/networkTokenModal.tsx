@@ -11,6 +11,7 @@ import {
 	isTokenSelected,
 	NETWORK_TO_ID,
 	SourceEnum,
+	AmountEnum,
 	useStore
 } from '../../helpers';
 import type { DestinationNetworks } from '../../helpers';
@@ -157,6 +158,8 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 				// @ts-ignore
 				payload: CHAINS[chainId.toString()].name
 			});
+			dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+			dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 		}
 	}, [chainId]);
 
