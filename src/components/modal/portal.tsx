@@ -25,7 +25,7 @@ const Wrapper = styled.div(
 const Content = styled.div(
 	({ theme, size }: StyledProps) => css`
 		background-color: ${theme.modal.default};
-		width: ${pxToRem(size === 'small' ? 450 : size === 'large' ? 685 : 755)};
+		width: ${pxToRem(size === 'small' ? 450 : size === 'large' ? 685 : size === 'xs' ? 480 : 755)};
 		max-width: calc(100% - ${spacing[40]});
 		display: flex;
 		box-sizing: border-box;
@@ -38,7 +38,7 @@ const Content = styled.div(
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
 		height: calc(100% - ${spacing[40]});
-		max-height: ${pxToRem(size === 'small' ? 305 : size === 'large' ? 530 : 690)};
+		max-height: ${pxToRem(size === 'small' ? 305 : size === 'large' ? 530 : size === 'xs' ? 200 : 690)};
 	`
 );
 
@@ -76,7 +76,7 @@ type WrapperProps = {
 	wrapperId: string;
 };
 
-export type PortalSizeProps = 'xl' | 'large' | 'small';
+export type PortalSizeProps = 'xl' | 'large' | 'small' | 'xs';
 
 const PortalWrapper = ({ children, wrapperId = 'react-portal-wrapper' }: WrapperProps) => {
 	const [ wrapperElement, setWrapperElement ] = useState<HTMLElement | null>(null);
