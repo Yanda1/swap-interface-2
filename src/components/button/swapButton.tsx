@@ -78,6 +78,17 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		kycStatus !== 'PASS' ||
 		kycL2Status !== 2;
 
+	const isDestinationAddressValid = (destinationAddress: any) => {
+		if (destinationAddress) {
+			return new RegExp(
+				// @ts-ignore,
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+					'tokens'
+					]?.[destinationToken]?.['addressRegex']
+			);
+		}
+	};
+
 	const message = !isDisabled
 		? 'Swap'
 		: !isUserVerified && buttonStatus.text === 'Connect Wallet'
@@ -92,14 +103,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 							? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
 							: +amount > +maxAmount
 								? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-								: // @ts-ignore
-								DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-									'hasTag'
-									] && !destinationMemo
-									? 'Please insert a valid Destination Memo'
-									: !destinationAddress
-										? 'Please insert a valid Destination Address'
-										: 'Wait for deposit';
+								: isDestinationAddressValid(destinationAddress)
+									? 'Please insert a valid Destination Address'
+									: 'Wait for deposit';
 	const sourceTokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
 		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken]
@@ -199,7 +205,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	return (
 		<ButtonWrapper>
-			<Button isLoading={!SOURCE_NETWORKS && !DESTINATION_NETWORKS} disabled={isDisabled} color="default" onClick={onClick}>
+			<Button isLoading={!SOURCE_NETWORKS && !DESTINATION_NETWORKS} disabled={isDisabled} color="default"
+							onClick={onClick}>
 				{message}
 			</Button>
 		</ButtonWrapper>

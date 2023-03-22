@@ -211,9 +211,7 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 				) : withdrawal?.t === 0 && withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemLink theme={theme} onClick={() => window.open(withdrawLink.url)}>
-							The {orders.s.replace(swap.sourceToken, '')} swap completed, funds available in destination address
-							<br/>
-							Auditing in progress, please wait
+							Funds may have already arrived or will be received shortly. <a href={withdrawLink.url}>txid</a>
 						</ContentItemLink>
 					</ContentItem>
 				) : null}

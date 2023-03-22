@@ -189,7 +189,7 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		if (DESTINATION_NETWORKS) {
-			const hasTag = 
+			const hasTag =
 				// @ts-ignore
 				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
 					'hasTag'
@@ -214,7 +214,11 @@ export const SwapForm = () => {
 			);
 
 			setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
-			setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
+			if (destinationMemo.length > 0) {
+				setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
+			} else {
+				setDestinationMemoIsValid(true);
+			}
 		}
 	}, [ DESTINATION_NETWORKS, destinationAddress, destinationMemo, destinationToken ]);
 
@@ -302,6 +306,7 @@ export const SwapForm = () => {
 							onClick={() => setShowDestinationModal(!showDestinationModal)}
 						/>
 						<TextField
+							autocomplete='off'
 							disabled
 							type="text"
 							value={beautifyNumbers({ n: destinationAmount })}
@@ -324,6 +329,7 @@ export const SwapForm = () => {
 					})} ${destinationToken}`}
 			</ExchangeRate>
 			<TextField
+				autocomplete='off'
 				value={destinationAddress}
 				error={!destinationAddressIsValid}
 				description="Destination Address"
@@ -338,7 +344,6 @@ export const SwapForm = () => {
 				<div style={{ marginTop: 24 }}>
 					<TextField
 						value={destinationMemo}
-						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
 							dispatch({ type: DestinationEnum.MEMO, payload: e.target.value.trim() })
