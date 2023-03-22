@@ -528,6 +528,17 @@ export const Header = () => {
 				style={{ marginRight: 'auto' }}
 				size={isMobile ? 'medium' : 112}
 			/>
+			{!isMobile && (
+				<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/" target="_blank">
+				<Button
+					variant="pure"
+					onClick={() =>
+						console.log('Out')
+					}>
+					Step-by-step Guide
+				</Button>
+				</a>
+			)}
 			{!isMobile && isNetworkSelected(sourceNetwork) && (
 				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
 					{sourceNetwork ? sourceNetwork : null}
@@ -542,15 +553,6 @@ export const Header = () => {
 					/>
 				</NetworkWrapper>
 			)}
-			{/* {!isMobile && (
-				<Button
-					variant="pure"
-					onClick={() =>
-						navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/')
-					}>
-					{pathname !== '/transaction-history' ? 'Transaction History' : 'Cross-Chain Form'}
-				</Button>
-			)} */}
 			{isUserVerified && account && isNetworkConnected ? (
 				<Wallet/>
 			) : (
@@ -586,19 +588,26 @@ export const Header = () => {
 			{showMenu && (
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
-						{/* <li
-							onClick={() => {
-								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
-								setShowMenu(!showMenu);
+						<li>
+							<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/" target="_blank">
+								<Button
+									variant="pure"
+									onClick={() =>
+										console.log('Out')
+									}>
+									Step-by-step Guide
+								</Button>
+							</a>
+						</li>
+						<li>
+							<Button
+								variant="pure"
+								onClick={() => {
+									changeTheme();
+									setShowMenu(!showMenu);
 							}}>
-							{pathname !== '/transaction-history' ? <>Transaction History &#11044;</> : <>Cross-Chain Swap &#11044;</>}
-						</li> */}
-						<li
-							onClick={() => {
-								changeTheme();
-								setShowMenu(!showMenu);
-							}}>
-							{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
+								{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
+							</Button>
 						</li>
 					</Menu>
 				</MenuWrapper>
