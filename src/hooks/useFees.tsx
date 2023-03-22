@@ -10,7 +10,6 @@ import {
 	SERVICE_ADDRESS,
 	Graph,
 	BINANCE_FEE,
-	FEE_CURRENCY,
 	PROTOCOL_FEE_FACTOR,
 	isNetworkSelected,
 	useStore,
@@ -113,9 +112,9 @@ export const useFees = () => {
 								]?.['tokens']
 							);
 
-							const allTokens = [...tokens, networkTokens];
+							const allTokens = [...tokens, ...networkTokens];
 
-							return [...new Set(allTokens.flat(1))];
+							return [...new Set(allTokens)];
 						},
 						[sourceToken]
 				  )
@@ -138,9 +137,11 @@ export const useFees = () => {
 				// }
 				
 				// TODO: use above logic for "double-swap" P.S. need performance improvement
-				for (let i = 0; i < uniqueTokens.length - 1; i++) {
-					result.push(uniqueTokens[i] + sourceToken);
-					result.push(sourceToken + uniqueTokens[i]);
+				for (let i = 0; i < uniqueTokens.length; i++) {
+					if (uniqueTokens[i] !== sourceToken) {
+						result.push(uniqueTokens[i] + sourceToken);
+						result.push(sourceToken + uniqueTokens[i]);
+					}
 				}
 				
 				return result;
@@ -272,15 +273,19 @@ export const useFees = () => {
 				BigNumber.from(calculatedTransactionFee)
 			);
 
+			// @ts-ignore
+			// eslint-disable-next-line
+			const nativeToken = Object.entries(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens']).find(item => item[1].isNative);
+
 			return {
 				amount: +utils.formatEther(calculatedFee['_hex']),
-				currency: sourceToken,
+				currency: nativeToken?.length ? nativeToken[0] : sourceNetwork,
 				name: 'Network'
 			};
 		} else {
-			return { amount: 0, currency: sourceToken, name: 'Network' };
+			return { amount: 0, currency: '', name: 'Network' };
 		}
-	}, [gasAmount, sourceToken]);
+	}, [gasAmount, sourceNetwork]);
 
 	useEffect(() => {
 		const localGraph = new Graph();
@@ -332,17 +337,17 @@ export const useFees = () => {
 	const allFees = useMemo((): Fee => {
 		const allFees = [...cexFee, withdrawFee, protocolFee, networkFee].reduce(
 			(total: number, fee: Fee) =>
-				fee.currency === FEE_CURRENCY
+				fee.currency === sourceToken
 					? (total += fee.amount)
-					: (total += fee.amount * getPrice(fee.currency, FEE_CURRENCY)),
+					: (total += fee.amount * getPrice(fee.currency, sourceToken)),
 			0
 		);
 
-		return { amount: allFees, currency: FEE_CURRENCY };
+		return { amount: allFees, currency: sourceToken };
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
 	const percentageOfAllFeesToAmount = useMemo(
-		() => (amount ? (allFees.amount / (getPrice(sourceToken, FEE_CURRENCY) * +amount)) * 100 : ''),
+		() => (amount ? (allFees.amount / +amount) * 100 : ''),
 		[allFees.amount, destinationToken, amount]
 	);
 
