@@ -797,8 +797,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							</div>
 							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px' }}>
 								<ContentTitle style={{ width: '80%' }}>Copy of excerpt of public register
-								or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
-								Foundation etc.)</ContentTitle>
+									or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
+									Foundation etc.)</ContentTitle>
 								<div style={{ textAlign: 'left' }}>
 									<LabelInput htmlFor="fileIdentification">
 										<FileInput
@@ -807,7 +807,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											ref={fileIdentification as any}
 											onChange={handleChangeFileInput}>
 										</FileInput>
-										{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
+										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelInput>
 								</div>
 							</div>

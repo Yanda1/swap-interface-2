@@ -27,9 +27,9 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	KycEnum,
+	KycL2BusinessEnum,
 	KycL2Enum,
 	KycL2StatusEnum,
-	KycL2BusinessEnum,
 	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
@@ -101,12 +101,19 @@ const Menu = styled.ul`
 `;
 
 const Networks = styled(Menu)`
-	width: 100%;
+	width: calc(100% - ${pxToRem(8)});
 
 	& li {
 		display: flex;
 		align-items: center;
 		gap: ${spacing[10]};
+		cursor: pointer;
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		transition: 0.3s;
+
+		&:hover {
+			transform: scale(1.05);
+		}
 	}
 `;
 
@@ -123,32 +130,33 @@ export const NETWORK_PARAMS = {
 		{
 			chainId: ethers.utils.hexValue(Mainnet.chainId),
 			chainName: Mainnet.chainName,
-			rpcUrls: [ETHEREUM_URL],
+			rpcUrls: [ ETHEREUM_URL ],
 			nativeCurrency: {
 				name: 'Ethereum',
 				symbol: 'ETH',
 				decimals: 18
 			},
-			blockExplorerUrls: ['https://etherscan.io/']
+			blockExplorerUrls: [ 'https://etherscan.io/' ]
 		}
 	],
 	'1284': [
 		{
 			chainId: ethers.utils.hexValue(Moonbeam.chainId),
 			chainName: Moonbeam.chainName,
-			rpcUrls: [MOONBEAM_URL],
+			rpcUrls: [ MOONBEAM_URL ],
 			nativeCurrency: {
 				name: 'Glimer',
 				symbol: 'GLMR',
 				decimals: 18
 			},
-			blockExplorerUrls: ['https://moonscan.io/']
+			blockExplorerUrls: [ 'https://moonscan.io/' ]
 		}
 	]
 };
 
 export const Header = () => {
 	const { mobileWidth: isMobile } = useMedia('s');
+	const { mobileWidth: isDeskTop } = useMedia('m');
 	const {
 		state: {
 			buttonStatus,
@@ -163,19 +171,19 @@ export const Header = () => {
 		},
 		dispatch
 	} = useStore();
-	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
+	const [ storage, setStorage ] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	// @ts-ignore
 	const { addToast } = useToasts();
 	const api = useAxios();
 
-	const [showMenu, setShowMenu] = useState(false);
-	const [showNetworksList, setShowNetworksList] = useState(false);
-	const [showModal, setShowModal] = useState(false);
-	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	const [ showMenu, setShowMenu ] = useState(false);
+	const [ showNetworksList, setShowNetworksList ] = useState(false);
+	const [ showModal, setShowModal ] = useState(false);
+	const [ showStatusKycL2Modal, setShowStatusKycL2Modal ] = useState(false);
+	const [ isLoading, setIsLoading ] = useState(false);
 
-	const [binanceToken, setBinanceToken] = useState('');
-	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
+	const [ binanceToken, setBinanceToken ] = useState('');
+	const [ binanceScriptLoaded, setBinanceScriptLoaded ] = useState(false);
 	// const navigate = useNavigate();
 	// const { pathname } = useLocation();
 
@@ -231,44 +239,56 @@ export const Header = () => {
 
 	const handleNetworkChange = async (name: string) => {
 		setShowNetworksList(!showNetworksList);
-		try {
-			// @ts-ignore
-			await ethereum.request({
-				method: 'wallet_switchEthereumChain',
-				params: [
-					{
-						chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+		if (isUserVerified) {
+			try {
+				// @ts-ignore
+				await ethereum.request({
+					method: 'wallet_switchEthereumChain',
+					params: [
+						{
+							chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+						}
+					]
+				});
+			} catch (error: any) {
+				if (( error.code === 4902 || error.code === -32603 ) && name === 'GLMR') {
+					try {
+						// @ts-ignore
+						await ethereum.request({
+							method: 'wallet_addEthereumChain',
+							params: NETWORK_PARAMS['1284']
+						});
+						dispatch({
+							type: SourceEnum.NETWORK,
+							payload: name
+						});
+						dispatch({
+							type: SourceEnum.TOKEN,
+							payload: name
+						});
+					} catch (e) {
+						dispatch({
+							type: SourceEnum.NETWORK,
+							payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+						});
+						dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
 					}
-				]
-			});
-		} catch (error: any) {
-			if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
-				try {
-					// @ts-ignore
-					await ethereum.request({
-						method: 'wallet_addEthereumChain',
-						params: NETWORK_PARAMS['1284']
-					});
-					dispatch({
-						type: SourceEnum.NETWORK,
-						payload: name
-					});
-					dispatch({
-						type: SourceEnum.TOKEN,
-						payload: name
-					});
-				} catch (e) {
-					dispatch({
-						type: SourceEnum.NETWORK,
-						payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-					});
-					dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+				} else if (error.code === 4001) {
+					return;
+				} else {
+					addToast('Something went wrong - please try again');
 				}
-			} else if (error.code === 4001) {
-				return;
-			} else {
-				addToast('Something went wrong - please try again');
 			}
+
+		} else {
+			dispatch({
+				type: SourceEnum.NETWORK,
+				payload: name
+			});
+			dispatch({
+				type: SourceEnum.TOKEN,
+				payload: name
+			});
 		}
 		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
@@ -283,7 +303,11 @@ export const Header = () => {
 					await getBinanceToken();
 				}
 				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
-				const { status: kycL2Status, statusBusiness: kycL2StatusBusiness, representativeType: reprType } = res?.data?.L2;
+				const {
+					status: kycL2Status,
+					statusBusiness: kycL2StatusBusiness,
+					representativeType: reprType
+				} = res?.data?.L2;
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
@@ -296,7 +320,7 @@ export const Header = () => {
 					type: KycL2BusinessEnum.STATUS,
 					payload: kycL2StatusBusiness
 				});
-				if(reprType !== undefined) {
+				if (reprType !== undefined) {
 					dispatch({
 						type: KycL2BusinessEnum.REPR,
 						payload: reprType
@@ -418,12 +442,12 @@ export const Header = () => {
 		if (binanceScriptLoaded && binanceToken) {
 			makeBinanceKycCall(binanceToken);
 		}
-	}, [binanceToken, binanceScriptLoaded]);
+	}, [ binanceToken, binanceScriptLoaded ]);
 
 	useEffect(() => {
 		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
-	}, [sourceNetwork]);
+	}, [ sourceNetwork ]);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
@@ -482,7 +506,7 @@ export const Header = () => {
 			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
-	}, [account, isUserVerified, isNetworkConnected]);
+	}, [ account, isUserVerified, isNetworkConnected ]);
 
 	useEffect(() => {
 		if (!chainId) {
@@ -491,11 +515,11 @@ export const Header = () => {
 		} else {
 			dispatch({ type: VerificationEnum.NETWORK, payload: true });
 		}
-	}, [chainId]);
+	}, [ chainId ]);
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, kycL2Status, accessToken, account, userAccount]);
+	}, [ kycStatus, kycL2Status, accessToken, account, userAccount ]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -507,7 +531,7 @@ export const Header = () => {
 			{!isMobile && isNetworkSelected(sourceNetwork) && (
 				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
 					{sourceNetwork ? sourceNetwork : null}
-					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small"/>
 					<Icon
 						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
 						size={16}
@@ -528,7 +552,7 @@ export const Header = () => {
 				</Button>
 			)} */}
 			{isUserVerified && account && isNetworkConnected ? (
-				<Wallet />
+				<Wallet/>
 			) : (
 				<Button
 					isLoading={isLoading}
@@ -540,7 +564,7 @@ export const Header = () => {
 			)}
 			{isMobile && isNetworkSelected(sourceNetwork) && (
 				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
-					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small"/>
 					<Icon
 						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
 						size={16}
@@ -551,7 +575,7 @@ export const Header = () => {
 					/>
 				</NetworkWrapper>
 			)}
-			{!isMobile && <Icon icon={isLight ? 'moon' : 'sun'} onClick={changeTheme} size="small" />}
+			{!isMobile && <Icon icon={isLight ? 'moon' : 'sun'} onClick={changeTheme} size="small"/>}
 			{isMobile && (
 				<Icon
 					icon={isLight ? 'menuLight' : 'menuDark'}
@@ -581,18 +605,24 @@ export const Header = () => {
 			)}
 			{showNetworksList && (
 				<MenuWrapper theme={theme}>
-					<Networks theme={theme} ref={domNode}>
+					<Networks
+						theme={theme}
+						ref={domNode}
+						style={{
+							maxWidth: `${isDeskTop ? '100%' : pxToRem(200)}`,
+							right: `${!isDeskTop && '20%'}`
+						}}>
 						{Object.values(CHAINS).map((chain) => (
 							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
-								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
+								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small"/>
 								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
 								<Icon
 									icon={
 										sourceNetwork !== chain.name
 											? undefined
 											: isLightTheme(theme)
-											? 'checkLight'
-											: 'checkDark'
+												? 'checkLight'
+												: 'checkDark'
 									}
 									size={16}
 									style={{ marginLeft: 'auto' }}
@@ -602,7 +632,7 @@ export const Header = () => {
 					</Networks>
 				</MenuWrapper>
 			)}
-			<KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />
+			<KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2}/>
 			<StatusKycL2Modal
 				showStatusKycL2Modal={showStatusKycL2Modal}
 				updateStatusKycL2Modal={updateStatusKycL2Modal}

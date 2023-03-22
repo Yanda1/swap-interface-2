@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
@@ -37,6 +37,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		localStorage.removeItem('swaps');
 	}
 	const { account } = useEthers();
+	const [ isDestinationAddressValid, setIsDestinationAddressValid ] = useState<any>(false);
 	const [ swapProductId, setSwapProductId ] = useLocalStorage<string>('productId', '');
 	const [ swapsStorage, setSwapsStorage ] = useLocalStorage<any>('localSwaps', []);
 	const [ isDepositConfirmed, setIsDepositConfirmed ] = useLocalStorage<any>(
@@ -78,6 +79,20 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		kycStatus !== 'PASS' ||
 		kycL2Status !== 2;
 
+	useEffect(() => {
+		if (destinationAddress) {
+			const addressRegEx = new RegExp(
+				// @ts-ignore,
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+					'tokens'
+					]?.[destinationToken]?.['addressRegex']
+			);
+			setIsDestinationAddressValid(() => addressRegEx.test(destinationAddress));
+		} else {
+			setIsDestinationAddressValid(false);
+		}
+	}, [ destinationAddress, destinationAmount, destinationMemo ]);
+
 	const message = !isDisabled
 		? 'Swap'
 		: !isUserVerified && buttonStatus.text === 'Connect Wallet'
@@ -92,14 +107,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 							? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
 							: +amount > +maxAmount
 								? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-								: // @ts-ignore
-								DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-									'hasTag'
-									] && !destinationMemo
-									? 'Please insert a valid Destination Memo'
-									: !destinationAddress
-										? 'Please insert a valid Destination Address'
-										: 'Wait for deposit';
+								: !isDestinationAddressValid
+									? 'Please insert a valid Destination Address'
+									: 'Wait for deposit';
 	const sourceTokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
 		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken]
@@ -199,7 +209,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	return (
 		<ButtonWrapper>
-			<Button isLoading={!SOURCE_NETWORKS && !DESTINATION_NETWORKS} disabled={isDisabled} color="default" onClick={onClick}>
+			<Button isLoading={!SOURCE_NETWORKS && !DESTINATION_NETWORKS} disabled={isDisabled} color="default"
+							onClick={onClick}>
 				{message}
 			</Button>
 		</ButtonWrapper>

@@ -112,28 +112,30 @@ type Props = {
 	id?: string;
 	checked?: boolean;
 	maxLength?: any;
+	autocomplete?: string;
 };
 
 export const TextField = ({
-	placeholder,
-	disabled = false,
-	type = 'text',
-	value,
-	onChange,
-	description,
-	error,
-	size = 'regular',
-	align = 'center',
-	required = false,
-	name,
-	id,
-	checked = false,
-	maxLength
-}: Props) => {
+														placeholder,
+														disabled = false,
+														type = 'text',
+														value,
+														onChange,
+														description,
+														error,
+														size = 'regular',
+														align = 'center',
+														required = false,
+														name,
+														id,
+														checked = false,
+														maxLength,
+														autocomplete = 'on'
+													}: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const [isActive, setIsActive] = useState(false);
+	const [ isActive, setIsActive ] = useState(false);
 	const isTypeSearch = type === 'search';
 
 	const textField = (
@@ -155,6 +157,7 @@ export const TextField = ({
 				id={id}
 				checked={checked}
 				maxLength={maxLength}
+				autocomplete={autocomplete}
 			/>
 			{isTypeSearch && (
 				<Icon
@@ -168,7 +171,7 @@ export const TextField = ({
 					}}
 				/>
 			)}
-			{(error || description) && type === 'text' && (
+			{( error || description ) && type === 'text' && (
 				<Message>
 					{description && <Description theme={theme}>{description}</Description>}
 					{error && isActive && <Error theme={theme}>Invalid input</Error>}

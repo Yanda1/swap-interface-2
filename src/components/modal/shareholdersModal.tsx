@@ -838,7 +838,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 											type="file"
 											ref={fileIdentification as any}
 											onChange={handleChangeFileInput}></FileInput>
-										{client.fileIdentification ? client.fileIdentification.name : 'Upload File'}
+										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelInput>
 								</div>
 							</div>
