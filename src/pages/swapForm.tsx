@@ -124,6 +124,17 @@ const ExchangeRate = styled.div(
 `
 );
 
+const WithdrawTips = styled.div(
+	({ color }: { color: string }) => `
+		margin: ${spacing[28]} 0;
+		color: ${color};
+
+		${mediaQuery('xs')} {
+			width: 100%;
+		}
+	`
+);
+
 type Limit = { message: string; value: string; error: boolean };
 
 export const SwapForm = () => {
@@ -149,6 +160,7 @@ export const SwapForm = () => {
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [ showSourceModal, setShowSourceModal ] = useState(false);
 	const [ hasMemo, setHasMemo ] = useState(false);
+	const [ withdrawTipsText, setWithdrawTipsText ] = useState('');
 	const [ destinationAddressIsValid, setDestinationAddressIsValid ] = useState(false);
 	const [ destinationMemoIsValid, setDestinationMemoIsValid ] = useState(false);
 	const [ limit, setLimit ] = useState<Limit>({ message: '', value: '', error: false });
@@ -193,10 +205,21 @@ export const SwapForm = () => {
 				// @ts-ignore
 				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
 					'hasTag'
-					];
+				];
 			setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
 		}
-	}, [ DESTINATION_NETWORKS, sourceToken, destinationNetwork, sourceNetwork ]);
+	}, [ DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork ]);
+
+	useEffect(() => {
+		if (DESTINATION_NETWORKS) {
+			const specialWithdrawTips = 
+				// @ts-ignore
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.tokens[
+					destinationToken
+				]?.specialWithdrawTips;
+			setWithdrawTipsText(!isNetworkSelected(destinationNetwork) ? '' : specialWithdrawTips);
+		}
+	}, [ DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork, destinationToken ]);
 
 	useEffect(() => {
 		if (DESTINATION_NETWORKS) {
@@ -350,6 +373,7 @@ export const SwapForm = () => {
 				isNetworkSelected(destinationNetwork) &&
 				isTokenSelected(destinationToken)}
 			<Fees/>
+			<WithdrawTips color={theme.button.warning}>{withdrawTipsText}</WithdrawTips>
 			<SwapButton
 				ref={swapButtonRef}
 				validInputs={destinationMemoIsValid && destinationAddressIsValid && !limit.error}
