@@ -344,6 +344,7 @@ export const SwapForm = () => {
 				<div style={{ marginTop: 24 }}>
 					<TextField
 						value={destinationMemo}
+						error={!destinationMemoIsValid}
 						description="Destination Memo"
 						onChange={(e) =>
 							dispatch({ type: DestinationEnum.MEMO, payload: e.target.value.trim() })
