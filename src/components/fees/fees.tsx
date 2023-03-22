@@ -77,7 +77,6 @@ export const Fees = () => {
 		protocolFee,
 		networkFee,
 		cexFee,
-		allFees,
 		percentageOfAllFeesToAmount: percentage
 	} = useFees();
 
@@ -85,11 +84,7 @@ export const Fees = () => {
 		<details>
 			<Summary color={theme.font.default} theme={theme}>
 				{'Fee: '}
-				{percentage && `${beautifyNumbers({ n: percentage, digits: 2 })}%`}
-				<small>
-					{' ≈ '}
-					<Detail value={allFees}/>{' '}
-				</small>
+				{percentage && `${beautifyNumbers({ n: percentage, digits: 4 })}%`}
 			</Summary>
 			<Details theme={theme}>
 				<Detail value={networkFee}/>
