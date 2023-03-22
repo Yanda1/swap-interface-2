@@ -387,8 +387,9 @@ export const useFees = () => {
 				).toString();
 
 				if (sourceTokenData?.isNative) {
+					const mathMax = Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount;
 					maxAmount = (
-						Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
+						mathMax > 0 ? mathMax : 0
 					).toString();
 				} else {
 					maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();
