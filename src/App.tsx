@@ -79,7 +79,7 @@ const Title = styled.p(() => {
 
 	return css`
 		text-align: center;
-		margin: 0 0 ${spacing[20]};
+		margin: 0 0 ${spacing[48]};
 		color: ${theme.font.default}
 	`;
 });
