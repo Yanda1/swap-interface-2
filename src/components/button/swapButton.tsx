@@ -38,6 +38,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	}
 	const { account } = useEthers();
 	const [ isDestinationAddressValid, setIsDestinationAddressValid ] = useState<any>(false);
+	const [ isDestinationMemoValid, setIsDestinationMemoValid ] = useState<any>(false);
 	const [ swapProductId, setSwapProductId ] = useLocalStorage<string>('productId', '');
 	const [ swapsStorage, setSwapsStorage ] = useLocalStorage<any>('localSwaps', []);
 	const [ isDepositConfirmed, setIsDepositConfirmed ] = useLocalStorage<any>(
@@ -91,7 +92,21 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		} else {
 			setIsDestinationAddressValid(false);
 		}
-	}, [ destinationAddress, destinationAmount, destinationMemo ]);
+	}, [ destinationAddress, destinationAmount ]);
+
+	useEffect(() => {
+		if (destinationMemo) {
+			const memoRegEx = new RegExp(
+				// @ts-ignore
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+					'tokens'
+					]?.[destinationToken]?.['tagRegex']
+			);
+			setIsDestinationMemoValid(() => memoRegEx.test(destinationMemo));
+		} else {
+			setIsDestinationMemoValid(false);
+		}
+	}, [ destinationMemo, destinationAmount ]);
 
 	const message = !isDisabled
 		? 'Swap'
@@ -105,11 +120,16 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 						? 'Select Network and Token'
 						: +amount < +minAmount
 							? `Min Amount ${beautifyNumbers({ n: minAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-							: +amount > +maxAmount
+							: +amount > +maxAmount && +maxAmount > 0
 								? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
-								: !isDestinationAddressValid
-									? 'Please insert a valid Destination Address'
-									: 'Wait for deposit';
+								: +maxAmount === 0
+									? `Your ${sourceToken} balance is to low`
+									: destinationAddress.length > 0 && !isDestinationAddressValid
+										? 'Please insert a valid Destination Address'
+										: destinationMemo.length > 0 && !isDestinationMemoValid
+											? 'Please insert a valid Destination Memo'
+											: 'Wait for deposit';
+
 	const sourceTokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
 		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken]
@@ -118,7 +138,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
-	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider)) {
+	if (web3Provider && !( web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider )) {
 		protocol.connect(web3Provider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
