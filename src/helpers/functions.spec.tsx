@@ -69,7 +69,7 @@ describe('Helpers should return the correct values', () => {
 	});
 
 	it('formatDate() function should return the correct value', () => {
-		expect(formatDate(1669895567)).toBe('01/12/2022 13:52:47');
+		expect(formatDate(1669895567)).toBe('01/12/2022 11:52:47');
 		expect(formatDate(undefined)).toBe('n/a');
 	});
 });

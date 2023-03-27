@@ -18,3 +18,4 @@ export * from './textField/textField';
 export * from './toast/toast';
 export * from './wallet/wallet';
 export * from './modal/kycL2Modal';
+export * from './footer/footer';

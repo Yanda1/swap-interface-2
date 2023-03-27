@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import type { ThemeProps } from '../../styles';
 import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import { DestinationEnum, hexToRgbA, useStore } from '../../helpers';
+import { useClickOutside } from '../../hooks';
 
 type StyledProps = ThemeProps & { size: PortalSizeProps };
 
@@ -24,7 +25,7 @@ const Wrapper = styled.div(
 const Content = styled.div(
 	({ theme, size }: StyledProps) => css`
 		background-color: ${theme.modal.default};
-		width: ${pxToRem(size === 'small' ? 450 : 685)};
+		width: ${pxToRem(size === 'small' ? 450 : size === 'large' ? 685 : size === 'xs' ? 480 : 755)};
 		max-width: calc(100% - ${spacing[40]});
 		display: flex;
 		box-sizing: border-box;
@@ -37,7 +38,7 @@ const Content = styled.div(
 		border: 1px solid ${theme.border.default};
 		box-shadow: ${pxToRem(10)} ${pxToRem(10)} ${pxToRem(20)} ${hexToRgbA(theme.modal.shadow)};
 		height: calc(100% - ${spacing[40]});
-		max-height: ${pxToRem(size === 'small' ? 305 : 530)};
+		max-height: ${pxToRem(size === 'small' ? 305 : size === 'large' ? 530 : size === 'xs' ? 200 : 690)};
 	`
 );
 
@@ -75,10 +76,10 @@ type WrapperProps = {
 	wrapperId: string;
 };
 
-export type PortalSizeProps = 'large' | 'small';
+export type PortalSizeProps = 'xl' | 'large' | 'small' | 'xs';
 
 const PortalWrapper = ({ children, wrapperId = 'react-portal-wrapper' }: WrapperProps) => {
-	const [wrapperElement, setWrapperElement] = useState<HTMLElement | null>(null);
+	const [ wrapperElement, setWrapperElement ] = useState<HTMLElement | null>(null);
 
 	useLayoutEffect(() => {
 		let element = document.getElementById(wrapperId) as HTMLElement;
@@ -94,7 +95,7 @@ const PortalWrapper = ({ children, wrapperId = 'react-portal-wrapper' }: Wrapper
 				element.parentNode.removeChild(element);
 			}
 		};
-	}, [wrapperId]);
+	}, [ wrapperId ]);
 
 	if (wrapperElement === null) return null;
 
@@ -108,30 +109,32 @@ type Props = {
 	size?: PortalSizeProps;
 	handleClose: () => void;
 	handleBack?: () => void;
+	closeOutside?: boolean;
 };
 
 export const Portal = ({
-	children,
-	isOpen,
-	hasBackButton = false,
-	handleClose,
-	size = 'small',
-	handleBack
-}: Props) => {
+												 children,
+												 isOpen,
+												 hasBackButton = false,
+												 handleClose,
+												 size = 'small',
+												 handleBack,
+												 closeOutside = true
+											 }: Props) => {
 	const {
 		state: { theme, destinationNetwork, destinationToken, sourceNetwork, sourceToken },
 		dispatch
 	} = useStore();
 
-	// const domNode = useClickOutside(() => {
-	// 	if (isOpen) handleClick();
-	// });
+	const domNode = useClickOutside(() => {
+		if (isOpen && closeOutside) handleClick();
+	});
 
-	const [selectedSourceTokenNetwork, setSelectedSourceTokenNetwork] = useState({
+	const [ selectedSourceTokenNetwork, setSelectedSourceTokenNetwork ] = useState({
 		network: '',
 		token: ''
 	});
-	const [selectedDestinationTokenNetwork, setSelectedDestinationTokenNetwork] = useState({
+	const [ selectedDestinationTokenNetwork, setSelectedDestinationTokenNetwork ] = useState({
 		network: '',
 		token: ''
 	});
@@ -152,7 +155,7 @@ export const Portal = ({
 		} else {
 			document.body.style.overflow = 'unset';
 		}
-	}, [isOpen]);
+	}, [ isOpen ]);
 
 	useEffect(() => {
 		const closeOnEscapeKey = (e: any) => {
@@ -168,7 +171,8 @@ export const Portal = ({
 	return isOpen ? (
 		<PortalWrapper wrapperId="react-portal-modal-container">
 			<Wrapper theme={theme}>
-				<Content theme={theme} size={size}>
+				{/* @ts-ignore */}
+				<Content theme={theme} size={size} ref={closeOutside ? domNode : null}>
 					{hasBackButton ? (
 						<BackButton onClick={handleBack} theme={theme}>
 							&#8592; BACK

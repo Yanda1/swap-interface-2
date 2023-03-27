@@ -16,7 +16,6 @@ import {
 } from '../../styles';
 import { useMedia } from '../../hooks';
 import { WalletModal } from '../../components';
-import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 
 const StyledJazzIcon = styled.div`
 	height: ${pxToRem(16)};
@@ -86,14 +85,15 @@ export const Wallet = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: { theme, account, sourceNetwork, sourceToken }
+		state: { theme, account, sourceNetwork, sourceToken, availableSourceNetworks: SOURCE_NETWORKS }
 	} = useStore();
 	const { mobileWidth: isMobile } = useMedia('s');
 
 	const etherBalance = account && useEtherBalance(account);
-	const tokenData =
+	const tokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
-		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
+		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+		: {};
 	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
 	const balance = tokenData?.isNative
 		? etherBalance && formatEther(etherBalance)
@@ -112,7 +112,7 @@ export const Wallet = () => {
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			{isTokenSelected(sourceToken) && (
 				<Amount theme={theme}>
-					{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
+					{beautifyNumbers({ n: balance ?? '0.0', digits: 4 })} {sourceToken}
 				</Amount>
 			)}
 			<Account theme={theme} onClick={openModal}>

@@ -108,4 +108,4 @@ export const darkTheme: Theme = {
 	}
 };
 
-export const theme: { light: Theme; dark: Theme } = { light: lightTheme, dark: darkTheme };
+export const theme: { light: Theme; dark: Theme } = {light: lightTheme, dark: darkTheme};

@@ -1,6 +1,8 @@
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
+import { BASE_URL } from './constants';
 import type { ColorType, Theme } from '../styles';
 import { darkTheme } from '../styles';
+import axios from 'axios';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -52,27 +54,28 @@ export enum KycL2Enum {
 }
 
 export enum KycL2StatusEnum {
-	PENDING = 'PENDING',
-	INITIAL = 'INITIAL',
-	REVIEW = 'REVIEW',
-	REFUSED = 'REFUSED',
-	PASSED = 'PASSED',
-	DISABLE = 'DISABLE',
-	REJECT = 'REJECT'
+	INITIAL = 0,
+	PENDING = 1,
+	PASSED = 2,
+	REJECTED = 9
 }
 
 export enum KycL2BusinessEnum {
-	STATUS = 'SET_KYCL2_Business_STATUS'
+	STATUS = 'SET_KYCL2_Business_STATUS',
+	REPR = 'SET_KYCL2_Business_REPR'
 }
 
 export enum KycL2BusinessStatusEnum {
-	PENDING = 'PENDING',
-	INITIAL = 'INITIAL',
-	REVIEW = 'REVIEW',
-	REFUSED = 'REFUSED',
-	PASSED = 'PASSED',
-	DISABLE = 'DISABLE',
-	REJECT = 'REJECT'
+	INITIAL = 0,
+	PENDING = 1,
+	PASSED = 2,
+	BASIC = 3,
+	REJECTED = 9
+}
+
+export enum KycL2BusinessReprEnum {
+	NATURAL = 0,
+	LEGAL = 1
 }
 
 export enum BasicStatusEnum {
@@ -102,6 +105,10 @@ export enum DefaultSelectEnum {
 	NETWORK = 'Select Network'
 }
 
+export enum AvailableCurrenciesEnum {
+	SET = 'SET'
+}
+
 type SourceNetworks = 'ETH' | 'GLMR' | DefaultSelectEnum.NETWORK;
 
 type VerificationAction = {
@@ -121,7 +128,7 @@ type KycL2Action = {
 
 type KycL2BusinessAction = {
 	type: KycL2BusinessEnum;
-	payload: KycL2BusinessStatusEnum;
+	payload: number;
 };
 
 type ButtonAction = {
@@ -159,6 +166,11 @@ type PairAction = {
 	payload: string;
 };
 
+type AvailableCurrenciesAction = {
+	type: AvailableCurrenciesEnum;
+	payload: { sourceNetworks: any; destinationNetworks: any };
+};
+
 type Action =
 	| VerificationAction
 	| ButtonAction
@@ -170,7 +182,8 @@ type Action =
 	| DestinationAction
 	| AmountAction
 	| ProductIdAction
-	| PairAction;
+	| PairAction
+	| AvailableCurrenciesAction;
 
 type State = {
 	isUserVerified: boolean;
@@ -178,7 +191,8 @@ type State = {
 	isNetworkConnected: boolean;
 	kycStatus: KycStatusEnum;
 	kycL2Status: KycL2StatusEnum;
-	kycL2Business: KycL2BusinessStatusEnum;
+	kycL2Business: KycL2BusinessStatusEnum | null;
+	kycL2BusinessRepr: KycL2BusinessReprEnum | null;
 	accessToken: string;
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
@@ -194,6 +208,8 @@ type State = {
 	amount: string;
 	productId: string;
 	pair: string;
+	availableSourceNetworks: any | null;
+	availableDestinationNetworks: any | null;
 };
 
 enum ButtonName {
@@ -226,7 +242,8 @@ const initialState: State = {
 	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
 	kycL2Status: KycL2StatusEnum.INITIAL,
-	kycL2Business: KycL2BusinessStatusEnum.INITIAL,
+	kycL2Business: null,
+	kycL2BusinessRepr: null,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
@@ -239,7 +256,9 @@ const initialState: State = {
 	destinationMemo: '',
 	amount: '',
 	productId: '',
-	pair: ''
+	pair: '',
+	availableSourceNetworks: null,
+	availableDestinationNetworks: null
 };
 
 type Dispatch = (action: Action) => void;
@@ -262,6 +281,10 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, kycStatus: action.payload };
 		case KycL2Enum.STATUS:
 			return { ...state, kycL2Status: action.payload };
+		case KycL2BusinessEnum.STATUS:
+			return { ...state, kycL2Business: action.payload };
+		case KycL2BusinessEnum.REPR:
+			return { ...state, kycL2BusinessRepr: action.payload };
 		case ButtonEnum.BUTTON:
 			return { ...state, buttonStatus: action.payload };
 		case ThemeEnum.THEME:
@@ -288,15 +311,21 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, productId: action.payload };
 		case PairEnum.PAIR:
 			return { ...state, pair: action.payload };
+		case AvailableCurrenciesEnum.SET:
+			return { 
+				...state,
+				availableSourceNetworks: action.payload.sourceNetworks,
+				availableDestinationNetworks: action.payload.destinationNetworks
+			};
 		default:
 			return state;
 	}
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [state, dispatch] = useReducer(authReducer, initialState);
+	const [ state, dispatch ] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
-	const { account, isNetworkConnected, kycStatus, isUserVerified, kycL2Status } = state;
+	const { account, isNetworkConnected, kycStatus, kycL2Status } = state;
 
 	useEffect(() => {
 		if (!account) {
@@ -313,20 +342,46 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			});
 		}
 
-		if (account && !isUserVerified && isNetworkConnected) {
+		if (account && isNetworkConnected) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
-		if (kycStatus !== KycStatusEnum.PASS && kycL2Status !== KycL2StatusEnum.PASSED) {
-			dispatch({ type: VerificationEnum.USER, payload: false });
-		} else if (
-			kycStatus === KycStatusEnum.PASS &&
-			isNetworkConnected &&
-			account &&
-			kycL2Status === KycL2StatusEnum.PASSED
-		) {
+
+		if (kycStatus === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED && account && isNetworkConnected) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
+		} else {
+			dispatch({ type: VerificationEnum.USER, payload: false });
+
 		}
-	}, [account, isNetworkConnected, kycStatus, kycL2Status, isUserVerified]);
+
+		// TODO: please do not delete comment section below ;)
+		// if (( kycStatus !== KycStatusEnum.PASS && kycL2Status !== KycL2StatusEnum.PASSED ) || !account || !isNetworkConnected) {
+		// 	dispatch({ type: VerificationEnum.USER, payload: false });
+		// } else if (
+		// 	kycStatus === KycStatusEnum.PASS &&
+		// 	isNetworkConnected &&
+		// 	account &&
+		// 	kycL2Status === KycL2StatusEnum.PASSED
+		// ) {
+		// 	dispatch({ type: VerificationEnum.USER, payload: true });
+		// }
+	}, [ account, isNetworkConnected, kycStatus, kycL2Status ]);
+
+	useEffect(() => {
+		axios.request({
+			url: `${BASE_URL}cex/currencies`
+		})
+			.then(function(response: any) {
+				dispatch({
+					type: AvailableCurrenciesEnum.SET,
+					payload: response.data
+				});
+			})
+			.catch(function(response: any) {
+				console.log(response);
+				console.error();
+			});
+
+	}, []);
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
