@@ -108,7 +108,7 @@ const Networks = styled(Menu)`
 		align-items: center;
 		gap: ${spacing[10]};
 		cursor: pointer;
-		border-radius: ${DEFAULT_TRANSIITON};
+		border-radius: ${DEFAULT_TRANSITION};
 		transition: 0.3s;
 
 		&:hover {
