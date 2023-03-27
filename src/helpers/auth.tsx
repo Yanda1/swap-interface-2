@@ -1,10 +1,15 @@
 import { Buffer } from 'buffer';
+import type { ApiAuthType } from '../helpers';
 import { BASE_URL, BINANCE_PROD_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY, routes } from '../helpers';
 import axios from 'axios';
-import type { ApiAuthType } from '../helpers';
 
 const getMetamaskMessage = (nonce: string): string =>
-	`0x${Buffer.from('Please sign this one time nonce: ' + nonce, 'utf8').toString('hex')}`;
+	`0x${Buffer.from(
+		'By signing this nonce: "' +
+			nonce +
+			'" you accept the terms and conditions available at https://cryptoyou.io/terms-of-use/',
+		'utf8'
+	).toString('hex')}`;
 
 export const loadBinanceKycScript = (cb?: any) => {
 	const existingId = document.getElementById('binance-kcy-script');

@@ -220,7 +220,7 @@ exports[`SelectList Render tab component with correct length, data and styles 1`
           class="c7"
         >
           Time: 
-          10/06/2022 09:40:54
+          10/06/2022 07:40:54
         </div>
       </li>
       <li
@@ -459,8 +459,8 @@ exports[`SelectList Render tab component with one tab 1`] = `
         <div
           class="c7"
         >
-          Time: 
-          10/06/2022 09:40:54
+          Time:
+          10/06/2022 07:40:54
         </div>
       </li>
       <li

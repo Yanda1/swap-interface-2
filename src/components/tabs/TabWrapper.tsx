@@ -15,7 +15,6 @@ import { providers, utils } from 'ethers';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import { Contract } from '@ethersproject/contracts';
 import { useEffect, useMemo, useState } from 'react';
-import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 import { useLocalStorage } from '../../hooks';
 import { TabContentNew } from './tabContentNew';
 
@@ -46,7 +45,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 	const [isDepositing, setIsDepositing] = useState(false);
 	const { account } = useEthers();
 	const {
-		state: { sourceNetwork, sourceToken }
+		state: { sourceNetwork, sourceToken, availableSourceNetworks: SOURCE_NETWORKS }
 	} = useStore();
 	const { chainId, library: web3Provider } = useEthers();
 	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
@@ -66,7 +65,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 	const tokenContract =
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
-	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider)) {
+	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider)) {
 		protocol.connect(web3Provider.getSigner());
 		if (tokenContract) {
 			tokenContract.connect(web3Provider.getSigner());

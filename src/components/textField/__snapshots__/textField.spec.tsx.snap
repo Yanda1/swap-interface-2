@@ -2,8 +2,7 @@
 
 exports[`TextField should match snapshot for value disabled: false, type: number, size: small, align: left, error: true and description: description 1`] = `
 <input
-  class="sc-fvEvSO dYmHXD"
-  min="0"
+  class="sc-jmpzUR cfuFBO"
   placeholder="placeholder"
   type="number"
   value="Test value"
@@ -12,8 +11,7 @@ exports[`TextField should match snapshot for value disabled: false, type: number
 
 exports[`TextField should match snapshot for value disabled: false, type: text, size: small, align: left, error: false and description: description 1`] = `
 <input
-  class="sc-fvEvSO gvpuQm"
-  min="0"
+  class="sc-jmpzUR blJFcP"
   placeholder="placeholder"
   type="text"
   value="Test value"
@@ -22,9 +20,8 @@ exports[`TextField should match snapshot for value disabled: false, type: text, 
 
 exports[`TextField should match snapshot for value disabled: true, type: number, size: regular, align: right, error: true and description: description 1`] = `
 <input
-  class="sc-fvEvSO bFASPB"
+  class="sc-jmpzUR bgwzTM"
   disabled=""
-  min="0"
   placeholder="placeholder"
   type="number"
   value="Test value"
@@ -33,9 +30,8 @@ exports[`TextField should match snapshot for value disabled: true, type: number,
 
 exports[`TextField should match snapshot for value disabled: true, type: search, size: small, align: center, error: false and description:  1`] = `
 <input
-  class="sc-fvEvSO jMmoyy"
+  class="sc-jmpzUR fvDXBb"
   disabled=""
-  min="0"
   placeholder="placeholder"
   type="search"
   value="Test value"

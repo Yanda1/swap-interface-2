@@ -1,15 +1,9 @@
 import styled, { css } from 'styled-components';
 import { useFees } from '../../hooks';
-import {
-	DEFAULT_BORDER_RADIUS,
-	spacing,
-	DEFAULT_OUTLINE,
-	DEFAULT_OUTLINE_OFFSET
-} from '../../styles';
-import type { Theme } from '../../styles';
-import type { ThemeProps } from '../../styles';
-import { beautifyNumbers, isArrayType, useStore } from '../../helpers';
+import type { Theme, ThemeProps } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, DEFAULT_OUTLINE, DEFAULT_OUTLINE_OFFSET, spacing } from '../../styles';
 import type { Fee } from '../../helpers';
+import { beautifyNumbers, isArrayType, useStore } from '../../helpers';
 
 const Summary = styled.summary(
 	({ theme }: ThemeProps) => css`
@@ -56,7 +50,7 @@ type Props = {
 };
 
 const Detail = ({ value }: Props) => {
-	const data = isArrayType(value) ? (value as Fee[]) : ([value] as Fee[]);
+	const data = isArrayType(value) ? ( value as Fee[] ) : ( [ value ] as Fee[] );
 
 	return !data[0].name ? (
 		<>{beautifyNumbers({ n: data[0].amount, digits: 4 })} USDT</>
@@ -83,21 +77,20 @@ export const Fees = () => {
 		protocolFee,
 		networkFee,
 		cexFee,
-		allFees,
 		percentageOfAllFeesToAmount: percentage
 	} = useFees();
 
 	return (
 		<details>
 			<Summary color={theme.font.default} theme={theme}>
-				<Detail value={allFees} />{' '}
-				{percentage && `(${beautifyNumbers({ n: percentage, digits: 2 })}%)`}
+				{'Fee: '}
+				{percentage && `${beautifyNumbers({ n: percentage, digits: 4 })}%`}
 			</Summary>
 			<Details theme={theme}>
-				<Detail value={networkFee} />
-				<Detail value={protocolFee} />
-				<Detail value={cexFee} />
-				<Detail value={withdrawFee} />
+				<Detail value={networkFee}/>
+				<Detail value={protocolFee}/>
+				<Detail value={cexFee}/>
+				<Detail value={withdrawFee}/>
 			</Details>
 		</details>
 	);

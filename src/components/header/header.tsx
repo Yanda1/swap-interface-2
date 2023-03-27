@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { Mainnet, MetamaskConnector, Moonbeam, useEthers } from '@usedapp/core';
 import { ethers } from 'ethers';
 import {
 	ColorType,
 	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSIITON,
+	DEFAULT_TRANSITION,
 	mediaQuery,
 	pxToRem,
 	spacing,
@@ -28,6 +27,9 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	KycEnum,
+	KycL2BusinessEnum,
+	KycL2Enum,
+	KycL2StatusEnum,
 	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
@@ -41,9 +43,10 @@ import {
 	VerificationEnum
 } from '../../helpers';
 import type { IconType } from '../../components';
-import { Button, Icon, useToasts, Wallet } from '../../components';
+import { Button, Icon, KycL2Modal, useToasts, Wallet } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import _ from 'lodash';
+import { StatusKycL2Modal } from '../modal/statusKycL2Modal';
 
 type Props = {
 	theme: Theme;
@@ -98,14 +101,14 @@ const Menu = styled.ul`
 `;
 
 const Networks = styled(Menu)`
-	width: 100%;
+	width: calc(100% - ${pxToRem(8)});
 
 	& li {
 		display: flex;
 		align-items: center;
 		gap: ${spacing[10]};
 		cursor: pointer;
-		border-radius: ${DEFAULT_TRANSIITON};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 		transition: 0.3s;
 
 		&:hover {
@@ -127,32 +130,33 @@ export const NETWORK_PARAMS = {
 		{
 			chainId: ethers.utils.hexValue(Mainnet.chainId),
 			chainName: Mainnet.chainName,
-			rpcUrls: [ETHEREUM_URL],
+			rpcUrls: [ ETHEREUM_URL ],
 			nativeCurrency: {
 				name: 'Ethereum',
 				symbol: 'ETH',
 				decimals: 18
 			},
-			blockExplorerUrls: ['https://etherscan.io/']
+			blockExplorerUrls: [ 'https://etherscan.io/' ]
 		}
 	],
 	'1284': [
 		{
 			chainId: ethers.utils.hexValue(Moonbeam.chainId),
 			chainName: Moonbeam.chainName,
-			rpcUrls: [MOONBEAM_URL],
+			rpcUrls: [ MOONBEAM_URL ],
 			nativeCurrency: {
 				name: 'Glimer',
 				symbol: 'GLMR',
 				decimals: 18
 			},
-			blockExplorerUrls: ['https://moonscan.io/']
+			blockExplorerUrls: [ 'https://moonscan.io/' ]
 		}
 	]
 };
 
 export const Header = () => {
 	const { mobileWidth: isMobile } = useMedia('s');
+	const { mobileWidth: isDeskTop } = useMedia('m');
 	const {
 		state: {
 			buttonStatus,
@@ -162,23 +166,26 @@ export const Header = () => {
 			sourceNetwork,
 			account: userAccount,
 			isNetworkConnected,
-			theme
+			theme,
+			kycL2Status
 		},
 		dispatch
 	} = useStore();
-	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
+	const [ storage, setStorage ] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	// @ts-ignore
 	const { addToast } = useToasts();
 	const api = useAxios();
 
-	const [showMenu, setShowMenu] = useState(false);
-	const [showNetworksList, setShowNetworksList] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	const [ showMenu, setShowMenu ] = useState(false);
+	const [ showNetworksList, setShowNetworksList ] = useState(false);
+	const [ showModal, setShowModal ] = useState(false);
+	const [ showStatusKycL2Modal, setShowStatusKycL2Modal ] = useState(false);
+	const [ isLoading, setIsLoading ] = useState(false);
 
-	const [binanceToken, setBinanceToken] = useState('');
-	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
-	const navigate = useNavigate();
-	const { pathname } = useLocation();
+	const [ binanceToken, setBinanceToken ] = useState('');
+	const [ binanceScriptLoaded, setBinanceScriptLoaded ] = useState(false);
+	// const navigate = useNavigate();
+	// const { pathname } = useLocation();
 
 	const noKycStatusMessage = 'kyc verify not exist';
 
@@ -211,7 +218,8 @@ export const Header = () => {
 				});
 				setStorage({ account, access: res.access, isKyced: res.is_kyced, refresh: res.refresh });
 			} catch (error: any) {
-				addToast('You have rejected signing the nonce. To proceed login again!', 'info');
+				// TODO: do we need toast here?
+				addToast('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', 'error');
 			}
 			setIsLoading(false);
 		}
@@ -231,44 +239,56 @@ export const Header = () => {
 
 	const handleNetworkChange = async (name: string) => {
 		setShowNetworksList(!showNetworksList);
-		try {
-			// @ts-ignore
-			await ethereum.request({
-				method: 'wallet_switchEthereumChain',
-				params: [
-					{
-						chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+		if (isUserVerified) {
+			try {
+				// @ts-ignore
+				await ethereum.request({
+					method: 'wallet_switchEthereumChain',
+					params: [
+						{
+							chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+						}
+					]
+				});
+			} catch (error: any) {
+				if (( error.code === 4902 || error.code === -32603 ) && name === 'GLMR') {
+					try {
+						// @ts-ignore
+						await ethereum.request({
+							method: 'wallet_addEthereumChain',
+							params: NETWORK_PARAMS['1284']
+						});
+						dispatch({
+							type: SourceEnum.NETWORK,
+							payload: name
+						});
+						dispatch({
+							type: SourceEnum.TOKEN,
+							payload: name
+						});
+					} catch (e) {
+						dispatch({
+							type: SourceEnum.NETWORK,
+							payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+						});
+						dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
 					}
-				]
-			});
-		} catch (error: any) {
-			if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
-				try {
-					// @ts-ignore
-					await ethereum.request({
-						method: 'wallet_addEthereumChain',
-						params: NETWORK_PARAMS['1284']
-					});
-					dispatch({
-						type: SourceEnum.NETWORK,
-						payload: name
-					});
-					dispatch({
-						type: SourceEnum.TOKEN,
-						payload: name
-					});
-				} catch (e) {
-					dispatch({
-						type: SourceEnum.NETWORK,
-						payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-					});
-					dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+				} else if (error.code === 4001) {
+					return;
+				} else {
+					addToast('Something went wrong - please try again');
 				}
-			} else if (error.code === 4001) {
-				return;
-			} else {
-				addToast('Something went wrong - please try again');
 			}
+
+		} else {
+			dispatch({
+				type: SourceEnum.NETWORK,
+				payload: name
+			});
+			dispatch({
+				type: SourceEnum.TOKEN,
+				payload: name
+			});
 		}
 		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
@@ -282,20 +302,50 @@ export const Header = () => {
 				if (res.data.errorData === noKycStatusMessage) {
 					await getBinanceToken();
 				}
-				const { kycStatus: kyc, basicStatus: basic } = res?.data?.statusInfo;
+				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
+				const {
+					status: kycL2Status,
+					statusBusiness: kycL2StatusBusiness,
+					representativeType: reprType
+				} = res?.data?.L2;
 				dispatch({
 					type: KycEnum.STATUS,
 					payload: kyc
 				});
-				setStorage({ ...storage, isKyced: kyc === KycStatusEnum.PASS });
+				dispatch({
+					type: KycL2Enum.STATUS,
+					payload: kycL2Status
+				});
+				dispatch({
+					type: KycL2BusinessEnum.STATUS,
+					payload: kycL2StatusBusiness
+				});
+				if (reprType !== undefined) {
+					dispatch({
+						type: KycL2BusinessEnum.REPR,
+						payload: reprType
+					});
+				}
+				setStorage({
+					...storage,
+					isKyced: kyc === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED
+				});
 				// TODO: move this part to context?
 				if (kyc === KycStatusEnum.REJECT) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-					addToast('Your KYC process has been rejected - please start again!', 'warning');
+					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
+				} else if (kycL2Status === KycL2StatusEnum.REJECTED) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
+					addToast('Your KYC L2 process has been rejected - please start again!', 'warning');
 				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				} else if (kycL2Status === KycL2StatusEnum.INITIAL) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 				} else if (kyc === KycStatusEnum.REVIEW) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
+				} else if (kycL2Status === KycL2StatusEnum.PENDING) {
+					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
+					setShowStatusKycL2Modal(true);
 				}
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
@@ -338,7 +388,6 @@ export const Header = () => {
 				}
 			}
 			if (!onMobileDevice && metamaskMissing) {
-				console.log('HERE');
 				addToast(
 					'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
 				);
@@ -363,6 +412,11 @@ export const Header = () => {
 		if (chainId && account) {
 			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
+			} else if (buttonStatus === button.PASS_KYC_L2) {
+				// add  request to base to get status of KYC review show modal window
+				setShowModal(!showModal);
+			} else if (buttonStatus === button.CHECK_KYC_L2) {
+				void checkStatus();
 			} else if (buttonStatus === button.LOGIN) {
 				await setTokensInStorageAndContext();
 			} else {
@@ -376,16 +430,24 @@ export const Header = () => {
 		setShowNetworksList(false);
 	});
 
+	const updateShowKycL2 = (value: boolean) => {
+		setShowModal(value);
+	};
+
+	const updateStatusKycL2Modal = (value: boolean) => {
+		setShowStatusKycL2Modal(value);
+	};
+
 	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
 			makeBinanceKycCall(binanceToken);
 		}
-	}, [binanceToken, binanceScriptLoaded]);
+	}, [ binanceToken, binanceScriptLoaded ]);
 
 	useEffect(() => {
 		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
-	}, [sourceNetwork]);
+	}, [ sourceNetwork ]);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
@@ -405,6 +467,12 @@ export const Header = () => {
 				type: KycEnum.STATUS,
 				payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
 			});
+			dispatch({
+				type: KycL2Enum.STATUS,
+				payload: JSON.parse(localStorageAuth).isKyced
+					? KycL2StatusEnum.PASSED
+					: KycL2StatusEnum.INITIAL
+			});
 		}
 	}, []);
 
@@ -423,8 +491,8 @@ export const Header = () => {
 
 		if (account && storage?.account && storage?.account !== account) {
 			addToast(
-				'Please login to the account that has already passed KYC or connect wallet again',
-				'warning'
+				'Switch to your verified account on Metamask to come back to CryptoYou.',
+				'error'
 			);
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
@@ -432,9 +500,13 @@ export const Header = () => {
 				type: KycEnum.STATUS,
 				payload: KycStatusEnum.INITIAL
 			});
+			dispatch({
+				type: KycL2Enum.STATUS,
+				payload: KycL2StatusEnum.INITIAL
+			});
 			setStorage({ account, access: '', isKyced: false, refresh: '' });
 		}
-	}, [account, isUserVerified, isNetworkConnected]);
+	}, [ account, isUserVerified, isNetworkConnected ]);
 
 	useEffect(() => {
 		if (!chainId) {
@@ -443,11 +515,11 @@ export const Header = () => {
 		} else {
 			dispatch({ type: VerificationEnum.NETWORK, payload: true });
 		}
-	}, [chainId]);
+	}, [ chainId ]);
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, accessToken, account, userAccount]);
+	}, [ kycStatus, kycL2Status, accessToken, account, userAccount ]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -456,31 +528,33 @@ export const Header = () => {
 				style={{ marginRight: 'auto' }}
 				size={isMobile ? 'medium' : 112}
 			/>
+			{!isMobile && (
+				<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/" target="_blank">
+				<Button
+					variant="pure"
+					onClick={() =>
+						console.log('Out')
+					}>
+					Step-by-step Guide
+				</Button>
+				</a>
+			)}
 			{!isMobile && isNetworkSelected(sourceNetwork) && (
 				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
 					{sourceNetwork ? sourceNetwork : null}
-					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small"/>
 					<Icon
 						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
 						size={16}
 						style={{
 							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
-							transition: DEFAULT_TRANSIITON
+							transition: DEFAULT_TRANSITION
 						}}
 					/>
 				</NetworkWrapper>
 			)}
-			{!isMobile && (
-				<Button
-					variant="pure"
-					onClick={() =>
-						navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/')
-					}>
-					{pathname !== '/transaction-history' ? 'Transaction History' : 'Swap Form'}
-				</Button>
-			)}
 			{isUserVerified && account && isNetworkConnected ? (
-				<Wallet />
+				<Wallet/>
 			) : (
 				<Button
 					isLoading={isLoading}
@@ -492,18 +566,18 @@ export const Header = () => {
 			)}
 			{isMobile && isNetworkSelected(sourceNetwork) && (
 				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
-					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small"/>
 					<Icon
 						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
 						size={16}
 						style={{
 							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
-							transition: DEFAULT_TRANSIITON
+							transition: DEFAULT_TRANSITION
 						}}
 					/>
 				</NetworkWrapper>
 			)}
-			{!isMobile && <Icon icon={isLight ? 'moon' : 'sun'} onClick={changeTheme} size="small" />}
+			{!isMobile && <Icon icon={isLight ? 'moon' : 'sun'} onClick={changeTheme} size="small"/>}
 			{isMobile && (
 				<Icon
 					icon={isLight ? 'menuLight' : 'menuDark'}
@@ -514,19 +588,26 @@ export const Header = () => {
 			{showMenu && (
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
-						<li
-							onClick={() => {
-								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
-								setShowMenu(!showMenu);
-							}}>
-							{pathname !== '/transaction-history' ? <>Transaction History</> : <>Swap Form</>}
+						<li>
+							<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/" target="_blank">
+								<Button
+									variant="pure"
+									onClick={() =>
+										console.log('Out')
+									}>
+									Step-by-step Guide
+								</Button>
+							</a>
 						</li>
-						<li
-							onClick={() => {
-								changeTheme();
-								setShowMenu(!showMenu);
+						<li>
+							<Button
+								variant="pure"
+								onClick={() => {
+									changeTheme();
+									setShowMenu(!showMenu);
 							}}>
-							{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
+								{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
+							</Button>
 						</li>
 					</Menu>
 				</MenuWrapper>
@@ -537,20 +618,20 @@ export const Header = () => {
 						theme={theme}
 						ref={domNode}
 						style={{
-							maxWidth: `${isMobile ? '100%' : pxToRem(170)}`,
-							right: `${!isMobile && '30%'}`
+							maxWidth: `${isDeskTop ? '100%' : pxToRem(200)}`,
+							right: `${!isDeskTop && '20%'}`
 						}}>
 						{Object.values(CHAINS).map((chain) => (
 							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
-								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
+								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small"/>
 								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
 								<Icon
 									icon={
 										sourceNetwork !== chain.name
 											? undefined
 											: isLightTheme(theme)
-											? 'checkLight'
-											: 'checkDark'
+												? 'checkLight'
+												: 'checkDark'
 									}
 									size={16}
 									style={{ marginLeft: 'auto' }}
@@ -560,6 +641,11 @@ export const Header = () => {
 					</Networks>
 				</MenuWrapper>
 			)}
+			<KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2}/>
+			<StatusKycL2Modal
+				showStatusKycL2Modal={showStatusKycL2Modal}
+				updateStatusKycL2Modal={updateStatusKycL2Modal}
+			/>
 		</StyledHeader>
 	);
 };

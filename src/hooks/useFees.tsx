@@ -10,7 +10,6 @@ import {
 	SERVICE_ADDRESS,
 	Graph,
 	BINANCE_FEE,
-	FEE_CURRENCY,
 	PROTOCOL_FEE_FACTOR,
 	isNetworkSelected,
 	useStore,
@@ -18,8 +17,6 @@ import {
 } from '../helpers';
 import type { GraphType, DestinationNetworks, Price, Fee } from '../helpers';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
-import SOURCE_NETWORKS from '../data/sourceNetworks.json';
-import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { useEthers, useGasPrice, useEtherBalance, useTokenBalance } from '@usedapp/core';
 import { BigNumber, utils, providers } from 'ethers';
 import { Contract } from '@ethersproject/contracts';
@@ -51,24 +48,29 @@ export const useFees = () => {
 			amount,
 			isNetworkConnected,
 			destinationAddress,
-			account
+			account,
+			availableSourceNetworks: SOURCE_NETWORKS,
+			availableDestinationNetworks: DESTINATION_NETWORKS,
 		}
 	} = useStore();
 
 	const { chainId, library: web3Provider } = useEthers();
 	const sourceTokenData = useMemo(
 		() =>
-			// @ts-ignore
 			// eslint-disable-next-line
-			SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken],
-		[sourceToken]
+			SOURCE_NETWORKS ?
+				// @ts-ignore
+				// eslint-disable-next-line
+				SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+			: {},
+		[SOURCE_NETWORKS, sourceToken]
 	);
 	const gasPrice = useGasPrice();
 	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, web3Provider);
 
-	if (web3Provider && isNetworkConnected && !(web3Provider instanceof providers.FallbackProvider)) {
+	if (web3Provider && isNetworkConnected && !(web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider)) {
 		contract.connect(web3Provider.getSigner());
 	}
 	const walletBalance = useEtherBalance(account);
@@ -99,7 +101,7 @@ export const useFees = () => {
 
 	const uniqueTokens: string[] = useMemo(
 		() =>
-			isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
+			DESTINATION_NETWORKS && isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
 				? // @ts-ignore
 				  Object.keys(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]).reduce(
 						(tokens: string[], network: string) => {
@@ -110,38 +112,50 @@ export const useFees = () => {
 								]?.['tokens']
 							);
 
-							const allTokens = [...tokens, networkTokens];
+							const allTokens = [...tokens, ...networkTokens];
 
-							return [...new Set(allTokens.flat(1))];
+							return [...new Set(allTokens)];
 						},
 						[sourceToken]
 				  )
 				: [],
-		[sourceToken]
+		[DESTINATION_NETWORKS, sourceToken]
 	);
 
-	const isSymbol = (symbol: string): boolean => {
-		let k = 0;
+	const uniquePairs: string[] = useMemo(
+		() => {
+			if(uniqueTokens) {
+				const result = [];
+				// let k = 0;
 
-		for (let i = 0; i < uniqueTokens.length - 1; i++) {
-			k++;
-			for (let j = k; j < uniqueTokens.length; j++) {
-				if (
-					uniqueTokens[i] + uniqueTokens[j] === symbol ||
-					uniqueTokens[j] + uniqueTokens[i] === symbol
-				) {
-					return true;
+				// for (let i = 0; i < uniqueTokens.length - 1; i++) {
+				// 	k++;
+				// 	for (let j = k; j < uniqueTokens.length; j++) {
+				// 		result.push(uniqueTokens[i] + uniqueTokens[j]);
+				// 		result.push(uniqueTokens[j] + uniqueTokens[i]);
+				// 	}
+				// }
+				
+				// TODO: use above logic for "double-swap" P.S. need performance improvement
+				for (let i = 0; i < uniqueTokens.length; i++) {
+					if (uniqueTokens[i] !== sourceToken) {
+						result.push(uniqueTokens[i] + sourceToken);
+						result.push(sourceToken + uniqueTokens[i]);
+					}
 				}
+				
+				return result;
+			} else {
+				return [];
 			}
-		}
-
-		return false;
-	};
+		},
+		[uniqueTokens, sourceToken]
+	);
 
 	useEffect(() => {
 		if (allPairs) {
 			const filteredPairs = allPairs
-				.filter((pair: any) => isSymbol(pair.symbol))
+				.filter((pair: any) => uniquePairs.includes(pair.symbol))
 				.map((pair: any) => {
 					return {
 						baseAsset: pair.baseAsset,
@@ -159,7 +173,7 @@ export const useFees = () => {
 
 	useEffect(() => {
 		if (allPrices) {
-			const filteredPrices = allPrices.filter((price: any) => isSymbol(price.symbol));
+			const filteredPrices = allPrices.filter((price: any) => uniquePairs.includes(price.symbol));
 			setAllFilteredPrices(filteredPrices);
 		}
 	}, [allPrices, uniqueTokens]);
@@ -259,15 +273,19 @@ export const useFees = () => {
 				BigNumber.from(calculatedTransactionFee)
 			);
 
+			// @ts-ignore
+			// eslint-disable-next-line
+			const nativeToken = Object.entries(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens']).find(item => item[1].isNative);
+
 			return {
 				amount: +utils.formatEther(calculatedFee['_hex']),
-				currency: sourceToken,
+				currency: nativeToken?.length ? nativeToken[0] : sourceNetwork,
 				name: 'Network'
 			};
 		} else {
-			return { amount: 0, currency: sourceToken, name: 'Network' };
+			return { amount: 0, currency: '', name: 'Network' };
 		}
-	}, [gasAmount, sourceToken]);
+	}, [gasAmount, sourceNetwork]);
 
 	useEffect(() => {
 		const localGraph = new Graph();
@@ -319,17 +337,17 @@ export const useFees = () => {
 	const allFees = useMemo((): Fee => {
 		const allFees = [...cexFee, withdrawFee, protocolFee, networkFee].reduce(
 			(total: number, fee: Fee) =>
-				fee.currency === FEE_CURRENCY
+				fee.currency === sourceToken
 					? (total += fee.amount)
-					: (total += fee.amount * getPrice(fee.currency, FEE_CURRENCY)),
+					: (total += fee.amount * getPrice(fee.currency, sourceToken)),
 			0
 		);
 
-		return { amount: allFees, currency: FEE_CURRENCY };
+		return { amount: allFees, currency: sourceToken };
 	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
 	const percentageOfAllFeesToAmount = useMemo(
-		() => (amount ? (allFees.amount / (getPrice(sourceToken, FEE_CURRENCY) * +amount)) * 100 : ''),
+		() => (amount ? (allFees.amount / +amount) * 100 : ''),
 		[allFees.amount, destinationToken, amount]
 	);
 
@@ -374,8 +392,9 @@ export const useFees = () => {
 				).toString();
 
 				if (sourceTokenData?.isNative) {
+					const mathMax = Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount;
 					maxAmount = (
-						Math.min(lotSizeMaxAmount, Number(walletMaxAmount)) - networkFee.amount
+						mathMax > 0 ? mathMax : 0
 					).toString();
 				} else {
 					maxAmount = Math.min(lotSizeMaxAmount, Number(tokenMaxAmount)).toString();

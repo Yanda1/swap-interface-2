@@ -103,7 +103,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: { destinationToken, destinationNetwork, sourceNetwork, sourceToken }
+		state: { destinationToken, destinationNetwork, sourceNetwork, sourceToken, isUserVerified }
 	} = useStore();
 
 	const handleClick = useCallback(
@@ -124,52 +124,61 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					type: DestinationEnum.TOKEN,
 					payload: name
 				});
-				dispatch({
-					type: AmountEnum.AMOUNT,
-					payload: ''
-				});
 			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
-				try {
-					// @ts-ignore
-					await ethereum.request({
-						method: 'wallet_switchEthereumChain',
-						params: [
-							{
-								chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+				if(isUserVerified) {
+					try {
+						// @ts-ignore
+						await ethereum.request({
+							method: 'wallet_switchEthereumChain',
+							params: [
+								{
+									chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+								}
+							]
+						});
+					} catch (error: any) {
+						if (error.code === 4902 || (error.code === -32603 && name === 'GLMR')) {
+							try {
+								// @ts-ignore
+								await ethereum.request({
+									method: 'wallet_addEthereumChain',
+									params: NETWORK_PARAMS['1284']
+								});
+								dispatch({
+									type: SourceEnum.NETWORK,
+									payload: name
+								});
+								dispatch({
+									type: SourceEnum.TOKEN,
+									payload: name
+								});
+							} catch (e) {
+								dispatch({
+									type: SourceEnum.NETWORK,
+									payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+								});
+								dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
 							}
-						]
-					});
-				} catch (error: any) {
-					if (error.code === 4902 || (error.code === -32603 && name === 'GLMR')) {
-						try {
-							// @ts-ignore
-							await ethereum.request({
-								method: 'wallet_addEthereumChain',
-								params: NETWORK_PARAMS['1284']
-							});
-							dispatch({
-								type: SourceEnum.NETWORK,
-								payload: name
-							});
-							dispatch({
-								type: SourceEnum.TOKEN,
-								payload: name
-							});
-						} catch (e) {
-							dispatch({
-								type: SourceEnum.NETWORK,
-								payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-							});
-							dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+						} else if (error.code === 4001) {
+							return;
+						} else {
+							addToast('Something went wrong - please try again');
 						}
-					} else if (error.code === 4001) {
-						return;
-					} else {
-						addToast('Something went wrong - please try again');
 					}
+				} else {
+					dispatch({
+						type: SourceEnum.NETWORK,
+						payload: name
+					});
+					dispatch({
+						type: SourceEnum.TOKEN,
+						payload: name
+					});
 				}
 				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+				dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+				dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 			} else if (value === 'SOURCE_TOKEN') {
 				dispatch({
 					type: SourceEnum.TOKEN,
@@ -177,6 +186,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				});
 				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+				dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+				dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 			}
 		},
 		[destinationToken, destinationNetwork, sourceNetwork, sourceToken, value] // TODO: add destinationWallet later

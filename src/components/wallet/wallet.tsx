@@ -1,22 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Jazzicon from '@metamask/jazzicon';
-import { useEtherBalance, useTokenBalance, useEthers } from '@usedapp/core';
+import { useEtherBalance, useEthers, useTokenBalance } from '@usedapp/core';
 import { formatEther, formatUnits } from '@ethersproject/units';
-import { beautifyNumbers, useStore, NETWORK_TO_ID, isTokenSelected } from '../../helpers';
-import {
-	pxToRem,
-	spacing,
-	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSIITON,
-	mediaQuery,
-	DEFAULT_OUTLINE_OFFSET,
-	DEFAULT_OUTLINE
-} from '../../styles';
+import { beautifyNumbers, isTokenSelected, NETWORK_TO_ID, useStore } from '../../helpers';
 import type { Theme } from '../../styles';
+import {
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_OUTLINE,
+	DEFAULT_OUTLINE_OFFSET,
+	DEFAULT_TRANSITION,
+	mediaQuery,
+	pxToRem,
+	spacing
+} from '../../styles';
 import { useMedia } from '../../hooks';
 import { WalletModal } from '../../components';
-import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 
 const StyledJazzIcon = styled.div`
 	height: ${pxToRem(16)};
@@ -61,7 +60,7 @@ const Account = styled.button`
 	display: flex;
 	align-items: center;
 	gap: ${spacing[4]};
-	transition: ${DEFAULT_TRANSIITON};
+	transition: ${DEFAULT_TRANSITION};
 	cursor: pointer;
 
 	${mediaQuery('s')} {
@@ -86,14 +85,15 @@ export const Wallet = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: { theme, account, sourceNetwork, sourceToken }
+		state: { theme, account, sourceNetwork, sourceToken, availableSourceNetworks: SOURCE_NETWORKS }
 	} = useStore();
 	const { mobileWidth: isMobile } = useMedia('s');
 
 	const etherBalance = account && useEtherBalance(account);
-	const tokenData =
+	const tokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
-		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
+		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+		: {};
 	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
 	const balance = tokenData?.isNative
 		? etherBalance && formatEther(etherBalance)
@@ -112,7 +112,7 @@ export const Wallet = () => {
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			{isTokenSelected(sourceToken) && (
 				<Amount theme={theme}>
-					{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
+					{beautifyNumbers({ n: balance ?? '0.0', digits: 4 })} {sourceToken}
 				</Amount>
 			)}
 			<Account theme={theme} onClick={openModal}>
