@@ -107,6 +107,13 @@ const Networks = styled(Menu)`
 		display: flex;
 		align-items: center;
 		gap: ${spacing[10]};
+		cursor: pointer;
+		border-radius: ${DEFAULT_TRANSIITON};
+		transition: 0.3s;
+
+		&:hover {
+			transform: scale(1.05);
+		}
 	}
 `;
 
@@ -570,7 +577,13 @@ export const Header = () => {
 			)}
 			{showNetworksList && (
 				<MenuWrapper theme={theme}>
-					<Networks theme={theme} ref={domNode}>
+					<Networks
+						theme={theme}
+						ref={domNode}
+						style={{
+							maxWidth: `${isMobile ? '100%' : pxToRem(170)}`,
+							right: `${!isMobile && '30%'}`
+						}}>
 						{Object.values(CHAINS).map((chain) => (
 							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
 								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
