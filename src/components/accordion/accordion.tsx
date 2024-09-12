@@ -282,10 +282,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 									<ContentList>
 										{item.content === 'none' ? (
 											<>
-												<ContentItemText>This swap has not been completed.</ContentItemText>{' '}
-												<ContentItemText color={theme.button.error}>
-													Unsuccessful swap!
-												</ContentItemText>
+												<ContentItemText>This swap has not been completed.</ContentItemText>
 											</>
 										) : !item.content ? (
 											<ContentItemText>
@@ -298,7 +295,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 													<ContentItemText>Gas fee: {item.gasFee}</ContentItemText>
 												</ContentItem>
 												<ContentItem theme={theme}>
-													<ContentItemTitle>Buy Order {item.header?.symbol}</ContentItemTitle>
+													<ContentItemTitle>{item.content?.action === 0 ? 'Sell' : 'Buy'} Order {item.header?.symbol}</ContentItemTitle>
 													<ContentItemText>
 														Quantity: {beautifyNumbers({ n: item.content?.qty })}{' '}
 														{item.header?.scoin}
@@ -312,6 +309,7 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 														{item.header?.fcoin}
 													</ContentItemText>
 												</ContentItem>
+												{ item.withdrawl ?
 												<ContentItem theme={theme}>
 													<ContentItemLink
 														theme={theme}
@@ -324,12 +322,19 @@ export const Accordion = ({ data, contentLoading }: Props) => {
 														{item.header?.fcoin}
 													</ContentItemText>
 												</ContentItem>
+												:
+												<ContentItem theme={theme}>
+													<ContentItemText>
+														Withdrawal wallet and destination wallet on the same CEX, there is no transaction link.
+													</ContentItemText>
+												</ContentItem>
+												}
 												<ContentItem theme={theme}>
 													<ContentItemText
 														color={
 															item.content?.success ? theme.button.default : theme.button.error
 														}>
-														{item.content?.success ? 'Successful swap!' : 'Unsuccessful swap!'}
+														{item.content?.success === true ? 'Successful swap!' : (item.content?.success === false ? 'Unsuccessful swap!' : 'Not validated swap!') }
 													</ContentItemText>
 												</ContentItem>
 											</>

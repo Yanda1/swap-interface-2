@@ -341,7 +341,8 @@ exports[`Accordion should match snapshot 1`] = `
               <div
                 class="c13"
               >
-                Buy Order 
+                Buy
+                 Order 
                 GLMRBTC
               </div>
               <div

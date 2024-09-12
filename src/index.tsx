@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, memo } from 'react';
 import ReactDOM from 'react-dom/client';
 import type { Config } from '@usedapp/core';
 import { DAppProvider, Mainnet, Moonbeam } from '@usedapp/core';
@@ -17,12 +17,14 @@ const config: Config = {
 	networks: [Mainnet, Moonbeam]
 };
 
+const MemoizedApp = memo(App);
+
 root.render(
 	<StrictMode>
 		<DAppProvider config={config}>
 			<AuthProvider>
 				<ToastProvider>
-					<App />
+					<MemoizedApp />
 				</ToastProvider>
 			</AuthProvider>
 		</DAppProvider>

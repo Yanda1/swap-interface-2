@@ -25,6 +25,7 @@ export type TransactionData = {
 	};
 	content:
 		| {
+				action: number;
 				qty: string;
 				price: string;
 				timestamp: number;
@@ -59,4 +60,16 @@ export type SelectProps = {
 	name: string;
 	value: TransactionHeaderSortValue;
 	checked: boolean;
+};
+
+export type CostRequest = {
+	data: string;
+	id: string;
+	customer: string;
+	service: string;
+	productId: string;
+	validatorsList: string[];
+	blockNumber: string;
+	blockTimestamp: string;
+	transactionHash: string;
 };

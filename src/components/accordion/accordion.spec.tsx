@@ -17,6 +17,7 @@ describe('Accordion', () => {
 					net: 'test'
 				},
 				content: {
+					action: 1,
 					qty: '100',
 					price: '10',
 					timestamp: 28304732,

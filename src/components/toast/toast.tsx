@@ -1,10 +1,9 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
+import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS, pxToRem } from '../../styles';
 import type { ColorType } from '../../styles';
 import { useStore } from '../../helpers';
 import { Icon } from '../../components';
-import type { IconType } from '../../components';
 
 const ToastContext = createContext({});
 
@@ -39,6 +38,10 @@ const Toaster = styled.div(({ color }: { color: ColorType }) => {
 		padding: ${spacing[10]};
 		gap: ${spacing[8]};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		svg {
+			font-size: ${pxToRem(48)};
+		}
 	`;
 });
 
@@ -54,7 +57,7 @@ const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 
 	return (
 		<Toaster color={color} onClick={onDismiss}>
-			<Icon icon={type as IconType} />
+			<Icon icon={type} />
 			{message}
 		</Toaster>
 	);
